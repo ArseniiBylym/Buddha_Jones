@@ -1,0 +1,47 @@
+.campaign {
+  border-radius: 3px;
+  background: color(#EEEAE7 lightness(+3%));
+  border: 5px solid #EEEAE7;
+  box-sizing: border-box;
+  margin-top: 12px;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.campaignContent {
+  padding-top: 24px;
+}
+
+.campaignHeader {
+  justify-content: space-between;
+  align-items: center;
+  background: #EEEAE7;
+  padding-bottom: 12px;
+  padding-top: 12px;
+
+  & .campaignInfo {
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  & .campaignName {
+    flex: 0 1 auto;
+    padding-left: 0;
+    padding-top: 12px;
+    padding-bottom: 12px;
+
+    & h5 {
+      color: #5A4D3F;
+      font-size: 0.8em;
+      font-weight: 600;
+    }
+  }
+
+  & .campaignRemoveButtonContainer {
+    flex: 0 1 auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}

@@ -1,0 +1,172 @@
+.campaignSpot {
+
+  & .campaignSpotHeader {
+    position: relative;
+  }
+
+  & h5 {
+    font-size: 0.95em;
+    font-weight: 600;
+    display: inline;
+  }
+
+  & .removeSpotButton {
+    display: inline-block;
+    margin-left: 6px;
+    position: relative;
+    top: -2px;
+  }
+
+  & .editSpotButton {
+    position: absolute;
+    right: 24px;
+    top: 1px;
+  }
+}
+
+:global(.row).campaignSpotVersions {
+  position: relative;
+  margin-top: 0;
+  margin-left: -6px;
+  margin-right: -6px;
+  padding-right: 48px;
+
+  & > :global(.col) {
+    display: inline-flex;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: center;
+    padding: 6px;
+    padding-bottom: 0;
+    flex: 0 1 auto;
+    overflow: visible;
+
+    &.versionsLabel {
+
+      & p {
+        margin: 0;
+        padding: 8px 10px;
+        color: #A59E97;
+        background: #EEEAE7;
+        height: 32px;
+        box-sizing: border-box;
+      }
+    }
+
+    &.addingNewSpot {
+
+      & p {
+        margin: 0;
+        padding: 8px 12px;
+        background: #EEEAE7;
+        height: 32px;
+        box-sizing: border-box;
+      }
+    }
+
+    &.addVersion {
+      overflow: visible;
+
+      & :global(.dropdownLabel) {
+        background: #EEEAE7;
+        padding: 6px;
+        height: 32px;
+        box-sizing: border-box;
+
+        & p {
+          padding-left: 6px;
+
+          & span {
+            font-weight: 600;
+            color: #5A4D3F;
+          }
+
+          & strong {
+            padding-right: 0;
+          }
+        }
+      }
+    }
+
+    & > button {
+      background: #EEEAE7;
+      padding: 0 6px;
+      height: 32px;
+      box-sizing: border-box;
+      float: left;
+
+      & > :global(.buttonIcon.buttonIconSmall) {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    & > h6 {
+      float: left;
+    }
+
+    &.removingVersion {
+
+      & > h6 {
+        background: #A59E97;
+        color: #EEEAE7;
+      }
+
+      & > button {
+        background: #A59E97;
+      }
+    }
+  }
+
+  & h6 {
+    padding: 4px 8px;
+    background: #EEEAE7;
+    color: #5A4D3F;
+    font-size: 0.85em;
+  }
+
+  & p {
+    margin-top: -4px;
+    color: #A59E97;
+    font-size: 0.8em;
+    font-weight: 400;
+  }
+}
+
+:global(.button).rotate45 > span:global(.buttonIcon) {
+  transform: rotateZ(-45deg);
+}
+
+:global(.button).campaignSpotVersionAdd {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  margin-top: -15px;
+}
+
+:global(.button).campaignSpotVersionAdd > span:global(.buttonIcon) {
+  transform: rotateZ(0deg);
+}
+
+.spotDetails {
+  margin: 12px 0;
+
+  & p {
+    margin-top: 6px;
+    font-size: 0.85em;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    & > span {
+      color: #A59E97;
+      font-weight: 400;
+    }
+
+    & > strong {
+      color: #5A4D3F;
+      font-weight: 600;
+    }
+  }
+}

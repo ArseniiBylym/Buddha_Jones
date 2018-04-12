@@ -1,0 +1,42 @@
+.spotsContainer {
+
+  & .spotContainer {
+
+  }
+}
+
+.campaignSpots {
+  margin-top: -24px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  background: color(#F4F2F0 lightness(+1%));
+
+  & h4 {
+    font-size: 0.95em;
+    font-weight: 400;
+    color: #A59E97;
+  }
+
+  & > p {
+    color: #A59E97;
+    font-size: 0.8em;
+    font-weight: 400;
+  }
+
+  & hr {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    background: color(#F4F2F0 lightness(-8%));
+  }
+}
+
+:global(.button).rotate45 > span:global(.buttonIcon) {
+  transform: rotateZ(-45deg);
+}
+
+.campaignAddSpot {
+
+  & :global(.button).campaignAddSpotButton > span:global(.buttonIcon) {
+    transform: rotateZ(0deg);
+  }
+}

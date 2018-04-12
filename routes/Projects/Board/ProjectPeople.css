@@ -1,0 +1,12 @@
+.peopleList {
+  margin-top: -12px;
+
+  & .person {
+    margin-top: 12px;
+    margin-right: 24px;
+  }
+
+  & .empty {
+    font-size: 0.85em;
+  }
+}

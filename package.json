@@ -1,0 +1,59 @@
+{
+  "name": "buddha-jones-portal",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3.8"
+  },
+  "scripts": {
+    "lint": "eslint actions components core routes test utils main.js",
+    "build": "react-app build",
+    "start": "react-app run"
+  },
+  "dependencies": {
+    "accounting": "^0.4.1",
+    "axios": "^0.17.1",
+    "classnames": "^2.2.5",
+    "eslint": "^2.13.1",
+    "eslint-plugin-jsx-a11y": "^1.2.3",
+    "history": "^3.3.0",
+    "html-entities": "^1.2.1",
+    "immutability-helper": "^2.6.4",
+    "invariant": "^2.2.2",
+    "lodash": "^4.17.4",
+    "luxon": "^0.2.12",
+    "moment": "^2.19.4",
+    "prop-types": "^15.6.0",
+    "query-string": "^5.0.1",
+    "react": "^16.2.0",
+    "react-animate-height": "^0.10.9",
+    "react-app": "^1.1.2",
+    "react-dom": "^16.2.0",
+    "react-redux": "^5.0.6",
+    "react-transition-group": "^1.2.1",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
+    "reselect": "^3.0.1",
+    "warning": "^3.0.0",
+    "zenscroll": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/luxon": "^0.2.2",
+    "react-app-tools": "^1.1.2"
+  },
+  "babel": {
+    "presets": [
+      "react",
+      "es2015",
+      "stage-1"
+    ],
+    "plugins": [
+      "transform-runtime"
+    ]
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "extends": "airbnb"
+  }
+}

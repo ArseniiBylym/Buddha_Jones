@@ -1,0 +1,7 @@
+.newSpotFields {
+
+}
+
+:global(.button).cancelSpotFormButton {
+  margin-top: 6px;
+}

@@ -1,0 +1,14 @@
+:global(.row) :global(.col).versionName {
+
+  & h6 {
+    display: inline-block;
+    font-size: 0.85em;
+    height: 32px;
+    padding: 7px 10px;
+    box-sizing: border-box;
+  }
+}
+
+:global(.button).rotate45 > span:global(.buttonIcon) {
+  transform: rotateZ(-45deg);
+}

@@ -1,0 +1,28 @@
+.view {
+
+  & h6 {
+
+    & strong {
+      font-size: inherit;
+      font-weight: 600;
+    }
+
+    & span {
+      font-size: inherit;
+      font-weight: 400;
+    }
+  }
+
+  & p {
+    margin-top: 6px;
+    font-size: 0.85em;
+
+    & span {
+      color: #A59E97;
+    }
+  }
+}
+
+.textarea {
+  padding-top: 12px;
+}

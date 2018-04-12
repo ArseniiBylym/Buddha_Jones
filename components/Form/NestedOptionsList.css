@@ -1,0 +1,37 @@
+.searchContainer {
+  margin: 0;
+  padding: 8px;
+}
+
+.optionsListContainer {
+  position: relative;
+  border-top: 1px solid color(#E6E0DB lightness(-16%));
+
+  & :global(.optionsListResults) {
+    background: none;
+
+    & > ul {
+
+      & > li {
+
+        & > button {
+          background: #EFEAE6;
+          border-top: 1px solid transparent;
+          border-bottom: 1px dotted color(#EFEAE6 lightness(-16%));
+
+          &:hover {
+            background: color(#EFEAE6 lightness(+2%));
+          }
+        }
+
+        &:first-child > button {
+          padding-top: 16px;
+        }
+
+        &:last-child > button {
+          border-bottom-color: transparent;
+        }
+      }
+    }
+  }
+}

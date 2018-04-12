@@ -1,0 +1,13 @@
+.dropdownContainer {
+
+  & :global(.dropdownLabel) {
+    font-size: 0.75em;
+  }
+
+  & p {
+
+    & strong {
+      padding-left: 2px;
+    }
+  }
+}
