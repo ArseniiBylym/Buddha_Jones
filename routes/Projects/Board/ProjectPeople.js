@@ -10,7 +10,7 @@ import { Section, Row, Col } from './../../../components/Section';
 import { Paragraph } from './../../../components/Content';
 import { ButtonEdit } from '../../../components/Button';
 import { LoadingBar, LoadingIndicator } from './../../../components/Loaders';
-import { PersonWithRole, PersonPickerByType } from '../../../components/Buddha';
+import { Person, PersonWithRole, PersonPickerByType } from '../../../components/Buddha';
 import { getUserRolesCount, getUserTypesCount, getUsersIds } from './ProjectPeopleSelectors';
 
 // Styles
@@ -18,6 +18,7 @@ const s = require('./ProjectPeople.css');
 
 // Props
 const propTypes = {
+    type: PropTypes.oneOf(['creative', 'billing', 'editorial', 'design']).isRequired,
     projectId: PropTypes.number.isRequired,
     campaignId: PropTypes.number.isRequired,
     users: PropTypes.arrayOf(
@@ -30,7 +31,7 @@ const propTypes = {
 
 // Defaults
 const defaultProps = {
-    users: []
+    users: [],
 };
 
 // Deriviations
@@ -43,7 +44,7 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 // Actions
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
         actionsProjectBoard: bindActionCreators(projectBoardActions, dispatch),
         actionsUserRoles: bindActionCreators(userRolesActions, dispatch),
@@ -83,18 +84,21 @@ class ProjectPeople extends React.Component {
             updatingRoles: this.props.userRolesCount > 0,
         });
 
-        this.props.actionsUserRoles.fetchUserRoles().then(() => {
-            this.setState({
-                loadingRoles: false,
-                updatingRoles: false,
+        this.props.actionsUserRoles
+            .fetchUserRoles()
+            .then(() => {
+                this.setState({
+                    loadingRoles: false,
+                    updatingRoles: false,
+                });
+            })
+            .catch(error => {
+                setTimeout(() => {
+                    if (this.componentIsMounted) {
+                        this.fetchUserRoles();
+                    }
+                }, 2048);
             });
-        }).catch((error) => {
-            setTimeout(() => {
-                if (this.componentIsMounted) {
-                    this.fetchUserRoles();
-                }
-            }, 2048);
-        });
     }
 
     fetchUserTypes() {
@@ -103,80 +107,124 @@ class ProjectPeople extends React.Component {
             updatingTypes: this.props.userTypesCount > 0,
         });
 
-        this.props.actionsUserTypes.fetchUserTypes().then(() => {
-            this.setState({
-                loadingTypes: false,
-                updatingTypes: false,
+        this.props.actionsUserTypes
+            .fetchUserTypes()
+            .then(() => {
+                this.setState({
+                    loadingTypes: false,
+                    updatingTypes: false,
+                });
+            })
+            .catch(error => {
+                setTimeout(() => {
+                    if (this.componentIsMounted) {
+                        this.fetchUserTypes();
+                    }
+                }, 2048);
             });
-        }).catch((error) => {
-            setTimeout(() => {
-                if (this.componentIsMounted) {
-                    this.fetchUserTypes();
-                }
-            }, 2048);
-        });
     }
 
     render() {
         return (
             <Section
-                title="Creative team"
+                title={
+                    this.props.type === 'creative'
+                        ? 'Creative team'
+                        : this.props.type === 'billing'
+                            ? 'Billing team'
+                            : this.props.type === 'editorial'
+                                ? 'Editorial team'
+                                : this.props.type === 'design' ? 'Graphics team' : ''
+                }
                 removeTitleGutter={false}
                 removeTitleMargins={true}
                 noSeparator={true}
                 headerElements={[
-                    ...(this.state.updatingRoles || this.state.updatingTypes ? [{
-                        element: <LoadingIndicator label="Refreshing" />
-                    }] : []),
-                    ...(this.state.editing ? [{
-                        element:
-                            <PersonPickerByType
-                                onChange={e => this.handleUserChange(e)}
-                                label="Add people to the team"
-                                selectedUsersIds={this.props.users.map((user) => user.userId)}
-                                showUsersOfTypesIds={[
-                                    UserTypesIds.Producer,
-                                    UserTypesIds.ProductionCoordinator,
-                                    UserTypesIds.ProductionAssistant,
-                                    UserTypesIds.Manager,
-                                    UserTypesIds.Owners,
-                                    UserTypesIds.SeniorManagement,
-                                    UserTypesIds.EditorialManager,
-                                    UserTypesIds.AssitantEditor,
-                                    UserTypesIds.CreativeManager,
-                                    UserTypesIds.GraphicsDeptHeads,
-                                    UserTypesIds.GraphicsCoordinator,
-                                    UserTypesIds.MusicManager,
-                                ]}
-                            />
-                    }] : []),
-                    ...[{
-                        element:
-                            <ButtonEdit
-                                onClick={e => this.handleEditingToggle()}
-                                label={this.state.editing ? 'Cancel' : 'Edit team'}
-                            />
-                    }]
+                    ...(this.state.updatingRoles || this.state.updatingTypes
+                        ? [
+                              {
+                                  element: <LoadingIndicator label="Refreshing" />,
+                              },
+                          ]
+                        : []),
+                    ...(this.state.editing
+                        ? [
+                              {
+                                  element: (
+                                      <PersonPickerByType
+                                          onChange={e => this.handleUserChange(e)}
+                                          label="Add people to the team"
+                                          selectedUsersIds={this.props.users.map(user => user.userId)}
+                                          showUsersOfTypesIds={
+                                              this.props.type === 'creative'
+                                                  ? [
+                                                        UserTypesIds.Producer,
+                                                        UserTypesIds.ProductionCoordinator,
+                                                        UserTypesIds.ProductionAssistant,
+                                                        UserTypesIds.CreativeManager,
+                                                        UserTypesIds.Owners,
+                                                        UserTypesIds.SeniorManagement,
+                                                        UserTypesIds.EditorialManager,
+                                                        UserTypesIds.AssitantEditor,
+                                                        UserTypesIds.CreativeManager,
+                                                        UserTypesIds.GraphicsDeptHeads,
+                                                        UserTypesIds.GraphicsCoordinator,
+                                                        UserTypesIds.MusicManager,
+                                                    ]
+                                                  : this.props.type === 'billing'
+                                                      ? [
+                                                            UserTypesIds.BillingCoordinator,
+                                                            UserTypesIds.SeniorBilling,
+                                                            UserTypesIds.Owners,
+                                                        ]
+                                                      : this.props.type === 'editorial'
+                                                          ? [UserTypesIds.Editor]
+                                                          : this.props.type === 'design'
+                                                              ? [UserTypesIds.GraphicDesigner]
+                                                              : []
+                                          }
+                                      />
+                                  ),
+                              },
+                          ]
+                        : []),
+                    ...[
+                        {
+                            element: (
+                                <ButtonEdit
+                                    onClick={e => this.handleEditingToggle()}
+                                    label={this.state.editing ? 'Cancel' : 'Edit team'}
+                                />
+                            ),
+                        },
+                    ],
                 ]}
             >
                 <Row removeMargins={true} className={s.peopleList} doWrap={true}>
-                    <Col>
-                        {(this.props.users.length > 0) && this.props.users.map((user) => (
-                            <PersonWithRole
-                                key={'user-' + user.userId}
-                                onChange={e => this.handleUserRoleChange(e, user.userId)}
-                                className={s.person}
-                                userId={user.userId}
-                                roleId={typeof user.roleId !== 'undefined' && user.roleId ? user.roleId : null}
-                                selected={true}
-                                editing={this.state.editing}
-                                updating={this.state.updatingUsers.indexOf(user.userId) !== -1}
-                            />
-                        )) || (this.state.loadingRoles || this.state.loadingTypes) && (
-                            <LoadingBar />
-                        ) || (
-                            <Paragraph className={s.empty} type="dim">Team has no people assigned yet.</Paragraph>
-                        )}
+                    <Col className={s.peopleContainer} size={0}>
+                        {(this.props.users.length > 0 &&
+                            this.props.users.map(user => (
+                                <PersonWithRole
+                                    key={'user-' + user.userId}
+                                    onChange={e => this.handleUserRoleChange(e, user.userId)}
+                                    className={s.person}
+                                    userId={user.userId}
+                                    roleId={typeof user.roleId !== 'undefined' && user.roleId ? user.roleId : null}
+                                    hideRole={this.props.type !== 'creative'}
+                                    selected={true}
+                                    editing={this.state.editing}
+                                    updating={this.state.updatingUsers.indexOf(user.userId) !== -1}
+                                />
+                            ))) ||
+                            ((this.state.loadingRoles || this.state.loadingTypes) && (
+                                <div className={s.loadingBarContainer}>
+                                    <LoadingBar />
+                                </div>
+                            )) || (
+                                <Paragraph className={s.empty} type="dim">
+                                    Team has no people assigned.
+                                </Paragraph>
+                            )}
                     </Col>
                 </Row>
             </Section>
@@ -185,7 +233,7 @@ class ProjectPeople extends React.Component {
 
     handleEditingToggle() {
         this.setState({
-            editing: !this.state.editing
+            editing: !this.state.editing,
         });
     }
 
@@ -196,61 +244,68 @@ class ProjectPeople extends React.Component {
             console.log('existingUserFound: ', existingUserFound);
 
             this.setState({
-                updatingUsers: [
-                    ...this.state.updatingUsers,
-                    ...[userOption.value]
-                ]
+                updatingUsers: [...this.state.updatingUsers, ...[userOption.value]],
             });
 
-            this.props.actionsProjectBoard[existingUserFound !== -1
-                ? 'removeUserFromProjectCampaign'
-                : 'addOrChangeRoleOfUserInProjectCampaign'
-            ](
-                this.props.projectId,
-                this.props.campaignId,
-                userOption.value
-            ).then(() => {
-                this.stopUpdatingUsers(userOption.value);
-            }).catch((error) => {
-                this.stopUpdatingUsers(userOption.value);
-            });
+            this.props.actionsProjectBoard[
+                existingUserFound !== -1 ? 'removeUserFromProjectCampaign' : 'addOrChangeRoleOfUserInProjectCampaign'
+            ](this.props.projectId, this.props.campaignId, userOption.value)
+                .then(() => {
+                    this.stopUpdatingUsers(userOption.value);
+                })
+                .catch(error => {
+                    this.stopUpdatingUsers(userOption.value);
+                });
         }
     }
 
     handleUserRoleChange(roleOption, userId) {
         if (roleOption.value === 'remove' || !isNaN(roleOption.value)) {
             this.setState({
-                updatingUsers: [
-                    ...this.state.updatingUsers,
-                    ...[userId]
-                ]
+                updatingUsers: [...this.state.updatingUsers, ...[userId]],
             });
 
-            this.props.actionsProjectBoard[roleOption.value === 'remove'
-                ? 'removeUserFromProjectCampaign'
-                : 'addOrChangeRoleOfUserInProjectCampaign'
-            ](
-                this.props.projectId,
-                this.props.campaignId,
-                userId,
-                roleOption.value
-            ).then(() => {
-                this.stopUpdatingUsers(userId);
-            }).catch((error) => {
-                this.stopUpdatingUsers(userId);
+            this.props.actionsProjectBoard[
+                roleOption.value === 'remove'
+                    ? 'removeUserFromProjectCampaign'
+                    : 'addOrChangeRoleOfUserInProjectCampaign'
+            ]('creative', this.props.projectId, this.props.campaignId, userId, roleOption.value)
+                .then(() => {
+                    this.stopUpdatingUsers(userId);
+                })
+                .catch(error => {
+                    this.stopUpdatingUsers(userId);
+                });
+        }
+    }
+
+    handleBillingUserChange(option, userId) {
+        if (option.value === 'remove' || !isNaN(option.value)) {
+            this.setState({
+                updatingUsers: [...this.state.updatingUsers, ...[userId]],
             });
+
+            this.props.actionsProjectBoard[
+                option.value === 'remove' ? 'removeUserFromProjectCampaign' : 'addOrChangeRoleOfUserInProjectCampaign'
+            ]('billing', this.props.projectId, this.props.campaignId, userId, option.value)
+                .then(() => {
+                    this.stopUpdatingUsers(userId);
+                })
+                .catch(error => {
+                    this.stopUpdatingUsers(userId);
+                });
         }
     }
 
     stopUpdatingUsers(userId) {
-        const userIndex = this.state.updatingUsers.findIndex((id) => id === userId);
+        const userIndex = this.state.updatingUsers.findIndex(id => id === userId);
 
         if (userIndex !== -1) {
             this.setState({
                 updatingUsers: [
                     ...this.state.updatingUsers.slice(0, userIndex),
-                    ...this.state.updatingUsers.slice(userIndex + 1)
-                ]
+                    ...this.state.updatingUsers.slice(userIndex + 1),
+                ],
             });
         }
     }

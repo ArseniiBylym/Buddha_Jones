@@ -27,6 +27,12 @@ class ProjectCampaignOfUserController extends CustomAbstractActionController
         $data = $this->_projectCampaignRepo->search($filter, $offset, $length);
         $totalCount = $this->_projectCampaignRepo->searchCount($filter);
 
+        foreach($data as &$row) {
+            // set project name
+            $projectName = $this->_projectRepo->getProjectName($row['projectId'], $this->_user_type_id, true);
+            $row = array_merge($row, $projectName);
+        }
+
         $response = array(
             'status' => 1,
             'message' => 'Request successful',

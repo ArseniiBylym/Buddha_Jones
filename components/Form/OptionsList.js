@@ -34,6 +34,7 @@ const propTypes = {
             label: PropTypes.string.isRequired
         })
     ),
+    selectedIcon: PropTypes.element,
     loadingOptions: PropTypes.bool,
     loadingOptionsLabel: PropTypes.string,
     refreshingOptionsLabel: PropTypes.string,
@@ -53,6 +54,7 @@ const defaultProps = {
     label: null,
     value: null,
     options: [],
+    selectedIcon: null,
     loadingOptions: false,
     loadingOptionsLabel: 'Loading',
     refreshingOptionsLabel: 'Refreshing',
@@ -291,11 +293,10 @@ class OptionsList extends React.Component {
                                         return (
                                             <li key={optionKey} className={optionClassName !== '' ? optionClassName : null}>
                                                 <button onClick={e => this.handleSelectionChange(e, option.value, option.label)}>
-                                                    {
-                                                        typeof option.label !== 'undefined'
-                                                            ? option.label
-                                                            : option.value
-                                                    }
+                                                    {(resultIsActive && this.props.selectedIcon) && (
+                                                        <div className={s.optionIcon}>{this.props.selectedIcon}</div>
+                                                    )}
+                                                    {typeof option.label !== 'undefined' ? option.label : option.value}
                                                 </button>
                                             </li>
                                         );

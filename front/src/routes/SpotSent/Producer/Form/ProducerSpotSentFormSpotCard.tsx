@@ -1,0 +1,203 @@
+import * as React from 'react';
+import { observer, inject } from 'mobx-react';
+import { SpotSentSpot } from 'types/spotSent';
+import { Card, Section } from 'components/Section';
+import { Checkmark, DropdownContainer, OptionsList, OptionsListValuePropType } from 'components/Form';
+import { ButtonClose } from 'components/Button';
+import { ProjectPicker, ProjectPickerGroupValues, ProjectPickerValues, PersonWithRole } from 'components/Buddha';
+import { Paragraph } from 'components/Content';
+import { AppOnlyStoreState } from 'store/AllStores';
+import { ProjectCampaignUserFromApi } from 'types/projectDetails';
+import { computed } from 'mobx';
+import { LoadingIndicator } from 'components/Loaders';
+
+// Styles
+const s = require('./ProducerSpotSentForm.css');
+
+// Props
+interface ProducerSpotSentFormSpotCardProps {
+    onSpotResendToggle: (checked: boolean) => void;
+    onSpotRemove: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    onSpotChange: (values: ProjectPickerValues | null) => void;
+    onEditorAdd: (id: number) => void;
+    project: ProjectPickerGroupValues | null;
+    clientId: number | null;
+    spot: SpotSentSpot;
+    spotIndex: number;
+    forUserId: number;
+}
+
+// Types
+type ProducerSpotSentFormSpotCardPropsTypes = ProducerSpotSentFormSpotCardProps & AppOnlyStoreState;
+
+// Component
+@inject('store')
+@observer
+export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSentFormSpotCardPropsTypes, {}> {
+    @computed
+    private get campaignEditorialUsers(): { isLoading: boolean; users: ProjectCampaignUserFromApi[] } {
+        if (!this.props.store) {
+            return {
+                isLoading: false,
+                users: [],
+            };
+        }
+
+        if (this.props.spot.projectCampaign === null) {
+            return {
+                isLoading: false,
+                users: [],
+            };
+        }
+
+        const projectCampaign = this.props.store.campaignPeople.projectCampaignPeople.find(
+            pc => pc.projectCampaignId === this.props.spot.projectCampaign!.id
+        );
+        if (typeof projectCampaign === 'undefined') {
+            return {
+                isLoading: true,
+                users: [],
+            };
+        }
+
+        return {
+            isLoading: projectCampaign.editorialTeam.isLoading,
+            users: projectCampaign.editorialTeam.users,
+        };
+    }
+
+    @computed
+    private get selectedEditors(): ProjectCampaignUserFromApi[] {
+        return this.props.spot.selectedEditorsIds.reduce((editors: ProjectCampaignUserFromApi[], editorId) => {
+            const editorDetails = this.campaignEditorialUsers.users.find(u => u.userId === editorId);
+            if (editorDetails) {
+                editors.push(editorDetails);
+            }
+
+            return editors;
+        }, []);
+    }
+
+    private editorDropdown: DropdownContainer | null = null;
+
+    public render() {
+        return (
+            <Card
+                title={'#' + (this.props.spotIndex + 1)}
+                subTitle="Spot sent"
+                isExpandable={false}
+                headerElements={[
+                    <Checkmark
+                        key="spot-resend-checkmark"
+                        onClick={this.props.onSpotResendToggle}
+                        checked={this.props.spot.isResend}
+                        label="Spot resend"
+                        labelOnLeft={true}
+                    />,
+                    <ButtonClose key="remove-spot" onClick={this.props.onSpotRemove} label="Remove spot" />,
+                ]}
+            >
+                <ProjectPicker
+                    onChange={this.props.onSpotChange}
+                    forUserId={this.props.forUserId}
+                    noSeparator={true}
+                    show="campaign-spot-version"
+                    requiredSelection="campaign-spot-version"
+                    value={{
+                        project: this.props.project,
+                        projectCampaign: this.props.spot.projectCampaign,
+                        spot: this.props.spot.spot,
+                        version: this.props.spot.version,
+                        customerId: this.props.clientId,
+                    }}
+                />
+
+                <Section
+                    title={`Spot #${this.props.spotIndex + 1} editors`}
+                    headerElements={
+                        this.campaignEditorialUsers.users.length > 0
+                            ? this.campaignEditorialUsers.users.length > this.selectedEditors.length
+                                ? [
+                                      {
+                                          key: 'editors-picker',
+                                          element: (
+                                              <DropdownContainer
+                                                  ref={this.referenceEditorDropdown}
+                                                  label="Select editors"
+                                              >
+                                                  <OptionsList
+                                                      onChange={this.handleAddingUser}
+                                                      options={this.campaignEditorialUsers.users
+                                                          .filter(
+                                                              user =>
+                                                                  this.props.spot.selectedEditorsIds.indexOf(
+                                                                      user.userId
+                                                                  ) === -1
+                                                          )
+                                                          .map(user => ({
+                                                              value: user.userId,
+                                                              label: user.fullName || user.username,
+                                                          }))}
+                                                  />
+                                              </DropdownContainer>
+                                          ),
+                                      },
+                                  ]
+                                : [
+                                      {
+                                          key: 'editors-nope',
+                                          element: (
+                                              <Paragraph type="dim">All editors from campaign are selected</Paragraph>
+                                          ),
+                                      },
+                                  ]
+                            : []
+                    }
+                >
+                    {this.props.spot.projectCampaign === null && (
+                        <Paragraph type="dim">Campaign selection is needed to pick editors.</Paragraph>
+                    )}
+
+                    {this.props.spot.projectCampaign !== null &&
+                        this.campaignEditorialUsers.isLoading && <LoadingIndicator label="Loading editors" />}
+
+                    {this.props.spot.projectCampaign !== null &&
+                        this.campaignEditorialUsers.isLoading === false &&
+                        this.campaignEditorialUsers.users.length <= 0 && (
+                            <Paragraph type="dim">Campaign has no editors assigned.</Paragraph>
+                        )}
+
+                    {this.props.spot.projectCampaign !== null &&
+                        this.campaignEditorialUsers.isLoading === false &&
+                        this.campaignEditorialUsers.users.length > 0 &&
+                        this.selectedEditors.length <= 0 && <Paragraph type="dim">Add editors</Paragraph>}
+
+                    {this.selectedEditors.map(selectedEditor => (
+                        <PersonWithRole
+                            key={selectedEditor.userId}
+                            className={s.spotEditor}
+                            userId={selectedEditor.userId}
+                            userFullName={selectedEditor.fullName}
+                            userImage={selectedEditor.image}
+                            roleId={null}
+                            roleName={null}
+                            hideRole={true}
+                            selected={true}
+                            editing={false}
+                        />
+                    ))}
+                </Section>
+            </Card>
+        );
+    }
+
+    private referenceEditorDropdown = (ref: DropdownContainer) => (this.editorDropdown = ref);
+
+    private handleAddingUser = (option: { value: OptionsListValuePropType; label: string }) => {
+        this.props.onEditorAdd(option.value as number);
+
+        if (this.editorDropdown) {
+            this.editorDropdown.closeDropdown();
+        }
+    };
+}

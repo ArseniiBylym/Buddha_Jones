@@ -49,6 +49,13 @@ class RediCampaign
      */
     private $materialReceived;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="created_by_user_id", type="integer", nullable=true)
+     */
+    private $createdByUserId;
+
 
 
     /**
@@ -151,5 +158,28 @@ class RediCampaign
     public function getMaterialReceived()
     {
         return $this->materialReceived;
+    }
+
+    /**
+     * Set createdByUserId
+     *
+     * @param integer $createdByUserId
+     * @return RediCampaign
+     */
+    public function setCreatedByUserId($createdByUserId)
+    {
+        $this->createdByUserId = $createdByUserId;
+
+        return $this;
+    }
+
+    /**
+     * Get createdByUserId
+     *
+     * @return integer 
+     */
+    public function getCreatedByUserId()
+    {
+        return $this->createdByUserId;
     }
 }

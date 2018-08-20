@@ -7,7 +7,6 @@ import * as API from './../../actions/api';
 import { actionAlertNotify } from './../../actions/Notifications';
 import history from './../../core/history';
 import { Section, Row, Col } from './../../components/Section';
-import { LoadingShade, LoadingSpinner } from './../../components/Loaders/LoadingShade';
 import Layout from './../../components/Layout/Layout';
 import Table from './../../components/Table/Table';
 import TableRow from './../../components/Table/TableRow';
@@ -28,6 +27,8 @@ import Button from './../../components/Button/Button';
 import AdditionalStaffList from './AdditionalStaffList';
 import OutsideCosts from './OutsideCosts';
 import GenericStaff from './GenericStaff';
+import LoadingShade from '../../components/Loaders/LoadingShade';
+import LoadingSpinner from '../../components/Loaders/LoadingSpinner';
 
 // Styles
 import s from './EstimationAndQuoting.css';
@@ -54,14 +55,13 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                 search: '',
                 rate: {
                     value: 'all',
-                    label: 'All'
-                }
+                    label: 'All',
+                },
             },
             loadedWorkers: [],
             visibleWorkers: [],
             selectedWorkers: {},
-            additionalWorkers: [
-            ],
+            additionalWorkers: [],
             showAllWorkers: this.props.estimateId ? false : true,
             showEstimateDays: false,
             defaultProject: undefined,
@@ -69,29 +69,27 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                 projectId: null,
                 campaignId: null,
                 spotId: null,
-                versionId: null
+                versionId: null,
             },
             totalQuote: {
                 baseValue: 0,
                 markup: 150,
-                totalValue: 0
+                totalValue: 0,
             },
             notes: {
-                technical: ''
+                technical: '',
             },
             isFinal: false,
             isWorkersLoading: false,
             isEstimateUploading: false,
             isEstimateLoading: false,
-            outsideCosts: [
-            ],
-            genericStaff: [
-            ],
+            outsideCosts: [],
+            genericStaff: [],
             totalCostToClient: {
                 baseValue: 0,
                 markup: 110,
-                totalValue: 0
-            }
+                totalValue: 0,
+            },
         };
 
         // Binding
@@ -103,28 +101,32 @@ class PageEstimateEstimationAndQuoting extends React.Component {
         window.scrollTo(0, 0);
 
         // Provide sample estimate type options
-        this.setState({
-            estimateTypeOptionsLoading: true
-        }, () => {
-            // API.get(API.ESTIMATE_TYPE+ '?active=1', {})
-            API.get(API.ESTIMATE_TYPE, {})
-            .then(response => {
-                //console.log(response);
-                this.setState({
-                    estimateTypeOptionsLoading: false,
-                    estimateTypeOptions: response.map((item, index)=>{
-                        return {
-                            value: item.id,
-                            label: item.name
-                        };
+        this.setState(
+            {
+                estimateTypeOptionsLoading: true,
+            },
+            () => {
+                // API.get(API.ESTIMATE_TYPE+ '?active=1', {})
+                API.get(API.ESTIMATE_TYPE, {})
+                    .then(response => {
+                        //console.log(response);
+                        this.setState({
+                            estimateTypeOptionsLoading: false,
+                            estimateTypeOptions: response.map((item, index) => {
+                                return {
+                                    value: item.id,
+                                    label: item.name,
+                                };
+                            }),
+                        });
                     })
-                });
-            }).catch(error => {
-                this.setState({
-                    estimateTypeOptionsLoading: false
-                });
-            });
-        });
+                    .catch(error => {
+                        this.setState({
+                            estimateTypeOptionsLoading: false,
+                        });
+                    });
+            }
+        );
 
         let headerElements = [];
 
@@ -135,18 +137,12 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                     text: 'Back to all estimates',
                     color: 'white',
                     size: 'large',
-                    onLeft: false
+                    onLeft: false,
                 }}
                 icon={{
                     background: 'none-alt',
                     size: 'small',
-                    element:
-                        <IconArrowLeftYellow
-                            width={15}
-                            height={11}
-                            marginTop={-5}
-                            marginLeft={-7}
-                        />
+                    element: <IconArrowLeftYellow width={15} height={11} marginTop={-5} marginLeft={-7} />,
                 }}
             />
         );
@@ -168,8 +164,8 @@ class PageEstimateEstimationAndQuoting extends React.Component {
             type: actions.HEADER_SET_ALL,
             payload: {
                 title: 'Estimate and quote the spot',
-                elements: headerElements
-            }
+                elements: headerElements,
+            },
         });
 
         if (this.props.estimateId) {
@@ -186,14 +182,14 @@ class PageEstimateEstimationAndQuoting extends React.Component {
     componentWillUmount() {
         // Remove header
         this.props.dispatch({
-            type: actions.HEADER_RESET
+            type: actions.HEADER_RESET,
         });
     }
 
     fetchEstimate(estimateId) {
         // Show that estimate is loading
         this.setState({
-            isEstimateLoading: true
+            isEstimateLoading: true,
         });
 
         // Fetch
@@ -208,7 +204,7 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                         regular: parseFloat(worker.estimatedRegular) || 0.0,
                         overtime: parseFloat(worker.estimatedOvertime) || 0.0,
                         doubletime: parseFloat(worker.estimatedDoubletime) || 0.0,
-                        totalCost: parseFloat(worker.totalAmount) || 0.0
+                        totalCost: parseFloat(worker.totalAmount) || 0.0,
                     };
 
                     selectedWorkers[worker.workerId] = workerValues;
@@ -217,19 +213,19 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                 const defaultProject = {
                     project: {
                         value: response.projectName || '',
-                        selectedId: response.projectId
+                        selectedId: response.projectId,
                     },
                     campaign: {
                         value: response.campaignName || '',
-                        selectedId: response.campaignId
+                        selectedId: response.campaignId,
                     },
                     spot: {
                         value: response.spotName || '',
-                        selectedId: response.spotId
+                        selectedId: response.spotId,
                     },
                     version: {
                         value: response.versionName || '',
-                        selectedId: response.versionId
+                        selectedId: response.versionId,
                     },
                 };
 
@@ -240,33 +236,33 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                     versionId: response.versionId,
                 };
 
-                const additionalWorkers = response.temporaryStaff.map((item, index)=>{
+                const additionalWorkers = response.temporaryStaff.map((item, index) => {
                     return {
                         role: item.name,
                         rate: item.rate,
                         regular: item.estimatedTime,
                         overtime: 0,
                         doubletime: 0,
-                        totalCost: item.totalAmount
+                        totalCost: item.totalAmount,
                     };
                 });
 
-                const outsideCosts = response.outsideCost.map((item, index)=>{
+                const outsideCosts = response.outsideCost.map((item, index) => {
                     return {
                         expenseId: item.outsideCostId,
                         amount: item.cost,
-                        budgetType: (item.outsideCostType === 'Part of Budget') ? false : true
+                        budgetType: item.outsideCostType === 'Part of Budget' ? false : true,
                     };
                 });
 
-                let genericStaff=[];
-                genericStaff = response.staffs.map((item, index)=>{
+                let genericStaff = [];
+                genericStaff = response.staffs.map((item, index) => {
                     return {
                         id: item.staffId,
                         regular: item.estimatedRegular,
                         overtime: item.estimatedOvertime,
                         doubletime: item.estimatedDoubletime,
-                        totalCost: item.totalAmount
+                        totalCost: item.totalAmount,
                     };
                 });
 
@@ -280,17 +276,18 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                         defaultProject: defaultProject,
                         selectedProject: selectedProject,
                         totalQuote: {
-                            markup: (response.multiplier < 100 ? response.multiplier*100 : response.multiplier)
+                            markup: response.multiplier < 100 ? response.multiplier * 100 : response.multiplier,
                         },
                         notes: {
-                            technical: response.notes
+                            technical: response.notes,
                         },
                         isFinal: response.status !== 'Draft',
                         additionalWorkers: additionalWorkers,
                         outsideCosts: outsideCosts,
                         genericStaff: genericStaff,
-                        isEstimateLoading: false
-                    }), ()=>{
+                        isEstimateLoading: false,
+                    }),
+                    () => {
                         this.calcTotalQuote();
                         this.calcTotalCostToClient();
                     }
@@ -307,27 +304,23 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                     text: 'Back to all estimates',
                                     color: 'white',
                                     size: 'large',
-                                    onLeft: false
+                                    onLeft: false,
                                 }}
                                 icon={{
                                     background: 'none-alt',
                                     size: 'small',
-                                    element:
-                                        <IconArrowLeftYellow
-                                            width={15}
-                                            height={11}
-                                            marginTop={-5}
-                                            marginLeft={-7}
-                                        />
+                                    element: (
+                                        <IconArrowLeftYellow width={15} height={11} marginTop={-5} marginLeft={-7} />
+                                    ),
                                 }}
-                            />
-                        ]
+                            />,
+                        ],
                     });
                 }
             })
             .catch(error => {
                 this.setState({
-                    isEstimateLoading: false
+                    isEstimateLoading: false,
                 });
             });
     }
@@ -342,15 +335,15 @@ class PageEstimateEstimationAndQuoting extends React.Component {
         const params = {
             search: query,
             offset: offset,
-            length: length
+            length: length,
         };
 
         // Show that results are loading
         this.setState({
-            isWorkersLoading: true
+            isWorkersLoading: true,
         });
 
-        if (!this.props.estimateId || this.props.estimateId && this.state.estimateStatus === 'Draft') {
+        if (!this.props.estimateId || (this.props.estimateId && this.state.estimateStatus === 'Draft')) {
             // Disable workers toggle
             this.props.dispatch({
                 type: actions.HEADER_SET_ELEMENTS,
@@ -361,21 +354,15 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                             text: 'Back to all estimates',
                             color: 'white',
                             size: 'large',
-                            onLeft: false
+                            onLeft: false,
                         }}
                         icon={{
                             background: 'none-alt',
                             size: 'small',
-                            element:
-                                <IconArrowLeftYellow
-                                    width={15}
-                                    height={11}
-                                    marginTop={-5}
-                                    marginLeft={-7}
-                                />
+                            element: <IconArrowLeftYellow width={15} height={11} marginTop={-5} marginLeft={-7} />,
                         }}
-                    />
-                ]
+                    />,
+                ],
             });
         }
 
@@ -389,21 +376,24 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                         id: worker.id,
                         name: fullName,
                         initials: worker.initials || '',
-                        rate: accounting.parse(worker.hourly_rate) || 0.0
+                        rate: accounting.parse(worker.hourly_rate) || 0.0,
                     };
                 });
 
-                this.setState({
-                    loadedWorkers: workers,
-                    visibleWorkers: workers,
-                    isWorkersLoading: false
-                }, () => {
-                    if (callback) {
-                        callback();
+                this.setState(
+                    {
+                        loadedWorkers: workers,
+                        visibleWorkers: workers,
+                        isWorkersLoading: false,
+                    },
+                    () => {
+                        if (callback) {
+                            callback();
+                        }
                     }
-                });
+                );
 
-                if (!this.props.estimateId || this.props.estimateId && this.state.estimateStatus === 'Draft') {
+                if (!this.props.estimateId || (this.props.estimateId && this.state.estimateStatus === 'Draft')) {
                     // Reenable workers toggle
                     this.props.dispatch({
                         type: actions.HEADER_SET_ELEMENTS,
@@ -414,33 +404,32 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                     text: 'Back to all estimates',
                                     color: 'white',
                                     size: 'large',
-                                    onLeft: false
+                                    onLeft: false,
                                 }}
                                 icon={{
                                     background: 'none-alt',
                                     size: 'small',
-                                    element:
-                                        <IconArrowLeftYellow
-                                            width={15}
-                                            height={11}
-                                            marginTop={-5}
-                                            marginLeft={-7}
-                                        />
+                                    element: (
+                                        <IconArrowLeftYellow width={15} height={11} marginTop={-5} marginLeft={-7} />
+                                    ),
                                 }}
-                            />
-                        ]
+                            />,
+                        ],
                     });
                 }
             })
             .catch(error => {
                 this.setState({
-                    isWorkersLoading: false
+                    isWorkersLoading: false,
                 });
             });
     }
 
     uploadEstimate() {
-        let workers = [], additionalStaff = [], outsideCost = [], genericStaff = [];
+        let workers = [],
+            additionalStaff = [],
+            outsideCost = [],
+            genericStaff = [];
         let workerId, worker;
         const selectedWorkerIds = Object.keys(this.state.selectedWorkers);
 
@@ -457,44 +446,42 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                 estimated_regular: worker.regular,
                 estimated_overtime: worker.overtime,
                 estimated_doubletime: worker.doubletime,
-                total_amount: worker.totalCost
+                total_amount: worker.totalCost,
             });
         }
 
-        this.state.additionalWorkers.map((worker, index)=>{
+        this.state.additionalWorkers.map((worker, index) => {
             if (worker.regular !== 0 && worker.role.trim() !== '') {
                 additionalStaff.push({
                     name: worker.role,
                     rate: worker.rate,
                     estimated_time: worker.regular,
-                    total_amount: worker.rate * worker.regular * ((this.state.showEstimateDays === true) ? 8 : 1)
+                    total_amount: worker.rate * worker.regular * (this.state.showEstimateDays === true ? 8 : 1),
                 });
             }
         });
 
-        this.state.outsideCosts.map((item, index)=>{
+        this.state.outsideCosts.map((item, index) => {
             if (item.amount !== 0 && item.expenseId !== null) {
                 outsideCost.push({
                     outside_cost_id: item.expenseId,
                     cost: item.amount,
-                    type_id: (item.budgetType === true) ? 2 : 1
+                    type_id: item.budgetType === true ? 2 : 1,
                 });
             }
         });
 
-        this.state.genericStaff.map((worker, index)=>{
+        this.state.genericStaff.map((worker, index) => {
             if (worker.regular !== 0 && worker.rate !== 0) {
                 genericStaff.push({
                     staff_id: worker.id,
                     estimated_regular: worker.regular,
                     estimated_overtime: worker.overtime,
                     estimated_doubletime: worker.doubletime,
-                    total_amount: worker.totalCost
-
+                    total_amount: worker.totalCost,
                 });
             }
         });
-
 
         // Request params
         let params = {
@@ -508,12 +495,12 @@ class PageEstimateEstimationAndQuoting extends React.Component {
             time_unit: this.state.showEstimateDays ? 'D' : 'H',
             temporary_staff: JSON.stringify(additionalStaff),
             outside_cost: JSON.stringify(outsideCost),
-            staffs: JSON.stringify(genericStaff)
+            staffs: JSON.stringify(genericStaff),
         };
 
         // Show that estimate is uploading
         this.setState({
-            isEstimateUploading: true
+            isEstimateUploading: true,
         });
 
         // Decide API mothod - PUT or POST
@@ -526,30 +513,24 @@ class PageEstimateEstimationAndQuoting extends React.Component {
             .then(response => {
                 this.setState({
                     estimateId: parseInt(response.data.id, 10) || null,
-                    isEstimateUploading: false
+                    isEstimateUploading: false,
                 });
 
                 // Notification attributes
-                let notificationTitle = '', notificationDescription = '';
+                let notificationTitle = '',
+                    notificationDescription = '';
                 if (this.state.isFinal === true) {
                     notificationTitle = 'Estimate sent for review';
                     notificationDescription = 'Estimate has been passed to billing department for review.';
                 } else {
-                    notificationTitle = 'Estimate\'s draft saved';
-                    notificationDescription = 'You can come back and modify the estimate whenever you like and send it for review when ready.';
+                    notificationTitle = "Estimate's draft saved";
+                    notificationDescription =
+                        'You can come back and modify the estimate whenever you like and send it for review when ready.';
                 }
 
                 // Notify to success
                 this.props.dispatch(
-                    actionAlertNotify(
-                        notificationTitle,
-                        notificationDescription,
-                        'success',
-                        false,
-                        true,
-                        false,
-                        5
-                    )
+                    actionAlertNotify(notificationTitle, notificationDescription, 'success', false, true, false, 5)
                 );
 
                 // Redirect to estimates list if it's final
@@ -559,7 +540,7 @@ class PageEstimateEstimationAndQuoting extends React.Component {
             })
             .catch(error => {
                 this.setState({
-                    isEstimateUploading: false
+                    isEstimateUploading: false,
                 });
             });
     }
@@ -596,9 +577,9 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                     workersFilter: Object.assign({}, this.state.workersFilter, {
                         rate: Object.assign({}, this.state.workersFilter.rate, {
                             value: selected.value,
-                            label: selected.label
-                        })
-                    })
+                            label: selected.label,
+                        }),
+                    }),
                 });
             }
         }
@@ -646,8 +627,8 @@ class PageEstimateEstimationAndQuoting extends React.Component {
             this.setState({
                 visibleWorkers: visibleWorkers,
                 workersFilter: Object.assign({}, this.state.workersFilter, {
-                    search: val
-                })
+                    search: val,
+                }),
             });
         }
     }
@@ -658,18 +639,20 @@ class PageEstimateEstimationAndQuoting extends React.Component {
             this.setState({
                 totalQuote: Object.assign({}, this.state.totalQuote, {
                     markup: markup,
-                    totalValue: this.state.totalQuote.baseValue * this.conversionPercent(markup)
-                })
+                    totalValue: this.state.totalQuote.baseValue * this.conversionPercent(markup),
+                }),
             });
         }
     }
 
     getTotalOutsideCosts() {
         let total = [0, 0]; // bill back to client, part of budget
-        this.state.outsideCosts.map((item, index)=>{
-            if (item.budgetType === true) {  // Bill back to client
+        this.state.outsideCosts.map((item, index) => {
+            if (item.budgetType === true) {
+                // Bill back to client
                 total[0] += item.amount;
-            } else { // Part of budget
+            } else {
+                // Part of budget
                 total[1] += item.amount;
             }
         });
@@ -690,7 +673,7 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                 regular: 0,
                 overtime: 0,
                 doubletime: 0,
-                totalCost: 0
+                totalCost: 0,
             };
 
             // Check if worker exists
@@ -720,23 +703,27 @@ class PageEstimateEstimationAndQuoting extends React.Component {
             const estimatedTotalFromOvertimeHours = workerValues.overtime * workerValues.rate * 1.5 * multiplieris;
             const estimatedTotalFromDoubletimeHours = workerValues.doubletime * workerValues.rate * 2.0 * multiplieris;
 
-            workerValues.totalCost = estimatedTotalFromRegularHours + estimatedTotalFromOvertimeHours + estimatedTotalFromDoubletimeHours;
+            workerValues.totalCost =
+                estimatedTotalFromRegularHours + estimatedTotalFromOvertimeHours + estimatedTotalFromDoubletimeHours;
 
             // Update state
-            this.setState({
-                selectedWorkers: Object.assign({}, this.state.selectedWorkers, {
-                    [workerId]: workerValues
-                })
-            }, ()=>{
-                this.calcTotalQuote();
-            });
+            this.setState(
+                {
+                    selectedWorkers: Object.assign({}, this.state.selectedWorkers, {
+                        [workerId]: workerValues,
+                    }),
+                },
+                () => {
+                    this.calcTotalQuote();
+                }
+            );
         }
     }
 
     handleShowingAllWorkersChange(value) {
         if (typeof value !== 'undefined') {
             this.setState({
-                showAllWorkers: value
+                showAllWorkers: value,
             });
         }
     }
@@ -769,9 +756,10 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                     doubletimeMultiplieris = 2;
                 }
 
-                selectedWorkersArray[workerId].totalCost = worker.rate * worker.regular * multiplieris
-                    + worker.rate * worker.overtime * overtimeMultiplieris * multiplieris
-                    + worker.rate * worker.doubletime * doubletimeMultiplieris * multiplieris;
+                selectedWorkersArray[workerId].totalCost =
+                    worker.rate * worker.regular * multiplieris +
+                    worker.rate * worker.overtime * overtimeMultiplieris * multiplieris +
+                    worker.rate * worker.doubletime * doubletimeMultiplieris * multiplieris;
                 allWorkersTotalCost += selectedWorkersArray[workerId].totalCost;
             }
         }
@@ -795,88 +783,91 @@ class PageEstimateEstimationAndQuoting extends React.Component {
         this.setState({
             totalQuote: Object.assign({}, this.state.totalQuote, {
                 baseValue: allWorkersTotalCost,
-                totalValue: allWorkersTotalCost * this.conversionPercent(this.state.totalQuote.markup)
-            })
+                totalValue: allWorkersTotalCost * this.conversionPercent(this.state.totalQuote.markup),
+            }),
         });
     }
-
 
     calcTotalCostToClient() {
         let totalOutsideCosts = this.getTotalOutsideCosts();
         let totalCost = {
             baseValue: totalOutsideCosts[0],
             markup: this.state.totalCostToClient.markup,
-            totalValue: totalOutsideCosts[0] * this.conversionPercent(this.state.totalCostToClient.markup)
+            totalValue: totalOutsideCosts[0] * this.conversionPercent(this.state.totalCostToClient.markup),
         };
 
         this.setState({
-            totalCostToClient: totalCost
+            totalCostToClient: totalCost,
         });
     }
 
     handleEstimatingDaysChange(value) {
         if (typeof value !== 'undefined') {
-                let workerId, worker;
-                let selectedWorkersArray = Object.assign({}, this.state.selectedWorkers);
-                let selectedWorkerIds = Object.keys(selectedWorkersArray);
-                let showEstimateDays = this.state.showEstimateDays;
+            let workerId, worker;
+            let selectedWorkersArray = Object.assign({}, this.state.selectedWorkers);
+            let selectedWorkerIds = Object.keys(selectedWorkersArray);
+            let showEstimateDays = this.state.showEstimateDays;
 
-                function plus(employmentMode) {
-                    for (workerId of selectedWorkerIds) {
-                        worker = selectedWorkersArray[workerId];
+            function plus(employmentMode) {
+                for (workerId of selectedWorkerIds) {
+                    worker = selectedWorkersArray[workerId];
 
-                        if (worker.regular === 0 && worker.overtime === 0 && worker.doubletime === 0) {
-                            continue;
-                        }
-
-                        let multiplieris = 1;
-                        let overtimeMultiplieris = 1;
-                        let doubletimeMultiplieris = 1;
-
-                        if (showEstimateDays === true) {
-                            multiplieris = 8;
-                        }
-
-                        if (employmentMode === 'staff') {
-                            overtimeMultiplieris = 1.5;
-                            doubletimeMultiplieris = 2;
-                        }
-                        if (value) {
-                            selectedWorkersArray[workerId].doubletime = 0;
-                        }
-                        selectedWorkersArray[workerId].totalCost = worker.rate * worker.regular * multiplieris
-                            + worker.rate * worker.overtime * overtimeMultiplieris * multiplieris
-                            + worker.rate * worker.doubletime * doubletimeMultiplieris * multiplieris;
+                    if (worker.regular === 0 && worker.overtime === 0 && worker.doubletime === 0) {
+                        continue;
                     }
+
+                    let multiplieris = 1;
+                    let overtimeMultiplieris = 1;
+                    let doubletimeMultiplieris = 1;
+
+                    if (showEstimateDays === true) {
+                        multiplieris = 8;
+                    }
+
+                    if (employmentMode === 'staff') {
+                        overtimeMultiplieris = 1.5;
+                        doubletimeMultiplieris = 2;
+                    }
+                    if (value) {
+                        selectedWorkersArray[workerId].doubletime = 0;
+                    }
+                    selectedWorkersArray[workerId].totalCost =
+                        worker.rate * worker.regular * multiplieris +
+                        worker.rate * worker.overtime * overtimeMultiplieris * multiplieris +
+                        worker.rate * worker.doubletime * doubletimeMultiplieris * multiplieris;
                 }
-                plus('staff');
+            }
+            plus('staff');
 
-				//
-                let selectedWorkersStateArray = Object.assign({}, selectedWorkersArray);
+            //
+            let selectedWorkersStateArray = Object.assign({}, selectedWorkersArray);
 
-                selectedWorkersArray = Object.assign([], this.state.additionalWorkers);
-                selectedWorkerIds = Object.keys(selectedWorkersArray);
+            selectedWorkersArray = Object.assign([], this.state.additionalWorkers);
+            selectedWorkerIds = Object.keys(selectedWorkersArray);
 
-                plus('additionalStaff');
+            plus('additionalStaff');
 
-                let additionalWorkersStateArray = Object.assign([], selectedWorkersArray);
+            let additionalWorkersStateArray = Object.assign([], selectedWorkersArray);
 
-				//
-				selectedWorkersArray = Object.assign([], this.state.genericStaff);
-                selectedWorkerIds = Object.keys(selectedWorkersArray);
+            //
+            selectedWorkersArray = Object.assign([], this.state.genericStaff);
+            selectedWorkerIds = Object.keys(selectedWorkersArray);
 
-				plus('genericStaff');
+            plus('genericStaff');
 
-				let genericStaffArray = Object.assign([], selectedWorkersArray);
+            let genericStaffArray = Object.assign([], selectedWorkersArray);
 
-                this.setState({
+            this.setState(
+                {
                     selectedWorkers: selectedWorkersStateArray,
                     additionalWorkers: additionalWorkersStateArray,
-					genericStaff: genericStaffArray,
-                    showEstimateDays: value
-                }, ()=>{
+                    genericStaff: genericStaffArray,
+                    showEstimateDays: value,
+                },
+                () => {
                     this.calcTotalQuote();
-                });
+                }
+            );
         }
     }
 
@@ -884,8 +875,8 @@ class PageEstimateEstimationAndQuoting extends React.Component {
         // Update state
         this.setState({
             notes: Object.assign({}, this.state.notes, {
-                technical: e.target.value
-            })
+                technical: e.target.value,
+            }),
         });
     }
 
@@ -893,15 +884,15 @@ class PageEstimateEstimationAndQuoting extends React.Component {
         // Update state
         this.setState({
             notes: Object.assign({}, this.state.notes, {
-                internal: e.target.value
-            })
+                internal: e.target.value,
+            }),
         });
     }
 
     handleEstimateTypeChange(e) {
         if (typeof e !== 'undefined' && typeof e.target !== 'undefined' && typeof e.target.value !== 'undefined') {
             this.setState({
-                estimateTypeSelected: e.target.value
+                estimateTypeSelected: e.target.value,
             });
         }
     }
@@ -909,12 +900,11 @@ class PageEstimateEstimationAndQuoting extends React.Component {
     handleEstimateStatusToggle(e) {
         // Toggle state
         this.setState({
-            isFinal: !this.state.isFinal
+            isFinal: !this.state.isFinal,
         });
     }
 
-    handleNotifyPersonSearch(query) {
-    }
+    handleNotifyPersonSearch(query) {}
 
     handleSelectProject(selected) {
         if (typeof selected !== 'undefined') {
@@ -923,8 +913,8 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                     projectId: selected.project.selectedId,
                     campaignId: selected.campaign.selectedId,
                     spotId: selected.spot.selectedId,
-                    versionId: selected.version.selectedId
-                }
+                    versionId: selected.version.selectedId,
+                },
             });
         }
     }
@@ -977,7 +967,7 @@ class PageEstimateEstimationAndQuoting extends React.Component {
     }
 
     conversionPercent(factor) {
-        return (factor<100) ? factor : _.round(factor/100, 2).toFixed(2);
+        return factor < 100 ? factor : _.round(factor / 100, 2).toFixed(2);
     }
 
     /**
@@ -1018,42 +1008,50 @@ class PageEstimateEstimationAndQuoting extends React.Component {
     }
 
     /**
-    * Set the role of additional staff
-    * @param {index} index of additinal staff array
-    * @param {event} onchange event of input object
-    * @return {void}
-    */
+     * Set the role of additional staff
+     * @param {index} index of additinal staff array
+     * @param {event} onchange event of input object
+     * @return {void}
+     */
     handleAdditionalRoleChange(index, e) {
         const updatedAdditionalWorkersArray = [...this.state.additionalWorkers];
         updatedAdditionalWorkersArray[index].role = e.target.value;
         this.setState({
-            additionalWorkers: updatedAdditionalWorkersArray
+            additionalWorkers: updatedAdditionalWorkersArray,
         });
     }
 
     /**
-    * Set the value of rate in additional staff row with index {index}
-    * @param {index} index of additinal staff array
-    * @param {int} rate
-    * @return {void}
-    */
+     * Set the value of rate in additional staff row with index {index}
+     * @param {index} index of additinal staff array
+     * @param {int} rate
+     * @return {void}
+     */
     handleAdditionalRateChange(index, rate) {
         const updatedAdditionalWorkersArray = [...this.state.additionalWorkers];
         updatedAdditionalWorkersArray[index].rate = rate;
-        this.setState({
-            additionalWorkers: updatedAdditionalWorkersArray
-        }, ()=>{
-            this.handleAdditionalHoursChange(index, rate, 'regular', this.state.additionalWorkers[index]['regular']);
-        });
+        this.setState(
+            {
+                additionalWorkers: updatedAdditionalWorkersArray,
+            },
+            () => {
+                this.handleAdditionalHoursChange(
+                    index,
+                    rate,
+                    'regular',
+                    this.state.additionalWorkers[index]['regular']
+                );
+            }
+        );
     }
 
     /**
-    * Set the value of regular or overtime or double
-    * @param {index} index of additinal staff array
-    * @param {str} hoursType - regular/overtime/double
-    * @param {int} hoursCount
-    * @return {void}
-    */
+     * Set the value of regular or overtime or double
+     * @param {index} index of additinal staff array
+     * @param {str} hoursType - regular/overtime/double
+     * @param {int} hoursCount
+     * @return {void}
+     */
     handleAdditionalHoursChange(index, rate, hoursType, hoursCount) {
         // Check if all values are defined
         if (typeof hoursType !== 'undefined' && typeof hoursCount !== 'undefined') {
@@ -1068,7 +1066,7 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                 regular: 0,
                 overtime: 0,
                 doubletime: 0,
-                totalCost: 0
+                totalCost: 0,
             };
 
             // Check if worker exists
@@ -1101,104 +1099,116 @@ class PageEstimateEstimationAndQuoting extends React.Component {
             const estimatedTotalFromOvertimeHours = workerValues.overtime * workerValues.rate * multiplieris * 1.5;
             const estimatedTotalFromDoubletimeHours = workerValues.doubletime * workerValues.rate * multiplieris * 2;
 
-            workerValues.totalCost = estimatedTotalFromRegularHours + estimatedTotalFromOvertimeHours + estimatedTotalFromDoubletimeHours;
-
+            workerValues.totalCost =
+                estimatedTotalFromRegularHours + estimatedTotalFromOvertimeHours + estimatedTotalFromDoubletimeHours;
 
             const updatedAdditionalWorkersArray = [...this.state.additionalWorkers];
             updatedAdditionalWorkersArray[index][hoursType] = hoursCount;
             updatedAdditionalWorkersArray[index]['totalCost'] = workerValues.totalCost;
 
-            this.setState({
-                additionalWorkers: updatedAdditionalWorkersArray
-            }, ()=>{
-                this.calcTotalQuote();
-            });
+            this.setState(
+                {
+                    additionalWorkers: updatedAdditionalWorkersArray,
+                },
+                () => {
+                    this.calcTotalQuote();
+                }
+            );
         }
     }
 
     /**
-    * Set the id of the expense selected
-    * @param {index} index of outside array
-    * @param {int} expense id
-    * @return {void}
-    */
+     * Set the id of the expense selected
+     * @param {index} index of outside array
+     * @param {int} expense id
+     * @return {void}
+     */
 
     handleExpensePicked(index, expenseId) {
         const updatedOutsideCostsArray = [...this.state.outsideCosts];
         updatedOutsideCostsArray[index].expenseId = expenseId;
         this.setState({
-            outsideCosts: updatedOutsideCostsArray
+            outsideCosts: updatedOutsideCostsArray,
         });
     }
 
     /**
-    * Set a value of amount or budgetType.
-    * @param {index} index of outside array
-    * @param {str} amount or budgetType
-    * @return {void}
-    */
+     * Set a value of amount or budgetType.
+     * @param {index} index of outside array
+     * @param {str} amount or budgetType
+     * @return {void}
+     */
     handleOutsideCostsChange(index, type, value) {
         const updatedOutsideCostsArray = [...this.state.outsideCosts];
         updatedOutsideCostsArray[index][type] = value;
-        this.setState({
-            outsideCosts: updatedOutsideCostsArray
-        }, ()=>{
-            this.calcTotalQuote();
-            this.calcTotalCostToClient();
-        });
+        this.setState(
+            {
+                outsideCosts: updatedOutsideCostsArray,
+            },
+            () => {
+                this.calcTotalQuote();
+                this.calcTotalCostToClient();
+            }
+        );
     }
 
     /**
-    * Set the id of the expense just created
-    * @param {index} index of outside array
-    * @param {json} expense info just created
-    * @return {void}
-    */
+     * Set the id of the expense just created
+     * @param {index} index of outside array
+     * @param {json} expense info just created
+     * @return {void}
+     */
     handleCreateExpensePicked(index, e) {
         const updatedOutsideCostsArray = [...this.state.outsideCosts];
         updatedOutsideCostsArray[index].expenseId = e.value;
         this.setState({
-            outsideCosts: updatedOutsideCostsArray
+            outsideCosts: updatedOutsideCostsArray,
         });
     }
 
     /**
-    * Remove the additional staff item
-    * @param {int} index of item to be removed
-    * @return {void}
-    */
+     * Remove the additional staff item
+     * @param {int} index of item to be removed
+     * @return {void}
+     */
     handleRemoveAdditionalStaff(index) {
         const updatedAdditionalWorkersArray = [...this.state.additionalWorkers];
         updatedAdditionalWorkersArray.splice(index, 1);
 
-        this.setState({
-            additionalWorkers: updatedAdditionalWorkersArray
-        }, ()=>{
-            this.calcTotalQuote();
-        });
+        this.setState(
+            {
+                additionalWorkers: updatedAdditionalWorkersArray,
+            },
+            () => {
+                this.calcTotalQuote();
+            }
+        );
     }
 
     /**
-    * Remove the outside cost item
-    * @param {int} index of item to be removed
-    * @return {void}
-    */
+     * Remove the outside cost item
+     * @param {int} index of item to be removed
+     * @return {void}
+     */
     handleRemoveOutsideCosts(index) {
         const updatedOutsideCostsArray = [...this.state.outsideCosts];
         updatedOutsideCostsArray.splice(index, 1);
 
-        this.setState({
-            outsideCosts: updatedOutsideCostsArray
-        }, ()=>{
-            this.calcTotalQuote();
-            this.calcTotalCostToClient();
-        });
+        this.setState(
+            {
+                outsideCosts: updatedOutsideCostsArray,
+            },
+            () => {
+                this.calcTotalQuote();
+                this.calcTotalCostToClient();
+            }
+        );
     }
 
     /**
-    * Add a new additional staff
-    * @return {void}
-    */
+     * Add a new additional staff
+     * @return {void}
+     */
     handleAddAdditionalStaff() {
         const updatedAdditionalWorkersArray = Object.assign([], this.state.additionalWorkers);
         updatedAdditionalWorkersArray.push({
@@ -1207,33 +1217,33 @@ class PageEstimateEstimationAndQuoting extends React.Component {
             regular: 0,
             overtime: 0,
             doubletime: 0,
-            totalCost: 0
+            totalCost: 0,
         });
         this.setState({
-            additionalWorkers: updatedAdditionalWorkersArray
+            additionalWorkers: updatedAdditionalWorkersArray,
         });
     }
 
     /**
-    * Add a new outside cost
-    * @return {void}
-    */
+     * Add a new outside cost
+     * @return {void}
+     */
     handleAddOutsideCosts() {
         const updatedOutsideCostsArray = [...this.state.outsideCosts];
         updatedOutsideCostsArray.push({
             expenseId: null,
             amount: 0,
-            budgetType: true
+            budgetType: true,
         });
         this.setState({
-            outsideCosts: updatedOutsideCostsArray
+            outsideCosts: updatedOutsideCostsArray,
         });
     }
 
     /**
-    * Add a new generic staff
-    * @return {void}
-    */
+     * Add a new generic staff
+     * @return {void}
+     */
     handleAddGenericStaff() {
         const updatedGenericStaffArray = [...this.state.genericStaff];
         updatedGenericStaffArray.push({
@@ -1242,19 +1252,19 @@ class PageEstimateEstimationAndQuoting extends React.Component {
             regular: 0,
             overtime: 0,
             doubletime: 0,
-            totalCost: 0
+            totalCost: 0,
         });
         this.setState({
-            genericStaff: updatedGenericStaffArray
+            genericStaff: updatedGenericStaffArray,
         });
     }
 
     /**
-    * Set the id of the staffpicker selected
-    * @param {index} index of staff state array
-    * @param {int} staff item id
-    * @return {void}
-    */
+     * Set the id of the staffpicker selected
+     * @param {index} index of staff state array
+     * @param {int} staff item id
+     * @return {void}
+     */
 
     handleGenericStaffPicked(index, id, rate) {
         //console.log("KKKK");
@@ -1263,17 +1273,22 @@ class PageEstimateEstimationAndQuoting extends React.Component {
         updatedGenericStaffArray[index].id = id;
         updatedGenericStaffArray[index].rate = rate;
         //updatedGenericStaffArray[index].totalCost = rate * hours;
-        this.setState({
-            genericStaff: updatedGenericStaffArray
-        }, ()=>{this.calcTotalQuote()});
+        this.setState(
+            {
+                genericStaff: updatedGenericStaffArray,
+            },
+            () => {
+                this.calcTotalQuote();
+            }
+        );
     }
 
     /**
-    * Set hours on itme with index
-    * @param {index} index of staff array
-    * @param {value} hours value
-    * @return {void}
-    */
+     * Set hours on itme with index
+     * @param {index} index of staff array
+     * @param {value} hours value
+     * @return {void}
+     */
     handleGenericStaffChange(index, rate, hoursType, hoursCount) {
         // Check if all values are defined
         if (typeof hoursType !== 'undefined' && typeof hoursCount !== 'undefined') {
@@ -1288,7 +1303,7 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                 regular: 0,
                 overtime: 0,
                 doubletime: 0,
-                totalCost: 0
+                totalCost: 0,
             };
 
             // Check if worker exists
@@ -1318,35 +1333,41 @@ class PageEstimateEstimationAndQuoting extends React.Component {
             const estimatedTotalFromOvertimeHours = workerValues.overtime * workerValues.rate * multiplieris;
             const estimatedTotalFromDoubletimeHours = workerValues.doubletime * workerValues.rate * multiplieris;
 
-            workerValues.totalCost = estimatedTotalFromRegularHours + estimatedTotalFromOvertimeHours + estimatedTotalFromDoubletimeHours;
-
+            workerValues.totalCost =
+                estimatedTotalFromRegularHours + estimatedTotalFromOvertimeHours + estimatedTotalFromDoubletimeHours;
 
             const updatedGenericStaffArray = [...this.state.genericStaff];
             updatedGenericStaffArray[index][hoursType] = hoursCount;
             updatedGenericStaffArray[index]['totalCost'] = workerValues.totalCost;
 
-            this.setState({
-                genericStaff: updatedGenericStaffArray
-            }, ()=>{
-                this.calcTotalQuote();
-            });
+            this.setState(
+                {
+                    genericStaff: updatedGenericStaffArray,
+                },
+                () => {
+                    this.calcTotalQuote();
+                }
+            );
         }
     }
 
     /**
-    * Remove the generic staff item
-    * @param {int} index of item to be removed
-    * @return {void}
-    */
+     * Remove the generic staff item
+     * @param {int} index of item to be removed
+     * @return {void}
+     */
     handleRemoveGenericStaff(index) {
         const updatedGenericStaffArray = [...this.state.genericStaff];
         updatedGenericStaffArray.splice(index, 1);
 
-        this.setState({
-            genericStaff: updatedGenericStaffArray
-        }, ()=>{
-            this.calcTotalQuote();
-        });
+        this.setState(
+            {
+                genericStaff: updatedGenericStaffArray,
+            },
+            () => {
+                this.calcTotalQuote();
+            }
+        );
     }
 
     // Render
@@ -1354,7 +1375,8 @@ class PageEstimateEstimationAndQuoting extends React.Component {
         // Check if estimate is no longer a draft
         const isNotDraftEstimate =
             this.props.estimateId &&
-            typeof this.state.estimateStatus !== 'undefined' && this.state.estimateStatus !== 'Draft'
+            typeof this.state.estimateStatus !== 'undefined' &&
+            this.state.estimateStatus !== 'Draft'
                 ? true
                 : false;
 
@@ -1368,14 +1390,14 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                         isRight={this.state.showAllWorkers}
                         left={{
                             label: 'Assigned staff only',
-                            value: false
+                            value: false,
                         }}
                         right={{
                             label: 'All available staff',
-                            value: true
+                            value: true,
                         }}
                     />
-                )
+                ),
             });
 
             staffSectionHeaderElements.push({
@@ -1383,24 +1405,17 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                     <Input
                         onChange={e => this.handleWorkersFilterByNameChange(e)}
                         label="Filter staff by name..."
-                        icon={
-                            <IconSearchLoupe
-                                width={13}
-                                height={13}
-                                marginTop={-6}
-                            />
-                        }
+                        icon={<IconSearchLoupe width={13} height={13} marginTop={-6} />}
                         color="brown"
                         minWidth={250}
                         maxWidth={250}
                     />
-                )
+                ),
             });
         }
 
         return (
             <Layout>
-
                 <Section title="Estimate type" noSeparator={true}>
                     <Row alignContent="center" alignItems="center">
                         <Col size={9}>
@@ -1420,13 +1435,13 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                 isRight={this.state.showEstimateDays}
                                 left={{
                                     label: 'Hours',
-                                    value: false
+                                    value: false,
                                 }}
                                 right={{
                                     label: 'Days',
-                                    value: true
+                                    value: true,
                                 }}
-                                label='Estimate in'
+                                label="Estimate in"
                             />
                         </Col>
                     </Row>
@@ -1434,70 +1449,52 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                     <br />
                 </Section>
 
-                {(() => {
-                    // Mount ProjectPicker if new, if not, then if defaultProject is given from api
-                    if (!this.props.estimateId || this.props.estimateId && this.state.defaultProject) {
-                        return (
-                            <ProjectPicker
-                                ref="projectPicker"
-                                noSeparator={true}
-                                showVersion={true}
-                                levelRequired={4}
-                                title="Select spot"
-                                userCanCreateNew={true}
-                                defaultToOpenProjects={true}
-                                defaultValue={this.state.defaultProject}
-                                onChange={this.handleSelectProject}
-                                readOnly={isNotDraftEstimate}
-                            />
-                        );
-                    }
-                })()}
+                {/* Mount ProjectPicker if new, if not, then if defaultProject is given from api */}
+                {(!this.props.estimateId || (this.props.estimateId && this.state.defaultProject)) && (
+                    <ProjectPicker
+                        ref="projectPicker"
+                        noSeparator={true}
+                        showVersion={true}
+                        levelRequired={4}
+                        title="Select spot"
+                        userCanCreateNew={true}
+                        defaultToOpenProjects={true}
+                        defaultValue={this.state.defaultProject}
+                        onChange={this.handleSelectProject}
+                        readOnly={isNotDraftEstimate}
+                    />
+                )}
 
-                <Section
-                    className={s.workersSection}
-                    title="Staff"
-                    headerElements={staffSectionHeaderElements}
-                >
-
+                <Section className={s.workersSection} title="Staff" headerElements={staffSectionHeaderElements}>
                     {(() => {
                         // Set workers table header
                         let workersTableHeader = [
                             { title: 'Full Name', align: 'left' },
                             { title: 'ID', align: 'left' },
                             { title: 'Rate', align: 'right' },
-                            { title: this.state.showEstimateDays?'Regular Days':'Regular Hours', align: 'center' },
-                            { title: this.state.showEstimateDays?'Overtime Days':'Overtime Hours', align: 'center' },
-                            { title: 'Total', align: 'right' }
+                            { title: this.state.showEstimateDays ? 'Regular Days' : 'Regular Hours', align: 'center' },
+                            {
+                                title: this.state.showEstimateDays ? 'Overtime Days' : 'Overtime Hours',
+                                align: 'center',
+                            },
+                            { title: 'Total', align: 'right' },
                         ];
 
                         if (isNotDraftEstimate === false) {
                             workersTableHeader.push({
-                                title: '', align: 'right', width: 22
+                                title: '',
+                                align: 'right',
+                                width: 22,
                             });
                         }
 
                         // Set workers table columns widths
-                        let workersTableColumnsWidth = [
-                            '30%',
-                            '10%',
-                            '15%',
-                            '14%',
-                            '14%'
-                        ];
+                        let workersTableColumnsWidth = ['30%', '10%', '15%', '14%', '14%'];
 
                         if (!this.state.showEstimateDays) {
                             workersTableHeader.splice(5, 0, { title: 'Double Time Hours', align: 'center' });
-                            workersTableColumnsWidth = [
-                                '23%',
-                                '10%',
-                                '14%',
-                                '12%',
-                                '12%',
-                                '12%'
-                            ];
+                            workersTableColumnsWidth = ['23%', '10%', '14%', '12%', '12%', '12%'];
                         }
-
 
                         if (isNotDraftEstimate === false) {
                             workersTableColumnsWidth.push('9%');
@@ -1514,15 +1511,18 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                 columnsWidths={workersTableColumnsWidth}
                             >
                                 {(() => {
-                                    if ((!this.props.estimateId && this.state.loadedWorkers.length > 0) ||
-                                        (this.props.estimateId && Object.keys(this.state.selectedWorkers).length !== 0)) {
+                                    if (
+                                        (!this.props.estimateId && this.state.loadedWorkers.length > 0) ||
+                                        (this.props.estimateId && Object.keys(this.state.selectedWorkers).length !== 0)
+                                    ) {
                                         let visibleWorkers;
 
                                         if (this.state.showAllWorkers) {
                                             visibleWorkers = this.state.visibleWorkers;
                                         } else {
-                                            visibleWorkers = this.state.visibleWorkers
-                                                .filter(worker => typeof this.state.selectedWorkers[worker.id] !== 'undefined');
+                                            visibleWorkers = this.state.visibleWorkers.filter(
+                                                worker => typeof this.state.selectedWorkers[worker.id] !== 'undefined'
+                                            );
                                         }
 
                                         let workerRows;
@@ -1539,14 +1539,18 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                                 }
 
                                                 // Worker hours
-                                                let workerRegularHours = typeof selectedWorker === 'undefined' ? 0 : selectedWorker.regular;
-                                                let workerOvertimeHours = typeof selectedWorker === 'undefined' ? 0 : selectedWorker.overtime;
-                                                let workerDoubletimeHours = typeof selectedWorker === 'undefined' ? 0 : selectedWorker.doubletime;
+                                                let workerRegularHours =
+                                                    typeof selectedWorker === 'undefined' ? 0 : selectedWorker.regular;
+                                                let workerOvertimeHours =
+                                                    typeof selectedWorker === 'undefined' ? 0 : selectedWorker.overtime;
+                                                let workerDoubletimeHours =
+                                                    typeof selectedWorker === 'undefined'
+                                                        ? 0
+                                                        : selectedWorker.doubletime;
 
                                                 // Render
                                                 return (
                                                     <TableRow key={worker.id}>
-
                                                         <TableCell>
                                                             <Paragraph>{worker.name}</Paragraph>
                                                         </TableCell>
@@ -1561,7 +1565,14 @@ class PageEstimateEstimationAndQuoting extends React.Component {
 
                                                         <TableCell align="center">
                                                             <Counter
-                                                                onChange={count => this.handleHoursChange(worker.id, worker.rate, 'regular', count)}
+                                                                onChange={count =>
+                                                                    this.handleHoursChange(
+                                                                        worker.id,
+                                                                        worker.rate,
+                                                                        'regular',
+                                                                        count
+                                                                    )
+                                                                }
                                                                 min={0}
                                                                 multipleOf={0.25}
                                                                 increment={1}
@@ -1569,14 +1580,23 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                                                 value={workerRegularHours}
                                                                 readOnly={isNotDraftEstimate}
                                                                 readOnlyTextAfter={
-                                                                    this.state.showEstimateDays?' day':' hour' + (workerRegularHours > 1 ? 's' : '')
+                                                                    this.state.showEstimateDays
+                                                                        ? ' day'
+                                                                        : ' hour' + (workerRegularHours > 1 ? 's' : '')
                                                                 }
                                                             />
                                                         </TableCell>
 
                                                         <TableCell align="center">
                                                             <Counter
-                                                                onChange={count => this.handleHoursChange(worker.id, worker.rate, 'overtime', count)}
+                                                                onChange={count =>
+                                                                    this.handleHoursChange(
+                                                                        worker.id,
+                                                                        worker.rate,
+                                                                        'overtime',
+                                                                        count
+                                                                    )
+                                                                }
                                                                 min={0}
                                                                 multipleOf={0.25}
                                                                 increment={1}
@@ -1584,29 +1604,39 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                                                 value={workerOvertimeHours}
                                                                 readOnly={isNotDraftEstimate}
                                                                 readOnlyTextAfter={
-                                                                    this.state.showEstimateDays?' day':' hour' + (workerOvertimeHours > 1 ? 's' : '')
+                                                                    this.state.showEstimateDays
+                                                                        ? ' day'
+                                                                        : ' hour' + (workerOvertimeHours > 1 ? 's' : '')
                                                                 }
                                                             />
                                                         </TableCell>
 
-
-                                                        {
-                                                            !this.state.showEstimateDays &&
-                                                                <TableCell align="center">
-                                                                    <Counter
-                                                                        onChange={count => this.handleHoursChange(worker.id, worker.rate, 'doubletime', count)}
-                                                                        min={0}
-                                                                        multipleOf={0.25}
-                                                                        increment={1}
-                                                                        showPlusMinus={false}
-                                                                        value={workerDoubletimeHours}
-                                                                        readOnly={isNotDraftEstimate}
-                                                                        readOnlyTextAfter={
-                                                                            this.state.showEstimateDays?' day':' hour' + (workerDoubletimeHours > 1 ? 's' : '')
-                                                                        }
-                                                                    />
-                                                                </TableCell>
-                                                        }
+                                                        {!this.state.showEstimateDays && (
+                                                            <TableCell align="center">
+                                                                <Counter
+                                                                    onChange={count =>
+                                                                        this.handleHoursChange(
+                                                                            worker.id,
+                                                                            worker.rate,
+                                                                            'doubletime',
+                                                                            count
+                                                                        )
+                                                                    }
+                                                                    min={0}
+                                                                    multipleOf={0.25}
+                                                                    increment={1}
+                                                                    showPlusMinus={false}
+                                                                    value={workerDoubletimeHours}
+                                                                    readOnly={isNotDraftEstimate}
+                                                                    readOnlyTextAfter={
+                                                                        this.state.showEstimateDays
+                                                                            ? ' day'
+                                                                            : ' hour' +
+                                                                              (workerDoubletimeHours > 1 ? 's' : '')
+                                                                    }
+                                                                />
+                                                            </TableCell>
+                                                        )}
 
                                                         <TableCell align="right">
                                                             <Money value={estimatedTotal} />
@@ -1614,12 +1644,17 @@ class PageEstimateEstimationAndQuoting extends React.Component {
 
                                                         {isNotDraftEstimate === false && (
                                                             <TableCell align="right">
-                                                                {(workerRegularHours > 0 || workerOvertimeHours > 0 || workerDoubletimeHours > 0) && (
-                                                                    <IconCheckmarkGreen marginLeftAuto={true} width={22} height={22} />
+                                                                {(workerRegularHours > 0 ||
+                                                                    workerOvertimeHours > 0 ||
+                                                                    workerDoubletimeHours > 0) && (
+                                                                    <IconCheckmarkGreen
+                                                                        marginLeftAuto={true}
+                                                                        width={22}
+                                                                        height={22}
+                                                                    />
                                                                 )}
                                                             </TableCell>
                                                         )}
-
                                                     </TableRow>
                                                 );
                                             });
@@ -1627,10 +1662,12 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                             workerRows = [
                                                 <TableRow key="no-staff-selected">
                                                     <TableCell align="center" colSpan={8}>
-                                                        <Paragraph>There is no staff assigned to this estimate yet</Paragraph>
+                                                        <Paragraph>
+                                                            There is no staff assigned to this estimate yet
+                                                        </Paragraph>
                                                         <br />
                                                     </TableCell>
-                                                </TableRow>
+                                                </TableRow>,
                                             ];
                                         }
 
@@ -1639,12 +1676,18 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                                 <TableRow key="toggle-all-row">
                                                     <TableCell colSpan={3} align="left">
                                                         {this.state.showAllWorkers === false && (
-                                                            <Paragraph type="dim">Showing only assigned staff</Paragraph>
+                                                            <Paragraph type="dim">
+                                                                Showing only assigned staff
+                                                            </Paragraph>
                                                         )}
                                                     </TableCell>
                                                     <TableCell colSpan={5} align="right">
                                                         <Button
-                                                            onClick={e => this.handleShowingAllWorkersChange(this.state.showAllWorkers ? false : true)}
+                                                            onClick={e =>
+                                                                this.handleShowingAllWorkersChange(
+                                                                    this.state.showAllWorkers ? false : true
+                                                                )
+                                                            }
                                                             float="right"
                                                             label={{
                                                                 size: 'small',
@@ -1663,17 +1706,18 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                     }
                                 })()}
                                 {(() => {
-                                    if (!this.props.estimateId && this.state.visibleWorkers.length === 0
-                                        || this.props.estimateId && Object.keys(this.state.selectedWorkers).length === 0) {
+                                    if (
+                                        (!this.props.estimateId && this.state.visibleWorkers.length === 0) ||
+                                        (this.props.estimateId && Object.keys(this.state.selectedWorkers).length === 0)
+                                    ) {
                                         return (
                                             <TableRow>
                                                 <TableCell align="center" colSpan={8}>
                                                     <Paragraph>
-                                                        {
-                                                            this.state.isWorkersLoading === true || this.state.isEstimateLoading === true
-                                                                ? 'Loading staff...'
-                                                                : 'There is no staff matching criteria.'
-                                                        }
+                                                        {this.state.isWorkersLoading === true ||
+                                                        this.state.isEstimateLoading === true
+                                                            ? 'Loading staff...'
+                                                            : 'There is no staff matching criteria.'}
                                                     </Paragraph>
                                                 </TableCell>
                                             </TableRow>
@@ -1721,11 +1765,13 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                     </Section>
 
                     {(() => {
-                        if (!this.props.estimateId || this.props.estimateId && Object.keys(this.state.selectedWorkers).length !== 0) {
+                        if (
+                            !this.props.estimateId ||
+                            (this.props.estimateId && Object.keys(this.state.selectedWorkers).length !== 0)
+                        ) {
                             return (
                                 <Table>
                                     <TableRow>
-
                                         <TableCell>
                                             <div className={s.estimateSummaryRow}>
                                                 <h3>Total Hard Cost</h3>
@@ -1738,15 +1784,19 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                         </TableCell>
 
                                         <TableCell align="center">
-                                            {isNotDraftEstimate && (
+                                            {(isNotDraftEstimate && (
                                                 <div className={s.estimateSummaryRow}>
                                                     <h3>Mark Up Factor</h3>
                                                     <Paragraph bold={true}>
                                                         {`${this.state.totalQuote.markup} %`}
                                                     </Paragraph>
                                                 </div>
-                                            ) || (
-                                                <div className={s.estimateSummaryRow + ' ' + s.estimateSummaryRowWithCounter}>
+                                            )) || (
+                                                <div
+                                                    className={
+                                                        s.estimateSummaryRow + ' ' + s.estimateSummaryRowWithCounter
+                                                    }
+                                                >
                                                     <Counter
                                                         onChange={e => this.handleMarkupChange(e)}
                                                         multipleOf={1}
@@ -1772,7 +1822,6 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                                 />
                                             </div>
                                         </TableCell>
-
                                     </TableRow>
 
                                     <TableRow>
@@ -1808,46 +1857,43 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                         }
                     })()}
 
-                    {(
-                        !this.props.estimateId && this.state.isWorkersLoading === true ||
-                        this.props.estimateId && Object.keys(this.state.selectedWorkers).length === 0
-                    ) && (
+                    {((!this.props.estimateId && this.state.isWorkersLoading === true) ||
+                        (this.props.estimateId && Object.keys(this.state.selectedWorkers).length === 0)) && (
                         <LoadingShade background="rgba(247, 247, 247, 0.9)">
                             <LoadingSpinner size={64} color="#5A4D3F" />
                         </LoadingShade>
                     )}
-
                 </Section>
 
-                {(!this.props.estimateId || this.props.estimateId && Object.keys(this.state.selectedWorkers).length !== 0) && (
+                {(!this.props.estimateId ||
+                    (this.props.estimateId && Object.keys(this.state.selectedWorkers).length !== 0)) && (
                     <Section title="Notes">
                         <Row removeGutter={true}>
                             <Col size={12}>
-                                {(() => {
-                                    if (isNotDraftEstimate) {
-                                        return (
-                                            <Paragraph>
-                                                {this.state.notes.technical ? this.state.notes.technical : 'No technical notes have been provided.'}
-                                            </Paragraph>
-                                        );
-                                    } else {
-                                        return (
-                                            <TextArea
-                                                value={this.state.notes.technical}
-                                                onChange={e => this.handleTechnicalDetailsChange(e)}
-                                                label="Technical details, visible to the client..."
-                                                width={1152}
-                                                height={96}
-                                            />
-                                        );
-                                    }
-                                })()}
+                                {(isNotDraftEstimate && (
+                                    <Paragraph>
+                                        {this.state.notes.technical
+                                            ? this.state.notes.technical
+                                            : 'No technical notes have been provided.'}
+                                    </Paragraph>
+                                )) || (
+                                    <TextArea
+                                        value={this.state.notes.technical}
+                                        onChange={e => this.handleTechnicalDetailsChange(e)}
+                                        label="Technical details, visible to the client..."
+                                        width={1152}
+                                        height={96}
+                                    />
+                                )}
                             </Col>
                         </Row>
                     </Section>
                 )}
                 {(() => {
-                    if ((!this.props.estimateId || this.props.estimateId && Object.keys(this.state.selectedWorkers).length !== 0)) {
+                    if (
+                        !this.props.estimateId ||
+                        (this.props.estimateId && Object.keys(this.state.selectedWorkers).length !== 0)
+                    ) {
                         return (
                             <Section>
                                 <Row removeGutter={true}>
@@ -1861,7 +1907,7 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                             />
                                         </Section>
                                     </Col>
-                                    {(!isNotDraftEstimate) && (
+                                    {!isNotDraftEstimate && (
                                         <Col size={5} className={s.summarySectionCol}>
                                             <Section title="Summary" noSeparator={true}>
                                                 <Row removeGutter={true} className={s.summarySectionRow}>
@@ -1873,36 +1919,41 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                                             align="left"
                                                             left={{
                                                                 label: 'Draft',
-                                                                value: 'draft'
+                                                                value: 'draft',
                                                             }}
                                                             right={{
                                                                 label: 'Final',
-                                                                value: 'final'
+                                                                value: 'final',
                                                             }}
                                                         />
                                                     </Col>
-                                                    {(!this.props.estimateId || this.props.estimateId && this.state.estimateStatus === 'Draft') && (
+                                                    {(!this.props.estimateId ||
+                                                        (this.props.estimateId &&
+                                                            this.state.estimateStatus === 'Draft')) && (
                                                         <Col size={6} className={s.submitCol}>
                                                             <Button
                                                                 onClick={e => this.handleEstimateSubmission(e)}
                                                                 icon={{
                                                                     size: 'large',
                                                                     background: 'orange',
-                                                                    element:
+                                                                    element: (
                                                                         <IconSendSubmit
                                                                             width={25}
                                                                             height={26}
                                                                             marginLeft={-13}
                                                                             marginTop={-13}
                                                                         />
+                                                                    ),
                                                                 }}
                                                                 label={{
                                                                     text: this.state.isEstimateUploading
                                                                         ? 'Saving...'
-                                                                        : this.state.isFinal ? 'Submit estimate for review' : 'Save estimate\'s draft',
+                                                                        : this.state.isFinal
+                                                                            ? 'Submit estimate for review'
+                                                                            : "Save estimate's draft",
                                                                     size: 'small',
                                                                     color: 'orange',
-                                                                    onLeft: true
+                                                                    onLeft: true,
                                                                 }}
                                                                 disabled={this.state.isEstimateUploading}
                                                             />
@@ -1922,17 +1973,17 @@ class PageEstimateEstimationAndQuoting extends React.Component {
                                                                 <OptionsList
                                                                     value={0}
                                                                     search={{
-                                                                        onChange: query => this.handleNotifyPersonSearch(query),
+                                                                        onChange: query =>
+                                                                            this.handleNotifyPersonSearch(query),
                                                                         label: 'Search person to notify...',
-                                                                        searchViaApi: true
+                                                                        searchViaApi: true,
                                                                     }}
                                                                 />
                                                             </DropdownContainer>
                                                         </Col>
-                                                        <Col size={4}></Col>
+                                                        <Col size={4} />
                                                     </Row>
                                                 )}
-
                                             </Section>
                                         </Col>
                                     )}
@@ -1948,7 +1999,7 @@ class PageEstimateEstimationAndQuoting extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        header: state.header
+        header: state.header,
     };
 }
 

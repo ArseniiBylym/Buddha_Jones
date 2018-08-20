@@ -12,18 +12,15 @@
   font-size: 1.1em;
   font-weight: 400;
   color: #A59E97;
-
-  & > strong {
+  &>strong {
     font-weight: 400;
     color: color(#A59E97 lightness(-16%));
   }
-
-  & > em {
+  &>em {
     font-weight: 300;
     color: #A59E97;
   }
-
-  & > span {
+  &>span {
     color: color(#A59E97 lightness(+8%));
     font-weight: 400;
   }
@@ -33,13 +30,13 @@
   text-align: right;
 }
 
-.sectionElements > :global(.row) {
+.sectionElements> :global(.row) {
   justify-content: flex-end;
   align-content: center;
   align-items: center;
 }
 
-.sectionElements > :global(.row) > :global(.col) {
+.sectionElements> :global(.row)> :global(.col) {
   flex: 0 1 auto;
 }
 

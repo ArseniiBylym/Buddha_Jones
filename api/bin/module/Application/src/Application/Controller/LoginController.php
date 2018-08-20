@@ -6,8 +6,9 @@ use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\Mvc\MvcEvent;
 use Zend\View\Model\JsonModel;
 use Zend\Mail;
-use Namshi\JOSE\SimpleJWS;
+// use Namshi\JOSE\SimpleJWS;
 use Namshi\JOSE\Base64\Base64UrlSafeEncoder;
+use \Firebase\JWT\JWT;
 
 class LoginController extends AbstractRestfulController
 {
@@ -23,6 +24,8 @@ class LoginController extends AbstractRestfulController
         $this->_em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $this->_userRepository = $this->_em->getRepository('Application\Entity\RediUser');
         $this->_userTypeRepository = $this->_em->getRepository('Application\Entity\RediUserType');
+
+        $this->_userRepo = $this->getServiceLocator()->get('Application\Entity\Repository\UsersRepository');
 
         $this->_config = $this->getServiceLocator()->get('Config');
 
@@ -48,7 +51,6 @@ class LoginController extends AbstractRestfulController
     public function getList()
     {
         $config = $this->getServiceLocator()->get('Config');
-        $jwt_public_key_path = $config['jwt_config']['public_key_path'];
         $authFailed = false;
 
         $auth = $this->getRequest()->getHeaders('Authorization');
@@ -58,40 +60,40 @@ class LoginController extends AbstractRestfulController
             $token = str_replace('Bearer ', '', $auth->getFieldValue());
 
             if ($this->_checkTokenFormat($token)) {
-                $jws = SimpleJWS::load($token);
+                $jwtSecret = $this->_config['jwt_config']['jwt_secret'];
 
+                try {
+                    $payload = JWT::decode($token, $jwtSecret, array('HS256'));
 
-                $public_key = openssl_pkey_get_public($jwt_public_key_path);
+                    if ($payload) {
+                        $userId = (int)$payload->userId;
+                        $user = $this->_userRepository->find($userId);
+                        $userType = $this->_userTypeRepository->find($user->getTypeId());
 
-                if ($jws->isValid($public_key, 'RS256')) {
-                    $payload = $jws->getPayload();
-                    $userId = (int)$payload['sub'];
-//                    $permission = $this->_permissionRepo->getPermission($userId);
-
-                    $user = $this->_userRepository->find($userId);
-                    $userType = $this->_userTypeRepository->find($user->getTypeId());
-
-                    $response = array(
-                        'status' => 1,
-                        'message' => "User already logged in",
-                        'data' => array(
-                            'user_id' => $user->getId(),
-                            'username' => $user->getUsername(),
-                            'email' => $user->getEmail(),
-                            'first_name' => $user->getFirstName(),
-                            'last_name' => $user->getLastName(),
-                            'full_name' => trim(implode(' ', array($user->getFirstName(), $user->getLastName()))),
-                            'image' => ($user->getImage())?$this->_config['site_url'] . 'thumb/profile_image/' . $user->getImage():null,
-                            'type_id' => $userType->getId(),
-                            'type_name' => $userType->getTypeName(),
-                            'hourly_rate' => $user->getHourlyRate(),
-                            'salary_type' => $user->getSalaryType(),
-                            'salary_amount' => $user->getSalaryAmount(),
-                            'min_hour' => $user->getMinHour(),
-                            'status' => $user->getStatus(),
-                        )
-                    );
-                } else {
+                        $response = array(
+                            'status' => 1,
+                            'message' => "User already logged in",
+                            'data' => array(
+                                'user_id' => $user->getId(),
+                                'username' => $user->getUsername(),
+                                'email' => $user->getEmail(),
+                                'first_name' => $user->getFirstName(),
+                                'last_name' => $user->getLastName(),
+                                'initials' => $user->getInitials(),
+                                'full_name' => trim(implode(' ', array($user->getFirstName(), $user->getLastName()))),
+                                'image' => ($user->getImage())?$this->_config['site_url'] . 'thumb/profile_image/' . $user->getImage():null,
+                                'type_id' => $userType->getId(),
+                                'type_name' => $userType->getTypeName(),
+                                'hourly_rate' => $user->getHourlyRate(),
+                                'salary_type' => $user->getSalaryType(),
+                                'salary_amount' => $user->getSalaryAmount(),
+                                'min_hour' => $user->getMinHour(),
+                                'status' => $user->getStatus(),
+                                'page_access' => $this->_userRepo->getPageAccessOfUser($userType->getId()),
+                            )
+                        );
+                    }
+                } catch(\Exception $e){
                     $authFailed = true;
                 }
             } else {
@@ -151,29 +153,18 @@ class LoginController extends AbstractRestfulController
                 $authService->getStorage()->write($identity);
 
                 if ($identity->getStatus()) {
-
-                    $jws = new SimpleJWS(array(
-                        'typ' => 'JWT',
-                        'alg' => 'RS256'
-                    ));
-
-                    $jws->setPayload(array(
-                        'iss' => 'AmeriFleet Portal',
+                    $jwtSecret = $this->_config['jwt_config']['jwt_secret'];
+                    $token = array(
+                        'iss' => $this->_config['jwt_config']['issuer'],
+                        'aud' => $this->_config['jwt_config']['audience'],
+                        'algorithm' =>  'HS256',
                         'iat' => time(),
                         'exp' => time() + 86400,
-                        'sub' => $identity->getId()
-                    ));
+                        'userId' => $identity->getId(),
+                    );
 
-                    $private_key = openssl_pkey_get_private($this->_config['jwt_config']['private_key_path'], $this->_config['jwt_config']['password']);
-                    $jws->sign($private_key);
-
-//                    $permission = $this->_navigationRepo->getUserNavigation($identity->getUserId());
-//                    $allowedNavigation = $this->_navigationRepo->getUserNavigationPermission($identity->getUserId());
-
-
-                    //$this->_permissionRepo->getPermission($identity->getUserId());
+                    $jwtToken = JWT::encode($token, $jwtSecret);
                     $userType = $this->_userTypeRepository->find($identity->getTypeId());
-
 
                     $data = array(
                         'user_id' => $identity->getId(),
@@ -181,6 +172,7 @@ class LoginController extends AbstractRestfulController
                         'email' => $identity->getEmail(),
                         'first_name' => $identity->getFirstName(),
                         'last_name' => $identity->getLastName(),
+                        'initials' => $identity->getInitials(),
                         'full_name' => trim(implode(' ', array($identity->getFirstName(), $identity->getLastName()))),
                         'image' => ($identity->getImage())?$this->_config['site_url'] . 'thumb/profile_image/' . $identity->getImage():null,
                         'type_id' => $userType->getId(),
@@ -189,8 +181,10 @@ class LoginController extends AbstractRestfulController
                         'salary_type' => $identity->getSalaryType(),
                         'salary_amount' => $identity->getSalaryAmount(),
                         'min_hour' => $identity->getMinHour(),
-                        'token' => $jws->getTokenString(),
+                        'token' => $jwtToken,
                         'status' => $identity->getStatus(),
+                        'page_access' => $this->_userRepo->getPageAccessOfUser($userType->getId()),
+                        'project_permissions' => $this->_userRepo->getUserTypeProjectPermission($userType->getId()),
                     );
 
                     $userInfo = $this->_userRepository->find($identity->getId());

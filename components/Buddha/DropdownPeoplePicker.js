@@ -2,7 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as API from './../../actions/api';
-import { actionUsersListLoad, actionInitializeUserType } from './../../actions/Users';
+import {
+    actionUsersListLoad,
+    actionInitializeUserType,
+} from './../../actions/Users';
 import DropdownContainer from './../Form/DropdownContainer';
 import Input from './../Form/Input';
 import OptionsList from './../Form/OptionsList';
@@ -23,7 +26,16 @@ const propTypes = {
     pickedPeopleIds: PropTypes.arrayOf(PropTypes.number),
     label: PropTypes.string,
     valueLabel: PropTypes.string,
-    type: PropTypes.oneOf(['all', 'editor', 'designer', 'producer', 'billing', 'writer', 'musician', 'manager']).isRequired
+    type: PropTypes.oneOf([
+        'all',
+        'editor',
+        'designer',
+        'producer',
+        'billing',
+        'writer',
+        'musician',
+        'manager',
+    ]).isRequired,
 };
 
 const defaultProps = {
@@ -37,7 +49,7 @@ const defaultProps = {
     pickedPeopleIds: [],
     valueLabel: 'People',
     label: 'Pick',
-    type: 'all'
+    type: 'all',
 };
 
 class NewPeoplePicker extends React.Component {
@@ -49,14 +61,15 @@ class NewPeoplePicker extends React.Component {
             options: [],
             pickedPeople: [],
             removingPeopleIds: [],
-            maxHeight: 0
+            maxHeight: 0,
         };
 
         if (typeof this.props.users[this.props.type] === 'undefined') {
+            // TODO: Implement new user fetching
             // Initializing user type
-            this.props.dispatch(
-                actionInitializeUserType(this.props.type)
-            );
+            // this.props.dispatch(
+            //     actionInitializeUserType(this.props.type)
+            // );
         }
 
         this.peoplePickerDropdown = null;
@@ -76,25 +89,42 @@ class NewPeoplePicker extends React.Component {
             nextProps.users[nextProps.type].length > 0 &&
             nextProps.pickedPeopleIds.length > 0
         ) {
-            console.log('pickedPeople', nextProps.users[nextProps.type].filter((person, personIndex) => {
-                return nextProps.pickedPeopleIds.indexOf(person.id) !== -1 ? true : false;
-            }));
-            this.setState({
-                pickedPeople: nextProps.users[nextProps.type].filter((person, personIndex) => {
-                    return nextProps.pickedPeopleIds.indexOf(person.id) !== -1 ? true : false;
-                }),
-                removingPeopleIds: []
-            }, () => {
-                this.setOptions(nextProps.users[nextProps.type]);
-            });
+            console.log(
+                'pickedPeople',
+                nextProps.users[nextProps.type].filter(
+                    (person, personIndex) => {
+                        return nextProps.pickedPeopleIds.indexOf(person.id) !==
+                            -1
+                            ? true
+                            : false;
+                    }
+                )
+            );
+            this.setState(
+                {
+                    pickedPeople: nextProps.users[nextProps.type].filter(
+                        (person, personIndex) => {
+                            return nextProps.pickedPeopleIds.indexOf(
+                                person.id
+                            ) !== -1
+                                ? true
+                                : false;
+                        }
+                    ),
+                    removingPeopleIds: [],
+                },
+                () => {
+                    this.setOptions(nextProps.users[nextProps.type]);
+                }
+            );
         } else if (
-            (props.type !== nextProps.type) ||
-            (typeof props.users[nextProps.type] === 'undefined' && typeof nextProps.users[nextProps.type] !== 'undefined') ||
-            (
-                typeof props.users[nextProps.type] !== 'undefined' &&
+            props.type !== nextProps.type ||
+            (typeof props.users[nextProps.type] === 'undefined' &&
+                typeof nextProps.users[nextProps.type] !== 'undefined') ||
+            (typeof props.users[nextProps.type] !== 'undefined' &&
                 typeof nextProps.users[nextProps.type] !== 'undefined' &&
-                props.users[nextProps.type].length !== nextProps.users[nextProps.type].length
-            )
+                props.users[nextProps.type].length !==
+                    nextProps.users[nextProps.type].length)
         ) {
             this.setOptions(nextProps.users[nextProps.type]);
         } else if (
@@ -106,7 +136,7 @@ class NewPeoplePicker extends React.Component {
             this.setState({
                 search: '',
                 pickedPeople: [],
-                removingPeopleIds: []
+                removingPeopleIds: [],
             });
         }
 
@@ -127,34 +157,39 @@ class NewPeoplePicker extends React.Component {
         const timestamp = new Date().getTime();
 
         if (
-            (typeof users[type] === 'undefined') ||
-            (
-                typeof users[type] !== 'undefined' &&
+            typeof users[type] === 'undefined' ||
+            (typeof users[type] !== 'undefined' &&
                 typeof users[type + 'LastTimestamp'] !== 'undefined' &&
-                (users[type + 'LastTimestamp'] < 1 || timestamp - users[type + 'LastTimestamp'] > 1000 * 60 * 5)
-            )
+                (users[type + 'LastTimestamp'] < 1 ||
+                    timestamp - users[type + 'LastTimestamp'] > 1000 * 60 * 5))
         ) {
             // Fetch users
-            this.props.dispatch(
-                actionUsersListLoad(type)
-            );
+            // TODO: Implement fetching of users
+            // this.props.dispatch(actionUsersListLoad(type));
         } else {
-            this.setState({
-                pickedPeople: users[type].filter((person, personIndex) => {
-                    return this.props.pickedPeopleIds.indexOf(person.id) !== -1 ? true : false;
-                })
-            }, () => {
-                this.setOptions(users[type]);
-            });
+            this.setState(
+                {
+                    pickedPeople: users[type].filter((person, personIndex) => {
+                        return this.props.pickedPeopleIds.indexOf(person.id) !==
+                            -1
+                            ? true
+                            : false;
+                    }),
+                },
+                () => {
+                    this.setOptions(users[type]);
+                }
+            );
         }
     }
 
     setOptions(users) {
-        users = typeof users !== 'undefined'
-            ? users
-            : typeof this.props.users[this.props.type] !== 'undefined'
-                ? this.props.users[this.props.type]
-                : [];
+        users =
+            typeof users !== 'undefined'
+                ? users
+                : typeof this.props.users[this.props.type] !== 'undefined'
+                  ? this.props.users[this.props.type]
+                  : [];
 
         const { search } = this.state;
         const query = search.trim();
@@ -164,8 +199,13 @@ class NewPeoplePicker extends React.Component {
         // Search for query match
         if (typeof users !== 'undefined' && users.length > 0) {
             if (query !== '') {
-                filteredUsers = users.filter((user) => {
-                    return searchPhraseInString(user.fullName, query, true, true);
+                filteredUsers = users.filter(user => {
+                    return searchPhraseInString(
+                        user.fullName,
+                        query,
+                        true,
+                        true
+                    );
                 });
             } else {
                 filteredUsers = users;
@@ -173,7 +213,7 @@ class NewPeoplePicker extends React.Component {
         }
 
         // Remove users that have already been selected
-        filteredUsers = filteredUsers.filter((user) => {
+        filteredUsers = filteredUsers.filter(user => {
             if (this.state.pickedPeople.find(person => person.id === user.id)) {
                 return false;
             } else {
@@ -181,45 +221,58 @@ class NewPeoplePicker extends React.Component {
             }
         });
 
-        this.setState({
-            options: filteredUsers.map((user) => {
-                return {
-                    label: user.fullName,
-                    value: {
-                        id: user.id,
-                        username: user.userName,
-                        fullname: user.fullName,
-                        image: user.image,
-                        typeId: user.typeId
+        this.setState(
+            {
+                options: filteredUsers.map(user => {
+                    return {
+                        label: user.fullName,
+                        value: {
+                            id: user.id,
+                            username: user.userName,
+                            fullname: user.fullName,
+                            image: user.image,
+                            typeId: user.typeId,
+                        },
+                    };
+                }),
+            },
+            () => {
+                // Set timeout to refresh users list in case dropdown is left mounted
+                setTimeout(() => {
+                    if (this.isComponentMounted) {
+                        const timestamp = new Date().getTime();
+                        if (
+                            typeof this.props.users[
+                                this.props.type + 'LastTimestamp'
+                            ] !== 'undefined' &&
+                            timestamp -
+                                this.props.users[
+                                    this.props.type + 'LastTimestamp'
+                                ] >
+                                1000 * 60 * 5
+                        ) {
+                            this.props.dispatch(
+                                actionUsersListLoad(this.props.type)
+                            );
+                        }
                     }
-                };
-            })
-        }, () => {
-            // Set timeout to refresh users list in case dropdown is left mounted
-            setTimeout(() => {
-                if (this.isComponentMounted) {
-                    const timestamp = new Date().getTime();
-                    if (
-                        typeof this.props.users[this.props.type + 'LastTimestamp'] !== 'undefined' &&
-                        timestamp - this.props.users[this.props.type + 'LastTimestamp'] > 1000 * 60 * 5
-                    ) {
-                        this.props.dispatch(
-                            actionUsersListLoad(this.props.type)
-                        );
-                    }
-                }
-            }, 1024 * 60 * 5);
-        });
+                }, 1024 * 60 * 5);
+            }
+        );
     }
 
     handleAddToPicked(e) {
-        const person = this.props.users[this.props.type].find(user => user.id === e.value.id);
+        const person = this.props.users[this.props.type].find(
+            user => user.id === e.value.id
+        );
         const pickedPeople = [person].concat(this.state.pickedPeople);
 
         if (this.props.onPersonPicked) {
-            this.props.onPersonPicked(Object.assign({}, e, {
-                type: this.props.type
-            }));
+            this.props.onPersonPicked(
+                Object.assign({}, e, {
+                    type: this.props.type,
+                })
+            );
         }
 
         if (this.props.onChange) {
@@ -228,7 +281,7 @@ class NewPeoplePicker extends React.Component {
                 peopleIds: pickedPeople.map((person, personIndex) => {
                     return person.id;
                 }),
-                type: this.props.type
+                type: this.props.type,
             });
         }
 
@@ -236,20 +289,24 @@ class NewPeoplePicker extends React.Component {
             this.peoplePickerDropdown.closeDropdown();
         }
 
-        this.setState({
-            search: '',
-            pickedPeople
-        }, () => {
-            this.setOptions();
-        });
+        this.setState(
+            {
+                search: '',
+                pickedPeople,
+            },
+            () => {
+                this.setOptions();
+            }
+        );
     }
 
     handleRemoveFromPicked(person, personIndex) {
         this.setState({
-            removingPeopleIds: this.state.removingPeopleIds.concat([person.id])
+            removingPeopleIds: this.state.removingPeopleIds.concat([person.id]),
         });
 
-        const pickedPeople = this.state.pickedPeople.slice(0, personIndex)
+        const pickedPeople = this.state.pickedPeople
+            .slice(0, personIndex)
             .concat(this.state.pickedPeople.slice(personIndex + 1));
 
         setTimeout(() => {
@@ -260,7 +317,7 @@ class NewPeoplePicker extends React.Component {
                     username: person.userName,
                     type: this.props.type,
                     typeId: person.typeId,
-                    image: person.image
+                    image: person.image,
                 });
             }
 
@@ -270,31 +327,41 @@ class NewPeoplePicker extends React.Component {
                     peopleIds: pickedPeople.map((person, personIndex) => {
                         return person.id;
                     }),
-                    type: this.props.type
+                    type: this.props.type,
                 });
             }
 
-            this.setState({
-                pickedPeople
-            }, () => {
-                this.setOptions();
-            });
+            this.setState(
+                {
+                    pickedPeople,
+                },
+                () => {
+                    this.setOptions();
+                }
+            );
         }, 256);
     }
 
     handleMaxHeightChange(maxHeight) {
         this.setState({
-            maxHeight
+            maxHeight,
         });
     }
 
     handleUsersSearch(e) {
-        if (typeof e !== 'undefined' && typeof e.target !== 'undefined' && typeof e.target.value !== 'undefined') {
-            this.setState({
-                search: e.target.value
-            }, () => {
-                this.setOptions();
-            });
+        if (
+            typeof e !== 'undefined' &&
+            typeof e.target !== 'undefined' &&
+            typeof e.target.value !== 'undefined'
+        ) {
+            this.setState(
+                {
+                    search: e.target.value,
+                },
+                () => {
+                    this.setOptions();
+                }
+            );
         }
     }
 
@@ -312,40 +379,47 @@ class NewPeoplePicker extends React.Component {
         // Render
         return (
             <div className="dropdownPeoplePicker">
-
-                {(this.props.editable && (this.props.pickedPeopleLimit === 0 || this.props.pickedPeopleLimit > this.state.pickedPeople.length)) && (
-                    <DropdownContainer
-                        ref={ref => this.peoplePickerDropdown = ref}
-                        onMaxHeightChange={e => this.handleMaxHeightChange(e)}
-                        align={props.align}
-                        minWidth={210}
-                        maxWidth={props.maxDropdownWidth}
-                        maxHeight={480}
-                        label={props.label}
-                        value={props.valueLabel}
-                        truncuateLabelTo={0}
-                    >
-                        <Input
-                            autoFocus={true}
-                            className={s.search}
-                            label="Search person..."
-                            value={this.state.search}
-                            onChange={e => this.handleUsersSearch(e)}
-                        />
-                        <div
-                            className={s.options}
-                            style={{
-                                maxHeight: this.state.maxHeight > 0 ? this.state.maxHeight + 'px' : undefined
-                            }}
+                {this.props.editable &&
+                    (this.props.pickedPeopleLimit === 0 ||
+                        this.props.pickedPeopleLimit >
+                            this.state.pickedPeople.length) && (
+                        <DropdownContainer
+                            ref={ref => (this.peoplePickerDropdown = ref)}
+                            onMaxHeightChange={e =>
+                                this.handleMaxHeightChange(e)
+                            }
+                            align={props.align}
+                            minWidth={210}
+                            maxWidth={props.maxDropdownWidth}
+                            maxHeight={480}
+                            label={props.label}
+                            value={props.valueLabel}
+                            truncuateLabelTo={0}
                         >
-                            <OptionsList
-                                onChange={e => this.handleAddToPicked(e)}
-                                options={this.state.options}
-                                loadingOptions={this.props.usersLoading}
+                            <Input
+                                autoFocus={true}
+                                className={s.search}
+                                label="Search person..."
+                                value={this.state.search}
+                                onChange={e => this.handleUsersSearch(e)}
                             />
-                        </div>
-                    </DropdownContainer>
-                )}
+                            <div
+                                className={s.options}
+                                style={{
+                                    maxHeight:
+                                        this.state.maxHeight > 0
+                                            ? this.state.maxHeight + 'px'
+                                            : undefined,
+                                }}
+                            >
+                                <OptionsList
+                                    onChange={e => this.handleAddToPicked(e)}
+                                    options={this.state.options}
+                                    loadingOptions={this.props.usersLoading}
+                                />
+                            </div>
+                        </DropdownContainer>
+                    )}
 
                 {this.props.usersLoading && (
                     <Row>
@@ -356,13 +430,20 @@ class NewPeoplePicker extends React.Component {
                     </Row>
                 )}
 
-                <Row className={s.people} doWrap={true} justifyContent={justifyPeopleRow}>
+                <Row
+                    className={s.people}
+                    doWrap={true}
+                    justifyContent={justifyPeopleRow}
+                >
                     {this.state.pickedPeople.map((person, personIndex) => {
                         let personLabel = person.fullName;
 
                         // Is person being removed
                         let isBeingRemoved = false;
-                        if (this.state.removingPeopleIds.indexOf(person.id) !== -1) {
+                        if (
+                            this.state.removingPeopleIds.indexOf(person.id) !==
+                            -1
+                        ) {
                             personLabel = 'Removing ' + person.fullName;
                             isBeingRemoved = true;
                         }
@@ -371,15 +452,24 @@ class NewPeoplePicker extends React.Component {
                         return (
                             <Col className={s.person} size={0} key={person.id}>
                                 <Person
-                                    onClick={this.props.editable ? (e, checked) => this.handleRemoveFromPicked(person, personIndex) : undefined}
-                                    displayRemoveIcon={this.props.editable ? true : false}
+                                    onClick={
+                                        this.props.editable
+                                            ? (e, checked) =>
+                                                  this.handleRemoveFromPicked(
+                                                      person,
+                                                      personIndex
+                                                  )
+                                            : undefined
+                                    }
+                                    displayRemoveIcon={
+                                        this.props.editable ? true : false
+                                    }
                                     name={personLabel}
                                 />
                             </Col>
                         );
                     })}
                 </Row>
-
             </div>
         );
     }
@@ -392,7 +482,7 @@ const mapStateToProps = (state, ownProps) => {
     return {
         users: state.users,
         usersLastUpdateTimestamp: state.users[ownProps.type + 'LastTimestamp'],
-        usersLoading: state.users[ownProps.type + 'Loading']
+        usersLoading: state.users[ownProps.type + 'Loading'],
     };
 };
 

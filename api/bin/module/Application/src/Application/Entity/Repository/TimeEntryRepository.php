@@ -5,12 +5,6 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManager;
 use Zend\Config\Config;
 
-// before called Table now Repository Table Data Gateway
-// In Bug Entity add  @Entity(repositoryClass="BugRepository")
-// To be able to use this query logic through
-// $this->getEntityManager()->getRepository('Bug') we have to adjust the metadata slightly.
-// http://stackoverflow.com/questions/10481916/the-method-name-must-start-with-either-findby-or-findoneby-uncaught-exception
-
 class TimeEntryRepository extends EntityRepository
 {
     private $_className = "\Application\Entity\RediTimeEntry";
@@ -22,74 +16,148 @@ class TimeEntryRepository extends EntityRepository
 
     public function search($offset = 0, $length = 10, $filter=array())
     {
+        $projectDatePool = (empty($filter['get_single'])) ? $this->getPool($filter) : array();
+
+        $filter['id'] = (array)(!empty($filter['id'])?$filter['id']:array());
+        $filter['id'] = array_merge($filter['id'], $projectDatePool);
+
+        if(!empty($filter['activity_id'])) {
+            $activityDateFilter = $this->getFilterForActivity($filter);
+
+            $filter['id'] = array_merge($filter['id'], $activityDateFilter);
+        }
+
         $dql = "SELECT 
-                  a.id, a.userId,
-                  a.projectId, p.projectName, 
-                  a.campaignId, c.campaignName, 
+                  a.id, 
+                  a.userId, 
+                  ut.id AS userTypeId, ut.typeName AS userTypeName,
+                  u.username,
+                  u.initials,
+                  u.firstName,
+                  u.lastName,
+                  u.minHour,
+                  a.projectCampaignId,
+                  ptc.projectId,
+                  ptc.campaignId, c.campaignName, 
                   a.spotId, s.spotName,
                   a.versionId, v.versionName, 
-                  a.activityTypeId, ac.value AS activityValue, a.activityDescription, 
-                  ac.label AS activityLabel,
+                  a.activityId, 
+                  ac.name AS activityValue, 
+                  a.activityDescription, 
+                  atp.id AS activityTypeId,
+                  atp.activityType,
+                  cu.id AS customerId, cu.customerName,
                   a.startDate, a.duration, 
+                  a.approvedBy, a.approvedAt,
                   a.notes, a.status, st.status as statusName
                 FROM \Application\Entity\RediTimeEntry a 
                 LEFT JOIN \Application\Entity\RediSpot s
                   WITH a.spotId=s.id
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
+                  WITH ptc.id=a.projectCampaignId
                 LEFT JOIN \Application\Entity\RediProject p
-                  WITH p.id=a.projectId
+                  WITH p.id=ptc.projectId
                 LEFT JOIN \Application\Entity\RediCampaign c
-                  WITH c.id=a.campaignId
+                  WITH c.id=ptc.campaignId
                 LEFT JOIN \Application\Entity\RediVersion v
                   WITH v.id=a.versionId
-                LEFT JOIN \Application\Entity\RediActivity ac
-                  WITH ac.id=a.activityTypeId
                 LEFT JOIN \Application\Entity\RediStatus st
-                  WITH a.status=st.id";
+                  WITH a.status=st.id
+                LEFT JOIN \Application\Entity\RediUser u 
+                    WITH u.id=a.userId
+                LEFT JOIN \Application\Entity\RediUserType ut
+                    WITH ut.id=u.typeId
+                LEFT JOIN \Application\Entity\RediUserTypeTimeApprovalPermission tap
+                    WITH u.typeId=tap.submittingUserTypeId 
+                LEFT JOIN \Application\Entity\RediActivity ac
+                  WITH ac.id=a.activityId
+                LEFT JOIN \Application\Entity\RediActivityToType att
+                    WITH att.activityId=a.activityId
+                LEFT JOIN \Application\Entity\RediActivityType  atp
+                    WITH att.typeId=atp.id 
+                LEFT JOIN \Application\Entity\RediCustomer cu 
+                    WITH cu.id=p.customerId ";
 
         $dqlFilter = [];
+
+        if (isset($filter['id']) && $filter['id']) {
+            $dqlFilter[] = " a.id IN (" . implode(',', $filter['id']) . ") ";
+        }
 
         if (isset($filter['user_id']) && $filter['user_id']) {
             $dqlFilter[] = " a.userId=:user_id ";
         }
 
+        if (!empty($filter['exclude_user_time_entry'])) {
+            $dqlFilter[] = " a.userId!=:current_user_id ";
+        }
+
+        if (isset($filter['user_type_id']) && count($filter['user_type_id'])) {
+            $dqlFilter[] = " tap.submittingUserTypeId IN (" . implode(',', $filter['user_type_id']) . ") ";
+        }
+
+        if (isset($filter['status']) && $filter['status']) {
+            $dqlFilter[] = " a.status=:status ";
+        }
+
         if (isset($filter['start_date']) && $filter['start_date']) {
             $dqlFilter[] = " a.startDate>=:start_date ";
+
+            $startDate = new \DateTime($filter['start_date']);
+            $startDate = $startDate->format('Y-m-d 00:00:00');
         }
 
         if (isset($filter['end_date']) && $filter['end_date']) {
             $dqlFilter[] = " a.startDate<=:end_date ";
+
+            $endDate = new \DateTime($filter['end_date']);
+            $endDate = $endDate->format('Y-m-d 23:59:59');
         }
 
         if(count($dqlFilter)) {
             $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " ORDER BY a.id ASC";
+        $dql .= " GROUP BY a.id 
+                ORDER BY a.startDate ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setFirstResult($offset);
-        $query->setMaxResults($length);
+
+        if($length > 0) {
+            $query->setMaxResults($length);
+        }
 
         if (isset($filter['user_id']) && $filter['user_id']) {
             $query->setParameter('user_id', $filter['user_id']);
         }
 
+        if (!empty($filter['exclude_user_time_entry'])) {
+            $query->setParameter('current_user_id', $filter['current_user_id']);
+        }
+
+        if (isset($filter['status']) && $filter['status']) {
+            $query->setParameter('status', $filter['status']);
+        }
+
         if (isset($filter['start_date']) && $filter['start_date']) {
-            $query->setParameter('start_date', $filter['start_date']);
+            $query->setParameter('start_date', $startDate);
         }
 
         if (isset($filter['end_date']) && $filter['end_date']) {
-            $query->setParameter('end_date', $filter['end_date']);
+            $query->setParameter('end_date', $endDate);
         }
 
         $result = $query->getArrayResult();
 
         foreach($result as &$row) {
-            if($row['startDate']) {
-                $row['startDate'] = $row['startDate']->format('Y-m-d H:i:s');
-            }
-
             $row['id'] = (int)$row['id'];
+            $row['files'] = $this->getTimeEntryFiles($row['id']);
+
+            if(empty($filter['project_id'])) {
+                unset($row['customerId']);
+                unset($row['customerName']);
+            }
         }
 
         return $result;
@@ -97,22 +165,61 @@ class TimeEntryRepository extends EntityRepository
 
     public function searchCount($filter=array())
     {
+        $projectDatePool = $this->getPool($filter);
+
+        $filter['id'] = (array)(!empty($filter['id'])?$filter['id']:array());
+        $filter['id'] = array_merge($filter['id'], $projectDatePool);
+
+        if(!empty($filter['activity_id'])) {
+            $activityDateFilter = $this->getFilterForActivity($filter);
+
+            $filter['id'] = array_merge($filter['id'], $activityDateFilter);
+        }
+
         $dql = "SELECT 
-                  COUNT(a.id) AS total_count
-                FROM \Application\Entity\RediTimeEntry a ";
+                  COUNT(DISTINCT a.id) AS total_count
+                FROM \Application\Entity\RediTimeEntry a 
+                LEFT JOIN \Application\Entity\RediUser u 
+                    WITH u.id=a.userId
+                LEFT JOIN \Application\Entity\RediUserTypeTimeApprovalPermission tap
+                    WITH u.typeId=tap.submittingUserTypeId 
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
+                  WITH ptc.id=a.projectCampaignId";
 
         $dqlFilter = [];
+
+        if (isset($filter['id']) && $filter['id']) {
+            $dqlFilter[] = " a.id IN (" . implode(',', $filter['id']) . ") ";
+        }
 
         if (isset($filter['user_id']) && $filter['user_id']) {
             $dqlFilter[] = " a.userId=:user_id ";
         }
 
+        if (!empty($filter['exclude_user_time_entry'])) {
+            $dqlFilter[] = " a.userId!=:current_user_id ";
+        }
+        
+        if (isset($filter['user_type_id']) && count($filter['user_type_id'])) {
+            $dqlFilter[] = " tap.submittingUserTypeId IN (" . implode(',', $filter['user_type_id']) . ") ";
+        }
+
+        if (isset($filter['status']) && $filter['status']) {
+            $dqlFilter[] = " a.status=:status ";
+        }
+
         if (isset($filter['start_date']) && $filter['start_date']) {
             $dqlFilter[] = " a.startDate>=:start_date ";
+
+            $startDate = new \DateTime($filter['start_date']);
+            $startDate = $startDate->format('Y-m-d 00:00:00');
         }
 
         if (isset($filter['end_date']) && $filter['end_date']) {
             $dqlFilter[] = " a.startDate<=:end_date ";
+
+            $endDate = new \DateTime($filter['end_date']);
+            $endDate = $endDate->format('Y-m-d 23:59:59');
         }
 
         if(count($dqlFilter)) {
@@ -125,12 +232,20 @@ class TimeEntryRepository extends EntityRepository
             $query->setParameter('user_id', $filter['user_id']);
         }
 
+        if (!empty($filter['exclude_user_time_entry'])) {
+            $query->setParameter('current_user_id', $filter['current_user_id']);
+        }
+
+        if (isset($filter['status']) && $filter['status']) {
+            $query->setParameter('status', $filter['status']);
+        }
+
         if (isset($filter['start_date']) && $filter['start_date']) {
-            $query->setParameter('start_date', $filter['start_date']);
+            $query->setParameter('start_date', $startDate);
         }
 
         if (isset($filter['end_date']) && $filter['end_date']) {
-            $query->setParameter('end_date', $filter['end_date']);
+            $query->setParameter('end_date', $endDate);
         }
 
         $result = $query->getArrayResult();
@@ -138,41 +253,126 @@ class TimeEntryRepository extends EntityRepository
         return (isset($result[0]['total_count'])?(int)$result[0]['total_count']:0);
     }
 
-    public function searchUserTimeEntry($startDate, $endDate, $userId)
+    public function getPool($filter=array())
     {
+        $dql = "SELECT
+                    id 
+                FROM redi_time_entry 
+                WHERE DATE(start_date) IN (SELECT 
+                  DISTINCT DATE(a.start_date) AS start_date
+                FROM redi_time_entry a 
+                INNER JOIN redi_project_to_campaign ptc
+                    ON ptc.id=a.project_campaign_id ";
+
+        $dqlFilter = [];
+
+        if (isset($filter['project_id']) && $filter['project_id'] !== null) {
+            if($filter['project_id']) {
+                $dqlFilter[] = " ptc.project_id=:project_id ";
+            } else if($filter['project_id'] == 0) {
+                $dqlFilter[] = " ptc.project_id IS NULL ";
+            }
+        }
+
+        if (isset($filter['start_date']) && $filter['start_date']) {
+            $dqlFilter[] = " a.startDate>=:start_date ";
+
+            $startDate = new \DateTime($filter['start_date']);
+            $startDate = $startDate->format('Y-m-d 00:00:00');
+        }
+
+        if (isset($filter['end_date']) && $filter['end_date']) {
+            $dqlFilter[] = " a.startDate<=:end_date ";
+
+            $endDate = new \DateTime($filter['end_date']);
+            $endDate = $endDate->format('Y-m-d 23:59:59');
+        }
+
+        if(count($dqlFilter)) {
+            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        }
+
+        $dql .= ")";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+
+        if (isset($filter['project_id']) && $filter['project_id']) {
+            $query->bindParam('project_id', $filter['project_id']);
+        }
+
+        if (isset($filter['start_date']) && $filter['start_date']) {
+            $query->bindParam('start_date', $startDate);
+        }
+
+        if (isset($filter['end_date']) && $filter['end_date']) {
+            $query->bindParam('end_date', $endDate);
+        }
+
+        $query->execute();
+        $result = $query->fetchAll();
+
+        return array_column($result, 'id');
+    }
+
+    public function searchUserTimeEntry($startDate, $endDate, $userId, $projectId = null)
+    {
+        $projectDatePool = $this->getPool(array('project_id' => $projectId));
+        $filterCondition = array();
+        $conditionString = "";
+
+        if($projectId) {
+            $projectDatePool[] = 0;
+            $filterCondition[] = " p.id IN (" . implode(',', $projectDatePool) . ") ";
+        }
+
+        if(count($filterCondition)) {
+            $conditionString = " AND " . implode(" AND ", $filterCondition);
+        }
+
         $startDate = new \DateTime($startDate);
         $endDate = new \DateTime($endDate);
 
         $startDate = $startDate->format('Y-m-d 00:00:00');
-        $endDate = $endDate->format('Y-m-d 00:00:00');
+        $endDate = $endDate->format('Y-m-d 23:59:59');
 
         $dql = "SELECT 
                   a.id, 
-                  a.projectId, p.projectName, 
-                  a.campaignId, c.campaignName, 
+                  a.projectCampaignId,
+                  ptc.projectId,
+                  ptc.campaignId, c.campaignName,
+                  cu.id AS customerId, cu.customerName,
                   a.spotId, s.spotName,
                   a.versionId, v.versionName, 
-                  a.activityTypeId, ac.name AS activityValue, a.activityDescription,
+                  a.activityId, ac.name AS activityValue, a.activityDescription,
                   a.startDate, a.duration, 
                   a.notes, a.status, st.status as statusName
                 FROM \Application\Entity\RediTimeEntry a 
                 LEFT JOIN \Application\Entity\RediSpot s
                   WITH a.spotId=s.id
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
+                  WITH ptc.id=a.projectCampaignId
                 LEFT JOIN \Application\Entity\RediProject p
-                  WITH p.id=a.projectId
+                  WITH p.id=ptc.projectId
                 LEFT JOIN \Application\Entity\RediCampaign c
-                  WITH c.id=a.campaignId
+                  WITH c.id=ptc.campaignId
                 LEFT JOIN \Application\Entity\RediVersion v
-                  WITH v.id=a.versionId
-                LEFT JOIN \Application\Entity\RediActivity ac
-                  WITH ac.id=a.activityTypeId    
+                  WITH v.id=a.versionId 
                 LEFT JOIN \Application\Entity\RediStatus st
                   WITH a.status=st.id
+                LEFT JOIN \Application\Entity\RediActivity ac
+                  WITH ac.id=a.activityId
+                LEFT JOIN \Application\Entity\RediActivityToType att
+                    WITH att.activityId=a.activityId
+                LEFT JOIN \Application\Entity\RediActivityType  atp
+                    WITH att.typeId=atp.id
+                LEFT JOIN \Application\Entity\RediCustomer cu 
+                    WITH cu.id=p.customerId
                 WHERE 
                   a.userId=:user_id
                 AND a.startDate>=:start_date
                 AND a.startDate<=:end_date
-                ORDER BY a.id ASC";
+                " . $conditionString . "
+                ORDER BY a.startDate ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('user_id', $userId);
@@ -180,9 +380,17 @@ class TimeEntryRepository extends EntityRepository
         $query->setParameter('end_date', $endDate);
         $result = $query->getArrayResult();
 
+
         foreach($result as &$row) {
-            $row['startDate'] = $row['startDate']->format('Y-m-d H:i:s');
+            $row['id'] = (int)$row['id'];
+            $row['files'] = $this->getTimeEntryFiles($row['id']);
+
+            if(!$projectId) {
+                unset($row['customerId']);
+                unset($row['customerName']);
+            }
         }
+
         return $result;
     }
 
@@ -190,27 +398,37 @@ class TimeEntryRepository extends EntityRepository
     {
         $dql = "SELECT 
                 a.id, a.userId,
-                  a.projectId, p.projectName, 
-                  a.campaignId, c.campaignName, 
+                a.projectCampaignId,
+                  ptc.projectId,
+                  ptc.campaignId, c.campaignName, 
                   a.spotId, s.spotName,
                   a.versionId, v.versionName, 
-                  a.activityTypeId, ac.value AS activityValue,a.activityDescription,
-                  ac.label AS activityLabel,
+                  a.activityId, 
+                  ac.name AS activityValue, 
+                  a.activityDescription, 
+                  atp.id AS activityTypeId,
+                  atp.activityType,
                   a.startDate, a.duration, 
                   a.notes, a.status, st.status as statusName
                 FROM \Application\Entity\RediTimeEntry a 
                 LEFT JOIN \Application\Entity\RediSpot s
                   WITH a.spotId=s.id
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
+                  WITH ptc.id=a.projectCampaignId
                 LEFT JOIN \Application\Entity\RediProject p
-                  WITH p.id=a.projectId
+                  WITH p.id=ptc.projectId
                 LEFT JOIN \Application\Entity\RediCampaign c
-                  WITH c.id=a.campaignId
+                  WITH c.id=ptc.campaignId
                 LEFT JOIN \Application\Entity\RediVersion v
                   WITH v.id=a.versionId
                 LEFT JOIN \Application\Entity\RediActivity ac
-                  WITH ac.id=a.activityTypeId
+                  WITH ac.id=a.activityId
                 LEFT JOIN \Application\Entity\RediStatus st
                   WITH a.status=st.id
+                LEFT JOIN \Application\Entity\RediActivityToType att
+                    WITH att.activityId=a.activityId
+                LEFT JOIN \Application\Entity\RediActivityType  atp
+                    WITH att.typeId=atp.id
                 WHERE a.id=:id";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -219,13 +437,6 @@ class TimeEntryRepository extends EntityRepository
         $result =  $query->getArrayResult();
 
         $response =  (isset($result[0])?$result[0]:null);
-
-        if($response) {
-            if($response['startDate']) {
-                $response['startDate'] = $response['startDate']->format('Y-m-d H:i:s');
-            }
-
-        }
 
         return $response;
     }
@@ -250,5 +461,73 @@ class TimeEntryRepository extends EntityRepository
         $result =  $query->getArrayResult();
 
         return $result;
+    }
+
+    public function getTimeEntryFiles($timeEntryId)
+    {
+        $dql = "SELECT
+                  a.fileName, a.description, a.duration
+                FROM \Application\Entity\RediTimeEntryFile a 
+                WHERE 
+                  a.timeEntryId=:time_entry_id
+                ORDER BY a.id ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('time_entry_id', $timeEntryId);
+        $result =  $query->getArrayResult();
+
+        return $result;
+    }
+
+    public function getFilterForActivity($filter)
+    {
+        $dql = "SELECT id 
+                FROM redi_time_entry a
+                WHERE DATE(start_date) IN (SELECT
+                  DATE(a.start_date)
+                FROM redi_time_entry a 
+                WHERE 
+                  a.activity_id=:activity_id)
+                AND ";
+
+        $dqlFilter = [];
+
+        if (isset($filter['id']) && $filter['id']) {
+            $dqlFilter[] = " a.id=:id ";
+        }
+
+        if (isset($filter['user_id']) && $filter['user_id']) {
+            $dqlFilter[] = " a.user_id=:user_id ";
+        }
+
+        if (isset($filter['status']) && $filter['status']) {
+            $dqlFilter[] = " a.status=:status ";
+        }
+
+        if(count($dqlFilter)) {
+            $dql .=  implode(" AND ", $dqlFilter);
+        }
+
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('activity_id', $filter['activity_id']);
+
+        if (isset($filter['id']) && $filter['id']) {
+            $query->bindParam('id', $filter['id']);
+        }
+
+        if (isset($filter['user_id']) && $filter['user_id']) {
+            $query->bindParam('user_id', $filter['user_id']);
+        }
+
+        if (isset($filter['status']) && $filter['status']) {
+            $query->bindParam('status', $filter['status']);
+        }
+
+        $query->execute();
+
+        $result = $query->fetchAll();
+
+        return array_column($result, 'id');
     }
 }

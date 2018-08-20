@@ -24,7 +24,7 @@ class Sidebar extends React.Component {
 
     referenceSubLinksList(ref) {
         this.subLinksList = ref;
-    };
+    }
 
     componentDidMount() {
         const { navigation } = this.props;
@@ -50,13 +50,13 @@ class Sidebar extends React.Component {
         if (groupIndex !== null) {
             this.props.dispatch({
                 type: actions.SIDEBAR_CHANGE_ACTIVE_GROUP_INDEX,
-                payload: groupIndex
+                payload: groupIndex,
             });
         }
 
         setTimeout(() => {
             this.props.dispatch({
-                type: actions.SIDEBAR_COLLAPSE
+                type: actions.SIDEBAR_COLLAPSE,
             });
         }, 128);
     }
@@ -64,8 +64,8 @@ class Sidebar extends React.Component {
     componentDidUpdate(prevProps, prevState) {
         // Check if navigation is expanded and sub links nav needs realignment
         if (
-            (this.props.navigation.expandedNavigationGroupIndex !== null) &&
-            (prevProps.navigation.expandedNavigationGroupIndex !== this.props.navigation.expandedNavigationGroupIndex) &&
+            this.props.navigation.expandedNavigationGroupIndex !== null &&
+            prevProps.navigation.expandedNavigationGroupIndex !== this.props.navigation.expandedNavigationGroupIndex &&
             (typeof this.subLinksList !== 'undefined' && this.subLinksList) &&
             (typeof this.groupsList !== 'undefined' && this.groupsList)
         ) {
@@ -78,10 +78,10 @@ class Sidebar extends React.Component {
                 // Calculate expanded group center
                 const expandedGroupPos = expandedGroupEntry.offsetTop;
                 const expandedGroupHeight = expandedGroupEntry.offsetHeight;
-                const expandedGroupCenter = expandedGroupPos + (expandedGroupHeight / 2);
+                const expandedGroupCenter = expandedGroupPos + expandedGroupHeight / 2;
 
                 // Calculate list position and check if it isn't off screen
-                let listPosition = expandedGroupCenter - (listHeight / 2);
+                let listPosition = expandedGroupCenter - listHeight / 2;
                 if (listPosition + listHeight > sidebarHeight) {
                     const difference = sidebarHeight - (listPosition + listHeight);
                     listPosition = listPosition - difference;
@@ -93,7 +93,7 @@ class Sidebar extends React.Component {
                 // Dispatch position change
                 this.props.dispatch({
                     type: actions.SIDEBAR_CHANGE_ACTIVE_SUB_NAV_POSITION,
-                    payload: expandedGroupPos
+                    payload: expandedGroupPos,
                 });
             }
         }
@@ -103,7 +103,7 @@ class Sidebar extends React.Component {
         if (enter === true) {
             this.props.dispatch({
                 type: actions.SIDEBAR_TOGGLE_VISIBILITY,
-                payload: true
+                payload: true,
             });
         } else {
             this.props.dispatch({
@@ -111,8 +111,8 @@ class Sidebar extends React.Component {
                 payload: {
                     subSidebarExpanded: false,
                     sidebarExpanded: false,
-                    expandedNavigationGroupIndex: null
-                }
+                    expandedNavigationGroupIndex: null,
+                },
             });
         }
     }
@@ -134,16 +134,16 @@ class Sidebar extends React.Component {
                             hidingAnimation: false,
                             subSidebarExpanded: true,
                             subNavigationLinks: group.links,
-                            expandedNavigationGroupIndex: groupIndex
-                        }
+                            expandedNavigationGroupIndex: groupIndex,
+                        },
                     });
                 } else if (group.links.length === 1) {
                     this.props.dispatch({
                         type: actions.SIDEBAR_CHANGE_ALL,
                         payload: {
                             activeNavigationGroupIndex: groupIndex,
-                            expandedNavigationGroupIndex: null
-                        }
+                            expandedNavigationGroupIndex: null,
+                        },
                     });
 
                     history.push(group.links[0].path);
@@ -156,14 +156,17 @@ class Sidebar extends React.Component {
         const { navigation } = this.props;
         const { expandedNavigationGroupIndex, navigationGroups } = navigation;
 
-        if (typeof linkIndex !== 'undefined' && typeof navigationGroups[expandedNavigationGroupIndex].links[linkIndex] !== 'undefined') {
+        if (
+            typeof linkIndex !== 'undefined' &&
+            typeof navigationGroups[expandedNavigationGroupIndex].links[linkIndex] !== 'undefined'
+        ) {
             this.props.dispatch({
                 type: actions.SIDEBAR_CHANGE_ALL,
                 payload: {
                     activeNavigationGroupIndex: expandedNavigationGroupIndex,
                     activeSubNavigationIndex: linkIndex,
-                    expandedNavigationGroupIndex: null
-                }
+                    expandedNavigationGroupIndex: null,
+                },
             });
         }
     }
@@ -173,8 +176,8 @@ class Sidebar extends React.Component {
             type: actions.SIDEBAR_CHANGE_ALL,
             payload: {
                 activeNavigationGroupIndex: null,
-                expandedNavigationGroupIndex: null
-            }
+                expandedNavigationGroupIndex: null,
+            },
         });
     }
 
@@ -185,22 +188,22 @@ class Sidebar extends React.Component {
         // Nav container class name
         let containerNavClassName = s.sidebarNavigation;
         if (navigation.sidebarExpanded) {
-            containerNavClassName = s.sidebarNavigationActive;
+            containerNavClassName += ' ' + s.sidebarNavigationActive;
             if (navigation.subSidebarExpanded) {
-                containerNavClassName = s.sidebarNavigationActiveWithSubNav;
+                containerNavClassName += ' ' + s.sidebarNavigationActiveWithSubNav;
             }
         }
 
         // Main nav class name
         let mainNavClassName = s.mainNav;
         if (navigation.sidebarExpanded) {
-            mainNavClassName = s.mainNavActive;
+            mainNavClassName += ' ' + s.mainNavActive;
         }
 
         // Sub nav class name
         let subNavClassName = s.subNav;
         if (navigation.subSidebarExpanded) {
-            subNavClassName = s.subNavActive;
+            subNavClassName += ' ' + s.subNavActive;
         }
 
         return (
@@ -209,11 +212,16 @@ class Sidebar extends React.Component {
                 onMouseLeave={e => this.handleSidebarHover(false)}
                 className={containerNavClassName}
             >
-
                 <nav className={mainNavClassName}>
                     <div>
-                        <img className={s.sidebarLogo + ' ' + s.sidebarLogoSmall} src={require('./../../assets/images/logos/buddha-jones-logo-small.png')} />
-                        <img className={s.sidebarLogo + ' ' + s.sidebarLogoLarge} src={require('./../../assets/images/logos/buddha-jones-logo-large.png')} />
+                        <img
+                            className={s.sidebarLogo + ' ' + s.sidebarLogoSmall}
+                            src={require('./../../assets/images/logos/buddha-jones-logo-small.png')}
+                        />
+                        <img
+                            className={s.sidebarLogo + ' ' + s.sidebarLogoLarge}
+                            src={require('./../../assets/images/logos/buddha-jones-logo-large.png')}
+                        />
                     </div>
 
                     <hr className={s.sidebarSeparator} />
@@ -221,7 +229,7 @@ class Sidebar extends React.Component {
                     <ul className={s.sidebarLinksList} ref={ref => this.referenceGroupsList(ref)}>
                         {navigation.navigationGroups.map((group, groupIndex) => {
                             // Link class name
-                            let groupClassName = '';
+                            let groupClassName = s.sidebarLinksListEntry;
                             if (navigation.activeNavigationGroupIndex === groupIndex) {
                                 groupClassName += ' ' + s.sidebarLinksListEntryActive;
                             }
@@ -239,7 +247,10 @@ class Sidebar extends React.Component {
 
                             // Render link
                             return (
-                                <li key={`group-${group.title}`} className={groupClassName ? groupClassName : undefined}>
+                                <li
+                                    key={`group-${group.title}`}
+                                    className={groupClassName ? groupClassName : undefined}
+                                >
                                     <a onClick={e => this.handleSidebarGroupClick(e, groupIndex)}>
                                         <img width="24" src={group.icon} />
                                         <span>{groupTitle}</span>
@@ -256,8 +267,8 @@ class Sidebar extends React.Component {
                                     className={s.sidebarAccountImage + ' ' + s.sidebarAccountDefaultImage}
                                     src={
                                         this.props.user && this.props.user.image
-                                        ? this.props.user.image
-                                        : require('./../../assets/images/account/empty-user-profile-picture.png')
+                                            ? this.props.user.image
+                                            : require('./../../assets/images/account/empty-user-profile-picture.png')
                                     }
                                     height="36"
                                     width="36"
@@ -275,15 +286,15 @@ class Sidebar extends React.Component {
                         style={{
                             transform: navigation.activeSubNavigationPosition
                                 ? `translateY(${navigation.activeSubNavigationPosition}px)`
-                                : undefined
+                                : undefined,
                         }}
                     >
                         {navigation.subNavigationLinks.map((link, linkIndex) => {
                             // Sub link class name
-                            let linkClassName = '';
+                            let linkClassName = s.subNavigationLink;
                             if (
-                                (navigation.expandedNavigationGroupIndex === navigation.activeNavigationGroupIndex) &&
-                                (navigation.activeSubNavigationIndex === linkIndex)
+                                navigation.expandedNavigationGroupIndex === navigation.activeNavigationGroupIndex &&
+                                navigation.activeSubNavigationIndex === linkIndex
                             ) {
                                 linkClassName += ' ' + s.subNavigationLinkActive;
                             }
@@ -292,7 +303,11 @@ class Sidebar extends React.Component {
                             // Render sub link
                             return (
                                 <li key={`sub-link-${link.path}`} className={linkClassName ? linkClassName : undefined}>
-                                    <Link to={link.path} title={link.title} onClick={e => this.handleSidebarLinkClick(e, linkIndex)}>
+                                    <Link
+                                        to={link.path}
+                                        title={link.title}
+                                        onClick={e => this.handleSidebarLinkClick(e, linkIndex)}
+                                    >
                                         <span>{linkIndex + 1}.</span>
                                         {link.title}
                                     </Link>
@@ -301,7 +316,6 @@ class Sidebar extends React.Component {
                         })}
                     </ol>
                 </nav>
-
             </div>
         );
     }
@@ -310,7 +324,7 @@ class Sidebar extends React.Component {
 function mapStateToProps(state) {
     return {
         navigation: state.navigation,
-        user: state.user
+        user: state.user,
     };
 }
 

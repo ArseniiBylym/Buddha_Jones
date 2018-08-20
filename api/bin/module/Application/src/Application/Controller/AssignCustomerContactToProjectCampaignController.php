@@ -19,40 +19,31 @@ class AssignCustomerContactToProjectCampaignController extends CustomAbstractAct
 {
     public function create($data)
     {
-        $projectId = (int)(isset($data['project_id']) ? trim($data['project_id']) : 0);
-        $campaignId = (int)(isset($data['campaign_id']) ? trim($data['campaign_id']) : 0);
+        $projectCampaignId = (int)(isset($data['project_campaign_id']) ? trim($data['project_campaign_id']) : 0);
         $firstPointOfContact = (isset($data['first_point_of_contact_id']) ? trim($data['first_point_of_contact_id']) : 0);
         $firstPointOfContact = (strtolower($firstPointOfContact) != 'null') ? (int)$firstPointOfContact : null;
 
-        if ($projectId && $campaignId) {
-            $project = $this->_projectRepository->find($projectId);
+        if ($projectCampaignId && $firstPointOfContact) {
+            $existingProjectCampaign = $this->_projectToCampaignRepository->find($projectCampaignId);
 
-            if ($project) {
+            if ($existingProjectCampaign){
                 $customerContact = $this->_customerContactRepository->find((int)$firstPointOfContact);
+                $project = $this->_projectRepository->find($existingProjectCampaign->getProjectId());
 
-                if($firstPointOfContact && (!$customerContact || ($customerContact && $customerContact->getCustomerId()!=$project->getCustomerId()))) {
+                if ($firstPointOfContact && (!$customerContact || ($customerContact && $customerContact->getCustomerId() != $project->getCustomerId()))) {
                     $response = array(
                         'status' => 0,
                         'message' => 'Contact does not belong to customer the project is assigned to.'
                     );
                 } else {
-                    $existingProjectCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectId, 'campaignId' => $campaignId));
-
-                    if ($existingProjectCampaign) {
-                        if ($firstPointOfContact !== 0) {
-                            $existingProjectCampaign->setFirstPointOfContactId($firstPointOfContact);
-                        }
-                    } else {
-                        $existingProjectCampaign = new RediProjectToCampaign();
-                        $existingProjectCampaign->setProjectId($projectId);
-                        $existingProjectCampaign->setCampaignId($campaignId);
-
-                        if ($firstPointOfContact !== 0) {
-                            $existingProjectCampaign->setFirstPointOfContactId($firstPointOfContact);
-                        }
-                    }
-
+                    $existingProjectCampaign->setFirstPointOfContactId($firstPointOfContact);
                     $this->_em->persist($existingProjectCampaign);
+
+                    $customerContactToPC = new RediCustomerContactToProjectCampaign();
+                    $customerContactToPC->setProjectToCampaignId($projectCampaignId);
+                    $customerContactToPC->setCustomerContactId($firstPointOfContact);
+                    $this->_em->persist($customerContactToPC);
+
                     $this->_em->flush();
 
                     $response = array(
@@ -60,16 +51,16 @@ class AssignCustomerContactToProjectCampaignController extends CustomAbstractAct
                         'message' => 'Request successful.'
                     );
                 }
-            } else {
+            }  else {
                 $response = array(
                     'status' => 0,
-                    'message' => 'Project not found.'
+                    'message' => 'Project campaign not found.'
                 );
             }
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Please provide required data(project_id, campaign_id).'
+                'message' => 'Please provide required data(project_campaign_id, first_point_of_contact_id).'
             );
         }
 
@@ -82,12 +73,10 @@ class AssignCustomerContactToProjectCampaignController extends CustomAbstractAct
 
     public function delete($contactId)
     {
+        $projectCampaignId = $this->params()->fromRoute('param1', 0);
 
-        $projectId = $this->params()->fromRoute('param1', 0);
-        $campaignId = $this->params()->fromRoute('param2', 0);
-
-        if ($contactId && $projectId && $campaignId) {
-            $existingProjectCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectId, 'campaignId' => $campaignId));
+        if ($contactId && $projectCampaignId) {
+            $existingProjectCampaign = $this->_projectToCampaignRepository->find($projectCampaignId);
 
             if ($existingProjectCampaign) {
                 $checkCustomerContactToProjectCampaign = $this->_customerContactToProjectCampaignRepository->findOneBy(array('customerContactId' => $contactId, 'projectToCampaignId' => $existingProjectCampaign->getId()));

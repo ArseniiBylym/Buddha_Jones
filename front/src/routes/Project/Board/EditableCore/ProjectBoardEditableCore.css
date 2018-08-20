@@ -1,0 +1,13 @@
+.fieldsRow {
+  & > :global(.col) {
+    & > p {
+      font-size: 0.85em;
+      margin-bottom: 4px;
+    }
+  }
+}
+
+.saveRow {
+  margin-top: 12px;
+  padding-bottom: 24px;
+}

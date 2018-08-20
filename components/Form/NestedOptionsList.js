@@ -43,6 +43,7 @@ const propTypes = {
         })
     ),
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool, PropTypes.object, PropTypes.array]),
+    selectedIcon: PropTypes.element,
     noOptionsLabel: PropTypes.string,
     loading: PropTypes.bool,
 };
@@ -54,6 +55,7 @@ const defaultProps = {
     searchLabel: null,
     searchAutoFocus: false,
     value: null,
+    selectedIcon: null,
     noOptionsLabel: 'No results available',
     loading: false,
 };
@@ -61,7 +63,7 @@ const defaultProps = {
 // Deriviations
 const mapStateToProps = (state, ownProps) => {
     return {
-        flatOptions: getFlatListOfOptions(state, ownProps)
+        flatOptions: getFlatListOfOptions(state, ownProps),
     };
 };
 
@@ -76,9 +78,6 @@ class NestedOptionsList extends React.Component {
             groupId: null,
             searchText: '',
         };
-
-        this.debouncedOptionsSearch = this.debouncedOptionsSearch.bind(this);
-        this.handleOptionsSearch = _debounce(this.handleOptionsSearch, 300);
 
         this.container = null;
         this.searchContainer = null;
@@ -130,7 +129,7 @@ class NestedOptionsList extends React.Component {
                     >
                         <Input
                             ref={this.referenceSearchField}
-                            onChange={this.debouncedOptionsSearch}
+                            onChange={e => this.handleOptionsSearch(e)}
                             value={this.state.searchText}
                             label={this.props.searchLabel || 'Search...'}
                             autoFocus={this.props.searchAutoFocus}
@@ -199,6 +198,7 @@ class NestedOptionsList extends React.Component {
                     className={s.optionsList}
                     onChange={e => this.handleOptionClick(e)}
                     value={this.props.value !== null ? this.props.value : undefined}
+                    selectedIcon={this.props.selectedIcon}
                     loadingOptions={this.props.loading}
                     options={[
                         ...(this.state.groupId !== null ? [{ value: 'goBack', label: '←' }] : []),
@@ -210,15 +210,9 @@ class NestedOptionsList extends React.Component {
         );
     }
 
-    debouncedOptionsSearch(e) {
-        if (typeof e !== 'undefined' && typeof e.target !== 'undefined' && typeof e.target.value !== 'undefined') {
-            this.handleOptionsSearch(e.target.value);
-        }
-    }
-
-    handleOptionsSearch(query) {
+    handleOptionsSearch(e) {
         this.setState({
-            searchText: query
+            searchText: e.target.value
         });
     }
 

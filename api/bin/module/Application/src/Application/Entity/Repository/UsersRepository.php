@@ -27,7 +27,7 @@ class UsersRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         return $query->getArrayResult();
     }
-    public function search($search='', $type=[], $offset = 0, $length = 10, $userAccess = array())
+    public function search($search='', $ids=[], $class=[], $type=[], $offset = 0, $length = 10, $userAccess = array())
     {
         $selectColumn = ' a.id ';
 
@@ -62,8 +62,16 @@ class UsersRepository extends EntityRepository
             $dqlFilter[] = " (a.firstName LIKE '%" . $search . "%' OR a.lastName LIKE '%" . $search . "%' OR a.username LIKE '%" . $search . "%' OR a.initials ='" . $search . "' OR a.email LIKE '%" . $search . "%') ";
         }
 
+        if (count($class)) {
+            $dqlFilter[] = " utc.class IN (:class) ";
+        }
+
+        if (count($ids)) {
+            $dqlFilter[] = " a.id IN (:ids) ";
+        }
+
         if (count($type)) {
-                $dqlFilter[] = " utc.class IN (:type) ";
+            $dqlFilter[] = " a.typeId IN (:type) ";
         }
 
         if(count($dqlFilter)) {
@@ -76,8 +84,16 @@ class UsersRepository extends EntityRepository
         $query->setFirstResult($offset);
         $query->setMaxResults($length);
 
+        if(count($class)) {
+            $query->setParameter('class', $class, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
+        }
+
         if(count($type)) {
             $query->setParameter('type', $type, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
+        }
+
+        if(count($ids)) {
+            $query->setParameter('ids', $ids, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
         }
 
         $data = $query->getArrayResult();
@@ -135,7 +151,7 @@ class UsersRepository extends EntityRepository
         return $response;
     }
 
-    public function searchCount($search='', $type=[])
+    public function searchCount($search='', $ids=[], $class=[], $type=[])
     {
         $dql = "SELECT COUNT(a.id) AS total_count
                 FROM \Application\Entity\RediUser a
@@ -148,8 +164,16 @@ class UsersRepository extends EntityRepository
             $dqlFilter[] = " (a.firstName LIKE '%" . $search . "%' OR a.lastName LIKE '%" . $search . "%' OR a.username LIKE '%" . $search . "%' OR a.initials ='" . $search . "' OR a.email LIKE '%" . $search . "%') ";
         }
 
+        if (count($class)) {
+            $dqlFilter[] = " utc.class IN (:class) ";
+        }
+
         if (count($type)) {
-            $dqlFilter[] = " utc.class IN (:type) ";
+            $dqlFilter[] = " a.typeId IN (:type) ";
+        }
+
+        if (count($ids)) {
+            $dqlFilter[] = " a.id IN (:ids) ";
         }
 
         if(count($dqlFilter)) {
@@ -158,8 +182,16 @@ class UsersRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery($dql);
 
+        if(count($class)) {
+            $query->setParameter('class', $class, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
+        }
+
         if(count($type)) {
             $query->setParameter('type', $type, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
+        }
+
+        if(count($ids)) {
+            $query->setParameter('ids', $ids, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
         }
 
         $result = $query->getArrayResult();
@@ -239,6 +271,214 @@ class UsersRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         return (int)$result[0]['total_count'];
+    }
+
+    public function getUserPermission($userTypeId, $setKey = false) {
+        $dql = "select 
+                    pp.id,
+                    pp.key,
+                    utpp.canView,
+                    utpp.canEdit
+                FROM
+                \Application\Entity\RediProjectPermissions pp 
+                LEFT JOIN
+                    \Application\Entity\RediUserTypeProjectPermission utpp WITH pp.id = utpp.projectPermissionId AND utpp.userTypeId = :user_type_id
+                GROUP BY pp.id 
+                ORDER BY pp.id ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_type_id', $userTypeId);
+        $result = $query->getArrayResult();
+
+        foreach ($result as &$row) {
+//            if(!empty($row['canView']))
+            $row['canView'] = (!empty($row['canView'])) ? true : false;
+            $row['canEdit'] = (!empty($row['canEdit'])) ? true : false;
+        }
+
+        if($setKey) {
+            $data = array();
+
+            foreach($result as $row2) {
+                $data[$row2['id']] = $row2;
+            }
+
+            return $data;
+        }
+
+        return $result;
+    }
+
+    public function extractPermission($permissionArray, $permissionId, $options) {
+        $selectedPermission = !empty($permissionArray[$permissionId])?$permissionArray[$permissionId]:null;
+
+        if(!$selectedPermission) {
+            return false;
+        }
+
+        switch ($options) {
+            case 'view': return (bool)($selectedPermission['canView']); break;
+            case 'edit': return (bool)($selectedPermission['canEdit']); break;
+            case 'view_or_edit': return (bool)($selectedPermission['canView'] || $selectedPermission['canEdit']); break;
+            case 'view_and_edit': return (bool)($selectedPermission['canView'] && $selectedPermission['canEdit']); break;
+        }
+
+        return false;
+    }
+
+    public function getPageAccessOfUser($userTypeId) {
+        return array(
+            'project-board' => $this->getUserProjectBoardAccess($userTypeId),
+            'project-create' => $this->getUserProjectCreateAccess($userTypeId),
+            'time-entry' => $this->getUserTimeEntryAccess($userTypeId),
+            'activities-definition' => true
+        );
+    }
+
+    public function getUserProjectBoardAccess($userTypeId) {
+        $dql = "SELECT
+                    COUNT(utpp.userTypeId) AS totalCount
+                FROM
+                    \Application\Entity\RediUserTypeProjectPermission utpp 
+                WHERE
+                    utpp.canView = 1 and utpp.userTypeId = :user_type_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_type_id', $userTypeId);
+        $result = $query->getArrayResult();
+
+        $response = false;
+
+        if(!empty($result[0]['totalCount']) && $result[0]['totalCount']>0) {
+            $response = true;
+        }
+
+        return $response;
+    }
+
+    public function getUserProjectCreateAccess($userTypeId) {
+        $dql = "SELECT
+                    COUNT(utpp.userTypeId) AS totalCount
+                FROM
+                    \Application\Entity\RediUserTypeProjectPermission utpp 
+                WHERE
+                    utpp.canEdit = 1
+                    AND utpp.projectPermissionId = 1 
+                    AND utpp.userTypeId = :user_type_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_type_id', $userTypeId);
+        $result = $query->getArrayResult();
+
+        $response = false;
+
+        if(!empty($result[0]['totalCount']) && $result[0]['totalCount']>0) {
+            $response = true;
+        }
+
+        return $response;
+    }
+
+    public function getUserTimeEntryAccess($userTypeId) {
+        $dql = "SELECT
+                    COUNT(uttep.id) AS totalCount
+                FROM
+                    \Application\Entity\RediUserTypeTimeEntryPermission uttep 
+                WHERE
+                    uttep.userTypeId = :user_type_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_type_id', $userTypeId);
+        $result = $query->getArrayResult();
+
+        $response = true;
+
+        if(!empty($result[0]['totalCount']) && $result[0]['totalCount']>0) {
+            $response = false;
+        }
+
+        return $response;
+    }
+
+    public function getUserAccessPermission($userTypeId) {
+        $dql = "SELECT
+                    ua
+                FROM
+                    \Application\Entity\RediUserAccess ua 
+                WHERE
+                    ua.userTypeId = :user_type_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_type_id', $userTypeId);
+        $query->setMaxResults(1);
+        $result = $query->getArrayResult();
+
+        $response = array(
+            'can_access_basic_data' => (bool) (isset($result[0]['canAccessBasicData'])?$result[0]['canAccessBasicData']:false),
+            'can_access_extra_data' => (bool) (isset($result[0]['canAccessExtraData'])?$result[0]['canAccessExtraData']:false),
+            'can_edit' => (bool) (isset($result[0]['canAccessExtraData'])?$result[0]['canAccessExtraData']:false),
+        );
+
+        return $response;
+    }
+
+    public function getUserToApproveTimeEntry($approverUserTypeId) {
+        $dql = "SELECT
+                    uttap.submittingUserTypeId
+                FROM
+                    \Application\Entity\RediUserTypeTimeApprovalPermission uttap 
+                WHERE
+                    uttap.approverUserTypeId = :approver_user_type_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('approver_user_type_id', $approverUserTypeId);
+        $result = $query->getArrayResult();
+
+        $response = array_column($result, 'submittingUserTypeId');
+
+        return $response;
+    }
+
+    public function searchProjectPermission() {
+        $dql = "SELECT
+                    pp
+                FROM
+                    \Application\Entity\RediProjectPermissions pp";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getArrayResult();
+
+        return $result;
+    }
+
+    public function getUserTypeProjectPermission($userTypeId) {
+        $dql = "select 
+                    " . $userTypeId . " AS userTypeId,
+                    pp.id AS projectPermissionId,
+                    pp.key AS projectPermsisionKey,
+                    pp.label AS projectPermissionLable,
+                    utpp.canView,
+                    utpp.canEdit
+                FROM
+                    \Application\Entity\RediProjectPermissions pp 
+                LEFT JOIN
+                    \Application\Entity\RediUserTypeProjectPermission utpp 
+                    WITH pp.id = utpp.projectPermissionId 
+                        AND utpp.userTypeId = :user_type_id
+                GROUP BY pp.id 
+                ORDER BY pp.id ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_type_id', $userTypeId);
+        $result = $query->getArrayResult();
+
+        foreach ($result as &$row) {
+            $row['userTypeId'] = (int)$row['userTypeId'];
+            $row['canView'] = (int)$row['canView'];
+            $row['canEdit'] = (int)$row['canEdit'];
+        }
+        
+        return $result;
     }
 
 }

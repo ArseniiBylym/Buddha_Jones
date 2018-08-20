@@ -1,7 +1,7 @@
 .campaign {
   border-radius: 3px;
-  background: color(#EEEAE7 lightness(+3%));
-  border: 5px solid #EEEAE7;
+  background: color(#eeeae7 lightness(+3%));
+  border: 5px solid #eeeae7;
   box-sizing: border-box;
   margin-top: 12px;
 
@@ -14,10 +14,14 @@
   padding-top: 24px;
 }
 
+.sider {
+  margin: 0 24px;
+}
+
 .campaignHeader {
   justify-content: space-between;
   align-items: center;
-  background: #EEEAE7;
+  background: #eeeae7;
   padding-bottom: 12px;
   padding-top: 12px;
 
@@ -33,7 +37,7 @@
     padding-bottom: 12px;
 
     & h5 {
-      color: #5A4D3F;
+      color: #5a4d3f;
       font-size: 0.8em;
       font-weight: 600;
     }

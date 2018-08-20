@@ -31,16 +31,9 @@ class RediTimeEntry
     /**
      * @var integer
      *
-     * @ORM\Column(name="project_id", type="integer", nullable=true)
+     * @ORM\Column(name="project_campaign_id", type="integer", nullable=true)
      */
-    private $projectId;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="campaign_id", type="integer", nullable=true)
-     */
-    private $campaignId;
+    private $projectCampaignId;
 
     /**
      * @var integer
@@ -73,9 +66,9 @@ class RediTimeEntry
     /**
      * @var integer
      *
-     * @ORM\Column(name="activity_type_id", type="integer", nullable=true)
+     * @ORM\Column(name="activity_id", type="integer", nullable=true)
      */
-    private $activityTypeId;
+    private $activityId;
 
     /**
      * @var string
@@ -111,6 +104,20 @@ class RediTimeEntry
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private $createdAt;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="approved_by", type="integer", nullable=true)
+     */
+    private $approvedBy;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="approved_at", type="datetime", nullable=true)
+     */
+    private $approvedAt;
 
     /**
      * @var integer
@@ -155,49 +162,26 @@ class RediTimeEntry
     }
 
     /**
-     * Set projectId
+     * Set projectCampaignId
      *
-     * @param integer $projectId
+     * @param integer $projectCampaignId
      * @return RediTimeEntry
      */
-    public function setProjectId($projectId)
+    public function setProjectCampaignId($projectCampaignId)
     {
-        $this->projectId = $projectId;
+        $this->projectCampaignId = $projectCampaignId;
 
         return $this;
     }
 
     /**
-     * Get projectId
+     * Get projectCampaignId
      *
      * @return integer 
      */
-    public function getProjectId()
+    public function getProjectCampaignId()
     {
-        return $this->projectId;
-    }
-
-    /**
-     * Set campaignId
-     *
-     * @param integer $campaignId
-     * @return RediTimeEntry
-     */
-    public function setCampaignId($campaignId)
-    {
-        $this->campaignId = $campaignId;
-
-        return $this;
-    }
-
-    /**
-     * Get campaignId
-     *
-     * @return integer 
-     */
-    public function getCampaignId()
-    {
-        return $this->campaignId;
+        return $this->projectCampaignId;
     }
 
     /**
@@ -293,26 +277,26 @@ class RediTimeEntry
     }
 
     /**
-     * Set activityTypeId
+     * Set activityId
      *
-     * @param integer $activityTypeId
+     * @param integer $activityId
      * @return RediTimeEntry
      */
-    public function setActivityTypeId($activityTypeId)
+    public function setActivityId($activityId)
     {
-        $this->activityTypeId = $activityTypeId;
+        $this->activityId = $activityId;
 
         return $this;
     }
 
     /**
-     * Get activityTypeId
+     * Get activityId
      *
      * @return integer 
      */
-    public function getActivityTypeId()
+    public function getActivityId()
     {
-        return $this->activityTypeId;
+        return $this->activityId;
     }
 
     /**
@@ -428,6 +412,52 @@ class RediTimeEntry
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * Set approvedBy
+     *
+     * @param integer $approvedBy
+     * @return RediTimeEntry
+     */
+    public function setApprovedBy($approvedBy)
+    {
+        $this->approvedBy = $approvedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get approvedBy
+     *
+     * @return integer 
+     */
+    public function getApprovedBy()
+    {
+        return $this->approvedBy;
+    }
+
+    /**
+     * Set approvedAt
+     *
+     * @param \DateTime $approvedAt
+     * @return RediTimeEntry
+     */
+    public function setApprovedAt($approvedAt)
+    {
+        $this->approvedAt = $approvedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get approvedAt
+     *
+     * @return \DateTime 
+     */
+    public function getApprovedAt()
+    {
+        return $this->approvedAt;
     }
 
     /**

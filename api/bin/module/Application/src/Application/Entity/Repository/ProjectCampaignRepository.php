@@ -18,13 +18,13 @@ class ProjectCampaignRepository extends EntityRepository
     {
         $dql = "SELECT
                   ptc.id,
-                  ptc.projectId, p.projectName,
+                  ptc.projectId,
                   ptc.campaignId, c.campaignName,
                   ptc.firstPointOfContactId,
                   ptc.requestWritingTeam, ptc.writingTeamNotes,
                   ptc.requestMusicTeam, ptc.musicTeamNotes,
                   MAX(ph.createdAt) AS maxHistoryCreatedAt,
-                  ptc.note, ptc.budget,
+                  ptc.note, ptc.budget, ptc.budgetNote,
                   ptc.por, ptc.invoiceContact,
                   ptc.materialReceiveDate
                 FROM \Application\Entity\RediProjectToCampaign ptc
@@ -121,7 +121,9 @@ class ProjectCampaignRepository extends EntityRepository
         foreach($result as &$row) {
             $row['id'] = (int)$row['id'];
 
-            // unset($row['maxHistoryCreatedAt']);
+            if($row['maxHistoryCreatedAt']) {
+                $row['maxHistoryCreatedAt'] = \DateTime::createFromFormat('Y-m-d H:i:s', $row['maxHistoryCreatedAt']);
+            }
         }
 
         return $result;

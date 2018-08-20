@@ -13,6 +13,25 @@ use Zend\Config\Config;
 
 class CommonRepository extends EntityRepository
 {
+    public $mimeToExtension = array(
+        "image/bmp" => ".bmp",
+        "image/x-windows-bmp" => ".bmp",
+        "application/msword" => ".doc",
+        "image/gif" => ".gif",
+        "image/x-icon" => ".ico",
+        "image/pjpeg" => ".jpeg",
+        "image/jpeg" => ".jpg",
+        "application/pdf" => ".pdf",
+        "application/mspowerpoint" => ".ppt",
+        "application/powerpoint" => ".ppt",
+        "application/vnd.ms-powerpoint" => ".ppt",
+        "application/x-mspowerpoint" => ".ppt",
+        "application/octet-stream" => ".psd",
+        "application/rtf" => ".rtf",
+        "application/x-rtf" => ".rtf",
+        "text/richtext" => ".rtf"
+    );
+
     private $_className = "\Application\Entity\RediActivity";
 
     private $_config;
@@ -56,5 +75,43 @@ class CommonRepository extends EntityRepository
             $str .= $characters[$rand];
         }
         return $str;
+    }
+
+    /**
+     * Convert date string to DateTime object
+     * return null if can not be converted
+     *
+     * This function is used to avoid any date conversion related exception
+     *
+     * @param $dateString String
+     * @return \DateTime
+     */
+    public function formatDateForInsert($dateString) {
+        if($dateString) {
+            try {
+                $date = new \DateTime($dateString);
+            } catch(\Exception $err) {
+                $date = null;
+            }
+        } else {
+            $date =  null;
+        }
+
+        return $date;
+    }
+
+    public function formatDateForDisplay($dateString) {
+
+    }
+
+    public function base64DecodeFile($data){
+        if(preg_match('/^data\:([a-zA-Z]+\/[a-zA-Z]+);base64\,([a-zA-Z0-9\+\/]+\=*)$/', $data, $matches)) {
+            return [
+                    'mime' => $matches[1],
+                    "extension" => (!empty($this->mimeToExtension[$matches[1]]))?$this->mimeToExtension[$matches[1]] : null,
+                    'data' => base64_decode($matches[2]),
+            ];
+        }
+        return false;
     }
 }

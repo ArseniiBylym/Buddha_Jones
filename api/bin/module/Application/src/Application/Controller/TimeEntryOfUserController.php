@@ -13,14 +13,19 @@ class TimeEntryOfUserController extends CustomAbstractActionController
 {
     public function getList()
     {
-        $workerId = (int)trim(isset($data['worker_id']) ? $data['worker_id'] : $this->_user_id);
+        $workerId = (int)$this->getRequest()->getQuery('worker_id', $this->_user_id);
+        $projectId = $this->getRequest()->getQuery('project_id', null);
         $startDate = $this->getRequest()->getQuery('start_date', null);
         $endDate = $this->getRequest()->getQuery('end_date', null);
+
+        if($projectId === "" || $projectId === 'null') {
+            $projectId = null;
+        }
 
         if($startDate && $endDate) {
             $dateRange = $this->_getDatesFromRange($startDate, $endDate, 'Y-m-d');
 
-            $timeEntryData = $this->_timeEntryRepo->searchUserTimeEntry($startDate, $endDate, $workerId);
+            $timeEntryData = $this->_timeEntryRepo->searchUserTimeEntry($startDate, $endDate, $workerId, $projectId);
 
             $data = array();
 
@@ -29,16 +34,28 @@ class TimeEntryOfUserController extends CustomAbstractActionController
             }
 
             foreach ($timeEntryData as $row) {
-                $rowDate = new \DateTime($row['startDate']);
-                $rowDate = $rowDate->format('Y-m-d');
+                $rowDate = $row['startDate']->format('Y-m-d');
+
+                // set project name
+                $projectName = $this->_projectRepo->getProjectName($row['projectId'], $this->_user_type_id, true);
+                $row = array_merge($row, $projectName);
 
                 $data[$rowDate][] = $row;
+            }
+
+            $timeEntryData = array();
+
+            foreach($data as $index => $row) {
+                $timeEntryData[] = array(
+                    'date' => $index,
+                    'entries' => $row,
+                );
             }
 
             $response = array(
                 'status' => 1,
                 'message' => 'Request successful',
-                'data' => $data
+                'data' => $timeEntryData
             );
         } else {
             $response = array(

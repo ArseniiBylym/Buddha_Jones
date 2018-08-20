@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * RediProject
  *
- * @ORM\Table(name="redi_project")
+ * @ORM\Table(name="redi_project", indexes={@ORM\Index(name="project_name", columns={"project_name"}), @ORM\Index(name="project_code", columns={"project_code"})})
  * @ORM\Entity
  */
 class RediProject
@@ -29,6 +29,20 @@ class RediProject
     private $projectName;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="project_code", type="string", length=100, nullable=true)
+     */
+    private $projectCode;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="project_release", type="datetime", nullable=true)
+     */
+    private $projectRelease;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="customer_id", type="integer", nullable=true)
@@ -43,18 +57,11 @@ class RediProject
     private $notes;
 
     /**
-     * @var string
+     * @var integer
      *
-     * @ORM\Column(name="project_code", type="string", length=100, nullable=true)
+     * @ORM\Column(name="created_by_user_id", type="integer", nullable=true)
      */
-    private $projectCode;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="project_release", type="datetime", nullable=true)
-     */
-    private $projectRelease;
+    private $createdByUserId;
 
 
 
@@ -89,6 +96,52 @@ class RediProject
     public function getProjectName()
     {
         return $this->projectName;
+    }
+
+    /**
+     * Set projectCode
+     *
+     * @param string $projectCode
+     * @return RediProject
+     */
+    public function setProjectCode($projectCode)
+    {
+        $this->projectCode = $projectCode;
+
+        return $this;
+    }
+
+    /**
+     * Get projectCode
+     *
+     * @return string 
+     */
+    public function getProjectCode()
+    {
+        return $this->projectCode;
+    }
+
+    /**
+     * Set projectRelease
+     *
+     * @param \DateTime $projectRelease
+     * @return RediProject
+     */
+    public function setProjectRelease($projectRelease)
+    {
+        $this->projectRelease = $projectRelease;
+
+        return $this;
+    }
+
+    /**
+     * Get projectRelease
+     *
+     * @return \DateTime 
+     */
+    public function getProjectRelease()
+    {
+        return $this->projectRelease;
     }
 
     /**
@@ -138,48 +191,25 @@ class RediProject
     }
 
     /**
-     * Set projectCode
+     * Set createdByUserId
      *
-     * @param string $projectCode
+     * @param integer $createdByUserId
      * @return RediProject
      */
-    public function setProjectCode($projectCode)
+    public function setCreatedByUserId($createdByUserId)
     {
-        $this->projectCode = $projectCode;
+        $this->createdByUserId = $createdByUserId;
 
         return $this;
     }
 
     /**
-     * Get projectCode
+     * Get createdByUserId
      *
-     * @return string 
+     * @return integer 
      */
-    public function getProjectCode()
+    public function getCreatedByUserId()
     {
-        return $this->projectCode;
-    }
-
-    /**
-     * Set projectRelease
-     *
-     * @param \DateTime $projectRelease
-     * @return RediProject
-     */
-    public function setProjectRelease($projectRelease)
-    {
-        $this->projectRelease = $projectRelease;
-
-        return $this;
-    }
-
-    /**
-     * Get projectRelease
-     *
-     * @return \DateTime 
-     */
-    public function getProjectRelease()
-    {
-        return $this->projectRelease;
+        return $this->createdByUserId;
     }
 }

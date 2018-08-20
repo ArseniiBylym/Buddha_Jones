@@ -31,7 +31,7 @@ class TimeEntrySubmitForReviewController extends CustomAbstractActionController
                 $entry = $this->_timeEntryRepository->find($row['id']);
 
                 $entry->setStatus($newStatus);
-                            $this->_em->persist($entry);
+                $this->_em->persist($entry);
             }
 
 

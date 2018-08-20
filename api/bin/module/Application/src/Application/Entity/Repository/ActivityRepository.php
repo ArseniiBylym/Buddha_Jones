@@ -23,13 +23,16 @@ class ActivityRepository extends EntityRepository
 
     public function search($filter)
     {
-        $dql = "SELECT a.id, a.name, a.userTypeId, a.descriptionRequired, a.billable, a.status 
+        $dql = "SELECT a.id, a.name, a.descriptionRequired, a.billable, 
+                    a.projectCampaignRequired, a.projectCampaignSpotVersionRequired,
+                    a.filesIncluded, a.status, a.allowedInFuture
                 FROM \Application\Entity\RediActivity a 
                 LEFT JOIN \Application\Entity\RediActivityToType att
                   WITH att.activityId=a.id
+                LEFT JOIN \Application\Entity\RediActivityToUserType atut
+                  WITH atut.activityId=a.id
                 LEFT JOIN \Application\Entity\RediActivityType at
                   WITH at.id=att.typeId ";
-
 
         $dqlFilter = [];
 
@@ -42,7 +45,19 @@ class ActivityRepository extends EntityRepository
         }
 
         if (isset($filter['user_type_id']) && $filter['user_type_id']) {
-            $dqlFilter[] = " (a.userTypeId =:user_type_id OR a.userTypeId IS NULL) ";
+            $dqlFilter[] = " (atut.userTypeId IN (" . implode(',', $filter['user_type_id']) . ") OR atut.userTypeId IS NULL) ";
+        }
+
+        if (isset($filter['project_campaign_required']) && $filter['project_campaign_required'] != null) {
+            $dqlFilter[] = " (a.projectCampaignRequired = :project_campaign_required) ";
+        }
+
+        if (isset($filter['project_campaign_spot_version_required']) && $filter['project_campaign_spot_version_required'] != null) {
+            $dqlFilter[] = " (a.projectCampaignSpotVersionRequired = :project_campaign_spot_version_required) ";
+        }
+
+        if (!empty($filter['allowed_in_future'])) {
+            $dqlFilter[] = " (a.allowedInFuture = :allowed_in_future) ";
         }
 
         if (count($dqlFilter)) {
@@ -58,15 +73,23 @@ class ActivityRepository extends EntityRepository
             $query->setParameter('search', '%' . $filter['search'] . '%');
         }
 
-        if (isset($filter['user_type_id']) && $filter['user_type_id']) {
-            $query->setParameter('user_type_id', $filter['user_type_id']);
+        if (isset($filter['project_campaign_required']) && $filter['project_campaign_required'] != null) {
+            $query->setParameter('project_campaign_required', $filter['project_campaign_required']);
         }
 
+        if (isset($filter['project_campaign_spot_version_required']) && $filter['project_campaign_spot_version_required'] != null) {
+            $query->setParameter('project_campaign_spot_version_required', $filter['project_campaign_spot_version_required']);
+        }
+
+        if (!empty($filter['allowed_in_future'])) {
+            $query->setParameter('allowed_in_future', $filter['allowed_in_future']);
+        }
 
         $data = $query->getArrayResult();
 
         foreach($data as &$row) {
             $row['type'] = $this->getActivityTypeByActivityId($row['id']);
+            $row['userType'] = $this->getUserTypeByActivityId($row['id']);
         }
 
         return $data;
@@ -74,15 +97,18 @@ class ActivityRepository extends EntityRepository
 
     public function searchWithPrice($filter)
     {
-        $dql = "SELECT a.id, a.name, a.userTypeId, a.descriptionRequired, a.billable, a.status, cp.price
+        $dql = "SELECT a.id, a.name, a.descriptionRequired, a.billable, 
+                    a.projectCampaignRequired, a.projectCampaignSpotVersionRequired,
+                    a.filesIncluded, a.status, a.allowedInFuture, cp.price
                 FROM \Application\Entity\RediActivity a 
                 LEFT JOIN \Application\Entity\RediActivityToType att
                   WITH att.activityId=a.id
                 LEFT JOIN \Application\Entity\RediActivityType at
                   WITH at.id=att.typeId
+                LEFT JOIN \Application\Entity\RediActivityToUserType atut
+                  WITH atut.activityId=a.id
                 LEFT JOIN \Application\Entity\RediCustomerPrice cp
                   WITH cp.activityId=a.id AND cp.customerId=:customer_id ";
-
 
         $dqlFilter = [];
 
@@ -95,7 +121,19 @@ class ActivityRepository extends EntityRepository
         }
 
         if (isset($filter['user_type_id']) && $filter['user_type_id']) {
-            $dqlFilter[] = " (a.userTypeId =:user_type_id OR a.userTypeId IS NULL) ";
+            $dqlFilter[] = " (atut.userTypeId IN (" . implode(',', $filter['type_id']) . ") OR atut.userTypeId IS NULL) ";
+        }
+
+        if (isset($filter['project_campaign_required']) && $filter['project_campaign_required'] != null) {
+            $dqlFilter[] = " (a.projectCampaignRequired = :project_campaign_required) ";
+        }
+
+        if (isset($filter['project_campaign_spot_version_required']) && $filter['project_campaign_spot_version_required'] != null) {
+            $dqlFilter[] = " (a.projectCampaignSpotVersionRequired = :project_campaign_spot_version_required) ";
+        }
+
+        if (!empty($filter['allowed_in_future'])) {
+            $dqlFilter[] = " (a.allowedInFuture = :allowed_in_future) ";
         }
 
         if (count($dqlFilter)) {
@@ -112,14 +150,23 @@ class ActivityRepository extends EntityRepository
             $query->setParameter('search', '%' . $filter['search'] . '%');
         }
 
-        if (isset($filter['user_type_id']) && $filter['user_type_id']) {
-            $query->setParameter('user_type_id', $filter['user_type_id']);
+        if (isset($filter['project_campaign_required']) && $filter['project_campaign_required'] != null) {
+            $query->setParameter('project_campaign_required', $filter['project_campaign_required']);
+        }
+
+        if (isset($filter['project_campaign_spot_version_required']) && $filter['project_campaign_spot_version_required'] != null) {
+            $query->setParameter('project_campaign_spot_version_required', $filter['project_campaign_spot_version_required']);
+        }
+
+        if (!empty($filter['allowed_in_future'])) {
+            $query->setParameter('allowed_in_future', $filter['allowed_in_future']);
         }
 
         $data = $query->getArrayResult();
 
         foreach($data as &$row) {
             $row['type'] = $this->getActivityTypeByActivityId($row['id']);
+            $row['userType'] = $this->getUserTypeByActivityId($row['id']);
         }
 
         return $data;
@@ -130,7 +177,9 @@ class ActivityRepository extends EntityRepository
         $dql = "SELECT COUNT(DISTINCT a.id) AS total_count
                 FROM \Application\Entity\RediActivity a 
                 LEFT JOIN \Application\Entity\RediActivityToType att
-                  WITH att.activityId=a.id  ";
+                  WITH att.activityId=a.id  
+                LEFT JOIN \Application\Entity\RediActivityToUserType atut
+                  WITH atut.activityId=a.id";
 
         $dqlFilter = [];
 
@@ -140,6 +189,22 @@ class ActivityRepository extends EntityRepository
 
         if (isset($filter['type_id']) && count($filter['type_id'])) {
             $dqlFilter[] = " (att.typeId IN (" . implode(',', $filter['type_id']) . ")) ";
+        }
+
+        if (isset($filter['user_type_id']) && $filter['user_type_id']) {
+            $dqlFilter[] = " (atut.userTypeId IN (" . implode(',', $filter['user_type_id']) . ") OR atut.userTypeId IS NULL) ";
+        }
+
+        if (isset($filter['project_campaign_required']) && $filter['project_campaign_required'] != null) {
+            $dqlFilter[] = " (a.projectCampaignRequired = :project_campaign_required) ";
+        }
+
+        if (isset($filter['project_campaign_spot_version_required']) && $filter['project_campaign_spot_version_required'] != null) {
+            $dqlFilter[] = " (a.projectCampaignSpotVersionRequired = :project_campaign_spot_version_required) ";
+        }
+
+        if (!empty($filter['allowed_in_future'])) {
+            $dqlFilter[] = " (a.allowedInFuture = :allowed_in_future) ";
         }
 
         if (count($dqlFilter)) {
@@ -152,6 +217,17 @@ class ActivityRepository extends EntityRepository
             $query->setParameter('search', '%' . $filter['search'] . '%');
         }
 
+        if (isset($filter['project_campaign_required']) && $filter['project_campaign_required'] != null) {
+            $query->setParameter('project_campaign_required', $filter['project_campaign_required']);
+        }
+
+        if (isset($filter['project_campaign_spot_version_required']) && $filter['project_campaign_spot_version_required'] != null) {
+            $query->setParameter('project_campaign_spot_version_required', $filter['project_campaign_spot_version_required']);
+        }
+
+        if (!empty($filter['allowed_in_future'])) {
+            $query->setParameter('allowed_in_future', $filter['allowed_in_future']);
+        }
 
         $result = $query->getArrayResult();
 
@@ -177,6 +253,21 @@ class ActivityRepository extends EntityRepository
                 WHERE att.activityId=:activity_id
                 GROUP BY at.id
                 ORDER BY at.activityType ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('activity_id', $activityId);
+
+        return $query->getArrayResult();
+    }
+
+    public function getUserTypeByActivityId($activityId) {
+        $dql = "SELECT ut
+                FROM \Application\Entity\RediActivityToUserType atut
+                INNER JOIN \Application\Entity\RediUserType ut
+                  WITH ut.id=atut.userTypeId 
+                WHERE atut.activityId=:activity_id
+                GROUP BY ut.id
+                ORDER BY ut.id ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('activity_id', $activityId);

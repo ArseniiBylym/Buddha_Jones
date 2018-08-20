@@ -111,5 +111,186 @@ Deauthorize user's token and session.
 `GET /logout`
 
 ### Query Parameters
-
 None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## User project permissions
+
+Get project permissions of loggedin user
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request successful",
+    "data": {
+        "permissions": [
+            {
+                "userTypeId": 100,
+                "projectPermissionId": 1,
+                "projectPermsisionKey": "project-create",
+                "projectPermissionLable": "Create project page",
+                "canView": 1,
+                "canEdit": 1
+            },
+            {
+                "userTypeId": 100,
+                "projectPermissionId": 2,
+                "projectPermsisionKey": "project-name",
+                "projectPermissionLable": "Project name",
+                "canView": 1,
+                "canEdit": 1
+            },
+            {
+                "userTypeId": 100,
+                "projectPermissionId": 3,
+                "projectPermsisionKey": "project-release-date",
+                "projectPermissionLable": "Project release date",
+                "canView": 1,
+                "canEdit": 1
+            },
+            {
+                "userTypeId": 100,
+                "projectPermissionId": 4,
+                "projectPermsisionKey": "project-history",
+                "projectPermissionLable": "Project history and changelog",
+                "canView": 1,
+                "canEdit": 1
+            }
+            ...
+        ]
+    }
+}
+```
+
+### HTTP Request
+
+`GET /user-project-permissions`
+
+
+
+## User type project permissions
+
+Get project permissions of any user type (used for project permission management)
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request successful",
+    "data": {
+        "permissions": [
+            {
+                "userTypeId": 100,
+                "projectPermissionId": 1,
+                "projectPermsisionKey": "project-create",
+                "projectPermissionLable": "Create project page",
+                "canView": 1,
+                "canEdit": 1
+            },
+            {
+                "userTypeId": 100,
+                "projectPermissionId": 2,
+                "projectPermsisionKey": "project-name",
+                "projectPermissionLable": "Project name",
+                "canView": 1,
+                "canEdit": 1
+            },
+            {
+                "userTypeId": 100,
+                "projectPermissionId": 3,
+                "projectPermsisionKey": "project-release-date",
+                "projectPermissionLable": "Project release date",
+                "canView": 1,
+                "canEdit": 1
+            },
+            {
+                "userTypeId": 100,
+                "projectPermissionId": 4,
+                "projectPermsisionKey": "project-history",
+                "projectPermissionLable": "Project history and changelog",
+                "canView": 1,
+                "canEdit": 1
+            }
+            ...
+        ]
+    }
+}
+```
+
+### HTTP Request
+
+`GET /user-type-project-permissions`
+
+### Query Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+**true** | user_type_id | int | null |  User type id
+
+Send request like  `GET /user-type-project-permission?user_type_id=1`
+
+
+## Update user type project permission
+
+Update/Create project permission of user type
+
+> Sample request
+
+```javascript
+axios.post('/user-type-project-permissions', {
+    project_permission_id: 1,
+    user_type_id: 100,
+    can_view: 1,
+    can_edit: 1
+});
+```
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request successful"
+}
+```
+
+> 400: error response - parameters missing
+
+```json
+{
+    "status": 0,
+    "message": "Parameters missing"
+}
+```
+
+### HTTP Request
+
+`POST /user-type-project-permissions`
+
+### Query Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+**true** | project_permission_id | int | null | project permission id
+**true** | user_type_id | int | null |  User type id
+false | can_view | int | 0 | Can view or not (send 0/1)
+false | can_edit | int | 0 | Can edit/create or not. (send 0/1)
+

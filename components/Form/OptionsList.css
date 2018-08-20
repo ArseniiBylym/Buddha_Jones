@@ -87,6 +87,10 @@
         }
       }
 
+      & .optionIcon {
+        display: inline-block;
+        margin-right: 8px;
+      }
 
       &:global(.activeResult) button {
         color: #5A4D3F;

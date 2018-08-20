@@ -1,0 +1,42 @@
+.timeEntryContent {
+  margin: 0 30px;
+  padding-top: 24px;
+  padding-bottom: 48px;
+}
+
+.summary {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  align-items: center;
+  min-height: 49px;
+}
+
+.left {
+  display: flex;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+}
+
+.errorMessage {
+  display: inline-block;
+  margin-left: 24px;
+  text-align: left;
+  font-size: 0.85em;
+  font-weight: 700;
+  padding: 0 24px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: scale(0.9);
+  transform-origin: 50% 70%;
+  transition: 300ms opacity 0ms cubic-bezier(0.645, 0.045, 0.355, 1), 300ms transform 0ms cubic-bezier(0.86, 0, 0.07, 1);
+  &.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.fileDuration {
+  margin: 0 auto;
+}

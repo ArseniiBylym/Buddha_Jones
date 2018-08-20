@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as projectBoardActions from './../../../actions/ProjectBoard';
+import moment from 'moment';
 import accounting from 'accounting';
 import classNames from 'classnames';
 import * as API from './../../../actions/api';
@@ -13,6 +14,7 @@ import { Paragraph } from './../../../components/Content';
 import { DropdownContainer, OptionsList } from './../../../components/Form';
 import { SpotForm, Version } from '.';
 import { getRemainingVersions } from './SpotSelectors';
+import { DatePicker } from '../../../components/Calendar';
 import { statuses } from './../../../helpers/status';
 
 // Styles
@@ -33,7 +35,7 @@ const spotPropTypes = {
     versions: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.number.isRequired,
-            name: PropTypes.string.isRequired
+            name: PropTypes.string.isRequired,
         })
     ),
     justAdded: PropTypes.bool,
@@ -54,14 +56,14 @@ const defaultSpotPropTypes = {
 // Deriviations
 const mapStateToProps = (state, ownProps) => {
     return {
-        remainingVersionsToSelect: getRemainingVersions(state, ownProps)
+        remainingVersionsToSelect: getRemainingVersions(state, ownProps),
     };
 };
 
 // Actions
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
-        actionsProjectBoard: bindActionCreators(projectBoardActions, dispatch)
+        actionsProjectBoard: bindActionCreators(projectBoardActions, dispatch),
     };
 };
 
@@ -73,11 +75,11 @@ class Spot extends React.Component {
         this.state = {
             addNewVersion: statuses.default,
             removeSpot: statuses.default,
-            editFormVisible: false
+            editFormVisible: false,
         };
 
         this.versionDropdown = null;
-        this.referenceVersionDropdown = (ref) => this.versionDropdown = ref;
+        this.referenceVersionDropdown = ref => (this.versionDropdown = ref);
     }
 
     render() {
@@ -88,28 +90,27 @@ class Spot extends React.Component {
         return (
             <Row key={`spot-id-${this.props.spotId}`} removeMargins={true} className={s.campaignSpot}>
                 <Col>
-                    {(this.props.hasSeparator) && (
-                        <hr />
-                    )}
+                    {this.props.hasSeparator && <hr />}
 
                     <Row className={s.campaignSpotHeader}>
                         <Col>
                             <h5>{this.props.name}</h5>
 
-                            {(this.props.justAdded) && (
+                            {this.props.justAdded && (
                                 <Button
                                     onClick={e => this.handleSpotRemoval(e)}
                                     className={classNames(s.removeSpotButton, s.rotate45)}
                                     label={{
                                         color: 'orange',
                                         size: 'small',
-                                        text: this.state.removeSpot === statuses.default
-                                            ? '(Remove)'
-                                            : this.state.removeSpot === statuses.error
-                                                ? '(Issue removing, try again)'
-                                                : this.state.removeSpot === statuses.saving
-                                                    ? '(Removing...)'
-                                                    : '(Removed)'
+                                        text:
+                                            this.state.removeSpot === statuses.default
+                                                ? '(Remove)'
+                                                : this.state.removeSpot === statuses.error
+                                                    ? '(Issue removing, try again)'
+                                                    : this.state.removeSpot === statuses.saving
+                                                        ? '(Removing...)'
+                                                        : '(Removed)',
                                     }}
                                 />
                             )}
@@ -124,7 +125,7 @@ class Spot extends React.Component {
                     </Row>
 
                     <Row className={s.campaignSpotVersions} justifyContent="flex-start">
-                        {(this.props.versions.length > 0) && (
+                        {this.props.versions.length > 0 && (
                             <Col className={s.versionsLabel} key={`spot-${this.props.spotId}-versions-label`}>
                                 <p>Versions:</p>
                             </Col>
@@ -142,83 +143,102 @@ class Spot extends React.Component {
                             />
                         ))}
 
-                        {(this.props.numberOfRevisions !== 0 && (this.props.versions === null || this.props.versions.length <= 0)) && (
-                            <Col key={`spot-${this.props.spotId}-has-no-versions`}>
-                                <p>No spot versions added.</p>
-                            </Col>
-                        )}
+                        {this.props.numberOfRevisions !== 0 &&
+                            (this.props.versions === null || this.props.versions.length <= 0) && (
+                                <Col key={`spot-${this.props.spotId}-has-no-versions`}>
+                                    <p>No spot versions added.</p>
+                                </Col>
+                            )}
 
-                        {(this.state.editFormVisible && this.state.addNewVersion !== statuses.default) && (
-                            <Col className={s.addingNewSpot} key={`spot-${this.props.spotId}-adding-new-version`}>
-                                <p>
-                                    {
-                                        this.state.addNewVersion === statuses.saving
+                        {this.state.editFormVisible &&
+                            this.state.addNewVersion !== statuses.default && (
+                                <Col className={s.addingNewSpot} key={`spot-${this.props.spotId}-adding-new-version`}>
+                                    <p>
+                                        {this.state.addNewVersion === statuses.saving
                                             ? 'Adding...'
                                             : this.state.addNewVersion === statuses.error
                                                 ? 'Error, try again'
-                                                : 'Added'
-                                    }
-                                </p>
-                            </Col>
-                        )}
+                                                : 'Added'}
+                                    </p>
+                                </Col>
+                            )}
 
-                        {(
-                            this.state.editFormVisible &&
-                            (
-                                (numberOfRevisions === null) ||
-                                (numberOfRevisions !== 0 && numberOfRevisions > versions.length)
-                            )
-                        ) && (
-                            <Col className={s.addVersion} key={`spot-${this.props.spotId}-add-version`}>
-                                <DropdownContainer
-                                    ref={this.referenceVersionDropdown}
-                                    label="Add version"
-                                    align="right"
-                                >
-                                    <OptionsList
-                                        onChange={e => this.handleNewVersionAdd(e)}
-                                        label="Select version"
-                                        options={
-                                            this.props.remainingVersionsToSelect.length > 0
-                                                ? this.props.remainingVersionsToSelect
-                                                : [{
-                                                    value: 0,
-                                                    label: 'No versions remaining'
-                                                }]
-                                        }
-                                    />
-                                </DropdownContainer>
-                            </Col>
-                        )}
+                        {this.state.editFormVisible &&
+                            (numberOfRevisions === null ||
+                                (numberOfRevisions !== 0 && numberOfRevisions > versions.length)) && (
+                                <Col className={s.addVersion} key={`spot-${this.props.spotId}-add-version`}>
+                                    <DropdownContainer
+                                        ref={this.referenceVersionDropdown}
+                                        label="Add version"
+                                        align="right"
+                                    >
+                                        <OptionsList
+                                            onChange={e => this.handleNewVersionAdd(e)}
+                                            label="Select version"
+                                            options={
+                                                this.props.remainingVersionsToSelect.length > 0
+                                                    ? this.props.remainingVersionsToSelect
+                                                    : [
+                                                          {
+                                                              value: 0,
+                                                              label: 'No versions remaining',
+                                                          },
+                                                      ]
+                                            }
+                                        />
+                                    </DropdownContainer>
+                                </Col>
+                            )}
                     </Row>
 
                     <Row>
                         <Col>
-                            {(!this.state.editFormVisible) && (
+                            {!this.state.editFormVisible && (
                                 <div className={s.spotDetails}>
+                                    <DatePicker
+                                        type="field"
+                                        isAmerican={true}
+                                        label="V.1 internal deadline"
+                                        value={
+                                            this.props.id === '55'
+                                                ? moment('2018-03-28')
+                                                : this.props.id === '73' ? moment('2018-04-11') : moment('2018-04-25')
+                                        }
+                                    />
 
-                                    {(this.props.notes !== null && this.props.notes !== 'null') && (
-                                        <Paragraph>
-                                            <span>Notes: </span>{this.props.notes}
-                                        </Paragraph>
-                                    )}
+                                    <DatePicker
+                                        type="field"
+                                        isAmerican={true}
+                                        label="V.1 client deadline"
+                                        value={
+                                            this.props.id === '55'
+                                                ? moment('2018-03-30')
+                                                : this.props.id === '73' ? moment('2018-04-20') : moment('2018-05-04')
+                                        }
+                                    />
 
-                                    {(this.props.numberOfRevisions !== 0) && (
+                                    {this.props.notes !== null &&
+                                        this.props.notes !== 'null' && (
+                                            <Paragraph>
+                                                <span>Notes: </span>
+                                                {this.props.notes}
+                                            </Paragraph>
+                                        )}
+
+                                    {(this.props.numberOfRevisions !== 0 && (
                                         <div>
                                             <Row>
                                                 <Col>
                                                     <Paragraph>
                                                         <span>Number of revisions: </span>
                                                         <strong>
-                                                            {
-                                                                (this.props.numberOfRevisions === null
-                                                                    ? 'Unlimited'
-                                                                    : this.props.numberOfRevisions)
-                                                                + ', ' +
+                                                            {(this.props.numberOfRevisions === null
+                                                                ? 'Unlimited'
+                                                                : this.props.numberOfRevisions) +
+                                                                ', ' +
                                                                 (this.props.graphicsIncluded
                                                                     ? 'graphics included'
-                                                                    : 'graphics not included')
-                                                            }
+                                                                    : 'graphics not included')}
                                                         </strong>
                                                     </Paragraph>
                                                 </Col>
@@ -228,23 +248,23 @@ class Spot extends React.Component {
                                                     <Paragraph>
                                                         <span>First stage cost: </span>
                                                         <strong>
-                                                            {
-                                                                this.props.firstRevisionCost === null
-                                                                    ? 'not specified'
-                                                                    : accounting.formatMoney(this.props.firstRevisionCost)
-                                                            }
+                                                            {this.props.firstRevisionCost === null
+                                                                ? 'not specified'
+                                                                : accounting.formatMoney(this.props.firstRevisionCost)}
                                                         </strong>
                                                     </Paragraph>
                                                 </Col>
                                             </Row>
                                         </div>
-                                    ) || (
-                                        <p><span>No revisions included</span></p>
+                                    )) || (
+                                        <p>
+                                            <span>No revisions included</span>
+                                        </p>
                                     )}
                                 </div>
                             )}
 
-                            {(this.state.editFormVisible) && (
+                            {this.state.editFormVisible && (
                                 <SpotForm
                                     onFormHide={e => this.handleEditHide(e)}
                                     projectId={this.props.projectId}
@@ -262,46 +282,41 @@ class Spot extends React.Component {
 
     handleEditHide(e) {
         this.setState({
-            editFormVisible: false
+            editFormVisible: false,
         });
     }
 
     handleSpotRemoval(e) {
         this.setState({
-            removeSpot: statuses.saving
+            removeSpot: statuses.saving,
         });
 
-        this.props.actionsProjectBoard.removeProjectSpot(
-            this.props.projectId,
-            this.props.campaignId,
-            this.props.id
-        ).catch((error) => {
-            this.setState({
-                removeSpot: statuses.error
+        this.props.actionsProjectBoard
+            .removeProjectSpot(this.props.projectId, this.props.campaignId, this.props.id)
+            .catch(error => {
+                this.setState({
+                    removeSpot: statuses.error,
+                });
             });
-        });
     }
 
     handleNewVersionAdd(e) {
         this.setState({
-            addNewVersion: statuses.saving
+            addNewVersion: statuses.saving,
         });
 
-        this.props.actionsProjectBoard.addProjectVersion(
-            this.props.projectId,
-            this.props.campaignId,
-            this.props.id,
-            e.value,
-            e.label
-        ).then(() => {
-            this.setState({
-                addNewVersion: statuses.default
+        this.props.actionsProjectBoard
+            .addProjectVersion(this.props.projectId, this.props.campaignId, this.props.id, e.value, e.label)
+            .then(() => {
+                this.setState({
+                    addNewVersion: statuses.default,
+                });
+            })
+            .catch(error => {
+                this.setState({
+                    addNewVersion: statuses.error,
+                });
             });
-        }).catch ((error) => {
-            this.setState({
-                addNewVersion: statuses.error
-            });
-        });
 
         if (this.versionDropdown) {
             if (typeof this.versionDropdown.closeDropdown !== 'undefined') {
@@ -312,7 +327,7 @@ class Spot extends React.Component {
 
     handleSpotEdit(e) {
         this.setState({
-            editFormVisible: !this.state.editFormVisible
+            editFormVisible: !this.state.editFormVisible,
         });
     }
 }

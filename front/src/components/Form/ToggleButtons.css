@@ -1,0 +1,20 @@
+.container {
+  display: inline-flex;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+  &.alignCenter {
+    justify-content: center;
+  }
+  &.alignRight {
+    justify-content: flex-end;
+  }
+  &.block {
+    display: flex;
+  }
+  & i {
+    margin: 0 6px;
+    color: #A59E97;
+    font-weight: 400;
+  }
+}

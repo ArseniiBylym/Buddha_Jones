@@ -14,7 +14,7 @@ import { getButton } from './CommentFormSelectors';
 // Styles
 const s = require('./CommentForm.css');
 import { IconChatBubbleWhiteIcon } from './../Icons';
-
+import { statuses } from '../../helpers/status';
 
 // Props
 const propTypes = {
@@ -66,13 +66,10 @@ class CommentFormComponent extends React.Component {
     render() {
         return (
             <div className={s.comments}>
-
                 <div className={s.commentForm}>
-                    {(this.props.viewOnly) && (
-                        <Paragraph>
-                            {this.props.value || this.props.viewOnlyEmptyValueText}
-                        </Paragraph>
-                    ) || (
+                    {(this.props.viewOnly && (
+                        <Paragraph>{this.props.value || this.props.viewOnlyEmptyValueText}</Paragraph>
+                    )) || (
                         <TextArea
                             onChange={e => this.handleCommentChange(e)}
                             value={this.props.value}
@@ -84,52 +81,49 @@ class CommentFormComponent extends React.Component {
                 </div>
 
                 <div className={s.commentButtonContainer}>
-
-                    {(this.props.description) && (
+                    {this.props.description && (
                         <Paragraph className={s.commentMessage} type={this.props.descriptionIsDim ? 'dim' : 'default'}>
                             {this.props.description}
                         </Paragraph>
                     )}
 
-                    {(this.props.status === 'saving') && (
-                        <LoadingIndicator
-                            label={this.props.button.label}
-                            labelOnRight={false}
-                            isInline={true}
-                        />
-                    ) || (!this.props.viewOnly) && (
-                        <Button
-                            onClick={e => this.handleCommentSubmit(e)}
-                            label={{
-                                text: this.props.button.label,
-                                color: this.props.button.color,
-                                size: 'small',
-                            }}
-                            icon={{
-                                background: 'blue',
-                                size: 'small',
-                                element:
-                                    <IconChatBubbleWhiteIcon
-                                        width={17}
-                                        marginLeft={-8}
-                                        height={14}
-                                        marginTop={-6}
-                                    />,
-                            }}
-                            disabled={this.props.status !== 'default' && this.props.status !== 'success'}
-                        />
-                    )}
-
+                    {(this.props.status === 'saving' && (
+                        <LoadingIndicator label={this.props.button.label} labelOnRight={false} isInline={true} />
+                    )) ||
+                        (!this.props.viewOnly && (
+                            <Button
+                                onClick={e => this.handleCommentSubmit(e)}
+                                label={{
+                                    text: this.props.button.label,
+                                    color: this.props.button.color,
+                                    size: 'small',
+                                }}
+                                icon={{
+                                    background: 'blue',
+                                    size: 'small',
+                                    element: (
+                                        <IconChatBubbleWhiteIcon
+                                            width={17}
+                                            marginLeft={-8}
+                                            height={14}
+                                            marginTop={-6}
+                                        />
+                                    ),
+                                }}
+                                disabled={
+                                    false /*this.props.status !== statuses.defalt && this.props.status !== statuses.success*/
+                                }
+                            />
+                        ))}
                 </div>
 
                 {this.props.children}
 
-                {(this.props.loading) && (
+                {this.props.loading && (
                     <LoadingShade background="rgba(247, 247, 247, 0.9)" contentCentered={true}>
                         <LoadingSpinner size={48} />
                     </LoadingShade>
                 )}
-
             </div>
         );
     }

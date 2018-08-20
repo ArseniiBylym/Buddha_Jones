@@ -1,0 +1,5 @@
+.container {
+  & > hr {
+    margin-bottom: 0;
+  }
+}

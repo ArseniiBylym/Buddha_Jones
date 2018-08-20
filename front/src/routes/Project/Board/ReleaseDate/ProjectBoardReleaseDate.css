@@ -1,0 +1,21 @@
+.projectBoardReleaseDateSection {
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  align-items: center;
+
+  & > :global(.col).leftCol {
+    display: flex;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: center;
+  }
+}

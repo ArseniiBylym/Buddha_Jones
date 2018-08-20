@@ -8,6 +8,9 @@ import * as userTypesActions from './../../actions/UserTypes';
 import { DropdownContainer, NestedOptionsList } from './../Form';
 import { getAllUsersByType } from './PersonPickerByTypeSelectors';
 
+// Styles
+import { IconCheckmarkGreen } from './../Icons';
+
 // Props
 const propTypes = {
     className: PropTypes.string,
@@ -131,6 +134,7 @@ class PersonPickerByType extends React.Component {
                     noOptionsLabel="No people found"
                     loading={this.state.loading}
                     groups={this.props.usersByType}
+                    selectedIcon={<IconCheckmarkGreen width={15} height={15} />}
                 />
             </DropdownContainer>
         );

@@ -11,22 +11,39 @@
   height: 100%;
   z-index: 9999;
   overflow: hidden;
-  box-shadow: 0px 0px 0px color(#A59E97 alpha(0%));
-  background: #C3AE99;
-  background-image: linear-gradient(to bottom, #BAADA0, #C6AE97);
-  transition: 1000ms box-shadow 0ms cubic-bezier(0.77, 0, 0.175, 1),
-              500ms width 0ms cubic-bezier(1, 0, 0, 1);
+  box-shadow: 0px 0px 0px color(#a59e97 alpha(0%));
+  background: #c3ae99;
+  background-image: linear-gradient(to bottom, #baada0, #c6ae97);
+  transition: 1000ms box-shadow 0ms cubic-bezier(0.77, 0, 0.175, 1), 500ms width 0ms cubic-bezier(1, 0, 0, 1);
 }
 
 .sidebarNavigationActive {
-  composes: sidebarNavigation;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: var(--sidebarPaneWidth);
-  box-shadow: 16px 0px 64px color(#A59E97 alpha(40%));
+  height: 100%;
+  z-index: 9999;
+  overflow: hidden;
+  box-shadow: 16px 0px 64px color(#a59e97 alpha(40%));
+  background: #c3ae99;
+  background-image: linear-gradient(to bottom, #baada0, #c6ae97);
+  transition: 1000ms box-shadow 0ms cubic-bezier(0.77, 0, 0.175, 1), 500ms width 0ms cubic-bezier(1, 0, 0, 1);
 }
 
 .sidebarNavigationActiveWithSubNav {
-  composes: sidebarNavigationActive;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebarPaneWidth);
   width: calc(var(--sidebarPaneWidth) * 2);
+  height: 100%;
+  z-index: 9999;
+  overflow: hidden;
+  box-shadow: 16px 0px 64px color(#a59e97 alpha(40%));
+  background: #c3ae99;
+  background-image: linear-gradient(to bottom, #baada0, #c6ae97);
+  transition: 1000ms box-shadow 0ms cubic-bezier(0.77, 0, 0.175, 1), 500ms width 0ms cubic-bezier(1, 0, 0, 1);
 }
 
 .sidebarPane {
@@ -36,22 +53,26 @@
   left: 0;
   height: 100%;
   width: var(--sidebarPaneWidth);
-  background: #C3AE99;
+  background: #c3ae99;
   transition: 500ms width 0ms cubic-bezier(1, 0, 0, 1);
 }
 
 .mainNav {
-  composes: sidebarPane;
+  position: absolute;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  height: 100%;
   width: var(--sidebarStartWidth);
-  background: #C3AE99;
-  background-image: linear-gradient(to bottom, #BAADA0, #C6AE97);
+  background: #c3ae99;
+  background-image: linear-gradient(to bottom, #baada0, #c6ae97);
+  transition: 500ms width 0ms cubic-bezier(1, 0, 0, 1);
 
   & .sidebarLogo {
     position: absolute;
     transform-origin: 0% 50%;
-    transform: scale(1.0);
-    transition: 300ms opacity 0ms cubic-bezier(0.86, 0, 0.07, 1),
-                500ms transform 0ms cubic-bezier(1, 0, 0, 1);
+    transform: scale(1);
+    transition: 300ms opacity 0ms cubic-bezier(0.86, 0, 0.07, 1), 500ms transform 0ms cubic-bezier(1, 0, 0, 1);
   }
 
   & .sidebarLogoSmall {
@@ -61,7 +82,7 @@
     left: 28px;
     top: 48px;
     opacity: 1;
-    transform: scale(1.0);
+    transform: scale(1);
   }
 
   & .sidebarLogoLarge {
@@ -84,7 +105,6 @@
     padding: 0;
 
     & li {
-
       & a {
         padding-left: 54px;
         padding-top: 16px;
@@ -105,8 +125,8 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    border: 4px solid #AA8A69;
-    background: #BFAD9C;
+    border: 4px solid #aa8a69;
+    background: #bfad9c;
     z-index: 2;
   }
 
@@ -116,8 +136,15 @@
 }
 
 .mainNavActive {
-  composes: mainNav;
+  position: absolute;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  height: 100%;
   width: var(--sidebarPaneWidth);
+  background: #c3ae99;
+  background-image: linear-gradient(to bottom, #baada0, #c6ae97);
+  transition: 500ms width 0ms cubic-bezier(1, 0, 0, 1);
 
   & .sidebarLogoSmall {
     opacity: 0;
@@ -126,20 +153,30 @@
 
   & .sidebarLogoLarge {
     opacity: 1;
-    transform: scale(1.0);
+    transform: scale(1);
   }
 }
 
 .subNav {
-  composes: sidebarPane;
-  width: 0px;
+  position: absolute;
+  overflow: hidden;
+  top: 0;
   left: var(--sidebarPaneWidth);
-  background: #B49E88;
+  height: 100%;
+  width: 0px;
+  background: #b49e88;
+  transition: 500ms width 0ms cubic-bezier(1, 0, 0, 1);
 }
 
 .subNavActive {
-  composes: subNav;
+  position: absolute;
+  overflow: hidden;
+  top: 0;
+  left: var(--sidebarPaneWidth);
+  height: 100%;
   width: var(--sidebarPaneWidth);
+  background: #b49e88;
+  transition: 500ms width 0ms cubic-bezier(1, 0, 0, 1);
 }
 
 .sidebarSeparator {
@@ -150,7 +187,7 @@
   margin-top: 120px;
   margin-bottom: 21px;
   border: none;
-  background: #FDD835;
+  background: #fdd835;
 }
 
 .sidebarLinksList {
@@ -195,13 +232,13 @@
       text-decoration: none;
       position: relative;
       padding: 28px;
-      background: color(#A4907B alpha(0%));
+      background: color(#a4907b alpha(0%));
       transition: 300ms background 0ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
 
       & span {
         position: relative;
         margin-left: 20px;
-        color: #FFFFFF;
+        color: #ffffff;
         font-size: 1.075em;
         font-weight: 600;
         text-transform: uppercase;
@@ -210,35 +247,43 @@
       }
 
       &:hover {
-        background: color(#A4907B lightness(-12%));
+        background: color(#a4907b lightness(-12%));
       }
     }
 
-    &.sidebarLinksListEntryActive {
-
-      & a {
-        background: color(#A4907B alpha(100%));
+    &.sidebarLinksListEntry {
+      &.sidebarLinksListEntryActive {
+        & a {
+          background: color(#a4907b alpha(100%));
+        }
       }
-    }
 
-    &.sidebarLinksListEntryExpanded {
-
-      & a {
-        background: #B49E88;
+      &.sidebarLinksListEntryExpanded {
+        & a {
+          background: #b49e88;
+        }
       }
     }
   }
 }
 
-.sidebarNavigationActive .sidebarLinksList li a span {
-  opacity: 1;
+.sidebarNavigationActive {
+  & .sidebarLinksList {
+    & li {
+      & a {
+        & span {
+          opacity: 1;
+        }
+      }
+    }
+  }
 }
 
 .sidebarSubLinksList {
   margin: 0;
   padding: 0;
   padding: 12px 0;
-  color: #FFFFFF;
+  color: #ffffff;
   transform: translateY(0px);
   transition: 500ms transform 0ms cubic-bezier(1, 0, 0, 1);
 
@@ -250,14 +295,14 @@
       display: block;
       padding: 12px 28px;
       text-decoration: none;
-      background: #B49E88;
-      color: #FFFFFF;
+      background: #b49e88;
+      color: #ffffff;
       font-size: 0.975em;
       font-weight: 600;
       text-transform: uppercase;
       white-space: nowrap;
       text-overflow: ellipsis;
-      background: color(#B49E88 alpha(0));
+      background: color(#b49e88 alpha(0));
       transition: 300ms background 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
 
       & span {
@@ -267,14 +312,15 @@
       }
 
       &:hover {
-        background: color(#B49E88 lightness(-12%));
+        background: color(#b49e88 lightness(-12%));
       }
     }
 
-    &.subNavigationLinkActive {
-
-      & a {
-        background: color(#B49E88 lightness(-8%));
+    &.subNavigationLink {
+      &.subNavigationLinkActive {
+        & a {
+          background: color(#b49e88 lightness(-8%));
+        }
       }
     }
   }

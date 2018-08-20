@@ -1,0 +1,37 @@
+{
+  "host": "localhost",
+  "port": 3030,
+  "v1_api_url": "http://192.168.43.37:8080",
+  "public": "../public/",
+  "base_url": "http://localhost:3030",
+  "profile_image_path": "thumb/profile_image/",
+  "paginate": {
+    "default": 10,
+    "max": 50
+  },
+  "authentication": {
+    "secret": "7599P4k668cF88L41vyDg6725Q9J228z89Kd758G8520M15t01r3ac70f97C8GXyf8Fv8klKS1200U9vHF69LUW3p6cFfh381cc922S0jk79T0W8e64ANHy5Fn512hhg3903386Zp0HT3CzNVrJW3E24U0KcwPE485ewf2Gx2C442S0T8l30LGX6z09l7m6zaWNm8617hO42iwb411hY51d598P9fj7mt7Yr86acnp1bur59ujI72nd9J146O0DodTLkbJWrksSosFVbfHzXTVqhQYhlsFaLMjkICdQYeBJVfHhWmGlEvsVAlngUQDcpCwPgKtqZcitrPKnqkvYglLvMpDlIVBdQtZQNNsFGVLbpRHBBQSiJmEbJSVJoapulqpdzTFUVHfshaPrQBEZYJVgowuFJHAcCXGPpJWYjYzDSsvIEIsCYAJWEQYTXxZImPrhsSrhrhXsnsSMEwcSnInIiWUpmuUswXGBEXEVArgdcNxxnnyoeiyYiJtcaluvUKsTLUpTALDIlXULxrmcfwHYNHOqrNUXVZQalUb",
+    "strategies": [
+      "jwt",
+      "local"
+    ],
+    "path": "/authentication",
+    "service": "users",
+    "jwt": {
+      "header": {
+        "typ": "JWT",
+        "alg": "HS256"
+      },
+      "issuer": "Buddha Jones Portal",
+      "audience": "http://buddha.redidemo.com",
+      "algorithm": "HS256",
+      "expiresIn": "1d"
+    },
+    "local": {
+      "entity": "user",
+      "usernameField": "email",
+      "passwordField": "password"
+    }
+  },
+  "mysql": "mysql://root:@localhost:3306/buddha_jones"
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import * as classNames from 'classnames';
+import classNames from 'classnames';
 import { Row, Col } from './../Section';
 import Dropdown from './Dropdown';
 
@@ -20,15 +20,15 @@ const propTypes = {
         selected: PropTypes.shape({
             value: PropTypes.any.isRequired,
             label: PropTypes.string.isRequired,
-            truncuateLabelTo: PropTypes.number
+            truncuateLabelTo: PropTypes.number,
         }),
         options: PropTypes.arrayOf(
             PropTypes.shape({
                 value: PropTypes.any.isRequired,
-                label: PropTypes.string.isRequired
+                label: PropTypes.string.isRequired,
             })
-        )
-    })
+        ),
+    }),
 };
 
 // Default props
@@ -37,7 +37,7 @@ const defaultProps = {
     className: null,
     checked: false,
     label: '',
-    dropdown: null
+    dropdown: null,
 };
 
 // Component
@@ -59,45 +59,69 @@ class Radio extends React.Component {
 
     render() {
         // Label class name
-        const labelClassName = classNames('radio', s.label, this.props.className, {
-            [s.checked]: this.props.checked,
-            [s.hasDropdown]:
-                typeof this.props.dropdown !== 'undefined' &&
-                this.props.dropdown &&
-                typeof this.props.dropdown.options !== 'undefined' &&
-                this.props.dropdown.options &&
-                this.props.dropdown.options.length > 0
-        });
+        const labelClassName = classNames(
+            'radio',
+            s.label,
+            this.props.className,
+            {
+                [s.checked]: this.props.checked,
+                [s.hasDropdown]:
+                    typeof this.props.dropdown !== 'undefined' &&
+                    this.props.dropdown &&
+                    typeof this.props.dropdown.options !== 'undefined' &&
+                    this.props.dropdown.options &&
+                    this.props.dropdown.options.length > 0,
+            }
+        );
 
         // With dropdown
-        if (typeof this.props.dropdown !== 'undefined' && this.props.dropdown.options.length > 0) {
+        if (
+            typeof this.props.dropdown !== 'undefined' &&
+            this.props.dropdown !== null &&
+            typeof this.props.dropdown.options !== 'undefined' &&
+            this.props.dropdown.options.length > 0
+        ) {
             return (
-                <label className={labelClassName} onClick={e => this.handleLabelClick(e)}>
+                <label
+                    className={labelClassName}
+                    onClick={e => this.handleLabelClick(e)}
+                >
                     <button className={s.icon}>
-                        <i></i>
+                        <i />
                     </button>
                     <Dropdown
                         onChange={this.props.dropdown.onChange}
                         align="left"
                         type="twolines"
                         label={this.props.dropdown.label}
-                        selected={typeof this.props.dropdown.selected !== 'undefined' ? this.props.dropdown.selected : undefined}
-                        options={typeof this.props.dropdown.options !== 'undefined' ? this.props.dropdown.options : undefined}
+                        selected={
+                            typeof this.props.dropdown.selected !== 'undefined'
+                                ? this.props.dropdown.selected
+                                : undefined
+                        }
+                        options={
+                            typeof this.props.dropdown.options !== 'undefined'
+                                ? this.props.dropdown.options
+                                : undefined
+                        }
                     />
                 </label>
             );
-        // Only text label
+            // Only text label
         } else {
             return (
-                <label className={labelClassName} onClick={e => this.handleLabelClick(e)}>
+                <label
+                    className={labelClassName}
+                    onClick={e => this.handleLabelClick(e)}
+                >
                     <button className={s.icon}>
-                        <i></i>
+                        <i />
                     </button>
                     <p className={s.text}>{this.props.label}</p>
                 </label>
             );
         }
-    };
+    }
 }
 
 Radio.propTypes = propTypes;

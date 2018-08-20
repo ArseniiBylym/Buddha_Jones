@@ -1,6 +1,7 @@
 <?php
 namespace Application\Entity\Repository;
 
+use Application\Entity\RediSpotSentViaMethod;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManager;
 use Zend\Config\Config;
@@ -20,24 +21,42 @@ class SpotRepository extends EntityRepository
         parent::__construct($entityManager, $classMetaData);
     }
 
-    public function search($projectId, $campaignId, $search = '', $offset = 0, $length = 10)
+    public function search($filter, $offset = 0, $length = 10)
     {
-        $dql = "SELECT a 
-                FROM \Application\Entity\RediSpot a ";
-
+        $dql = "SELECT a.id,
+                    a.spotName,
+                    a.projectCampaignId,
+                    a.revisionNotCounted,
+                    a.notes,
+                    a.revisions,
+                    a.graphicsRevisions,
+                    a.firstRevisionCost,
+                    a.internalDeadline,
+                    a.clientDeadline,
+                    a.billingType,
+                    a.billingNote, 
+                    ptc.projectId, 
+                    ptc.campaignId
+                FROM \Application\Entity\RediSpot a 
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc 
+                    WITH a.projectCampaignId=ptc.id";
 
         $dqlFilter = [];
 
-        if ($projectId) {
-            $dqlFilter[] = "a.projectId= " . (int)$projectId;
+        if (!empty($filter['project_id'])) {
+            $dqlFilter[] = "ptc.projectId= " . (int)$filter['project_id'];
         }
 
-        if ($campaignId) {
-            $dqlFilter[] = "a.campaignId= " . (int)$campaignId;
+        if (!empty($filter['campaign_id'])) {
+            $dqlFilter[] = "ptc.campaignId= " . (int)$filter['campaign_id'];
         }
 
-        if ($search) {
-            $dqlFilter[] = "(a.spotName LIKE '%" . $search . "%' )";
+        if (!empty($filter['project_campaign_id'])) {
+            $dqlFilter[] = "a.projectCampaignId= " . (int)$filter['project_campaign_id'];
+        }
+
+        if (!empty($filter['search'])) {
+            $dqlFilter[] = "(a.spotName LIKE '%" . $filter['search'] . "%' )";
         }
 
         if(count($dqlFilter)) {
@@ -57,24 +76,30 @@ class SpotRepository extends EntityRepository
 
         return $result;
     }
-    public function searchCount($projectId, $campaignId, $search = '')
+    public function searchCount($filter)
     {
         $dql = "SELECT COUNT(a.id) AS total_count 
-                FROM \Application\Entity\RediSpot a ";
+                FROM \Application\Entity\RediSpot a 
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc 
+                    WITH a.projectCampaignId=ptc.id ";
 
 
         $dqlFilter = [];
 
-        if ($projectId) {
-            $dqlFilter[] = "a.projectId= " . (int)$projectId;
+        if (!empty($filter['project_id'])) {
+            $dqlFilter[] = "ptc.projectId= " . (int)$filter['project_id'];
         }
 
-        if ($campaignId) {
-            $dqlFilter[] = "a.campaignId= " . (int)$campaignId;
+        if (!empty($filter['campaign_id'])) {
+            $dqlFilter[] = "ptc.campaignId= " . (int)$filter['campaign_id'];
         }
 
-        if ($search) {
-            $dqlFilter[] = "(a.spotName LIKE '%" . $search . "%' )";
+        if (!empty($filter['project_campaign_id'])) {
+            $dqlFilter[] = "a.projectCampaignId= " . (int)$filter['project_campaign_id'];
+        }
+
+        if (!empty($filter['search'])) {
+            $dqlFilter[] = "(a.spotName LIKE '%" . $filter['search'] . "%' )";
         }
 
         if(count($dqlFilter)) {
@@ -104,91 +129,22 @@ class SpotRepository extends EntityRepository
         return (isset($data[0])?$data[0]:null);
     }
 
-
-    public function getSpotSent($sentSpotId)
+    public function searchSpotSent($filter = array())
     {
+        $offset = (!empty($filter['offset']))?(int)$filter['offset'] : 0;
+        $length = (!empty($filter['length']))?(int)$filter['length'] : 10;
+
         $dql = "SELECT 
-                  sc.id,
-                  sc.workTypeId,
-                  wt.workType,
-                  sc.sentViaMethodId,
-                  ssvm.name AS sentViaMethod,
-                  ssvmp.id AS sentViaMethodParentId,
-                  ssvmp.name AS sentViaMethodParent,
-                  sc.date,
-                  sc.notes,
-                  sc.statusId,
-                  st.status,
-                  sc.final
-                FROM \Application\Entity\RediSpotSent sc
-                LEFT JOIN \Application\Entity\RediWorkType wt
-                  WITH sc.workTypeId=wt.id
-                LEFT JOIN \Application\Entity\RediSpotSentViaMethod ssvm
-                  WITH sc.sentViaMethodId=ssvm.id
-                LEFT JOIN \Application\Entity\RediSpotSentViaMethod ssvmp
-                  WITH ssvm.parentId=ssvmp.id
-                LEFT JOIN \Application\Entity\RediStatus st 
-                  WITH sc.statusId=st.id 
-                 WHERE sc.id=:sent_spot_id ";
-
-        $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('sent_spot_id', $sentSpotId);
-        $query->setMaxResults(1);
-
-        $result = $query->getArrayResult();
-
-        if($result && isset($result[0])) {
-            $response = $result[0];
-            $response['id'] = (int)$result[0]['id'];
-            $response['final'] = (int)$result[0]['final'];
-            $response['date'] = $result[0]['date']->format('Y-m-d');
-            $response['projectSpotVersion'] = $this->getSpotVersionBySpotSentId($response['id'], true);
-            $response['customerContact'] = $this->getSpotSentCustomerContact($response['id']);
-            $response['workStage'] = $this->getSpotSentWorkStage($response['id']);
-        } else {
-            $response = null;
-        }
-
-        return $response;
-    }
-
-    public function searchSpotSent($workTypeId=null, $sentViaMethodId=null, $statusId= null, $offset = 0, $length = 10)
-    {
-        $dql = "SELECT 
-                  sc.id,
-                  sc.workTypeId,
-                  wt.workType,
-                  sc.sentViaMethodId,
-                  ssvm.name AS sentViaMethod,
-                  ssvmp.id AS sentViaMethodParentId,
-                  ssvmp.name AS sentViaMethodParent,
-                  sc.date,
-                  sc.notes,
-                  sc.statusId,
-                  st.status,
-                  sc.final
-                FROM \Application\Entity\RediSpotSent sc
-                LEFT JOIN \Application\Entity\RediWorkType wt
-                  WITH sc.workTypeId=wt.id
-                LEFT JOIN \Application\Entity\RediSpotSentViaMethod ssvm
-                  WITH sc.sentViaMethodId=ssvm.id
-                LEFT JOIN \Application\Entity\RediSpotSentViaMethod ssvmp
-                  WITH ssvm.parentId=ssvmp.id
-                LEFT JOIN \Application\Entity\RediStatus st 
-                  WITH sc.statusId=st.id";
-
+                  sc
+                FROM \Application\Entity\RediSpotSent sc";
 
         $dqlFilter = [];
 
-        if ($workTypeId) {
-            $dqlFilter[] = "sc.workTypeId= :work_type_id";
-        }
+        if (!empty($filter['id'])) {
+            $dqlFilter[] = "sc.id= :id";
+        }    
 
-        if ($sentViaMethodId) {
-            $dqlFilter[] = "sc.sentMethodViaId = :sent_method_via_id";
-        }
-
-        if ($statusId) {
+        if (!empty($filter['status_id'])) {
             $dqlFilter[] = "sc.statusId = :status_id";
         }
 
@@ -196,37 +152,63 @@ class SpotRepository extends EntityRepository
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " ORDER BY sc.id ASC";
+        if(!empty($filter['sort']) && $filter['sort'] === 'priority') {
+            $orderBy = " ORDER BY sc.statusId ASC, sc.updatedAt DESC ";
+        } else {
+            $orderBy = " ORDER BY sc.updatedAt DESC ";
+        }
 
+        $dql .= $orderBy;
+        
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setFirstResult($offset);
         $query->setMaxResults($length);
 
-        if ($workTypeId) {
-            $query->setParameter("project_id", $workTypeId);
+        if (!empty($filter['id'])) {
+            $query->setParameter("id", $filter['id']);
         }
 
-        if ($sentViaMethodId) {
-            $query->setParameter("sent_method_via_id", $sentViaMethodId);
-        }
-
-        if ($statusId) {
-            $query->setParameter("status_id", $statusId);
+        if (!empty($filter['status_id'])) {
+            $query->setParameter("status_id", $filter['status_id']);
         }
 
         $result = $query->getArrayResult();
+        $methodes = $this->getSpotSentOption('sent_via_method');
+        $finishingOptions = $this->getSpotSentOption('finishing_option');
 
         foreach($result as &$row) {
             $row['id'] = (int)$row['id'];
-            $row['final'] = (int)$row['final'];
-            $row['date'] = $row['date']->format('Y-m-d');
             $row['projectSpotVersion'] = $this->getSpotVersionBySpotSentId($row['id']);
+
+            if(!empty($row['sentViaMethod'])) {
+                $methodIds = explode(',', $row['sentViaMethod']);
+
+                if(count($methodIds)) {
+                    $methodIds = array_map('trim', $methodIds);
+
+                    $row['sentViaMethodList'] = array_values(array_filter($methodes, function($method) use ($methodIds){
+                        return in_array($method['id'], $methodIds);
+                    }));
+                }
+            }
+
+            if(!empty($row['finishOption'])) {
+                $finishingOptionIds = explode(',', $row['finishOption']);
+
+                if(count($finishingOptionIds)) {
+                    $finishingOptionIds = array_map('trim', $finishingOptionIds);
+
+                    $row['finishOptionList'] = array_values(array_filter($finishingOptions, function($option) use ($finishingOptionIds){
+                        return in_array($option['id'], $finishingOptionIds);
+                    }));
+                }
+            }
         }
 
         return $result;
     }
-    
-    public function searchSpotSentCount($workTypeId=null, $sentViaMethodId=null, $statusId= null)
+
+    public function searchSpotSentCount($filter = array())
     {
         $dql = "SELECT COUNT(sc.id) AS total_count 
                 FROM \Application\Entity\RediSpotSent sc ";
@@ -234,15 +216,11 @@ class SpotRepository extends EntityRepository
 
         $dqlFilter = [];
 
-        if ($workTypeId) {
-            $dqlFilter[] = "sc.workTypeId= :work_type_id";
-        }
+        if (!empty($filter['id'])) {
+            $dqlFilter[] = "sc.id= :id";
+        }    
 
-        if ($sentViaMethodId) {
-            $dqlFilter[] = "sc.sentMethodViaId = :sent_method_via_id";
-        }
-
-        if ($statusId) {
+        if (!empty($filter['status_id'])) {
             $dqlFilter[] = "sc.statusId = :status_id";
         }
 
@@ -252,16 +230,12 @@ class SpotRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery($dql);
 
-        if ($workTypeId) {
-            $query->setParameter("project_id", $workTypeId);
+        if (!empty($filter['id'])) {
+            $query->setParameter("id", $filter['id']);
         }
 
-        if ($sentViaMethodId) {
-            $query->setParameter("sent_method_via_id", $sentViaMethodId);
-        }
-
-        if ($statusId) {
-            $query->setParameter("status_id", $statusId);
+        if (!empty($filter['status_id'])) {
+            $query->setParameter("status_id", $filter['status_id']);
         }
 
         $result =  $query->getArrayResult();
@@ -299,17 +273,19 @@ class SpotRepository extends EntityRepository
         $dql = "SELECT 
                   sstsv.spotId, s.spotName,
                   sstsv.versionId, v.versionName,
-                  p.id as projectId, p.projectName,
+                  p.id as projectId,
                   c.id as campaignId, c.campaignName" . $extraSelect . "
                 FROM \Application\Entity\RediSpotSentToSpotVersion sstsv 
                 INNER JOIN \Application\Entity\RediSpotSent ss
                   WITH ss.id=:spot_sent_id
                 INNER JOIN \Application\Entity\RediSpot s
                   WITH s.id=sstsv.spotId
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
+                    WITH ptc.id=s.projectCampaignId
                 LEFT JOIN \Application\Entity\RediProject p
-                  WITH p.id=s.projectId
+                  WITH p.id=ptc.projectId
                 LEFT JOIN \Application\Entity\RediCampaign c
-                  WITH c.id=s.campaignId
+                  WITH c.id=ptc.campaignId
                 LEFT JOIN \Application\Entity\RediVersion v 
                    WITH v.id=sstsv.versionId
                 WHERE sstsv.spotSentId=:spot_sent_id";
@@ -419,7 +395,6 @@ class SpotRepository extends EntityRepository
                     cu.customerName,
                     cu.cardcode,
                     p.customerId,
-                    p.projectName,
                     p.id AS projectId,
                     ca.campaignName,
                     ca.id AS campaignId,
@@ -427,19 +402,19 @@ class SpotRepository extends EntityRepository
                     s.spotName,
                     s.id AS spotId
                 FROM \Application\Entity\RediSpot s
-                INNER JOIN \Application\Entity\RediProject p
-                    WITH p.id=s.projectId
-                LEFT JOIN \Application\Entity\RediCampaign ca
-                    WITH ca.id=s.campaignId
-                LEFT JOIN \Application\Entity\RediCustomer cu
-                    WITH cu.id=p.customerId
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
-                    WITH ptc.projectId=p.id AND ptc.campaignId=s.campaignId ";
+                    WITH ptc.id=s.projectCampaignId
+                INNER JOIN \Application\Entity\RediProject p
+                    WITH p.id=ptc.projectId
+                LEFT JOIN \Application\Entity\RediCampaign ca
+                    WITH ca.id=ptc.campaignId
+                LEFT JOIN \Application\Entity\RediCustomer cu
+                    WITH cu.id=p.customerId ";
 
         $dqlFilter = [];
 
         if ($filter['search']) {
-            $dqlFilter[] = "(p.projectName LIKE :search OR s.spotName LIKE :search)";
+            $dqlFilter[] = "(p.projectName LIKE :search OR  p.projectCode LIKE :search OR s.spotName LIKE :search)";
         }
 
         if(count($dqlFilter)) {
@@ -483,19 +458,19 @@ class SpotRepository extends EntityRepository
         $dql = "SELECT 
                     COUNT(DISTINCT s) AS total_count
                 FROM \Application\Entity\RediSpot s
-                INNER JOIN \Application\Entity\RediProject p
-                    WITH p.id=s.projectId
-                LEFT JOIN \Application\Entity\RediCampaign ca
-                    WITH ca.id=s.campaignId
-                LEFT JOIN \Application\Entity\RediCustomer cu
-                    WITH cu.id=p.customerId
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
-                    WITH ptc.projectId=p.id AND ptc.campaignId=s.campaignId ";
+                    WITH ptc.id=s.projectCampaignId
+                INNER JOIN \Application\Entity\RediProject p
+                    WITH p.id=ptc.projectId
+                LEFT JOIN \Application\Entity\RediCampaign ca
+                    WITH ca.id=ptc.campaignId
+                LEFT JOIN \Application\Entity\RediCustomer cu
+                    WITH cu.id=p.customerId ";
 
         $dqlFilter = [];
 
         if ($filter['search']) {
-            $dqlFilter[] = "(p.projectName LIKE :search OR s.spotName LIKE :search)";
+            $dqlFilter[] = "(p.projectName LIKE :search OR  p.projectCode LIKE :search OR s.spotName LIKE :search)";
         }
 
         if(count($dqlFilter)) {
@@ -511,6 +486,33 @@ class SpotRepository extends EntityRepository
         $result =  $query->getArrayResult();
 
         return (isset($result[0]['total_count'])?(int)$result[0]['total_count']:0);
+    }
+
+    public function getSpotSentOption($key = null) {
+        $dql = "SELECT 
+                  sso.value
+                FROM \Application\Entity\RediSpotSentOption sso
+                  WHERE sso.key = :key";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('key', $key);
+        $result = $query->getArrayResult();
+
+        $response = null;
+
+        if( !empty($result[0])) {
+            $result = json_decode($result[0]['value'], true);
+
+            foreach($result as $row) {
+                $response[] = $row;
+
+                if(!empty($row['children'])) {
+                    array_push($response, ...$row['children']);
+                }
+            }
+        }
+
+        return $response;
     }
 
 

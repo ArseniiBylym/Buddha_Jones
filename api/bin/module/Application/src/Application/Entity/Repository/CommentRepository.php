@@ -95,7 +95,7 @@ class CommentRepository extends EntityRepository
                 'typeId' => $row['typeId'],
                 'commentType' => $row['commentType'],
                 'read' => (int)$row['commentRead'],
-                'createdAt' => ($row['createdAt']?$row['createdAt']->format('Y-m-d H:i:s'): null)
+                'createdAt' => $row['createdAt'],
             );
 
             $response[] = $tempRow;
@@ -184,7 +184,7 @@ class CommentRepository extends EntityRepository
                 'typeId' => $row['typeId'],
                 'commentType' => $row['commentType'],
                 'read' => (int)$row['commentRead'],
-                'createdAt' => ($row['createdAt']?$row['createdAt']->format('Y-m-d H:i:s'): null)
+                'createdAt' => $row['createdAt'],
             );
         } else {
             $response = null;

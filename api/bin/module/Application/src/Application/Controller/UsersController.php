@@ -11,20 +11,24 @@ class UsersController extends CustomAbstractActionController
 {
     public function getList()
     {
-        $userAccess = $this->_getUserAccessPermission();
+        $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
         $class = trim($this->getRequest()->getQuery('class', ''));
+        $ids = trim($this->getRequest()->getQuery('ids', ''));
+        $type = trim($this->getRequest()->getQuery('type', ''));
         $search = trim($this->getRequest()->getQuery('search', ''));
         $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
         $length = (int)trim($this->getRequest()->getQuery('length', 10));
 
+        $idsArr = (array)json_decode($ids, true);
         $classArr = (array)json_decode($class, true);
+        $typeArr = (array)json_decode($type, true);
 
         if(!count($classArr) && $class) {
             $classArr = [$class];
         }
 
-        $users = $this->_usersRepo->search($search, $classArr, $offset, $length, $userAccess);
-        $userCount = $this->_usersRepo->searchCount($search, $classArr);
+        $users = $this->_usersRepo->search($search, $idsArr, $classArr, $typeArr, $offset, $length, $userAccess);
+        $userCount = $this->_usersRepo->searchCount($search, $idsArr, $classArr, $typeArr);
 
         foreach($users as &$row) {
             if($row['image']) {
@@ -50,7 +54,7 @@ class UsersController extends CustomAbstractActionController
 
     public function get($id)
     {
-        $userAccess = $this->_getUserAccessPermission();
+        $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
         $user = $this->_usersRepo->getUser($id, $userAccess);
 
         if ($user && isset($user['image']) && $user['image']) {
@@ -72,7 +76,7 @@ class UsersController extends CustomAbstractActionController
 
     public function create($data)
     {
-        $userAccess = $this->_getUserAccessPermission();
+        $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
 
         if ($userAccess['can_edit']) {
             $userName = trim(isset($data['username']) ? $data['username'] : '');
@@ -186,7 +190,7 @@ class UsersController extends CustomAbstractActionController
         $minHour = isset($data['min_hour']) ? trim($data['min_hour']) : null;
         $image = isset($data['image']) ? $data['image'] : null;
 
-        $userAccess = $this->_getUserAccessPermission();
+        $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
 
         if ($id && ($id == $this->_user_id || $userAccess['can_edit'])) {
             $userNameCheck = $this->_userRepository->findOneBy(array('username' => $userName));
@@ -321,7 +325,7 @@ class UsersController extends CustomAbstractActionController
 
     public function delete($id)
     {
-        $userAccess = $this->_getUserAccessPermission();
+        $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
 
         if ($userAccess['can_edit']) {
             $user = $this->_userRepository->find($id);
@@ -478,18 +482,4 @@ class UsersController extends CustomAbstractActionController
         return $ext;
     }
 
-
-    private function _getUserAccessPermission() {
-        $currentUser = $this->_userRepository->find($this->_user_id);
-        $userAccess = $this->_userAccessRepository->find($currentUser->getTypeId());
-
-        $response = array(
-            'can_access_basic_data' => (bool) $userAccess->getCanAccessBasicData(),
-            'can_access_extra_data' => (bool) $userAccess->getCanAccessExtraData(),
-            'can_edit' => (bool) $userAccess->getCanEdit(),
-        );
-
-
-        return $response;
-    }
 }

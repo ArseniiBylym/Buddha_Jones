@@ -3,7 +3,7 @@
 import * as axios from 'axios';
 
 // General API constants
-export const URL = 'http://api.buddhajones.redidemo.com';
+export const URL = 'http://localhost:8080';
 export const AUTH_HEADER = 'Authorization';
 
 // Comment type IDs sync with DB

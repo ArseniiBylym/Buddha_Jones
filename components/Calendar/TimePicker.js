@@ -17,6 +17,7 @@ const propTypes = {
     isOneLine: PropTypes.bool,
     label: PropTypes.string,
     value: PropTypes.number,
+    isWhite: PropTypes.bool,
     startWithCurrentTime: PropTypes.bool
 };
 
@@ -29,6 +30,7 @@ const defaultProps = {
     isOneLine: false,
     label: '',
     value: null,
+    isWhite: true,
     startWithCurrentTime: false
 };
 
@@ -268,7 +270,7 @@ class TimePicker extends React.Component {
                 align="right"
                 minWidth={256}
                 type={this.props.isOneLine === true ? 'oneline' : 'twolines'}
-                isWhite={true}
+                isWhite={this.props.isWhite}
                 label={this.props.label}
                 value={this.state.valueText}
             >

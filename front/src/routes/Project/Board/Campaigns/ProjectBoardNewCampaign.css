@@ -1,0 +1,36 @@
+.newCampaignField {
+  border-radius: 3px;
+  background: color(#eeeae7 lightness(+5%));
+  border: 1px solid #eeeae7;
+  box-sizing: border-box;
+  margin-top: 12px;
+}
+
+.newCampaignBox {
+  padding-top: 19px;
+  padding-bottom: 19px;
+
+  & :global(.dropdownLabel) {
+    & span {
+      color: #0768d8;
+    }
+  }
+}
+
+.newCampaign {
+  position: relative;
+}
+
+.addCampaignButton {
+  margin: 24px !important;
+}
+
+.addCampaignButton > span {
+  font-weight: 600 !important;
+}
+
+:global(.button).addCampaignButtonIcon {
+  position: absolute;
+  right: 24px;
+  top: 18px;
+}

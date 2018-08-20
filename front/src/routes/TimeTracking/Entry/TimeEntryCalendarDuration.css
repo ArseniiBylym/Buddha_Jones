@@ -1,0 +1,129 @@
+.durationWrapper {
+  margin: 0 -36px;
+}
+
+:global(.row).timeRow {
+  position: relative;
+  justify-content: space-around;
+  background: #E2DBD5;
+  padding: 24px 64px;
+  &> :global(.col) {
+    padding-left: 3px;
+    padding-right: 3px;
+  }
+}
+
+.dateTimePicker :global(.dropdownLabel),
+.durationPicker {
+  &>p {
+    &:global(.durationPickerLabel),
+    &>span {
+      font-weight: 300;
+      font-size: 1.1em;
+      text-transform: uppercase;
+    }
+    &:global(.durationPickerTime)>strong,
+    &>strong {
+      color: #0B0C32 !important;
+      text-align: right;
+      font-size: 1.3em;
+      margin-top: 16px;
+    }
+    &:global(.durationPickerTime) {
+      &>span {
+        font-size: 1.3em;
+      }
+    }
+  }
+  &>i {
+    background: url("./../../../assets/images/form/dropdown-arrow.svg") top no-repeat;
+    background-size: 11px 8px;
+    position: relative;
+    margin-top: 0 !important;
+    top: -2px !important;
+  }
+  &:hover {
+    &>p {
+      &>strong {
+        color: #0768D8 !important;
+      }
+    }
+  }
+}
+
+:global(.row).timelineRow {
+  justify-content: space-around;
+  background: #EEEAE7;
+  overflow: hidden;
+  margin: 0;
+  padding: 0 64px !important;
+  border-top: 1px solid #D1CDCA;
+  border-bottom: 1px solid #D1CDCA;
+  & :global(.row) {
+    position: relative;
+    &> :global(.col) {
+      position: relative;
+      padding: 0;
+      height: 24px;
+      box-sizing: border-box;
+      border-left: 1px solid #E2DBD5;
+      border-right: 1px solid #E2DBD5;
+    }
+    & hr {
+      position: absolute;
+      display: block;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 1px;
+      left: 50%;
+      top: 0;
+      border: none;
+      background: #E8E3DE;
+    }
+  }
+}
+
+:global(.row).hoursRow {
+  justify-content: space-around;
+  background: #EFEAE6;
+  margin: 0;
+  padding: 0 64px !important;
+  border-bottom: 1px solid #D1CDCA;
+  &> :global(.col) {
+    padding: 4px 0;
+  }
+  & p {
+    color: #5A4D3F;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    & span {
+      position: relative;
+      color: #A59E97;
+      font-size: 0.7em;
+      top: -3px;
+      text-transform: inherit;
+    }
+  }
+}
+
+.timelineBox {
+  box-sizing: border-box;
+  position: absolute;
+  overflow: hidden;
+  left: 0%;
+  width: 0%;
+  top: 3px;
+  height: 18px;
+  background: #DBD3CD url("./../../../assets/images/table/table-sub-row.png") top left repeat-x;
+  border: 1px solid color(#E0D9D3 lightness(-16%));
+  transition: 300ms width 0ms cubic-bezier(1, 0, 0, 1), 500ms left 0ms cubic-bezier(1, 0, 0, 1), 300ms border 0ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  &.timelineBoxEditable {
+    border: 1px solid #E0D9D3;
+    border-left: 4px solid #0768D8;
+    border-right: 4px solid #0768D8;
+  }
+  &.timelineBoxOverlapping {
+    border-color: #D75B2B;
+  }
+}

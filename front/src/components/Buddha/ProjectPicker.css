@@ -1,0 +1,141 @@
+.projectRequiredLevelLabel {
+  color: #5A4D3F;
+  font-size: 0.85em;
+}
+
+.closeButton {
+  float: right;
+  margin-top: 3px;
+}
+
+.clearButton {
+  float: right;
+  margin-top: 3px;
+}
+
+:global(.col.dots) {
+  background: url('./../../assets/images/projectpicker/dots.png') left no-repeat, url('./../../assets/images/projectpicker/dots.png') right no-repeat;
+  background-size: 18px 1px;
+}
+
+:global(.col.dots):first-child {
+  background: url('./../../assets/images/projectpicker/dots.png') right no-repeat;
+  background-size: 18px 1px;
+}
+
+:global(.col.dots):last-child {
+  background: url('./../../assets/images/projectpicker/dots.png') left no-repeat;
+  background-size: 18px 1px;
+}
+
+button:global(.button).pickerSectionButton {
+  padding: 10px 24px;
+  width: 100%;
+  background: #E9E0D7;
+  border-color: #DDD6CF;
+  &> :global(.buttonLabel) {
+    text-transform: none;
+    color: #0768D8;
+  }
+  &.pickerSectionButtonGreen {
+    background: #5DB67B;
+    border-color: #469B62;
+    &:hover {
+      background: #469B62;
+    }
+    &> :global(.buttonLabel) {
+      color: #FFFFFF;
+    }
+  }
+  &.pickerSectionButtonBlue {
+    background: #3999BE;
+    border-color: #2D7895;
+    cursor: n-resize;
+    &> :global(.buttonLabel) {
+      color: #FFFFFF;
+    }
+  }
+  &[disabled] {
+    background: #F5F0EB;
+    border-color: #EAE6E1;
+    cursor: not-allowed;
+    &> :global(.buttonLabel) {
+      color: #A58668;
+    }
+  }
+}
+
+.searchResults {
+  position: relative;
+  margin-top: 24px;
+  border-radius: 8px;
+  border: 1pt dashed #A59E97;
+  /*
+  overflow: hidden;
+  */
+}
+
+.searchResultsList {
+  padding: 0;
+  margin: 12px 24px;
+  column-count: 4;
+  column-gap: 12px;
+  list-style: decimal-leading-zero;
+  &:global(.resultsCount1) {
+    column-count: 1;
+    column-gap: 0px;
+  }
+  &:global(.resultsCount2) {
+    column-count: 2;
+  }
+  &:global(.resultsCount3) {
+    column-count: 3;
+  }
+  &:global(.resultsCount4) {
+    column-count: 2;
+  }
+  &:global(.resultsCount5) {
+    column-count: 2;
+  }
+  &:global(.resultsCount6) {
+    column-count: 3;
+  }
+  &:global(.resultsCount7) {
+    column-count: 3;
+  }
+  &:global(.resultsCount8) {
+    column-count: 4;
+  }
+  &:global(.resultsCount9) {
+    column-count: 3;
+  }
+  &:global(.resultsCount10) {
+    column-count: 4;
+  }
+  & li {
+    margin: 0;
+    margin-left: 28px;
+    padding: 6px 0;
+    padding-left: 12px;
+    font-size: 0.85em;
+    font-weight: 300;
+    color: #A59E97;
+    white-space: nowrap;
+    &.noEntries {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+    & :global(.button) {
+      display: inline-block;
+      font-size: 1.05em;
+    }
+  }
+}
+
+.searchCreateCloseRow {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed #A59E97;
+  align-content: center;
+  align-items: center;
+}

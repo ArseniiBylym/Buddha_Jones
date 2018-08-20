@@ -87,7 +87,7 @@ class PersonRoleDropdown extends React.Component {
                 ref={this.referenceDropdownContainer}
                 className={s.dropdownContainer}
                 label="Role:"
-                value={this.props.role ? this.props.role.name : undefined}
+                value={this.props.role ? this.props.role.name : 'None selected'}
             >
                 <OptionsList
                     onChange={e => this.handleRoleChange(e)}

@@ -1,0 +1,122 @@
+.entriesGroup {
+  margin-top: 12px;
+}
+
+.tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+  & .tag {
+    margin-right: 12px;
+  }
+}
+
+.entry {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-content: flex-start;
+  & .overview {
+    text-align: left;
+    & .activity {
+      display: flex;
+      justify-content: flex-start;
+      align-content: center;
+      align-items: center;
+      flex: 1 0 70%;
+      & p {
+        margin-right: 12px;
+        font-size: 0.85em;
+        font-weight: 700;
+        &::before {
+          content: "─ ";
+        }
+      }
+    }
+    & .notes {
+      margin-left: 13px;
+      margin-top: 3px;
+      font-size: 0.85em;
+      & strong {
+        color: #5a4d3f;
+      }
+    }
+    & .files {
+      margin-left: 13px;
+      margin-top: 3px;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-content: flex-start;
+      align-items: flex-start;
+      & .label {
+        font-size: 0.85em;
+      }
+      & .lines {
+        margin-left: 10px;
+        font-size: 0.85em;
+        & .line {
+          position: relative;
+          margin-top: 3px;
+          &:first-child {
+            margin-top: 0;
+          }
+          & .fileDuration {
+            position: absolute;
+            left: 0;
+            top: 0;
+          }
+          & .filename {
+            color: #5a4d3f;
+            margin-left: 72px;
+            &:first-child {
+              margin-top: 0;
+            }
+          }
+          & .fileNotes {
+            margin-left: 72px;
+            color: #5a4d3f;
+          }
+          & hr {
+            position: absolute;
+            margin: 0;
+            left: 66px;
+            top: 10%;
+            height: 80%;
+            width: 1px;
+            border: none;
+            background: #A59E97;
+          }
+        }
+      }
+    }
+  }
+  & .time {
+    text-align: right;
+    & .duration {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85em;
+      font-weight: 400;
+      & strong {
+        display: inline-block;
+        text-align: right;
+        width: 84px;
+        font-weight: 700;
+        color: #0768D8;
+      }
+      &.overtime {
+        & strong {
+          color: #d16403;
+        }
+      }
+      &.doubletime {
+        & strong {
+          color: #CC2525;
+        }
+      }
+    }
+  }
+}

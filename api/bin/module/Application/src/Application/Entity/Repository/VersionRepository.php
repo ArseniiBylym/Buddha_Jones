@@ -20,79 +20,158 @@ class VersionRepository extends EntityRepository
         parent::__construct($entityManager, $classMetaData);
     }
 
-    public function search($search = '', $offset = 0, $length = 10)
+    public function search($filter, $offset = 0, $length = 10)
     {
-        $dql = "SELECT a 
+        $dql = "SELECT a.id, a.versionName, a.custom
                 FROM \Application\Entity\RediVersion a ";
 
+        $dqlFilter = array(
+            "a.active=1",
+        );
 
-        if ($search) {
-            $dql .= " WHERE (a.versionName LIKE '%" . $search . "%' )";
+        if (!empty($filter['search'])) {
+            $dqlFilter[] = " (a.versionName LIKE '%" . $filter['search'] . "%' ) ";
         }
 
-        $dql .= " ORDER BY a.versionName ASC";
+        if(isset($filter['custom']) && $filter['custom'] !== null) {
+            $dqlFilter[] = " a.custom = :custom ";
+        }
+
+        if(count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
+        }
+
+        $dql .= " ORDER BY a.seq ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
+
+        if(isset($filter['custom']) && $filter['custom'] !== null) {
+            $query->setParameter('custom', $filter['custom']);
+        }
+
         $query->setFirstResult($offset);
         $query->setMaxResults($length);
-        return $query->getArrayResult();
+
+        $data = $query->getArrayResult();
+
+        return $data;
     }
 
-    public function searchCount($search = '')
+    public function searchCount($filter)
     {
         $dql = "SELECT COUNT(a.id) AS total_count 
-                FROM \Application\Entity\RediVersion a ";
+                FROM \Application\Entity\RediVersion a  ";
 
+        $dqlFilter = array(
+            "a.active=1",
+        );
 
-        if ($search) {
-            $dql .= " WHERE (a.versionName LIKE '%" . $search . "%' )";
+        if (!empty($filter['search'])) {
+            $dqlFilter[] = " (a.versionName LIKE '%" . $filter['search'] . "%' ) ";
+        }
+
+        if(isset($filter['custom']) && $filter['custom'] !== null) {
+            $dqlFilter[] = " a.custom = :custom ";
+        }
+
+        if(count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $query = $this->getEntityManager()->createQuery($dql);
-        $result =  $query->getArrayResult();
+
+        if(isset($filter['custom']) && $filter['custom'] !== null) {
+            $query->setParameter('custom', $filter['custom']);
+        }
+
+        $result = $query->getArrayResult();
 
         return (isset($result[0]['total_count'])?(int)$result[0]['total_count']:0);
     }
 
-    public function searchWithSpot($search = '', $spotId, $offset = 0, $length = 10)
+    public function searchWithSpot($filter, $offset = 0, $length = 10)
     {
-        $dql = "SELECT a.id, a.versionName, sv.spotId, sv.billingType
+        $dql = "SELECT a.id, a.versionName, a.custom, sv.spotId, sv.billingType
                 FROM \Application\Entity\RediVersion a
                 INNER JOIN \Application\Entity\RediSpotVersion sv 
-                  WITH a.id=sv.versionId
-                 WHERE sv.spotId=:spot_id";
+                  WITH a.id=sv.versionId ";
 
 
-        if ($search) {
-            $dql .= " AND (a.versionName LIKE '%" . $search . "%' )";
+        $dqlFilter = array(
+            "a.active=1",
+            "sv.spotId=:spot_id",
+        );
+
+        if (!empty($filter['search'])) {
+            $dqlFilter[] = " (a.versionName LIKE '%" . $filter['search'] . "%' ) ";
         }
 
-        $dql .= " ORDER BY a.id ASC";
+        if(isset($filter['custom']) && $filter['custom'] !== null) {
+            $dqlFilter[] = " a.custom = :custom ";
+        }
+
+        if(count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
+        }
+
+        $dql .= " ORDER BY a.seq ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('spot_id', $spotId);
+        $query->setParameter('spot_id', $filter['spot_id']);
+
+        if(isset($filter['custom']) && $filter['custom'] !== null) {
+            $query->setParameter('custom', $filter['custom']);
+        }
+
         $query->setFirstResult($offset);
         $query->setMaxResults($length);
         return $query->getArrayResult();
     }
 
-    public function searchCountWithSpot($search = '', $spotId)
+    public function searchCountWithSpot($filter)
     {
         $dql = "SELECT COUNT(a.id) AS total_count 
                 FROM \Application\Entity\RediVersion a 
                  INNER JOIN \Application\Entity\RediSpotVersion sv 
-                  WITH a.id=sv.versionId
-                 WHERE sv.spotId=:spot_id";
+                  WITH a.id=sv.versionId ";
 
+        $dqlFilter = array(
+            "a.active=1",
+            "sv.spotId=:spot_id",
+        );
 
-        if ($search) {
-            $dql .= " AND (a.versionName LIKE '%" . $search . "%' )";
+        if (!empty($filter['search'])) {
+            $dqlFilter[] = " (a.versionName LIKE '%" . $filter['search'] . "%' ) ";
+        }
+
+        if(isset($filter['custom']) && $filter['custom'] !== null) {
+            $dqlFilter[] = " a.custom = :custom ";
+        }
+
+        if(count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('spot_id', $spotId);
+        $query->setParameter('spot_id', $filter['spot_id']);
+
+        if(isset($filter['custom']) && $filter['custom'] !== null) {
+            $query->setParameter('custom', $filter['custom']);
+        }
+
         $result =  $query->getArrayResult();
 
         return (isset($result[0]['total_count'])?(int)$result[0]['total_count']:0);
+    }
+
+    public function searchVersionStatus()
+    {
+        $dql = "SELECT a
+                FROM \Application\Entity\RediVersionStatus a ";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $result =  $query->getArrayResult();
+
+        return $result;
     }
 }

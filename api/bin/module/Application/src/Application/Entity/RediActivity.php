@@ -24,7 +24,7 @@ class RediActivity
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=200, nullable=true)
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     private $name;
 
@@ -38,13 +38,6 @@ class RediActivity
     /**
      * @var integer
      *
-     * @ORM\Column(name="user_type_id", type="integer", nullable=true)
-     */
-    private $userTypeId;
-
-    /**
-     * @var integer
-     *
      * @ORM\Column(name="description_required", type="smallint", nullable=true)
      */
     private $descriptionRequired;
@@ -52,9 +45,44 @@ class RediActivity
     /**
      * @var integer
      *
+     * @ORM\Column(name="billable", type="smallint", nullable=true)
+     */
+    private $billable;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="project_campaign_required", type="boolean", nullable=true)
+     */
+    private $projectCampaignRequired;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="project_campaign_spot_version_required", type="boolean", nullable=true)
+     */
+    private $projectCampaignSpotVersionRequired;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="files_included", type="boolean", nullable=true)
+     */
+    private $filesIncluded;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="status", type="smallint", nullable=true)
      */
     private $status;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="allowed_in_future", type="smallint", nullable=true)
+     */
+    private $allowedInFuture;
 
 
 
@@ -115,29 +143,6 @@ class RediActivity
     }
 
     /**
-     * Set userTypeId
-     *
-     * @param integer $userTypeId
-     * @return RediActivity
-     */
-    public function setUserTypeId($userTypeId)
-    {
-        $this->userTypeId = $userTypeId;
-
-        return $this;
-    }
-
-    /**
-     * Get userTypeId
-     *
-     * @return integer 
-     */
-    public function getUserTypeId()
-    {
-        return $this->userTypeId;
-    }
-
-    /**
      * Set descriptionRequired
      *
      * @param integer $descriptionRequired
@@ -161,6 +166,98 @@ class RediActivity
     }
 
     /**
+     * Set billable
+     *
+     * @param integer $billable
+     * @return RediActivity
+     */
+    public function setBillable($billable)
+    {
+        $this->billable = $billable;
+
+        return $this;
+    }
+
+    /**
+     * Get billable
+     *
+     * @return integer 
+     */
+    public function getBillable()
+    {
+        return $this->billable;
+    }
+
+    /**
+     * Set projectCampaignRequired
+     *
+     * @param boolean $projectCampaignRequired
+     * @return RediActivity
+     */
+    public function setProjectCampaignRequired($projectCampaignRequired)
+    {
+        $this->projectCampaignRequired = $projectCampaignRequired;
+
+        return $this;
+    }
+
+    /**
+     * Get projectCampaignRequired
+     *
+     * @return boolean 
+     */
+    public function getProjectCampaignRequired()
+    {
+        return $this->projectCampaignRequired;
+    }
+
+    /**
+     * Set projectCampaignSpotVersionRequired
+     *
+     * @param boolean $projectCampaignSpotVersionRequired
+     * @return RediActivity
+     */
+    public function setProjectCampaignSpotVersionRequired($projectCampaignSpotVersionRequired)
+    {
+        $this->projectCampaignSpotVersionRequired = $projectCampaignSpotVersionRequired;
+
+        return $this;
+    }
+
+    /**
+     * Get projectCampaignSpotVersionRequired
+     *
+     * @return boolean 
+     */
+    public function getProjectCampaignSpotVersionRequired()
+    {
+        return $this->projectCampaignSpotVersionRequired;
+    }
+
+    /**
+     * Set filesIncluded
+     *
+     * @param boolean $filesIncluded
+     * @return RediActivity
+     */
+    public function setFilesIncluded($filesIncluded)
+    {
+        $this->filesIncluded = $filesIncluded;
+
+        return $this;
+    }
+
+    /**
+     * Get filesIncluded
+     *
+     * @return boolean 
+     */
+    public function getFilesIncluded()
+    {
+        return $this->filesIncluded;
+    }
+
+    /**
      * Set status
      *
      * @param integer $status
@@ -181,5 +278,28 @@ class RediActivity
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * Set allowedInFuture
+     *
+     * @param integer $allowedInFuture
+     * @return RediActivity
+     */
+    public function setAllowedInFuture($allowedInFuture)
+    {
+        $this->allowedInFuture = $allowedInFuture;
+
+        return $this;
+    }
+
+    /**
+     * Get allowedInFuture
+     *
+     * @return integer 
+     */
+    public function getAllowedInFuture()
+    {
+        return $this->allowedInFuture;
     }
 }

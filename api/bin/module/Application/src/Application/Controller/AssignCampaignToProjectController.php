@@ -19,7 +19,7 @@ class AssignCampaignToProjectController extends CustomAbstractActionController
         $campaignId = (int)(isset($data['campaign_id']) ? trim($data['campaign_id']) : 0);
         $por = isset($data['por']) ? $data['por'] : null;
         $invoiceContact = isset($data['invoice_contact']) ? $data['invoice_contact'] : null;
-        
+
         if ($projectId && $campaignId) {
             $project = $this->_projectRepository->find($projectId);
 
@@ -27,13 +27,9 @@ class AssignCampaignToProjectController extends CustomAbstractActionController
                 $campaign = $this->_campaignRepository->find($campaignId);
 
                 if ($campaign) {
-                    $existingProjectToCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectId, 'campaignId' => $campaignId));
-
-                    if(!$existingProjectToCampaign) {
-                        $existingProjectToCampaign = new RediProjectToCampaign();
-                        $existingProjectToCampaign->setProjectId($projectId);
-                        $existingProjectToCampaign->setCampaignId($campaignId);
-                    }
+                    $existingProjectToCampaign = new RediProjectToCampaign();
+                    $existingProjectToCampaign->setProjectId($projectId);
+                    $existingProjectToCampaign->setCampaignId($campaignId);
 
                     if($por) {
                         $existingProjectToCampaign->setPor($por);
@@ -42,7 +38,7 @@ class AssignCampaignToProjectController extends CustomAbstractActionController
                     if($invoiceContact) {
                         $existingProjectToCampaign->setInvoiceContact($invoiceContact);
                     }
-                    
+
                     $this->_em->persist($existingProjectToCampaign);
                     $this->_em->flush();
 

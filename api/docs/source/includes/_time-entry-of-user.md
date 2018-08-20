@@ -163,3 +163,4 @@ Required | Parameter | Type | Default | Description
 **true** | start_date | date | null | Start date
 **true** | end_date | date | null | End date
 false | worker_id | int | logged in user id | worker id (user id).
+false | project_id | int | null | project id

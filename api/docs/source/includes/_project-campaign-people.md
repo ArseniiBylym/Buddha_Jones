@@ -11,68 +11,40 @@ Get people associated with project-campaign
 {
     "status": 1,
     "message": "Request successful",
-    "total_count": 4,
-    "object_count": 4,
+    "total_count": 2,
+    "object_count": 2,
     "data": [
         {
-            "projectId": 12,
-            "campaignId": 1,
-            "userId": 5,
-            "username": "AlexKroll",
-            "email": null,
-            "firstName": "Alex",
-            "lastName": "Kroll",
+            "projectCampaignId": "156",
+            "projectId": 47,
+            "campaignId": 4,
+            "userId": 23,
+            "username": "ABATES",
+            "email": "ALEXB@BUDDHA-JONES.COM",
+            "firstName": "ALEXANDRA",
+            "lastName": "BATES",
             "image": null,
-            "typeId": 1,
-            "type": "Editor",
-            "roleId": 3,
-            "role": "Producer",
-            "fullName": "Alex Kroll"
+            "typeId": 6,
+            "type": "Creative Manager/Coordinator",
+            "roleId": null,
+            "role": null,
+            "fullName": "ALEXANDRA BATES"
         },
         {
-            "projectId": 12,
-            "campaignId": 1,
-            "userId": 4,
-            "username": "AndyAustin",
-            "email": null,
-            "firstName": "Andy",
-            "lastName": "Austin",
+            "projectCampaignId": "156",
+            "projectId": 47,
+            "campaignId": 4,
+            "userId": 97,
+            "username": "MLAFONTANT",
+            "email": "MARK.LAFONTANT@BUDDHA-JONES.COM",
+            "firstName": "MARK",
+            "lastName": "LAFONTANT",
             "image": null,
-            "typeId": 1,
-            "type": "Editor",
-            "roleId": 3,
-            "role": "Producer",
-            "fullName": "Andy Austin"
-        },
-        {
-            "projectId": 12,
-            "campaignId": 1,
-            "userId": 3,
-            "username": "webhkp",
-            "email": "webhkp@gmail.com",
-            "firstName": "Rizwan",
-            "lastName": "Kader",
-            "image": "http://buddhajonesapi.localhost/thumb/profile_image/three.png",
-            "typeId": 1,
-            "type": "Editor",
-            "roleId": 3,
-            "role": "Producer",
-            "fullName": "Rizwan Kader"
-        },
-        {
-            "projectId": 12,
-            "campaignId": 1,
-            "userId": 1,
-            "username": "suda",
-            "email": "suda.sampath@indydutch.com",
-            "firstName": "Suda",
-            "lastName": "Sampath",
-            "image": "http://buddhajonesapi.localhost/thumb/profile_image/1.jpeg",
-            "typeId": 100,
-            "type": "Super Admin",
-            "roleId": 3,
-            "role": "Producer",
-            "fullName": "Suda Sampath"
+            "typeId": 21,
+            "type": "Producer",
+            "roleId": null,
+            "role": null,
+            "fullName": "MARK LAFONTANT"
         }
     ]
 }
@@ -80,14 +52,13 @@ Get people associated with project-campaign
 
 ### HTTP Request
 
-`GET /project-campaign-people/[:project_id]/[:campaign_id]`
+`GET /project-campaign-people/[:project_campaign_id]`
 
 ### Query Parameters
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true** | project_id | int | null | Project Id
-**true** | campaign_id | int | null | campaign Id
+**true** | project_campaign_id | int | null | project campaign Id
 false | type | JSON | null | JSON encode array of user type ids, like: [1,2,3,4,5]
 false | length | int | null | Limit number of returned results
 false | offset | int | null | Offset returned results
@@ -103,8 +74,7 @@ Add user to project campaign
 
 ```javascript
 axios.post('/project-campaign-people', {
-    project_id:12,
-    campaign_id:1,
+    project__id:1,
     user_id:5,
     role_id:3
 });
@@ -127,8 +97,7 @@ axios.post('/project-campaign-people', {
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true** | project_id | int | null | Project id
-**true** | campaign_id | int | null | Campaign id
+**true** | project_campaign_id | int | null | project campaign Campaign id
 **true** | user_id | int | null | User id
 false | role_id | int | null | Role Id
 
@@ -150,13 +119,12 @@ Delete project to campaign user
 
 ### HTTP Request
 
-`DELETE /project-campaign-people/[:project_id]/[:campaign_id]/[:user_id]`
+`DELETE /project-campaign-people/[:project_campaign_id]/[:user_id]`
 
 ### Query Parameters
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true* | campaign_id | int | null | Campaign ID
-**true* | project_id | int | null | Project ID
+**true* | project_campaign_id | int | null | Project campaign ID
 **true* | user_id | int | null | User Id
 

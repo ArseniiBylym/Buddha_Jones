@@ -410,7 +410,7 @@ class TimeTrackingCalendar extends React.Component {
                 // Fetch entries
                 API.get(API.TIME_ENTRY_OF_USER, {
                     start_date: firstDate,
-                    end_date: lastDate
+                    end_date: lastDate,
                 }).then(responseData => {
                     // Iterate days from response
                     const days = Object.keys(responseData).map((responseKey, dayIndex) => {
@@ -1202,6 +1202,7 @@ class TimeTrackingCalendar extends React.Component {
                             value={this.state.entered.start}
                             isAmerican={true}
                             isOneLine={true}
+                            isWhite={false}
                         />
                     </Col>
                     <Col size={0}>
@@ -1222,6 +1223,7 @@ class TimeTrackingCalendar extends React.Component {
                             value={this.state.entered.end}
                             isAmerican={true}
                             isOneLine={true}
+                            isWhite={false}
                         />
                     </Col>
                 </Row>

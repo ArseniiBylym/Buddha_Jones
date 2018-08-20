@@ -51,7 +51,7 @@ class CustomerRepository extends EntityRepository
 
         $dql .= " ORDER BY cu.customerName ASC";
 
-        
+
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setFirstResult($offset);
         $query->setMaxResults($length);
@@ -67,14 +67,6 @@ class CustomerRepository extends EntityRepository
         }
 
         $data = $query->getArrayResult();
-
-
-//        foreach($data as &$row) {
-//            $row['totalAmount'] = (float)$row['totalAmount'];
-//            $row['createdAt'] = $row['createdAt']->format('Y-m-d H:i:s');
-//
-//            unset($row['statusOrderFilter']);
-//        }
 
         return $data;
     }
@@ -267,5 +259,49 @@ class CustomerRepository extends EntityRepository
 
 
         return $response;
+    }
+
+    /**
+     * Get customer price for a specific customer
+     *
+     * It will return activity - Billable (id=1), Rate Card (id=4)
+     *
+     * @param int $customerId
+     * @return array customer price
+     */
+    public function searchCustomerPrice($customerId)
+    {
+        $dql = "SELECT  
+                  a.id AS activityId,
+                  a.name AS activityName,
+                  att.typeId AS activityTypeId,
+                  aty.activityType,
+                  cp.customerId, 
+                  cp.price
+                FROM \Application\Entity\RediActivity a
+                LEFT JOIN \Application\Entity\RediCustomerPrice cp
+                  WITH a.id=cp.activityId 
+                LEFT JOIN \Application\Entity\RediActivityToType att 
+                  WITH att.activityId=a.id
+                INNER JOIN \Application\Entity\RediActivityType aty
+                  WITH aty.id=att.typeId
+                WHERE att.typeId IN (1,4)
+                AND (cp.customerId=:customer_id OR cp.customerId IS NULL)
+                GROUP BY a.id
+                ORDER BY a.name ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('customer_id', $customerId);
+
+        $data = $query->getArrayResult();
+
+        $data = array_map(function($cPrice) use ($customerId) {
+            $cPrice['customerId'] = $cPrice['customerId']?$cPrice['customerId']:$customerId;
+            $cPrice['price'] = ($cPrice['price'] !== null)?(float)$cPrice['price'] : null;
+
+            return $cPrice;
+        }, $data);
+
+        return $data;
     }
 }

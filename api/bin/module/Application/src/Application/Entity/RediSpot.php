@@ -31,16 +31,9 @@ class RediSpot
     /**
      * @var integer
      *
-     * @ORM\Column(name="project_id", type="integer", nullable=true)
+     * @ORM\Column(name="project_campaign_id", type="integer", nullable=true)
      */
-    private $projectId;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="campaign_id", type="integer", nullable=true)
-     */
-    private $campaignId;
+    private $projectCampaignId;
 
     /**
      * @var integer
@@ -91,6 +84,20 @@ class RediSpot
      */
     private $clientDeadline;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="billing_type", type="string", length=1, nullable=true)
+     */
+    private $billingType;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="billing_note", type="text", nullable=true)
+     */
+    private $billingNote;
+
 
 
     /**
@@ -127,49 +134,26 @@ class RediSpot
     }
 
     /**
-     * Set projectId
+     * Set projectCampaignId
      *
-     * @param integer $projectId
+     * @param integer $projectCampaignId
      * @return RediSpot
      */
-    public function setProjectId($projectId)
+    public function setProjectCampaignId($projectCampaignId)
     {
-        $this->projectId = $projectId;
+        $this->projectCampaignId = $projectCampaignId;
 
         return $this;
     }
 
     /**
-     * Get projectId
+     * Get projectCampaignId
      *
      * @return integer 
      */
-    public function getProjectId()
+    public function getProjectCampaignId()
     {
-        return $this->projectId;
-    }
-
-    /**
-     * Set campaignId
-     *
-     * @param integer $campaignId
-     * @return RediSpot
-     */
-    public function setCampaignId($campaignId)
-    {
-        $this->campaignId = $campaignId;
-
-        return $this;
-    }
-
-    /**
-     * Get campaignId
-     *
-     * @return integer 
-     */
-    public function getCampaignId()
-    {
-        return $this->campaignId;
+        return $this->projectCampaignId;
     }
 
     /**
@@ -331,5 +315,51 @@ class RediSpot
     public function getClientDeadline()
     {
         return $this->clientDeadline;
+    }
+
+    /**
+     * Set billingType
+     *
+     * @param string $billingType
+     * @return RediSpot
+     */
+    public function setBillingType($billingType)
+    {
+        $this->billingType = $billingType;
+
+        return $this;
+    }
+
+    /**
+     * Get billingType
+     *
+     * @return string 
+     */
+    public function getBillingType()
+    {
+        return $this->billingType;
+    }
+
+    /**
+     * Set billingNote
+     *
+     * @param string $billingNote
+     * @return RediSpot
+     */
+    public function setBillingNote($billingNote)
+    {
+        $this->billingNote = $billingNote;
+
+        return $this;
+    }
+
+    /**
+     * Get billingNote
+     *
+     * @return string 
+     */
+    public function getBillingNote()
+    {
+        return $this->billingNote;
     }
 }

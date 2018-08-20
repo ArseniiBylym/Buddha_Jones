@@ -1,0 +1,31 @@
+.spotsSummary {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  align-content: center;
+  align-items: center;
+}
+
+.spotEditor {
+  margin-right: 12px;
+}
+
+.sentViaMethodsContainer,
+.studioContactsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: -6px;
+  margin-left: -12px;
+  margin-right: -12px;
+  &>label {
+    margin: 6px 12px;
+  }
+}
+
+.summary {
+  display: flex;
+  justify-content: flex-end;
+  &>* {
+    margin-left: 48px;
+  }
+}

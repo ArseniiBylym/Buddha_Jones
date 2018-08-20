@@ -15,6 +15,7 @@ use Application\Entity\RediUserCart;
 use Application\Entity\RediUserCartInfo;
 use Namshi\JOSE\SimpleJWS;
 use Namshi\JOSE\Base64\Base64UrlSafeEncoder;
+use \Firebase\JWT\JWT;
 
 class CustomAbstractActionController extends AbstractRestfulController
 {
@@ -25,6 +26,8 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_profileImagePath;
     protected $_tempProfileImagePath;
     protected $_siteUrl;
+    protected $_user_permission;
+    protected $_config;
 
     protected $_em;
     protected $_conn;
@@ -32,6 +35,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_userRepository;
     protected $_activityRepository;
     protected $_activityToTypeRepository;
+    protected $_activityToUserTypeRepository;
     protected $_billingRepository;
     protected $_billingApprovalRepository;
     protected $_campaignRepository;
@@ -62,25 +66,30 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_projectToCampaignBillingUserRepository;
     protected $_projectToCampaignEditorRepository;
     protected $_projectToCampaignDesignerRepository;
+    protected $_projectPermissionsRepository;
     protected $_spotRepository;
     protected $_spotSentRepository;
-    protected $_spotSentViaMethodRepository;
+    protected $_spotSentOptionRepository;
     protected $_spotSentToWorkStage;
     protected $_spotVersionRepository;
     protected $_staffRepository;
     protected $_statusRepository;
     protected $_timeEntryRepository;
+    protected $_timeEntryFileRepository;
     protected $_versionRepository;
+    protected $_versionStatusRepository;
     protected $_userTypeRepository;
     protected $_userAccessRepository;
     protected $_userRoleRepository;
     protected $_workTypeRepository;
     protected $_workStageRepository;
+    protected $_userTypeProjectPermissionRepository;
 
     protected $_activityRepo;
     protected $_billingRepo;
     protected $_campaignRepo;
     protected $_commentRepo;
+    protected $_commonRepo;
     protected $_customerRepo;
     protected $_estimateRepo;
     protected $_graphicsRequestRepo;
@@ -97,10 +106,11 @@ class CustomAbstractActionController extends AbstractRestfulController
 
         // get configuration values
         $config = $this->getServiceLocator()->get('Config');
-        $this->_jwt_public_key_path = $config['jwt_config']['public_key_path'];
+        $this->_config = $config;
         $this->_profileImagePath = $config['directory_path']['profile_image'];
         $this->_tempProfileImagePath = $config['directory_path']['temp_profile_image'];
         $this->_siteUrl = $config['site_url'];
+        $jwtSecret = $config['jwt_config']['jwt_secret'];
 
 //        $this->_conn = $this->getServiceManager()->get('doctrine.entitymanager.orm_default')->getConnection();
         $this->_em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
@@ -109,6 +119,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_billingApprovalRepository = $this->_em->getRepository('Application\Entity\RediBillingApproval');
         $this->_activityRepository = $this->_em->getRepository('Application\Entity\RediActivity');
         $this->_activityToTypeRepository = $this->_em->getRepository('Application\Entity\RediActivityToType');
+        $this->_activityToUserTypeRepository = $this->_em->getRepository('Application\Entity\RediActivityToUserType');
         $this->_campaignRepository = $this->_em->getRepository('Application\Entity\RediCampaign');
         $this->_commentRepository = $this->_em->getRepository('Application\Entity\RediComment');
         $this->_commentTypeRepository = $this->_em->getRepository('Application\Entity\RediCommentType');
@@ -137,26 +148,31 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_projectToCampaignDesignerRepository = $this->_em->getRepository('Application\Entity\RediProjectToCampaignDesigner');
         $this->_projectToCampaignEditorRepository = $this->_em->getRepository('Application\Entity\RediProjectToCampaignEditor');
         $this->_projectToCampaignUserRepository = $this->_em->getRepository('Application\Entity\RediProjectToCampaignUser');
+        $this->_projectPermissionsRepository = $this->_em->getRepository('Application\Entity\RediProjectPermissions');
         $this->_spotRepository = $this->_em->getRepository('Application\Entity\RediSpot');
         $this->_spotVersionRepository = $this->_em->getRepository('Application\Entity\RediSpotVersion');
-        $this->_spotSentViaMethodRepository = $this->_em->getRepository('Application\Entity\RediSpotSentViaMethod');
+        $this->_spotSentOptionRepository = $this->_em->getRepository('Application\Entity\RediSpotSentOption');
         $this->_spotSentRepository = $this->_em->getRepository('Application\Entity\RediSpotSent');
         $this->_spotSentToWorkStage = $this->_em->getRepository('Application\Entity\RediSpotSentToWorkStage');
         $this->_staffRepository = $this->_em->getRepository('Application\Entity\RediStaff');
         $this->_statusRepository = $this->_em->getRepository('Application\Entity\RediStatus');
         $this->_timeEntryRepository = $this->_em->getRepository('Application\Entity\RediTimeEntry');
+        $this->_timeEntryFileRepository = $this->_em->getRepository('Application\Entity\RediTimeEntryFile');
         $this->_versionRepository = $this->_em->getRepository('Application\Entity\RediVersion');
+        $this->_versionStatusRepository = $this->_em->getRepository('Application\Entity\RediVersionStatus');
         $this->_userTypeRepository = $this->_em->getRepository('Application\Entity\RediUserType');
         $this->_userAccessRepository = $this->_em->getRepository('Application\Entity\RediUserAccess');
         $this->_userRoleRepository = $this->_em->getRepository('Application\Entity\RediUserRole');
         $this->_workTypeRepository = $this->_em->getRepository('Application\Entity\RediWorkType');
         $this->_workStageRepository = $this->_em->getRepository('Application\Entity\RediWorkStage');
+        $this->_userTypeProjectPermissionRepository = $this->_em->getRepository('Application\Entity\RediUserTypeProjectPermission');
 
 
         $this->_activityRepo = $this->getServiceLocator()->get('Application\Entity\Repository\ActivityRepository');
         $this->_billingRepo = $this->getServiceLocator()->get('Application\Entity\Repository\BillingRepository');
         $this->_campaignRepo = $this->getServiceLocator()->get('Application\Entity\Repository\CampaignRepository');
         $this->_commentRepo = $this->getServiceLocator()->get('Application\Entity\Repository\CommentRepository');
+        $this->_commonRepo = $this->getServiceLocator()->get('Application\Entity\Repository\CommonRepository');
         $this->_customerRepo = $this->getServiceLocator()->get('Application\Entity\Repository\CustomerRepository');
         $this->_estimateRepo = $this->getServiceLocator()->get('Application\Entity\Repository\EstimateRepository');
         $this->_graphicsRequestRepo = $this->getServiceLocator()->get('Application\Entity\Repository\GraphicsRequestRepository');
@@ -185,19 +201,17 @@ class CustomAbstractActionController extends AbstractRestfulController
                 $token = str_replace('Bearer ', '', $auth->getFieldValue());
 
                 if ($this->_checkTokenFormat($token)) {
-                    $jws = SimpleJWS::load($token);
+                    try {
+                        $payload = JWT::decode($token, $jwtSecret, array('HS256'));
 
-
-                    $public_key = openssl_pkey_get_public($this->_jwt_public_key_path);
-
-                    if ($jws->isValid($public_key, 'RS256')) {
-
-                        $payload = $jws->getPayload();
-                        $this->_user_id = (int)$payload['sub'];
-
-                        $user = $this->_userRepository->find($this->_user_id);
-                        $this->_user_type_id = $user->getTypeId();
-                    } else {
+                        if ($payload) {
+                            $this->_user_id = (int)$payload->userId;
+                            $user = $this->_userRepository->find($this->_user_id);
+                            $this->_user_type_id = $user->getTypeId();
+                        } else {
+                            $authFailed = true;
+                        }
+                    } catch(\Exception $ex) {
                         $authFailed = true;
                     }
                 } else {
@@ -216,24 +230,7 @@ class CustomAbstractActionController extends AbstractRestfulController
                     $this->getResponse()->setStatusCode(401);
                     return $response;
                 } else {
-                    // check user permission for the navigation item
-                    $path = explode('/', $this->getRequest()->getUri()->getPath());
-                    if(isset($path[1])) {
-//                        $checkNavigationPermission = $this->_navigationRepo->checkNavigationPermission($this->_user_id, $path[1]);
-
-//                        if(!$checkNavigationPermission) {
-//                            $response = new JsonModel(array(
-//                                'status' => 0,
-//                                'message' => "User does not have access ",
-//                                'auth_error' => 1
-//                            ));
-//                            $e->stopPropagation(true);
-//                            $e->setViewModel($response);
-//
-//                            $this->getResponse()->setStatusCode(401);
-//                            return $response;
-//                        }
-                    }
+                    $this->_user_permission = $this->_usersRepo->getUserPermission($this->_user_type_id, true);
                 }
 
             } else {
@@ -270,21 +267,12 @@ class CustomAbstractActionController extends AbstractRestfulController
         return $response;
     }
 
-    private function _checkTokenFormat($jwsTokenString, $encoder = null)
+    private function _checkTokenFormat($jwsTokenString)
     {
-        if ($encoder === null) {
-            $encoder = strpbrk($jwsTokenString, '+/=') ? new Base64Encoder() : new Base64UrlSafeEncoder();
-        }
-
         $parts = explode('.', $jwsTokenString);
 
         if (count($parts) === 3) {
-            $header = json_decode($encoder->decode($parts[0]), true);
-            $payload = json_decode($encoder->decode($parts[1]), true);
-
-            if (is_array($header) && is_array($payload)) {
-                return true;
-            }
+            return true;
         }
         return false;
     }
@@ -297,7 +285,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         } else {
             $value = $amountValue;
         }
-        
+
         return $value;
     }
 }

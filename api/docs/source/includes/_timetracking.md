@@ -2,8 +2,6 @@
 
 
 
-
-
 ## Get time entries list
 
 Retrieve list of time entries.
@@ -26,7 +24,7 @@ Retrieve list of time entries.
               "spotName": null,
               "versionId": null,
               "versionName": null,
-              "activityTypeId": 5,
+              "activityId": 5,
               "activityValue": "editorial",
               "activityDescription": null,
               "activityLabel": "Editorial",
@@ -47,7 +45,7 @@ Retrieve list of time entries.
               "spotName": null,
               "versionId": null,
               "versionName": null,
-              "activityTypeId": 5,
+              "activityId": 5,
               "activityValue": "editorial",
               "activityDescription": null,
               "activityLabel": "Editorial",
@@ -55,7 +53,24 @@ Retrieve list of time entries.
               "duration": "4.50",
               "notes": null,
               "status": null,
-              "statusName": null
+              "statusName": null,
+              "files": [
+                  {
+                      "fileName": "test1.jpg",
+                      "description": "some description",
+                      "duration": "19.20"
+                  },
+                  {
+                      "fileName": "test1.jpg",
+                      "description": null,
+                      "duration": "91.20"
+                  },
+                  {
+                      "fileName": "test1.jpg",
+                      "description": null,
+                      "duration": null
+                  }
+              ]
             },
             {
               "id": 10,
@@ -68,7 +83,7 @@ Retrieve list of time entries.
               "spotName": null,
               "versionId": null,
               "versionName": null,
-              "activityTypeId": 5,
+              "activityId": 5,
               "activityValue": "editorial",
               "activityDescription": null,
               "activityLabel": "Editorial",
@@ -104,6 +119,8 @@ false | offset | int | null | Offset returned results
 false | user_id | int | null | user id (for filtering data)
 false | start_date | date | null | start date (for filtering data). send informat 'Y-m-d'
 false | end_date | date | null | end date (for filtering data). send informat 'Y-m-d'
+false | project_id | int | null | Project id
+false | exclude_user_time_entry | int | 0 | Exclude time entry of current loggedin user or not. (send 0=do not exclude, 1=exclude time entry of current loggedin user)
 
 
 
@@ -130,7 +147,7 @@ Retrieve single time entry based on its ID.
         "spotName": "Take Over :10",
         "versionId": 2,
         "versionName": "1a",
-        "activityTypeId": 3,
+        "activityId": 3,
         "activityValue": "dailies",
         "activityDescription": null,
         "activityLabel": "Digitize / Assemble Dailies",
@@ -138,7 +155,24 @@ Retrieve single time entry based on its ID.
         "duration": null,
         "notes": "some note",
         "status": 6,
-        "statusName": "Pending Review"
+        "statusName": "Pending Review",
+        "files": [
+            {
+                "fileName": "test1.jpg",
+                "description": "some description",
+                "duration": "19.20"
+            },
+            {
+                "fileName": "test1.jpg",
+                "description": null,
+                "duration": "91.20"
+            },
+            {
+                "fileName": "test1.jpg",
+                "description": null,
+                "duration": null
+            }
+        ]
     }
 }
 ```
@@ -168,13 +202,13 @@ axios.post('/time-entry', {
     worker_id: 1,
     start_date_time: '2017-01-04T16:59:14.078Z',
     duration: 4.5,
-    project_id: 1,
-    campaign_id: 1,    
+    project_campaign_id: 1,
     spot_id: 1,
     version_id: 2,
     activity_type_id: 3,
     activity_description: 'Globe animation',
-    non_billable: true
+    non_billable: true,
+    files: [{"filename":"test1.jpg","description":"some description 100","duration":199.20},{"filename":"test1.jpg","duration":921.20},{"filename":"test1.jpg"}]
 });
 ```
 
@@ -200,15 +234,15 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | start_date_time | datetime | null | Specifies at which date and time work started
 **true** | duration | float | null | Specifies how many hours work lasted(send value in H.M format, if duration is 5 Hour and 30 min, then send 5.30)
-**true** | activity_type_id | int | null | ID of the activity type picked by worker(if not provided current logged in user will be used)
+**true** | activity_id | int | null | ID of the activity picked by worker
 false | worker_id | int | null | Specifies worker which has entered the timesheet
-false | project_id | int | null | Project on which work happened
-false | campaign_id | int | null | Campaign on which work happened
+false | project_campaign_id | int | null | ProjectCampaignId
 false | spot_id | int | null | Spot on which work happened
 false | version_id | int | null | Spot version on which work happened
 false | activity_description | string | null | Selected activity type's additional notes
 false | notes | string | null | Estimate notes
 false | non_billable | bool | false | Defines if time entry is billable or not
+false | files | JSON | false | JSON encoded string of filename, description and duration. (example: [{"filename":"test1.jpg","description":"some description 100","duration":199.20},{"filename":"test1.jpg","duration":921.20},{"filename":"test1.jpg"}] )
 
 
 
@@ -225,10 +259,11 @@ Update existing time entry with.
 axios.put('/time-entry/12', {
     start_date_time: '2017-01-04T16:59:14.078Z',
     duration: 9.45,
-    project_id: 2,
-    activity_type_id: 3,
+    project_campaign_id: 2,
+    activity_id: 3,
     activity_description: 'Globe animation',
-    non_billable: true
+    non_billable: true,
+    files: [{"filename":"test1.jpg","description":"some description 100","duration":199.20},{"filename":"test1.jpg","duration":921.20},{"filename":"test1.jpg"}]
 });
 ```
 
@@ -249,7 +284,7 @@ axios.put('/time-entry/12', {
         "spotName": null,
         "versionId": null,
         "versionName": null,
-        "activityTypeId": 3,
+        "activityId": 3,
         "activityValue": "assistant",
         "activityDescription": "Globe animation",
         "activityLabel": "Assistant Editorial Work",
@@ -272,14 +307,16 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 false | start_date_time | datetime | null | Specifies at which date and time work started
 false | duration | float | null | Specifies how many hours work lasted(send value in H.M format, if duration is 5 Hour and 30 min, then send 5.30)
-false | activity_type_id | int | null | ID of the activity type picked by worker(if not provided current logged in user will be used)
-false | project_id | int | null | Project on which work happened
+false | activity_id | int | null | ID of the activity picked by worker
+false | project_campaign_id | int | null | ProjectCampaignId
 false | campaign_id | int | null | Campaign on which work happened
 false | spot_id | int | null | Spot on which work happened
 false | version_id | int | null | Spot version on which work happened
 false | activity_description | string | null | Selected activity type's additional notes
 false | notes | string | null | Estimate notes
 false | non_billable | bool | null | Defines if time entry is billable or not(send true or false)
+false | files | JSON | null | JSON encoded string of filename, description, duration. if sent previous data will be deleted and new one will be added. (example: [{"filename":"test1.jpg","description":"some description 100","duration":199.20},{"filename":"test1.jpg","duration":921.20},{"filename":"test1.jpg"}] )
+false | status | int | null | Sent status=4 for approving time entry
 
 
 

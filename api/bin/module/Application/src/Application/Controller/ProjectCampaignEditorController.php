@@ -16,98 +16,28 @@ use Application\Entity\RediCcStatementLine;
 
 class ProjectCampaignEditorController extends CustomAbstractActionController
 {
-    public function get($projectId)
+    public function get($projectCampaignId)
     {
-        $campaignId = $this->params()->fromRoute('param1', 0);
-        $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
-        $length = (int)trim($this->getRequest()->getQuery('length', 10));
+        $canViewProjectCampaignCreativeTeam = $this->_usersRepo->extractPermission($this->_user_permission, 12, 'view_or_edit');
 
-        $data = $this->_campaignRepo->getCampaignProjectPeople('editor', $projectId, $campaignId, $offset, $length, null, $this->_siteUrl . 'thumb/profile_image/');
-        $totalCount = $this->_campaignRepo->getCampaignProjectPeopleCount('editor', $projectId, $campaignId);
+        if($canViewProjectCampaignCreativeTeam) {
+            $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
+            $length = (int)trim($this->getRequest()->getQuery('length', 10));
 
-        $response = array(
-            'status' => 1,
-            'message' => 'Request successful',
-            'total_count' => $totalCount,
-            'object_count' => count($data),
-            'data' => $data
-        );
+            $data = $this->_campaignRepo->getCampaignProjectPeople('editor', $projectCampaignId, $offset, $length, null, $this->_siteUrl . 'thumb/profile_image/');
+            $totalCount = $this->_campaignRepo->getCampaignProjectPeopleCount('editor', $projectCampaignId);
 
-        return new JsonModel($response);
-    }
-
-    public function create($data)
-    {
-        $projectId = (int)(isset($data['project_id']) ? trim($data['project_id']) : 0);
-        $campaignId = (int)(isset($data['campaign_id']) ? trim($data['campaign_id']) : 0);
-        $userId = (int)(isset($data['user_id']) ? trim($data['user_id']) : 0);
-
-        if($projectId && $campaignId && $userId) {
-            $project = $this->_projectRepository->find($projectId);
-            $campaign = $this->_campaignRepository->find($campaignId);
-            $user = $this->_userRepository->find($userId);
-
-            if($project && $campaign && $user) {
-                $existingProjectToCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectId, 'campaignId' => $campaignId));
-
-                if ($existingProjectToCampaign) {
-                    $projectCampaignUser = $this->_projectToCampaignEditorRepository->findOneBy(array('projectCampaignId' => $existingProjectToCampaign->getId(), 'userId' => $userId));
-
-                    if (!$projectCampaignUser) {
-                        $projectCampaignUser = new RediProjectToCampaignEditor();
-                        $projectCampaignUser->setProjectCampaignId($existingProjectToCampaign->getId());
-                        $projectCampaignUser->setUserId($userId);
-
-                        $this->_em->persist($projectCampaignUser);
-                        $this->_em->flush();
-
-                        // project history
-                        $historyMessage = 'Editor "' . trim($user->getFirstName() . " " . $user->getLastName()) . '" was added to campaign "' . $campaign->getCampaignName() . '"';
-                        $projectHistory = new RediProjectHistory();
-                        $projectHistory->setProjectId($projectId);
-                        $projectHistory->setCampaignId($campaign->getId());
-                        $projectHistory->setUserId($this->_user_id);
-                        $projectHistory->setMessage($historyMessage);
-                        $projectHistory->setCreatedAt(new \DateTime('now'));
-                        $this->_em->persist($projectHistory);
-                        $this->_em->flush();
-
-                        $response = array(
-                            'status' => 1,
-                            'message' => 'Request successful',
-                        );
-                    } else {
-                        $response = array(
-                            'status' => 0,
-                            'message' => 'Editor already added project to campaign.'
-                        );
-                    }
-                } else {
-                    $response = array(
-                        'status' => 0,
-                        'message' => 'Project campaign not found.'
-                    );
-                }
-            } else {
-                $message = "";
-
-                if(!$project) {
-                    $message = "Project does not exist";
-                } else if(!$campaign) {
-                    $message = "Campaign does not exist";
-                } else if(!$user) {
-                    $message = "User does not exist";
-                }
-
-                $response = array(
-                    'status' => 0,
-                    'message' => $message
-                );
-            }
-        }  else {
+            $response = array(
+                'status' => 1,
+                'message' => 'Request successful',
+                'total_count' => $totalCount,
+                'object_count' => count($data),
+                'data' => $data
+            );
+        } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Please provide required data(project_id, campaign_id, user_id, role_id).'
+                'message' => 'Permission denied.'
             );
         }
 
@@ -118,69 +48,140 @@ class ProjectCampaignEditorController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    public function delete($projectId)
+    public function create($data)
     {
-        $projectId = (int)$projectId;
-        $campaignId = $this->params()->fromRoute('param1', 0);
-        $userId = $this->params()->fromRoute('param2', 0);
+        $canEditProjectCampaignCreativeTeam = $this->_usersRepo->extractPermission($this->_user_permission, 12, 'edit');
 
-        if($projectId && $campaignId && $userId) {
-            $project = $this->_projectRepository->find($projectId);
-            $campaign = $this->_campaignRepository->find($campaignId);
-            $user = $this->_userRepository->find($userId);
+        if($canEditProjectCampaignCreativeTeam) {
+            $projectCampaignId = (int)(isset($data['project_campaign_id']) ? trim($data['project_campaign_id']) : 0);
+            $userId = (int)(isset($data['user_id']) ? trim($data['user_id']) : 0);
 
-            if($project && $campaign && $user) {
-                $existingProjectToCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectId, 'campaignId' => $campaignId));
+            if ($projectCampaignId && $userId) {
+                $user = $this->_userRepository->find($userId);
 
-                if ($existingProjectToCampaign) {
-                    $projectCampaignUser = $this->_projectToCampaignEditorRepository->findOneBy(array('projectCampaignId' => $existingProjectToCampaign->getId(), 'userId' => $userId));
+                if ($user) {
+                    $existingProjectToCampaign = $this->_projectToCampaignRepository->find($projectCampaignId);
 
-                    if ($projectCampaignUser) {
-                        $this->_em->remove($projectCampaignUser);
-                        $this->_em->flush();
+                    if ($existingProjectToCampaign) {
+                        $projectCampaignUser = $this->_projectToCampaignEditorRepository->findOneBy(array('projectCampaignId' => $existingProjectToCampaign->getId(), 'userId' => $userId));
 
-                        // project history
-                        $historyMessage = 'Editor "' . trim($user->getFirstName() . " " . $user->getLastName()) . '" was removed from campaign "' . $campaign->getCampaignName() . '"';
-                        $projectHistory = new RediProjectHistory();
-                        $projectHistory->setProjectId($projectId);
-                        $projectHistory->setCampaignId($campaign->getId());
-                        $projectHistory->setUserId($this->_user_id);
-                        $projectHistory->setMessage($historyMessage);
-                        $projectHistory->setCreatedAt(new \DateTime('now'));
-                        $this->_em->persist($projectHistory);
-                        $this->_em->flush();
+                        if (!$projectCampaignUser) {
+                            $projectCampaignUser = new RediProjectToCampaignEditor();
+                            $projectCampaignUser->setProjectCampaignId($existingProjectToCampaign->getId());
+                            $projectCampaignUser->setUserId($userId);
+
+                            $this->_em->persist($projectCampaignUser);
+                            $this->_em->flush();
+
+                            // project history
+                            $campaign = $this->_campaignRepository->find($existingProjectToCampaign->getCampaignId());
+                            $historyMessage = 'Editor "' . trim($user->getFirstName() . " " . $user->getLastName()) . '" was added to campaign "' . $campaign->getCampaignName() . '"';
+                            $projectHistory = new RediProjectHistory();
+                            $projectHistory->setProjectId($existingProjectToCampaign->getProjectId());
+                            $projectHistory->setCampaignId($campaign->getId());
+                            $projectHistory->setUserId($this->_user_id);
+                            $projectHistory->setMessage($historyMessage);
+                            $projectHistory->setCreatedAt(new \DateTime('now'));
+                            $this->_em->persist($projectHistory);
+                            $this->_em->flush();
+                        }
+
+                        $response = array(
+                            'status' => 1,
+                            'message' => 'Request successful',
+                        );
+                    } else {
+                        $response = array(
+                            'status' => 0,
+                            'message' => 'Project campaign not found.'
+                        );
                     }
-
-                    $response = array(
-                        'status' => 1,
-                        'message' => 'Request successful',
-                    );
                 } else {
                     $response = array(
                         'status' => 0,
-                        'message' => 'Project campaign not found.'
+                        'message' => "User does not exist"
                     );
                 }
             } else {
-                $message = "";
-
-                if(!$project) {
-                    $message = "Project does not exist";
-                } else if(!$campaign) {
-                    $message = "Campaign does not exist";
-                } else if(!$user) {
-                    $message = "User does not exist";
-                }
-
                 $response = array(
                     'status' => 0,
-                    'message' => $message
+                    'message' => 'Please provide required data(project_id, campaign_id, user_id, role_id).'
                 );
             }
-        }  else {
+        } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Please provide required data(project_id, campaign_id, user_id).'
+                'message' => 'Permission denied.'
+            );
+        }
+
+        if ($response['status'] == 0) {
+            $this->getResponse()->setStatusCode(400);
+        }
+
+        return new JsonModel($response);
+    }
+
+    public function delete($projectCampaignId)
+    {
+        $canEditProjectCampaignCreativeTeam = $this->_usersRepo->extractPermission($this->_user_permission, 12, 'edit');
+
+        if($canEditProjectCampaignCreativeTeam) {
+            $projectCampaignId = (int)$projectCampaignId;
+            $userId = $this->params()->fromRoute('param1', 0);
+
+            if ($projectCampaignId && $userId) {
+                $user = $this->_userRepository->find($userId);
+
+                if ($projectCampaignId && $user) {
+                    $existingProjectToCampaign = $this->_projectToCampaignRepository->find($projectCampaignId);
+
+                    if ($existingProjectToCampaign) {
+                        $projectCampaignUser = $this->_projectToCampaignEditorRepository->findOneBy(array('projectCampaignId' => $existingProjectToCampaign->getId(), 'userId' => $userId));
+
+                        if ($projectCampaignUser) {
+                            $this->_em->remove($projectCampaignUser);
+                            $this->_em->flush();
+
+                            // project history
+                            $campaign = $this->_campaignRepository->find($existingProjectToCampaign->getCampaignId());
+                            $historyMessage = 'Editor "' . trim($user->getFirstName() . " " . $user->getLastName()) . '" was removed from campaign "' . $campaign->getCampaignName() . '"';
+                            $projectHistory = new RediProjectHistory();
+                            $projectHistory->setProjectId($existingProjectToCampaign->getProjectId());
+                            $projectHistory->setCampaignId($campaign->getId());
+                            $projectHistory->setUserId($this->_user_id);
+                            $projectHistory->setMessage($historyMessage);
+                            $projectHistory->setCreatedAt(new \DateTime('now'));
+                            $this->_em->persist($projectHistory);
+                            $this->_em->flush();
+                        }
+
+                        $response = array(
+                            'status' => 1,
+                            'message' => 'Request successful',
+                        );
+                    } else {
+                        $response = array(
+                            'status' => 0,
+                            'message' => 'Project campaign not found.'
+                        );
+                    }
+                } else {
+                    $response = array(
+                        'status' => 0,
+                        'message' => "User does not exist"
+                    );
+                }
+            } else {
+                $response = array(
+                    'status' => 0,
+                    'message' => 'Please provide required data(project_id, campaign_id, user_id).'
+                );
+            }
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Permission denied.'
             );
         }
 

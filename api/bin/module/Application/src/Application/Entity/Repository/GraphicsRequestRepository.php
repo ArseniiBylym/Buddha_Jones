@@ -144,25 +144,8 @@ class GraphicsRequestRepository extends EntityRepository
             $row['createdByUserId'] = $row['createdByUserId']?(int)$row['createdByUserId']:null;
             $row['projectCollect'] = $row['projectCollect']?(int)$row['projectCollect']:null;
             $row['stereoFinish'] = $row['stereoFinish']?(int)$row['stereoFinish']:null;
-            $row['createdAt'] = $row['createdAt']->format('Y-m-d H:i:s');
             $row['createdByUser'] = trim($row['firstName'] . ' ' . $row['lastName']);
             $row['finisher'] = trim($row['finisherFirstName'] . ' ' . $row['finisherLastName']);
-
-            if ($row['updatedAt']) {
-                $row['updatedAt'] = $row['updatedAt']->format('Y-m-d H:i:s');
-            }
-
-            if ($row['priorityDate']) {
-                $row['priorityDate'] = $row['priorityDate']->format('Y-m-d H:i:s');
-            }
-
-            if ($row['checkerDueDate']) {
-                $row['checkerDueDate'] = $row['checkerDueDate']->format('Y-m-d H:i:s');
-            }
-
-            if ($row['finalRendersDueDate']) {
-                $row['finalRendersDueDate'] = $row['finalRendersDueDate']->format('Y-m-d H:i:s');
-            }
 
             unset($row['firstName']);
             unset($row['lastName']);
@@ -362,14 +345,6 @@ class GraphicsRequestRepository extends EntityRepository
             $row['createdByUser'] = trim($row['createdByFirstName'] . ' ' . $row['createdByLastName']);
             $row['assignedToUser'] = trim($row['assignedToFirstName'] . ' ' . $row['assignedToLastName']);
 //            $row['finisher'] = trim($row['finisherFirstName'] . ' ' . $row['finisherLastName']);
-
-            if ($row['createdAt']) {
-                $row['createdAt'] = $row['createdAt']->format('Y-m-d H:i:s');
-            }
-
-            if ($row['updatedAt']) {
-                $row['updatedAt'] = $row['updatedAt']->format('Y-m-d H:i:s');
-            }
 
             unset($row['createdByFirstName']);
             unset($row['createdByLastName']);

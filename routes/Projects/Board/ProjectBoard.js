@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import moment from 'moment';
 import { toNumber as _toNumber, merge as _merge, isNil as _isNil, has as _has } from 'lodash';
 import { printDateAsFullYear, printDateAsYeardMonthDateTime, printDateAsTimeAgo } from './../../../helpers/date';
 import history from './../../../core/history';
@@ -14,9 +15,26 @@ import { LoadingSpinner, LoadingIndicator } from './../../../components/Loaders'
 import { Layout, HeaderSection } from './../../../components/Layout';
 import { Paragraph } from './../../../components/Content';
 import { Button, ButtonBack, ButtonEdit } from './../../../components/Button';
-import { Input, Radio, TextArea, Dropdown, DropdownContainer, Counter, OptionsList, Select } from './../../../components/Form';
+import {
+    Input,
+    Radio,
+    TextArea,
+    Dropdown,
+    DropdownContainer,
+    Counter,
+    OptionsList,
+    Select,
+} from './../../../components/Form';
 import { Table, TableRow } from './../../../components/Table';
-import { CommentForm, ClientsFilter, PeoplePicker, CampaignPicker, SpotPicker, Person } from './../../../components/Buddha';
+import {
+    CommentForm,
+    ClientsFilter,
+    PeoplePicker,
+    CampaignPicker,
+    SpotPicker,
+    Person,
+} from './../../../components/Buddha';
+import { DatePicker } from '../../../components/Calendar';
 import { ChangesLog, Campaign } from '.';
 import { statuses } from './../../../helpers/status';
 
@@ -31,11 +49,11 @@ import {
     IconCheckmarkGreen,
     IconTickBlue,
     IconArrowLeftYellow,
-    IconArrowRightYellow
+    IconArrowRightYellow,
 } from './../../../components/Icons';
 
 // Deriviations
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     return {
         header: state.header,
         notifications: state.notifications,
@@ -46,7 +64,7 @@ const mapStateToProps = (state) => {
 };
 
 // Actions
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
         actionsProjectBoard: bindActionCreators(actionsProjectBoard, dispatch),
         actionsHeader: bindActionCreators(actionsHeader, dispatch),
@@ -81,15 +99,15 @@ class PageProjectBoard extends React.Component {
             creativeExecutives: [
                 {
                     id: 0,
-                    name: 'Create new creative executive'
+                    name: 'Create new creative executive',
                 },
                 {
                     id: 1,
                     name: 'Michael Jones',
                     address: '1156 High Street Santa Cruz, CA 95064',
                     email: 'micheal.jones@warnerbros.com',
-                    phone: '(323) 469-1743'
-                }
+                    phone: '(323) 469-1743',
+                },
             ],
             savingCampaign: false,
             editing: {
@@ -102,8 +120,8 @@ class PageProjectBoard extends React.Component {
                     name: '',
                     phone: '',
                     email: '',
-                    address: ''
-                }
+                    address: '',
+                },
             },
             campaigns: [],
             history: [],
@@ -118,24 +136,24 @@ class PageProjectBoard extends React.Component {
                     ],
                     leadProducer: {
                         id: 1,
-                        name: 'John Doe'
+                        name: 'John Doe',
                     },
                     producer: {
                         id: 2,
-                        name: 'John Smith'
+                        name: 'John Smith',
                     },
                     associateProducer: {
                         id: 3,
-                        name: 'Adam Smith'
+                        name: 'Adam Smith',
                     },
                     creativeManager: {
                         id: 4,
-                        name: 'Joe Smith'
+                        name: 'Joe Smith',
                     },
                     creativeCoordinator: {
                         id: 5,
-                        name: 'Jonas Smith'
-                    }
+                        name: 'Jonas Smith',
+                    },
                 },
                 editorial: {
                     startDate: new Date('2016-08-02T12:00:00Z'),
@@ -143,48 +161,48 @@ class PageProjectBoard extends React.Component {
                     deliveryDate: new Date('2016-08-22T12:00:00Z'),
                     requestedEditor: {
                         id: 20,
-                        name: 'Fred "FG" Gago'
+                        name: 'Fred "FG" Gago',
                     },
                     assignedEditor: {
                         id: undefined,
-                        name: undefined
+                        name: undefined,
                     },
-                    notes: ''
+                    notes: '',
                 },
                 finance: {
                     notes: '',
                     requestedBudget: undefined,
                     assignedbudget: undefined,
-                    specWork: ''
+                    specWork: '',
                 },
                 graphics: {
                     requestedArtDirector: {
                         id: 0,
-                        name: 'Art director'
+                        name: 'Art director',
                     },
                     assignedArtDirector: {
                         id: undefined,
-                        name: undefined
+                        name: undefined,
                     },
                     requestedDesigner: {
                         id: 0,
-                        name: 'Graphics designer'
+                        name: 'Graphics designer',
                     },
                     assignedDesigner: {
                         id: undefined,
-                        name: undefined
+                        name: undefined,
                     },
-                    notes: ''
+                    notes: '',
                 },
                 writing: {
                     assignedWriters: [],
-                    notes: ''
+                    notes: '',
                 },
                 music: {
                     assignedMusicians: [],
                     contact: '',
                     notes: '',
-                }
+                },
             },
             meetings: {
                 create: {
@@ -194,9 +212,9 @@ class PageProjectBoard extends React.Component {
                     date: tomorrow,
                     creativeCoordinator: {
                         id: null,
-                        name: 'Assign coordinator'
+                        name: 'Assign coordinator',
                     },
-                    notes: ''
+                    notes: '',
                 },
                 list: [
                     {
@@ -204,12 +222,12 @@ class PageProjectBoard extends React.Component {
                         date: new Date('2016-11-03T12:00:00Z'),
                         creativeCoordinator: {
                             id: 1,
-                            name: 'John Doe'
+                            name: 'John Doe',
                         },
-                        notes: 'Creative kick-off meeting'
-                    }
-                ]
-            }
+                        notes: 'Creative kick-off meeting',
+                    },
+                ],
+            },
         };
 
         this.componentIsMounted = true;
@@ -260,14 +278,9 @@ class PageProjectBoard extends React.Component {
         this.props.actionsHeader.setNewHeader(
             {
                 title: pageTitle,
-                subTitle: pageSubTitle
+                subTitle: pageSubTitle,
             },
-            [
-                <ButtonBack
-                    onClick={e => this.handleBackToBoardNavigation(e)}
-                    label="Back to projects board"
-                />
-            ]
+            [<ButtonBack onClick={e => this.handleBackToBoardNavigation(e)} label="Back to projects board" />]
         );
     }
 
@@ -276,22 +289,24 @@ class PageProjectBoard extends React.Component {
             const projectId = _toNumber(this.props.projectId);
 
             if (!isNaN(projectId) && projectId !== null) {
-                this.props.actionsProjectBoard.initializeProject(
-                    projectId,
-                    !_isNil(this.props.projectName) && this.props.projectName ? this.props.projectName : null,
-                    !_isNil(this.props.clientId) && this.props.clientId ? _toNumber(this.props.clientId) : null,
-                    !_isNil(this.props.clientName) && this.props.clientName ? this.props.clientName : null
-                ).catch(() => {
-                    setTimeout(() => {
-                        this.fetchProjectDetails();
-                    }, 2048);
-                });
+                this.props.actionsProjectBoard
+                    .initializeProject(
+                        projectId,
+                        !_isNil(this.props.projectName) && this.props.projectName ? this.props.projectName : null,
+                        !_isNil(this.props.clientId) && this.props.clientId ? _toNumber(this.props.clientId) : null,
+                        !_isNil(this.props.clientName) && this.props.clientName ? this.props.clientName : null
+                    )
+                    .catch(() => {
+                        setTimeout(() => {
+                            this.fetchProjectDetails();
+                        }, 2048);
+                    });
             }
         }
     }
 
     fetchAllVersions() {
-        this.props.actionsProjectsVersions.fetchAllVersions().catch((error) => {
+        this.props.actionsProjectsVersions.fetchAllVersions().catch(error => {
             setTimeout(() => {
                 if (this.componentIsMounted) {
                     this.fetchAllVersions();
@@ -302,7 +317,7 @@ class PageProjectBoard extends React.Component {
 
     fetchCustomerDetails() {
         if (this.props.clientId) {
-            this.props.actionsCustomers.fetchCustomerDetails(_toNumber(this.props.clientId)).catch((error) => {
+            this.props.actionsCustomers.fetchCustomerDetails(_toNumber(this.props.clientId)).catch(error => {
                 setTimeout(() => {
                     if (this.componentIsMounted) {
                         this.fetchCustomerDetails();
@@ -314,7 +329,7 @@ class PageProjectBoard extends React.Component {
 
     fetchProjectHistory() {
         if (this.props.projectId) {
-            this.props.actionsProjectBoard.fetchProjectHistory(_toNumber(this.props.projectId)).catch((error) => {
+            this.props.actionsProjectBoard.fetchProjectHistory(_toNumber(this.props.projectId)).catch(error => {
                 setTimeout(() => {
                     if (this.componentIsMounted) {
                         this.fetchProjectHistory();
@@ -325,9 +340,10 @@ class PageProjectBoard extends React.Component {
     }
 
     handleBackToBoardNavigation(e) {
-        const page = typeof this.props.fromProjectsPage !== 'undefined' && this.props.fromProjectsPage
-            ? _toNumber(this.props.fromProjectsPage)
-            : null;
+        const page =
+            typeof this.props.fromProjectsPage !== 'undefined' && this.props.fromProjectsPage
+                ? _toNumber(this.props.fromProjectsPage)
+                : null;
 
         history.push('/projects/' + (page && !isNaN(page) ? page : '1'));
     }
@@ -352,10 +368,11 @@ class PageProjectBoard extends React.Component {
                             .slice(0, campaignIndex)
                             .concat([
                                 Object.assign({}, this.state.campaigns[campaignIndex], {
-                                    showCreativeExecutiveInfo: !this.state.campaigns[campaignIndex].showCreativeExecutiveInfo
-                                })
+                                    showCreativeExecutiveInfo: !this.state.campaigns[campaignIndex]
+                                        .showCreativeExecutiveInfo,
+                                }),
                             ])
-                            .concat(this.state.campaigns.slice(campaignIndex + 1))
+                            .concat(this.state.campaigns.slice(campaignIndex + 1)),
                     })
                 );
             }
@@ -367,7 +384,7 @@ class PageProjectBoard extends React.Component {
         let execEdit = Object.assign({}, this.state.editing.creativeExecutive, {
             error: false,
             saving: false,
-            adding: true
+            adding: true,
         });
 
         // When exec is defined
@@ -377,14 +394,14 @@ class PageProjectBoard extends React.Component {
                 name: exec.name,
                 phone: typeof exec.phone !== 'undefined' ? exec.phone : '',
                 email: typeof exec.email !== 'undefined' ? exec.email : '',
-                address: typeof exec.address !== 'undefined' ? exec.address : ''
+                address: typeof exec.address !== 'undefined' ? exec.address : '',
             });
         }
 
         // When campaign id is defined
         if (typeof campaignId !== 'undefined') {
             execEdit = Object.assign({}, execEdit, {
-                campaignId: campaignId
+                campaignId: campaignId,
             });
         }
 
@@ -392,14 +409,18 @@ class PageProjectBoard extends React.Component {
         this.setState(
             Object.assign({}, this.state, {
                 editing: Object.assign({}, this.state.editing, {
-                    creativeExecutive: execEdit
-                })
+                    creativeExecutive: execEdit,
+                }),
             })
         );
     }
 
     handleCreativeExecutiveChange(selected, campaignIndex) {
-        if (typeof selected !== 'undefined' && typeof selected.value !== 'undefined' && typeof selected.label !== 'undefined') {
+        if (
+            typeof selected !== 'undefined' &&
+            typeof selected.value !== 'undefined' &&
+            typeof selected.label !== 'undefined'
+        ) {
             // Values
             let name = '';
             let phone = '';
@@ -408,7 +429,7 @@ class PageProjectBoard extends React.Component {
 
             // Find exec
             if (selected.value !== 0) {
-                this.state.creativeExecutives.some((exec => {
+                this.state.creativeExecutives.some(exec => {
                     if (exec.id === selected.value) {
                         name = exec.name;
                         phone = exec.phone;
@@ -416,7 +437,7 @@ class PageProjectBoard extends React.Component {
                         address = exec.address;
                         return true;
                     }
-                }));
+                });
             }
 
             // Determine values
@@ -425,29 +446,34 @@ class PageProjectBoard extends React.Component {
                 name: name,
                 phone: phone,
                 email: email,
-                address: address
+                address: address,
             });
 
             // Update state
             this.setState(
                 Object.assign({}, this.state, {
                     editing: Object.assign({}, this.state.editing, {
-                        creativeExecutive: Object.assign({}, this.state.editing.creativeExecutive, execEdit)
-                    })
+                        creativeExecutive: Object.assign({}, this.state.editing.creativeExecutive, execEdit),
+                    }),
                 })
             );
         }
     }
 
     handleCreativeExecutiveInfoEditChange(e, field) {
-        if (typeof e !== 'undefined' && typeof e.target !== 'undefined' && typeof e.target.value !== 'undefined' && typeof field !== 'undefined') {
+        if (
+            typeof e !== 'undefined' &&
+            typeof e.target !== 'undefined' &&
+            typeof e.target.value !== 'undefined' &&
+            typeof field !== 'undefined'
+        ) {
             this.setState(
                 Object.assign({}, this.state, {
                     editing: Object.assign({}, this.state.editing, {
                         creativeExecutive: Object.assign({}, this.state.editing.creativeExecutive, {
-                            [field]: e.target.value
-                        })
-                    })
+                            [field]: e.target.value,
+                        }),
+                    }),
                 })
             );
         }
@@ -456,11 +482,14 @@ class PageProjectBoard extends React.Component {
     handleCreativeExecutiveInfoChangesSave(e, campaignIndex) {
         // Creative exec
         let creativeExec = {
-            id: typeof this.state.editing.creativeExecutive.id !== 'undefined' ? this.state.editing.creativeExecutive.id : 0,
+            id:
+                typeof this.state.editing.creativeExecutive.id !== 'undefined'
+                    ? this.state.editing.creativeExecutive.id
+                    : 0,
             name: this.state.editing.creativeExecutive.name.trim(),
             phone: this.state.editing.creativeExecutive.phone.trim(),
             email: this.state.editing.creativeExecutive.email.trim(),
-            address: this.state.editing.creativeExecutive.address.trim()
+            address: this.state.editing.creativeExecutive.address.trim(),
         };
 
         // Indicate saving
@@ -470,9 +499,9 @@ class PageProjectBoard extends React.Component {
                     creativeExecutive: Object.assign({}, this.state.editing.creativeExecutive, {
                         error: false,
                         adding: true,
-                        saving: true
-                    })
-                })
+                        saving: true,
+                    }),
+                }),
             })
         );
 
@@ -484,24 +513,24 @@ class PageProjectBoard extends React.Component {
                 if (creativeExec.id === 0) {
                     // Get id of new creative executive
                     creativeExec = Object.assign({}, creativeExec, {
-                        id: this.state.creativeExecutives.length + 1
+                        id: this.state.creativeExecutives.length + 1,
                     });
 
                     // Create new executive and assign it to campaign
                     this.setState(
                         Object.assign({}, this.state, {
-                            creativeExecutives: this.state.creativeExecutives
-                                .concat([creativeExec]),
-                            campaigns: typeof campaignIndex !== 'undefined'
-                                ? this.state.campaigns
-                                    .slice(0, campaignIndex)
-                                    .concat([
-                                        Object.assign({}, this.state.campaigns[campaignIndex], {
-                                            creativeExecutive: creativeExec.id
-                                        })
-                                    ])
-                                    .concat(this.state.campaigns.slice(campaignIndex + 1))
-                                : this.state.campaigns,
+                            creativeExecutives: this.state.creativeExecutives.concat([creativeExec]),
+                            campaigns:
+                                typeof campaignIndex !== 'undefined'
+                                    ? this.state.campaigns
+                                          .slice(0, campaignIndex)
+                                          .concat([
+                                              Object.assign({}, this.state.campaigns[campaignIndex], {
+                                                  creativeExecutive: creativeExec.id,
+                                              }),
+                                          ])
+                                          .concat(this.state.campaigns.slice(campaignIndex + 1))
+                                    : this.state.campaigns,
                             editing: Object.assign({}, this.state.editing, {
                                 creativeExecutive: Object.assign({}, this.state.editing.creativeExecutive, {
                                     error: false,
@@ -512,9 +541,9 @@ class PageProjectBoard extends React.Component {
                                     name: '',
                                     phone: '',
                                     email: '',
-                                    address: ''
-                                })
-                            })
+                                    address: '',
+                                }),
+                            }),
                         })
                     );
 
@@ -534,19 +563,20 @@ class PageProjectBoard extends React.Component {
                             creativeExecutives: this.state.creativeExecutives
                                 .slice(0, creativeExecIndex)
                                 .concat([
-                                    Object.assign({}, this.state.creativeExecutives[creativeExecIndex], creativeExec)
+                                    Object.assign({}, this.state.creativeExecutives[creativeExecIndex], creativeExec),
                                 ])
                                 .concat(this.state.creativeExecutives.slice(creativeExecIndex + 1)),
-                            campaigns: typeof campaignIndex !== 'undefined'
-                                ? this.state.campaigns
-                                    .slice(0, campaignIndex)
-                                    .concat([
-                                        Object.assign({}, this.state.campaigns[campaignIndex], {
-                                            creativeExecutive: creativeExec.id
-                                        })
-                                    ])
-                                    .concat(this.state.campaigns.slice(campaignIndex + 1))
-                                : this.state.campaigns,
+                            campaigns:
+                                typeof campaignIndex !== 'undefined'
+                                    ? this.state.campaigns
+                                          .slice(0, campaignIndex)
+                                          .concat([
+                                              Object.assign({}, this.state.campaigns[campaignIndex], {
+                                                  creativeExecutive: creativeExec.id,
+                                              }),
+                                          ])
+                                          .concat(this.state.campaigns.slice(campaignIndex + 1))
+                                    : this.state.campaigns,
                             editing: Object.assign({}, this.state.editing, {
                                 creativeExecutive: Object.assign({}, this.state.editing.creativeExecutive, {
                                     error: false,
@@ -557,9 +587,9 @@ class PageProjectBoard extends React.Component {
                                     name: '',
                                     phone: '',
                                     email: '',
-                                    address: ''
-                                })
-                            })
+                                    address: '',
+                                }),
+                            }),
                         })
                     );
 
@@ -574,9 +604,9 @@ class PageProjectBoard extends React.Component {
                         creativeExecutive: Object.assign({}, this.state.editing.creativeExecutive, {
                             error: true,
                             adding: true,
-                            saving: false
-                        })
-                    })
+                            saving: false,
+                        }),
+                    }),
                 })
             );
         }
@@ -585,19 +615,18 @@ class PageProjectBoard extends React.Component {
     addEmptyCampaignToState(campaignId, campaignName) {
         this.setState({
             savingCampaign: false,
-            campaigns: this.state.campaigns
-                .concat([
-                    {
-                        id: campaignId,
-                        name: campaignName,
-                        editable: false,
-                        creativeExecutive: null,
-                        showCreativeExecutiveInfo: false,
-                        manager: [],
-                        producer: [],
-                        spots: []
-                    }
-                ])
+            campaigns: this.state.campaigns.concat([
+                {
+                    id: campaignId,
+                    name: campaignName,
+                    editable: false,
+                    creativeExecutive: null,
+                    showCreativeExecutiveInfo: false,
+                    manager: [],
+                    producer: [],
+                    spots: [],
+                },
+            ]),
         });
     }
 
@@ -625,8 +654,9 @@ class PageProjectBoard extends React.Component {
             const campaignIndex = this.getCampaignIndexById(campaignId);
             if (campaignIndex !== null) {
                 this.setState({
-                    campaigns: this.state.campaigns.slice(0, campaignIndex)
-                        .concat(this.state.campaigns.slice(campaignIndex + 1))
+                    campaigns: this.state.campaigns
+                        .slice(0, campaignIndex)
+                        .concat(this.state.campaigns.slice(campaignIndex + 1)),
                 });
             }
         }
@@ -656,24 +686,26 @@ class PageProjectBoard extends React.Component {
                     numberOfRevisions: e.revisions,
                     firstRevisionCost: e.first_revision_cost,
                     graphicsIncluded: e.graphics_revisions === 1 ? true : false,
-                    versions: []
+                    versions: [],
                 };
 
                 // For new spot
                 if (e.new === true) {
                     // Mark spot as just added
                     spotObject = Object.assign({}, spotObject, {
-                        justAdded: true
+                        justAdded: true,
                     });
 
                     // Update state with new spot
                     this.setState({
-                        campaigns: this.state.campaigns.slice(0, campaignIndex)
-                            .concat([Object.assign({}, this.state.campaigns[campaignIndex], {
-                                spots: this.state.campaigns[campaignIndex].spots
-                                    .concat(spotObject)
-                            })])
-                            .concat(this.state.campaigns.slice(campaignIndex + 1))
+                        campaigns: this.state.campaigns
+                            .slice(0, campaignIndex)
+                            .concat([
+                                Object.assign({}, this.state.campaigns[campaignIndex], {
+                                    spots: this.state.campaigns[campaignIndex].spots.concat(spotObject),
+                                }),
+                            ])
+                            .concat(this.state.campaigns.slice(campaignIndex + 1)),
                     });
                 } else {
                     // Find updated spot
@@ -691,21 +723,33 @@ class PageProjectBoard extends React.Component {
                     if (spotIndex !== null) {
                         // Update versions
                         spotObject = Object.assign({}, spotObject, {
-                            versions: this.state.campaigns[campaignIndex].spots[spotIndex].versions
+                            versions: this.state.campaigns[campaignIndex].spots[spotIndex].versions,
                         });
 
                         // Update spot already in state
-                        this.setState({
-                            campaigns: this.state.campaigns.slice(0, campaignIndex)
-                                .concat([Object.assign({}, this.state.campaigns[campaignIndex], {
-                                    spots: this.state.campaigns[campaignIndex].spots.slice(0, spotIndex)
-                                        .concat([_merge(this.state.campaigns[campaignIndex].spots[spotIndex], spotObject)])
-                                        .concat(this.state.campaigns[campaignIndex].spots.slice(spotIndex + 1))
-                                })])
-                                .concat(this.state.campaigns.slice(campaignIndex + 1))
-                        }, () => {
-                            this.fetchProjectHistory();
-                        });
+                        this.setState(
+                            {
+                                campaigns: this.state.campaigns
+                                    .slice(0, campaignIndex)
+                                    .concat([
+                                        Object.assign({}, this.state.campaigns[campaignIndex], {
+                                            spots: this.state.campaigns[campaignIndex].spots
+                                                .slice(0, spotIndex)
+                                                .concat([
+                                                    _merge(
+                                                        this.state.campaigns[campaignIndex].spots[spotIndex],
+                                                        spotObject
+                                                    ),
+                                                ])
+                                                .concat(this.state.campaigns[campaignIndex].spots.slice(spotIndex + 1)),
+                                        }),
+                                    ])
+                                    .concat(this.state.campaigns.slice(campaignIndex + 1)),
+                            },
+                            () => {
+                                this.fetchProjectHistory();
+                            }
+                        );
                     }
                 }
             }
@@ -741,27 +785,46 @@ class PageProjectBoard extends React.Component {
                 // If spot was found
                 if (spotIndex !== null) {
                     // Update state with new version
-                    this.setState({
-                        campaigns: this.state.campaigns.slice(0, campaignIndex)
-                            .concat([Object.assign({}, this.state.campaigns[campaignIndex], {
-                                spots: this.state.campaigns[campaignIndex].spots.slice(0, spotIndex)
-                                    .concat([Object.assign({}, this.state.campaigns[campaignIndex].spots[spotIndex], {
-                                        versions: this.state.campaigns[campaignIndex].spots[spotIndex].versions
-                                            .concat([e.version])
-                                    })])
-                                    .concat(this.state.campaigns[campaignIndex].spots.slice(spotIndex + 1))
-                            })])
-                            .concat(this.state.campaigns.slice(campaignIndex + 1))
-                    }, () => {
-                        this.fetchProjectHistory();
-                    });
+                    this.setState(
+                        {
+                            campaigns: this.state.campaigns
+                                .slice(0, campaignIndex)
+                                .concat([
+                                    Object.assign({}, this.state.campaigns[campaignIndex], {
+                                        spots: this.state.campaigns[campaignIndex].spots
+                                            .slice(0, spotIndex)
+                                            .concat([
+                                                Object.assign(
+                                                    {},
+                                                    this.state.campaigns[campaignIndex].spots[spotIndex],
+                                                    {
+                                                        versions: this.state.campaigns[campaignIndex].spots[
+                                                            spotIndex
+                                                        ].versions.concat([e.version]),
+                                                    }
+                                                ),
+                                            ])
+                                            .concat(this.state.campaigns[campaignIndex].spots.slice(spotIndex + 1)),
+                                    }),
+                                ])
+                                .concat(this.state.campaigns.slice(campaignIndex + 1)),
+                        },
+                        () => {
+                            this.fetchProjectHistory();
+                        }
+                    );
                 }
             }
         }
     }
 
     handleManagementUserAdded(e) {
-        if (typeof e !== 'undefined' && typeof e.campaignId !== 'undefined' && typeof e.type !== 'undefined' && typeof e.value.id !== 'undefined') {
+        if (
+            typeof e !== 'undefined' &&
+            typeof e.campaignId !== 'undefined' &&
+            typeof e.type !== 'undefined' &&
+            typeof e.value.id !== 'undefined'
+        ) {
             // Find campaign
             let campaignIndex = null;
             this.state.campaigns.some((c, cIndex) => {
@@ -777,22 +840,32 @@ class PageProjectBoard extends React.Component {
             if (campaignIndex !== null) {
                 // Update state
                 this.setState({
-                    campaigns: this.state.campaigns.slice(0, campaignIndex)
-                        .concat([Object.assign({}, this.state.campaigns[campaignIndex], {
-                            [e.type]: [{
-                                id: e.value.id,
-                                image: e.value.image,
-                                fullName: e.value.fullname
-                            }].concat(this.state.campaigns[campaignIndex][e.type])
-                        })])
-                        .concat(this.state.campaigns.slice(campaignIndex + 1))
+                    campaigns: this.state.campaigns
+                        .slice(0, campaignIndex)
+                        .concat([
+                            Object.assign({}, this.state.campaigns[campaignIndex], {
+                                [e.type]: [
+                                    {
+                                        id: e.value.id,
+                                        image: e.value.image,
+                                        fullName: e.value.fullname,
+                                    },
+                                ].concat(this.state.campaigns[campaignIndex][e.type]),
+                            }),
+                        ])
+                        .concat(this.state.campaigns.slice(campaignIndex + 1)),
                 });
             }
         }
     }
 
     handleManagementUserRemoved(e) {
-        if (typeof e !== 'undefined' && typeof e.campaignId !== 'undefined' && typeof e.type !== 'undefined' && typeof e.userId !== 'undefined') {
+        if (
+            typeof e !== 'undefined' &&
+            typeof e.campaignId !== 'undefined' &&
+            typeof e.type !== 'undefined' &&
+            typeof e.userId !== 'undefined'
+        ) {
             // Find campaign
             let campaignIndex = null;
             this.state.campaigns.some((c, cIndex) => {
@@ -822,21 +895,28 @@ class PageProjectBoard extends React.Component {
                     // If user was found
                     if (userIndex !== null) {
                         this.setState({
-                            campaigns: this.state.campaigns.slice(0, campaignIndex)
-                                .concat([Object.assign({}, this.state.campaigns[campaignIndex], {
-                                    [e.type]: this.state.campaigns[campaignIndex][e.type].slice(0, userIndex)
-                                    .concat(this.state.campaigns[campaignIndex][e.type].slice(userIndex + 1))
-                                })])
-                                .concat(this.state.campaigns.slice(campaignIndex + 1))
+                            campaigns: this.state.campaigns
+                                .slice(0, campaignIndex)
+                                .concat([
+                                    Object.assign({}, this.state.campaigns[campaignIndex], {
+                                        [e.type]: this.state.campaigns[campaignIndex][e.type]
+                                            .slice(0, userIndex)
+                                            .concat(this.state.campaigns[campaignIndex][e.type].slice(userIndex + 1)),
+                                    }),
+                                ])
+                                .concat(this.state.campaigns.slice(campaignIndex + 1)),
                         });
                     }
                 } else {
                     this.setState({
-                        campaigns: this.state.campaigns.slice(0, campaignIndex)
-                            .concat([Object.assign({}, this.state.campaigns[campaignIndex], {
-                                [e.type]: []
-                            })])
-                            .concat(this.state.campaigns.slice(campaignIndex + 1))
+                        campaigns: this.state.campaigns
+                            .slice(0, campaignIndex)
+                            .concat([
+                                Object.assign({}, this.state.campaigns[campaignIndex], {
+                                    [e.type]: [],
+                                }),
+                            ])
+                            .concat(this.state.campaigns.slice(campaignIndex + 1)),
                     });
                 }
             }
@@ -851,27 +931,31 @@ class PageProjectBoard extends React.Component {
                         creative: Object.assign({}, this.state.teams.creative, {
                             [member]: Object.assign({}, this.state.teams.creative[member], {
                                 id: e.value,
-                                name: e.label
-                            })
-                        })
-                    })
+                                name: e.label,
+                            }),
+                        }),
+                    }),
                 })
             );
         }
     }
 
     handleEditorialRequesteEditorChange(selected) {
-        if (typeof selected !== 'undefined' && typeof selected.value !== 'undefined' && typeof selected.label !== 'undefined') {
+        if (
+            typeof selected !== 'undefined' &&
+            typeof selected.value !== 'undefined' &&
+            typeof selected.label !== 'undefined'
+        ) {
             this.setState(
                 Object.assign({}, this.state, {
                     teams: Object.assign({}, this.state.teams, {
                         editorial: Object.assign({}, this.state.teams.editorial, {
                             requestedEditor: Object.assign({}, this.state.teams.editorial.requestedEditor, {
                                 id: selected.value,
-                                name: selected.label
-                            })
-                        })
-                    })
+                                name: selected.label,
+                            }),
+                        }),
+                    }),
                 })
             );
         }
@@ -884,25 +968,29 @@ class PageProjectBoard extends React.Component {
                     create: Object.assign({}, this.state.meetings.create, {
                         error: false,
                         adding: !this.state.meetings.create.adding,
-                        saving: false
-                    })
-                })
+                        saving: false,
+                    }),
+                }),
             })
         );
     }
 
     handleMeetingCoordinatorChange(selected) {
-        if (typeof selected !== 'undefined' && typeof selected.value !== 'undefined' && typeof selected.label !== 'undefined') {
+        if (
+            typeof selected !== 'undefined' &&
+            typeof selected.value !== 'undefined' &&
+            typeof selected.label !== 'undefined'
+        ) {
             this.setState(
                 Object.assign({}, this.state, {
                     meetings: Object.assign({}, this.state.meetings, {
                         create: Object.assign({}, this.state.meetings.create, {
                             creativeCoordinator: Object.assign({}, this.state.meetings.create.creativeCoordinator, {
                                 id: selected.value,
-                                name: selected.label
-                            })
-                        })
-                    })
+                                name: selected.label,
+                            }),
+                        }),
+                    }),
                 })
             );
         }
@@ -920,9 +1008,9 @@ class PageProjectBoard extends React.Component {
                 Object.assign({}, this.state, {
                     meetings: Object.assign({}, this.state.meetings, {
                         create: Object.assign({}, this.state.meetings.create, {
-                            notes: e.target.value
-                        })
-                    })
+                            notes: e.target.value,
+                        }),
+                    }),
                 })
             );
         }
@@ -936,9 +1024,9 @@ class PageProjectBoard extends React.Component {
                     create: Object.assign({}, this.state.meetings.create, {
                         adding: true,
                         error: false,
-                        saving: true
-                    })
-                })
+                        saving: true,
+                    }),
+                }),
             })
         );
 
@@ -970,20 +1058,22 @@ class PageProjectBoard extends React.Component {
                                 date: tomorrow,
                                 creativeCoordinator: Object.assign({}, this.state.meetings.create.creativeCoordinator, {
                                     id: null,
-                                    name: 'Assign coordinator'
+                                    name: 'Assign coordinator',
                                 }),
-                                notes: ''
+                                notes: '',
                             }),
-                            list: [{
-                                id: meetingId,
-                                creativeCoordinator: {
-                                    id: coordinator.id,
-                                    name: coordinator.name
+                            list: [
+                                {
+                                    id: meetingId,
+                                    creativeCoordinator: {
+                                        id: coordinator.id,
+                                        name: coordinator.name,
+                                    },
+                                    date: tomorrow,
+                                    notes: notes,
                                 },
-                                date: tomorrow,
-                                notes: notes
-                            }].concat(this.state.meetings.list)
-                        })
+                            ].concat(this.state.meetings.list),
+                        }),
                     })
                 );
             }, 1024);
@@ -995,9 +1085,9 @@ class PageProjectBoard extends React.Component {
                         create: Object.assign({}, this.state.meetings.create, {
                             adding: true,
                             error: true,
-                            saving: false
-                        })
-                    })
+                            saving: false,
+                        }),
+                    }),
                 })
             );
         }
@@ -1017,14 +1107,13 @@ class PageProjectBoard extends React.Component {
     renderLoader() {
         return (
             <Layout>
-
                 <Row justifyContent="center">
                     <Col width={64}>
-                        <br /><br />
+                        <br />
+                        <br />
                         <LoadingSpinner size={64} />
                     </Col>
                 </Row>
-
             </Layout>
         );
     }
@@ -1036,7 +1125,6 @@ class PageProjectBoard extends React.Component {
         // Render
         return (
             <Layout>
-
                 <ChangesLog loading={selectedProject.loading} history={selectedProject.history} />
 
                 <Section
@@ -1045,36 +1133,51 @@ class PageProjectBoard extends React.Component {
                     headerElements={[
                         {
                             key: 'edit-note-button',
-                            element:
+                            element: (
                                 <ButtonEdit
                                     onClick={e => this.handleNotesEditableToggle(e)}
                                     label={this.state.notes.editable ? 'Cancel edit' : 'Edit project description'}
                                     float="right"
                                 />
-                        }
+                            ),
+                        },
                     ]}
                 >
-                    <CommentForm
-                        onChange={e => this.handleNotesChange(e)}
-                        onSubmit={e => this.handleNotesSubmit(e)}
-                        value={this.state.notes.editable ? this.state.notes.savedValue : selectedProject.notes || ''}
-                        placeholder="Details regarding requested work..."
-                        viewOnlyEmptyValueText="Project has no details."
-                        viewOnly={this.state.notes.editable === false}
-                        status={this.state.notes.status}
-                        label="Save note"
-                        labelSaving="Saving note"
-                        labelSuccess="Saved note"
-                        labelError="Could not save note, try again"
-                    />
+                    <Row>
+                        <Col size={9}>
+                            <CommentForm
+                                onChange={e => this.handleNotesChange(e)}
+                                onSubmit={e => this.handleNotesSubmit(e)}
+                                value={
+                                    this.state.notes.editable
+                                        ? this.state.notes.savedValue
+                                        : selectedProject.notes || ''
+                                }
+                                placeholder="Details regarding requested work..."
+                                viewOnlyEmptyValueText="Project has no details."
+                                viewOnly={this.state.notes.editable === false}
+                                status={this.state.notes.status}
+                                label="Save note"
+                                labelSaving="Saving note"
+                                labelSuccess="Saved note"
+                                labelError="Could not save note, try again"
+                            />
+                        </Col>
+                        <Col size={3}>
+                            <DatePicker
+                                type="field"
+                                isAmerican={true}
+                                label="Release date"
+                                value={moment('2018-06-02')}
+                            />
+                        </Col>
+                    </Row>
                 </Section>
 
                 <Section
                     title="Campaigns"
                     headerElements={
-                        selectedProject.updating
-                            ? [{ element: <LoadingIndicator label="Refreshing" /> }]
-                            : []
+                        selectedProject.updating ? [{ element: <LoadingIndicator label="Refreshing" /> }] : []
                     }
                 >
                     <Row className={s.campaigns}>
@@ -1087,7 +1190,7 @@ class PageProjectBoard extends React.Component {
                                 <Row removeMargins={true}>
                                     <Col>
                                         <div className={s.newCampaignBox}>
-                                            {(this.state.newCampaignCreateStatus !== statuses.default) && (
+                                            {this.state.newCampaignCreateStatus !== statuses.default && (
                                                 <Paragraph
                                                     type={
                                                         this.state.newCampaignCreateStatus === statuses.saving
@@ -1097,23 +1200,21 @@ class PageProjectBoard extends React.Component {
                                                                 : 'default'
                                                     }
                                                 >
-                                                    {
-                                                        this.state.newCampaignCreateStatus === statuses.saving
-                                                            ? 'Saving new campaign...'
-                                                            : this.state.newCampaignCreateStatus === statuses.error
-                                                                ? 'Could not create new campaign, try again'
-                                                                : 'Campaign added to project'
-                                                    }
+                                                    {this.state.newCampaignCreateStatus === statuses.saving
+                                                        ? 'Saving new campaign...'
+                                                        : this.state.newCampaignCreateStatus === statuses.error
+                                                            ? 'Could not create new campaign, try again'
+                                                            : 'Campaign added to project'}
                                                 </Paragraph>
                                             )}
-                                            {(this.state.newCampaignCreateStatus !== statuses.saving) && (
+                                            {this.state.newCampaignCreateStatus !== statuses.saving && (
                                                 <CampaignPicker
                                                     ref="campaignsPicker"
                                                     align="left"
                                                     label="Add new campaign"
                                                     projectId={selectedProject.projectId}
-                                                    onNewCreated={(e) => this.handleCampaignPicked(e)}
-                                                    onChange={(e) => this.handleCampaignPicked(e)}
+                                                    onNewCreated={e => this.handleCampaignPicked(e)}
+                                                    onChange={e => this.handleCampaignPicked(e)}
                                                     excludeIds={selectedProjectCampaignIds}
                                                 />
                                             )}
@@ -1523,7 +1624,7 @@ class PageProjectBoard extends React.Component {
                             </Section>
                             */}
 
-                            {/*
+                {/*
                             <Section title="Meetings">
                                 {(() => {
                                     if (this.state.meetings.list.length > 0) {
@@ -1576,7 +1677,6 @@ class PageProjectBoard extends React.Component {
                     </Row>
                 </Section>
                 */}
-
             </Layout>
         );
     }
@@ -1588,8 +1688,8 @@ class PageProjectBoard extends React.Component {
                 editable: !this.state.notes.editable,
                 savedValue: !this.state.notes.editable
                     ? this.props.selectedProject.notes || ''
-                    : this.state.notes.savedValue
-            }
+                    : this.state.notes.savedValue,
+            },
         });
     }
 
@@ -1597,8 +1697,8 @@ class PageProjectBoard extends React.Component {
         this.setState({
             notes: {
                 ...this.state.notes,
-                savedValue: e.target.value
-            }
+                savedValue: e.target.value,
+            },
         });
     }
 
@@ -1606,62 +1706,64 @@ class PageProjectBoard extends React.Component {
         this.setState({
             notes: {
                 ...this.state.notes,
-                status: statuses.saving
-            }
+                status: statuses.saving,
+            },
         });
 
-        this.props.actionsProjectBoard.updateProjectNotesText(
-            this.state.notes.savedValue,
-            this.props.selectedProject.projectId
-        ).then(() => {
-            this.setState({
-                notes: {
-                    ...this.state.notes,
-                    savedValue: '',
-                    editable: false,
-                    status: statuses.success,
-                }
-            }, () => {
-                setTimeout(() => {
-                    if (this.componentIsMounted) {
-                        this.setState({
-                            notes: {
-                                ...this.state.notes,
-                                status: statuses.default
+        this.props.actionsProjectBoard
+            .updateProjectNotesText(this.state.notes.savedValue, this.props.selectedProject.projectId)
+            .then(() => {
+                this.setState(
+                    {
+                        notes: {
+                            ...this.state.notes,
+                            savedValue: '',
+                            editable: false,
+                            status: statuses.success,
+                        },
+                    },
+                    () => {
+                        setTimeout(() => {
+                            if (this.componentIsMounted) {
+                                this.setState({
+                                    notes: {
+                                        ...this.state.notes,
+                                        status: statuses.default,
+                                    },
+                                });
                             }
-                        });
+                        }, 2048);
                     }
-                }, 2048);
+                );
+            })
+            .catch(error => {
+                this.setState({
+                    notes: {
+                        ...this.state.notes,
+                        status: statuses.error,
+                    },
+                });
             });
-        }).catch((error) => {
-            this.setState({
-                notes: {
-                    ...this.state.notes,
-                    status: statuses.error
-                }
-            });
-        });
     }
 
     handleCampaignPicked(e) {
         if (typeof e !== 'undefined' && typeof e.value !== 'undefined' && typeof e.label !== 'undefined') {
             this.setState({
-                newCampaignCreateStatus: statuses.saving
+                newCampaignCreateStatus: statuses.saving,
             });
 
-            this.props.actionsProjectBoard.createProjectCampaign(
-                this.props.selectedProject.projectId,
-                e.value,
-                e.label.trim()
-            ).then(() => {
-                this.setState({
-                    newCampaignCreateStatus: statuses.default
+            this.props.actionsProjectBoard
+                .createProjectCampaign(this.props.selectedProject.projectId, e.value, e.label.trim())
+                .then(() => {
+                    this.setState({
+                        newCampaignCreateStatus: statuses.default,
+                    });
+                })
+                .catch(error => {
+                    this.setState({
+                        newCampaignCreateStatus: statuses.error,
+                    });
                 });
-            }).catch((error) => {
-                this.setState({
-                    newCampaignCreateStatus: statuses.error
-                });
-            });
         }
     }
 }

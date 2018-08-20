@@ -87,6 +87,13 @@ class RediProjectToCampaign
     /**
      * @var string
      *
+     * @ORM\Column(name="budget_note", type="text", nullable=true)
+     */
+    private $budgetNote;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="POR", type="string", length=200, nullable=true)
      */
     private $por;
@@ -322,6 +329,29 @@ class RediProjectToCampaign
     public function getBudget()
     {
         return $this->budget;
+    }
+
+    /**
+     * Set budgetNote
+     *
+     * @param string $budgetNote
+     * @return RediProjectToCampaign
+     */
+    public function setBudgetNote($budgetNote)
+    {
+        $this->budgetNote = $budgetNote;
+
+        return $this;
+    }
+
+    /**
+     * Get budgetNote
+     *
+     * @return string 
+     */
+    public function getBudgetNote()
+    {
+        return $this->budgetNote;
     }
 
     /**

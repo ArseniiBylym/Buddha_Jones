@@ -15,17 +15,24 @@ class VersionController extends CustomAbstractActionController
 {
     public function getList()
     {
-        $search = trim($this->getRequest()->getQuery('search', ''));
+        $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
+        $filter['spot_id'] = (int)trim($this->getRequest()->getQuery('spot_id', 0));
+        $filter['custom'] = trim($this->getRequest()->getQuery('custom', ''));
         $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
         $length = (int)trim($this->getRequest()->getQuery('length', 10));
-        $spotId = (int)trim($this->getRequest()->getQuery('spot_id', 0));
 
-        if ($spotId) {
-            $data = $this->_versionRepo->searchWithSpot($search, $spotId, $offset, $length);
-            $totalCount = $this->_versionRepo->searchCountWithSpot($search, $spotId);
+        if($filter['custom']=='') {
+            $filter['custom'] = null;
         } else {
-            $data = $this->_versionRepo->search($search, $offset, $length);
-            $totalCount = $this->_versionRepo->searchCount($search);
+            $filter['custom'] = (int)$filter['custom'];
+        }
+
+        if ($filter['spot_id']) {
+            $data = $this->_versionRepo->searchWithSpot($filter, $offset, $length);
+            $totalCount = $this->_versionRepo->searchCountWithSpot($filter);
+        } else {
+            $data = $this->_versionRepo->search($filter, $offset, $length);
+            $totalCount = $this->_versionRepo->searchCount($filter);
         }
 
         $response = array(
@@ -44,52 +51,78 @@ class VersionController extends CustomAbstractActionController
     {
         $name = trim(isset($data['name']) ? $data['name'] : '');
         $billType = isset($data['billing_type']) ? $data['billing_type'] : null;
-
         $spotId = isset($data['spot_id']) ? $data['spot_id'] : null;
+        $custom = isset($data['custom']) ? $data['custom'] : null;
+
+        // if user is super user then it will be standard
+        // if user is not super user then it will be custom
+        $custom = ($this->_user_type_id == 100 && $custom!==null)?(int)$custom:1;
 
         $spotId = (array)json_decode($spotId, true);
 
         if ($name) {
-            $version = new RediVersion();
-            $version->setVersionName($name);
-            $this->_em->persist($version);
-            $this->_em->flush();
+            // check for unique name
+            $existingVersion = $this->_versionRepository->findOneBy(array('versionName' => $name));
 
-            $versionId = $version->getId();
+            if($existingVersion) {
+                $response = array(
+                    'status' => 1,
+                    'message' => 'Version with the same name already exists, returning existing version.',
+                    'data' => array(
+                        'version' => array(
+                            'id' => $existingVersion->getId(),
+                            'versionName' => $existingVersion->getVersionName(),
+                            'custom' => $existingVersion->getCustom(),
+                        )
+                    )
+                );
+            } else {
+                $version = new RediVersion();
+                $version->setVersionName($name);
+                $version->setCustom($custom);
+                $version->setActive(1);
+                $version->setCreatedUserId($this->_user_id);
+                $version->setCreatedAt(new \DateTime('now'));
+                $this->_em->persist($version);
+                $this->_em->flush();
 
-            foreach ($spotId as $sId) {
-                $spot = $this->_spotRepository->find($sId);
+                $versionId = $version->getId();
 
-                if ($spot) {
-                    $spotVersion = new RediSpotVersion();
-                    $spotVersion->setSpotId($sId);
-                    $spotVersion->setVersionId($versionId);
-                    $spotVersion->setBillingType($billType);
+                foreach ($spotId as $sId) {
+                    $spot = $this->_spotRepository->find($sId);
 
-                    $this->_em->persist($spotVersion);
+                    if ($spot) {
+                        $spotVersion = new RediSpotVersion();
+                        $spotVersion->setSpotId($sId);
+                        $spotVersion->setVersionId($versionId);
+                        $spotVersion->setBillingType($billType);
 
-                    // project history
-                    $campaign = $this->_campaignRepository->find($spot->getCampaignId());
-                    $historyMessage = 'Version "' . $name . '" was added to spot"' . $spot->getSpotName() . '" from "' . $campaign->getCampaignName() . '" campaign';
-                    $projectHistory = new RediProjectHistory();
-                    $projectHistory->setProjectId($spot->getProjectId());
-                    $projectHistory->setUserId($this->_user_id);
-                    $projectHistory->setMessage($historyMessage);
-                    $projectHistory->setCreatedAt(new \DateTime('now'));
-                    $this->_em->persist($projectHistory);
+                        $this->_em->persist($spotVersion);
+
+                        // project history
+                        $campaign = $this->_campaignRepository->find($spot->getCampaignId());
+                        $historyMessage = 'Version "' . $name . '" was added to spot"' . $spot->getSpotName() . '" from "' . $campaign->getCampaignName() . '" campaign';
+                        $projectHistory = new RediProjectHistory();
+                        $projectHistory->setProjectId($spot->getProjectId());
+                        $projectHistory->setUserId($this->_user_id);
+                        $projectHistory->setMessage($historyMessage);
+                        $projectHistory->setCreatedAt(new \DateTime('now'));
+                        $this->_em->persist($projectHistory);
+                    }
                 }
+
+                $this->_em->flush();
+
+                $response = array(
+                    'status' => 1,
+                    'message' => 'Request successful.',
+                    'data' => array(
+                        'id' => $versionId,
+                        'versionName' => $name,
+                        'custom' => $custom,
+                    ),
+                );
             }
-
-            $this->_em->flush();
-
-            $response = array(
-                'status' => 1,
-                'message' => 'Request successful.',
-                'data' => array(
-                    'version_id' => $versionId
-                ),
-            );
-
         } else {
             $response = array(
                 'status' => 0,
@@ -104,5 +137,142 @@ class VersionController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
+    public function update($id, $data)
+    {
+        $name = trim(isset($data['name']) ? $data['name'] : '');
+        $billType = isset($data['billing_type']) ? $data['billing_type'] : null;
+        $spotId = isset($data['spot_id']) ? $data['spot_id'] : null;
+        $custom = isset($data['custom']) ? $data['custom'] : null;
+
+        // if user is super user then it will be standard
+        // if user is not super user then it will be custom
+        $custom = ($this->_user_type_id == 100 && $custom!==null)?(int)$custom:null;
+
+        $spotId = (array)json_decode($spotId, true);
+
+        if ($id) {
+            $version = $this->_versionRepository->find($id);
+
+            if($version) {
+                if($name) {
+                    // check for unique name
+                    $existingVersion = $this->_versionRepository->findOneBy(array('versionName' => $name));
+
+                    if($existingVersion->getId() != $id) {
+                        // check if version is already used for any time entry or not
+                        $versionExistsInTimeEntry = $this->_timeEntryFileRepository->findOneBy(array('versionId' => $id));
+
+                        if(!$versionExistsInTimeEntry) {
+                            $version->setVersionName($name);
+                        }
+                    }
+                }
+
+                if($custom !== null) {
+                    $version->setCustom($custom);
+                }
+
+                $version->setUpdatedUserId($this->_user_id);
+                $version->setUpdatedAt(new \DateTime('now'));
+                $this->_em->persist($version);
+                $this->_em->flush();
+
+                $versionId = $version->getId();
+
+                foreach ($spotId as $sId) {
+                    $spot = $this->_spotRepository->find($sId);
+
+                    if ($spot) {
+                        $spotVersion = new RediSpotVersion();
+                        $spotVersion->setSpotId($sId);
+                        $spotVersion->setVersionId($versionId);
+                        $spotVersion->setBillingType($billType);
+
+                        $this->_em->persist($spotVersion);
+
+                        // project history
+                        $campaign = $this->_campaignRepository->find($spot->getCampaignId());
+                        $historyMessage = 'Version "' . $name . '" was added to spot"' . $spot->getSpotName() . '" from "' . $campaign->getCampaignName() . '" campaign';
+                        $projectHistory = new RediProjectHistory();
+                        $projectHistory->setProjectId($spot->getProjectId());
+                        $projectHistory->setUserId($this->_user_id);
+                        $projectHistory->setMessage($historyMessage);
+                        $projectHistory->setCreatedAt(new \DateTime('now'));
+                        $this->_em->persist($projectHistory);
+                    }
+                }
+
+                $this->_em->flush();
+
+                $response = array(
+                    'status' => 1,
+                    'message' => 'Request successful.',
+                    'data' => array(
+                        'version_id' => $versionId
+                    ),
+                );
+            } else {
+                $response = array(
+                    'status' => 0,
+                    'message' => 'Version does not exist.'
+                );
+            }
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Please provide required data(id).'
+            );
+        }
+
+        if ($response['status'] == 0) {
+            $this->getResponse()->setStatusCode(400);
+        }
+
+        return new JsonModel($response);
+    }
+
+    public function delete($id)
+    {
+        $version = $this->_versionRepository->find($id);
+
+        if($version) {
+            // check if version exist in time entry
+            $versionExistsInTimeEntry = $this->_timeEntryRepository->findOneBy(array('versionId' => $id));
+
+            if(!$versionExistsInTimeEntry) {
+                $spotVersions = $this->_spotVersionRepository->findBy(array('versionId' => $id));
+
+                foreach($spotVersions as $spotVersion) {
+                    $this->_em->remove($spotVersion);
+                }
+
+                $this->_em->remove($version);
+
+                $this->_em->flush();
+
+                $response = array(
+                    'status' => 1,
+                    'message' => 'Request successful',
+                );
+            } else {
+                $response = array(
+                    'status' => 0,
+                    'message' => 'Can not delete version as it is already used in time entry',
+                );
+            }
+
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Version does not exist',
+            );
+        }
+
+        if ($response['status'] == 0) {
+            $this->getResponse()->setStatusCode(400);
+        }
+
+        return new JsonModel($response);
+    }
 
 }

@@ -127,11 +127,6 @@ class EstimateRepository extends EntityRepository
         foreach ($data as &$row) {
             $row['id'] = (int)$row['id'];
             $row['totalAmount'] = (float)$row['totalAmount'];
-            $row['createdAt'] = $row['createdAt']->format('Y-m-d H:i:s');
-
-            if ($row['updatedAt']) {
-                $row['updatedAt'] = $row['updatedAt']->format('Y-m-d H:i:s');
-            }
 
             unset($row['statusOrderFilter']);
         }
@@ -221,7 +216,7 @@ class EstimateRepository extends EntityRepository
         $dql = "SELECT 
                   a.id, 
                   a.spotId, s.spotName, 
-                  s.projectId, p.projectName,
+                  s.projectId,
                   p.customerId, cu.customerName, cu.cardcode,
                   s.campaignId, c.campaignName,
                   a.versionId, v.versionName, 
@@ -255,7 +250,6 @@ class EstimateRepository extends EntityRepository
         if ($response) {
             $response['id'] = (int)$response['id'];
             $response['totalAmount'] = (float)$response['totalAmount'];
-            $response['createdAt'] = $response['createdAt']->format('Y-m-d H:i:s');
         }
 
         return $response;
@@ -440,8 +434,6 @@ class EstimateRepository extends EntityRepository
             } else {
                 $row['image'] = null;
             }
-
-            $row['createdAt'] = $row['createdAt']->format('Y-m-d H:i:s');
         }
 
         return $data;

@@ -6,8 +6,7 @@ use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\Mvc\MvcEvent;
 use Zend\View\Model\JsonModel;
 use Zend\Mail;
-use Namshi\JOSE\SimpleJWS;
-use Namshi\JOSE\Base64\Base64UrlSafeEncoder;
+use Firebase\JWT\JWT;
 
 class LoginRefreshController extends AbstractRestfulController
 {
@@ -48,7 +47,8 @@ class LoginRefreshController extends AbstractRestfulController
     public function getList()
     {
         $config = $this->getServiceLocator()->get('Config');
-        $jwt_public_key_path = $config['jwt_config']['public_key_path'];
+        $jwtSecret = $this->_config['jwt_config']['jwt_secret'];
+
         $authFailed = false;
 
         $auth = $this->getRequest()->getHeaders('Authorization');
@@ -58,47 +58,44 @@ class LoginRefreshController extends AbstractRestfulController
             $token = str_replace('Bearer ', '', $auth->getFieldValue());
 
             if ($this->_checkTokenFormat($token)) {
-                $jws = SimpleJWS::load($token);
+                try {
+                    $payload = JWT::decode($token, $jwtSecret, array('HS256'));
 
+                    if ($payload) {
+                        $userId = (int)$payload->userId;
+                        $user = $this->_userRepository->find($userId);
+                        $userType = $this->_userTypeRepository->find($user->getTypeId());
 
-                $public_key = openssl_pkey_get_public($jwt_public_key_path);
+                        $token = array(
+                            'iss' => $this->_config['jwt_config']['issuer'],
+                            'aud' => $this->_config['jwt_config']['audience'],
+                            'algorithm' =>  'HS256',
+                            'iat' => time(),
+                            'exp' => time() + 86400,
+                            'userId' => $user->getId(),
+                        );
 
-                if ($jws->isValid($public_key, 'RS256')) {
-                    $payload = $jws->getPayload();
-                    $userId = (int)$payload['sub'];
+                        $jwtToken = JWT::encode($token, $jwtSecret);
 
-                    $jws = new SimpleJWS(array(
-                        'typ' => 'JWT',
-                        'alg' => 'RS256'
-                    ));
-
-                    $jws->setPayload(array(
-                        'iss' => 'Buddha Jones',
-                        'iat' => time(),
-                        'exp' => time() + 2400, //86400,
-                        'sub' => $userId
-                    ));
-
-                    $private_key = openssl_pkey_get_private($this->_config['jwt_config']['private_key_path'], $this->_config['jwt_config']['password']);
-                    $jws->sign($private_key);
-
-                    $response = array(
-                        'status' => 1,
-                        'message' => "User login time extended",
-                        'data' => array(
-                            'token' => $jws->getTokenString()
-                        )
-                    );
-                } else {
+                        $response = array(
+                            'status' => 1,
+                            'message' => "User login time extended",
+                            'data' => array(
+                                'token' => $jwtToken
+                            )
+                        );
+                    }
+                } catch(\Exception $e){
                     $authFailed = true;
                 }
             } else {
                 $authFailed = true;
             }
-
+        } else {
+            $authFailed = true;
         }
 
-        if (!$auth || $authFailed) {
+        if ($authFailed) {
             $response = array(
                 'status' => 0,
                 'message' => "User authentication failed",
@@ -161,20 +158,12 @@ class LoginRefreshController extends AbstractRestfulController
 
     private function _checkTokenFormat($jwsTokenString, $encoder = null)
     {
-        if ($encoder === null) {
-            $encoder = strpbrk($jwsTokenString, '+/=') ? new Base64Encoder() : new Base64UrlSafeEncoder();
-        }
-
         $parts = explode('.', $jwsTokenString);
 
         if (count($parts) === 3) {
-            $header = json_decode($encoder->decode($parts[0]), true);
-            $payload = json_decode($encoder->decode($parts[1]), true);
-
-            if (is_array($header) && is_array($payload)) {
-                return true;
-            }
+            return true;
         }
+
         return false;
     }
 }

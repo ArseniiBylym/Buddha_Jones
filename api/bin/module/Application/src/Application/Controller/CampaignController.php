@@ -14,6 +14,8 @@ class CampaignController extends CustomAbstractActionController
 {
     public function getList()
     {
+        $canViewMaterialReceived = $this->_usersRepo->extractPermission($this->_user_permission, 17, 'view_or_edit');
+
         $search = trim($this->getRequest()->getQuery('search', ''));
         $projectId = (int)trim($this->getRequest()->getQuery('project_id', 0));
         $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
@@ -21,6 +23,12 @@ class CampaignController extends CustomAbstractActionController
 
         $data = $this->_campaignRepo->search($projectId, $search, $offset, $length);
         $totalCount = $this->_campaignRepo->searchCount($projectId, $search);
+
+        foreach($data as &$row) {
+            if(!$canViewMaterialReceived) {
+                unset($row['materialReceived']);
+            }
+        }
 
         $response = array(
             'status' => 1,
@@ -36,204 +44,83 @@ class CampaignController extends CustomAbstractActionController
 
     public function create($data)
     {
-        $name = trim(isset($data['name']) ? $data['name'] : '');
-        $description = isset($data['description']) ? trim($data['description']) : null;
-        $project = isset($data['project']) ? $data['project'] : null;
-        $editorReq = isset($data['editor_req']) ? $data['editor_req'] : null;
-        $materialReceived = isset($data['material_received']) ? $data['material_received'] : null;
+        $canEditMaterialReceived = $this->_usersRepo->extractPermission($this->_user_permission, 17, 'edit');
+        $canCreateCampaign = $this->_usersRepo->extractPermission($this->_user_permission, 6, 'edit');
 
-        $project = (array)json_decode($project, true);
+        if($canCreateCampaign) {
+            $name = trim(isset($data['name']) ? $data['name'] : '');
+            $description = isset($data['description']) ? trim($data['description']) : null;
+            $project = isset($data['project']) ? $data['project'] : null;
+            $editorReq = isset($data['editor_req']) ? $data['editor_req'] : null;
+            $materialReceived = (isset($data['material_received']) && $canEditMaterialReceived) ? $data['material_received'] : null;
 
-        if ($name) {
-            $campaign = new RediCampaign();
-            $campaign->setCampaignName($name);
+            $project = (array)json_decode($project, true);
 
-            if ($description) {
-                $campaign->setDescription($description);
-            }
+            if ($name) {
+                $campaign = new RediCampaign();
+                $campaign->setCampaignName($name);
 
-            if($editorReq) {
-                $campaign->setEditorReq($editorReq);
-            }
-
-            if($materialReceived) {
-                $materialReceived = new \DateTime($materialReceived);
-
-                if($materialReceived) {
-                    $campaign->setMaterialReceived($materialReceived);
+                if ($description) {
+                    $campaign->setDescription($description);
                 }
-            }
 
-            $this->_em->persist($campaign);
-            $this->_em->flush();
+                if ($editorReq) {
+                    $campaign->setEditorReq($editorReq);
+                }
 
-            $campaignId = $campaign->getId();
+                if ($materialReceived) {
+                    $materialReceived = new \DateTime($materialReceived);
 
-            foreach ($project as $row) {
-                if (isset($row['project_id'])) {
-                    $project = $this->_projectRepository->find($row['project_id']);
-
-                    if ($project) {
-                        $projectToCampaign = new RediProjectToCampaign();
-                        $projectToCampaign->setProjectId($row['project_id']);
-                        $projectToCampaign->setCampaignId($campaignId);
-
-                        if(isset($row['first_point_of_contact_id'])) {
-                            $projectToCampaign->setFirstPointOfContactId($row['first_point_of_contact_id']);
-                        }
-
-                        $this->_em->persist($projectToCampaign);
-                        $this->_em->flush();
-                        $projectCampaignEntryId = $projectToCampaign->getid();
-
-                        // project history
-                        $historyMessage = 'Campaign "' . $name . '" was added to project "' . $project->getProjectName() . '"';
-                        $projectHistory = new RediProjectHistory();
-                        $projectHistory->setProjectId($row['project_id']);
-                        $projectHistory->setCampaignId($campaign->getId());
-                        $projectHistory->setUserId($this->_user_id);
-                        $projectHistory->setMessage($historyMessage);
-                        $projectHistory->setCreatedAt(new \DateTime('now'));
-                        $this->_em->persist($projectHistory);
-
-                        if (isset($row['user'])) {
-                            foreach ($row['user'] as $user) {
-                                if(isset($user['id'], $user['role_id'])) {
-                                    $userInfo = $this->_userRepository->find($user['id']);
-
-                                    if($userInfo) {
-                                        $projectToCampaignUser = new RediProjectToCampaignUser();
-                                        $projectToCampaignUser->setProjectCampaignId($projectCampaignEntryId);
-                                        $projectToCampaignUser->setUserId($user['id']);
-                                        $projectToCampaignUser->setRoleId($user['role_id']);
-                                        $this->_em->persist($projectToCampaignUser);
-
-                                        // project history
-                                        $historyMessage = 'User "' . trim($userInfo->getFirstName() . " " . $userInfo->getLastName()) . '" was added to campaign "' . $campaign->getCampaignName() . '"';
-                                        $projectHistory = new RediProjectHistory();
-                                        $projectHistory->setProjectId($row['project_id']);
-                                        $projectHistory->setCampaignId($campaign->getId());
-                                        $projectHistory->setUserId($this->_user_id);
-                                        $projectHistory->setMessage($historyMessage);
-                                        $projectHistory->setCreatedAt(new \DateTime('now'));
-                                        $this->_em->persist($projectHistory);
-                                    }
-                                }
-                            }
-                        }
+                    if ($materialReceived) {
+                        $campaign->setMaterialReceived($materialReceived);
                     }
                 }
-            }
 
-            $this->_em->flush();
+                $campaign->setCreatedByUserId($this->_user_id);
 
-            $response = array(
-                'status' => 1,
-                'message' => 'Request successful.',
-                'data' => array(
-                    'campaign_id' => $campaignId
-                ),
-            );
-        } else {
-            $response = array(
-                'status' => 0,
-                'message' => 'Please provide required data(name).'
-            );
-        }
+                $this->_em->persist($campaign);
+                $this->_em->flush();
 
-        if ($response['status'] == 0) {
-            $this->getResponse()->setStatusCode(400);
-        }
+                $campaignId = $campaign->getId();
 
-        return new JsonModel($response);
-    }
+                foreach ($project as $row) {
+                    if (isset($row['project_id'])) {
+                        $project = $this->_projectRepository->find($row['project_id']);
 
-    public function update($campaignId, $data)
-    {
-        $name = trim(isset($data['name']) ? $data['name'] : '');
-        $description = isset($data['description']) ? trim($data['description']) : null;
-        $project = isset($data['project']) ? $data['project'] : null;
-        $editorReq = isset($data['editor_req']) ? $data['editor_req'] : null;
-        $materialReceived = isset($data['material_received']) ? $data['material_received'] : null;
-
-        $project = (array)json_decode($project, true);
-
-        $campaign = $this->_campaignRepository->find($campaignId);
-
-        if($campaign) {
-            if($name) {
-                $campaign->setCampaignName($name);
-            }
-
-            if ($description) {
-                $campaign->setDescription($description);
-            }
-
-            if($editorReq) {
-                $campaign->setEditorReq($editorReq);
-            }
-
-            if($materialReceived) {
-                $materialReceived = new \DateTime($materialReceived);
-
-                if($materialReceived) {
-                    $campaign->setMaterialReceived($materialReceived);
-                }
-            }
-            
-            $this->_em->persist($campaign);
-            $this->_em->flush();
-
-            $campaignId = $campaign->getId();
-
-            foreach ($project as $row) {
-                if (isset($row['project_id'])) {
-                    $project = $this->_projectRepository->find($row['project_id']);
-
-                    if ($project) {
-                        $projectToCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $row['project_id'], 'campaignId' => $campaignId));
-
-                        if(!$projectToCampaign) {
+                        if ($project) {
                             $projectToCampaign = new RediProjectToCampaign();
-
                             $projectToCampaign->setProjectId($row['project_id']);
                             $projectToCampaign->setCampaignId($campaignId);
 
-                            if(isset($row['first_point_of_contact_id'])) {
+                            if (isset($row['first_point_of_contact_id'])) {
                                 $projectToCampaign->setFirstPointOfContactId($row['first_point_of_contact_id']);
                             }
 
                             $this->_em->persist($projectToCampaign);
-
                             $this->_em->flush();
-                        }
+                            $projectCampaignEntryId = $projectToCampaign->getid();
 
-                        $projectCampaignEntryId = $projectToCampaign->getid();
+                            // project history
+                            $historyMessage = 'Campaign "' . $name . '" was added to project "' . $project->getProjectName() . '"';
+                            $projectHistory = new RediProjectHistory();
+                            $projectHistory->setProjectId($row['project_id']);
+                            $projectHistory->setCampaignId($campaign->getId());
+                            $projectHistory->setUserId($this->_user_id);
+                            $projectHistory->setMessage($historyMessage);
+                            $projectHistory->setCreatedAt(new \DateTime('now'));
+                            $this->_em->persist($projectHistory);
 
-                        // project history
-                        $historyMessage = 'Campaign "' . $name . '" was added to project "' . $project->getProjectName() . '"';
-                        $projectHistory = new RediProjectHistory();
-                        $projectHistory->setProjectId($row['project_id']);
-                        $projectHistory->setCampaignId($campaign->getId());
-                        $projectHistory->setUserId($this->_user_id);
-                        $projectHistory->setMessage($historyMessage);
-                        $projectHistory->setCreatedAt(new \DateTime('now'));
-                        $this->_em->persist($projectHistory);
+                            if (isset($row['user'])) {
+                                foreach ($row['user'] as $user) {
+                                    if (isset($user['id'], $user['role_id'])) {
+                                        $userInfo = $this->_userRepository->find($user['id']);
 
-                        if (isset($row['user'])) {
-                            foreach ($row['user'] as $user) {
-                                if(isset($user['id'], $user['role_id'])) {
-                                    $userInfo = $this->_userRepository->find($user['id']);
-
-                                    if($userInfo) {
-                                        $projectCampaignUser = $this->_projectToCampaignUserRepository->findOneBy(array('projectCampaignId' => $projectCampaignEntryId, 'userId' => $user['id']));
-
-                                        if (!$projectCampaignUser) {
-                                            $projectCampaignUser = new RediProjectToCampaignUser();
-                                            $projectCampaignUser->setProjectCampaignId($projectCampaignEntryId);
-                                            $projectCampaignUser->setManagerId($user['id']);
-                                            $projectCampaignUser->setRoleId($user['role_id']);
-                                            $this->_em->persist($projectCampaignUser);
+                                        if ($userInfo) {
+                                            $projectToCampaignUser = new RediProjectToCampaignUser();
+                                            $projectToCampaignUser->setProjectCampaignId($projectCampaignEntryId);
+                                            $projectToCampaignUser->setUserId($user['id']);
+                                            $projectToCampaignUser->setRoleId($user['role_id']);
+                                            $this->_em->persist($projectToCampaignUser);
 
                                             // project history
                                             $historyMessage = 'User "' . trim($userInfo->getFirstName() . " " . $userInfo->getLastName()) . '" was added to campaign "' . $campaign->getCampaignName() . '"';
@@ -251,21 +138,164 @@ class CampaignController extends CustomAbstractActionController
                         }
                     }
                 }
+
+                $this->_em->flush();
+
+                $response = array(
+                    'status' => 1,
+                    'message' => 'Request successful.',
+                    'data' => array(
+                        'campaign_id' => $campaignId
+                    ),
+                );
+            } else {
+                $response = array(
+                    'status' => 0,
+                    'message' => 'Please provide required data(name).'
+                );
             }
-
-            $this->_em->flush();
-
-            $response = array(
-                'status' => 1,
-                'message' => 'Request successful.',
-                'data' => array(
-                    'campaign_id' => $campaignId
-                ),
-            );
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Campaign not found.'
+                'message' => 'Permission denied.'
+            );
+        }
+
+        if ($response['status'] == 0) {
+            $this->getResponse()->setStatusCode(400);
+        }
+
+        return new JsonModel($response);
+    }
+
+    public function update($campaignId, $data)
+    {
+        $canEditMaterialReceived = $this->_usersRepo->extractPermission($this->_user_permission, 17, 'edit');
+        $canCreateCampaign = $this->_usersRepo->extractPermission($this->_user_permission, 6, 'edit');
+
+        if($canCreateCampaign) {
+            $name = trim(isset($data['name']) ? $data['name'] : '');
+            $description = isset($data['description']) ? trim($data['description']) : null;
+            $project = isset($data['project']) ? $data['project'] : null;
+            $editorReq = isset($data['editor_req']) ? $data['editor_req'] : null;
+            $materialReceived = (isset($data['material_received']) && $canEditMaterialReceived) ? $data['material_received'] : null;
+
+            $project = (array)json_decode($project, true);
+
+            $campaign = $this->_campaignRepository->find($campaignId);
+
+            if ($campaign) {
+                if ($name) {
+                    $campaign->setCampaignName($name);
+                }
+
+                if ($description) {
+                    $campaign->setDescription($description);
+                }
+
+                if ($editorReq) {
+                    $campaign->setEditorReq($editorReq);
+                }
+
+                if ($materialReceived) {
+                    $materialReceived = new \DateTime($materialReceived);
+
+                    if ($materialReceived) {
+                        $campaign->setMaterialReceived($materialReceived);
+                    }
+                }
+
+                $this->_em->persist($campaign);
+                $this->_em->flush();
+
+                $campaignId = $campaign->getId();
+
+                foreach ($project as $row) {
+                    if (isset($row['project_id'])) {
+                        $project = $this->_projectRepository->find($row['project_id']);
+
+                        if ($project) {
+                            $projectToCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $row['project_id'], 'campaignId' => $campaignId));
+
+                            if (!$projectToCampaign) {
+                                $projectToCampaign = new RediProjectToCampaign();
+
+                                $projectToCampaign->setProjectId($row['project_id']);
+                                $projectToCampaign->setCampaignId($campaignId);
+
+                                if (isset($row['first_point_of_contact_id'])) {
+                                    $projectToCampaign->setFirstPointOfContactId($row['first_point_of_contact_id']);
+                                }
+
+                                $this->_em->persist($projectToCampaign);
+
+                                $this->_em->flush();
+                            }
+
+                            $projectCampaignEntryId = $projectToCampaign->getid();
+
+                            // project history
+                            $historyMessage = 'Campaign "' . $name . '" was added to project "' . $project->getProjectName() . '"';
+                            $projectHistory = new RediProjectHistory();
+                            $projectHistory->setProjectId($row['project_id']);
+                            $projectHistory->setCampaignId($campaign->getId());
+                            $projectHistory->setUserId($this->_user_id);
+                            $projectHistory->setMessage($historyMessage);
+                            $projectHistory->setCreatedAt(new \DateTime('now'));
+                            $this->_em->persist($projectHistory);
+
+                            if (isset($row['user'])) {
+                                foreach ($row['user'] as $user) {
+                                    if (isset($user['id'], $user['role_id'])) {
+                                        $userInfo = $this->_userRepository->find($user['id']);
+
+                                        if ($userInfo) {
+                                            $projectCampaignUser = $this->_projectToCampaignUserRepository->findOneBy(array('projectCampaignId' => $projectCampaignEntryId, 'userId' => $user['id']));
+
+                                            if (!$projectCampaignUser) {
+                                                $projectCampaignUser = new RediProjectToCampaignUser();
+                                                $projectCampaignUser->setProjectCampaignId($projectCampaignEntryId);
+                                                $projectCampaignUser->setManagerId($user['id']);
+                                                $projectCampaignUser->setRoleId($user['role_id']);
+                                                $this->_em->persist($projectCampaignUser);
+
+                                                // project history
+                                                $historyMessage = 'User "' . trim($userInfo->getFirstName() . " " . $userInfo->getLastName()) . '" was added to campaign "' . $campaign->getCampaignName() . '"';
+                                                $projectHistory = new RediProjectHistory();
+                                                $projectHistory->setProjectId($row['project_id']);
+                                                $projectHistory->setCampaignId($campaign->getId());
+                                                $projectHistory->setUserId($this->_user_id);
+                                                $projectHistory->setMessage($historyMessage);
+                                                $projectHistory->setCreatedAt(new \DateTime('now'));
+                                                $this->_em->persist($projectHistory);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $this->_em->flush();
+
+                $response = array(
+                    'status' => 1,
+                    'message' => 'Request successful.',
+                    'data' => array(
+                        'campaign_id' => $campaignId
+                    ),
+                );
+            } else {
+                $response = array(
+                    'status' => 0,
+                    'message' => 'Campaign not found.'
+                );
+            }
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Permission denied',
             );
         }
 
@@ -279,60 +309,69 @@ class CampaignController extends CustomAbstractActionController
     public function delete($campaignId)
     {
 
-        $projectId = $this->params()->fromRoute('param1', 0);
+        $canCreateCampaign = $this->_usersRepo->extractPermission($this->_user_permission, 6, 'edit');
 
-        if ($campaignId && $projectId) {
+        if($canCreateCampaign) {
+            $projectId = $this->params()->fromRoute('param1', 0);
 
-            $campaign = $this->_campaignRepository->find($campaignId);
-            $project = $this->_projectRepository->find($projectId);
+            if ($campaignId && $projectId) {
 
-            if ($campaign && $project) {
-                $projectToCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectId, 'campaignId' => $campaignId));
+                $campaign = $this->_campaignRepository->find($campaignId);
+                $project = $this->_projectRepository->find($projectId);
 
-                if ($projectToCampaign) {
+                if ($campaign && $project) {
+                    $projectToCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectId, 'campaignId' => $campaignId));
 
-                    $this->_em->remove($projectToCampaign);
-                    $this->_em->flush();
+                    if ($projectToCampaign) {
 
-                    $otherProjectToCampaign = $this->_projectToCampaignRepository->findBy(array('campaignId' => $campaignId));
-
-                    if (!$otherProjectToCampaign) {
-                        $this->_em->remove($campaign);
+                        $this->_em->remove($projectToCampaign);
                         $this->_em->flush();
+
+                        $otherProjectToCampaign = $this->_projectToCampaignRepository->findBy(array('campaignId' => $campaignId));
+
+                        if (!$otherProjectToCampaign) {
+                            $this->_em->remove($campaign);
+                            $this->_em->flush();
+                        }
+
+                        // project history for project to campaign
+                        $historyMessage = 'Campaign "' . $campaign->getCampaignName() . '" was removed from project "' . $project->getProjectName() . '"';
+                        $projectHistory = new RediProjectHistory();
+                        $projectHistory->setProjectId($projectId);
+                        $projectHistory->setCampaignId($campaign->getId());
+                        $projectHistory->setUserId($this->_user_id);
+                        $projectHistory->setMessage($historyMessage);
+                        $projectHistory->setCreatedAt(new \DateTime('now'));
+                        $this->_em->persist($projectHistory);
+                        $this->_em->flush();
+
+                        $response = array(
+                            'status' => 1,
+                            'message' => 'Request successful.'
+                        );
+                    } else {
+                        $response = array(
+                            'status' => 0,
+                            'message' => 'Project to campaign relation not found.'
+                        );
                     }
 
-                    // project history for project to campaign
-                    $historyMessage = 'Campaign "' . $campaign->getCampaignName() . '" was removed from project "' . $project->getProjectName() . '"';
-                    $projectHistory = new RediProjectHistory();
-                    $projectHistory->setProjectId($projectId);
-                    $projectHistory->setCampaignId($campaign->getId());
-                    $projectHistory->setUserId($this->_user_id);
-                    $projectHistory->setMessage($historyMessage);
-                    $projectHistory->setCreatedAt(new \DateTime('now'));
-                    $this->_em->persist($projectHistory);
-                    $this->_em->flush();
-
-                    $response = array(
-                        'status' => 1,
-                        'message' => 'Request successful.'
-                    );
                 } else {
                     $response = array(
                         'status' => 0,
-                        'message' => 'Project to campaign relation not found.'
+                        'message' => 'Campaign or Project not found'
                     );
                 }
-
             } else {
                 $response = array(
                     'status' => 0,
-                    'message' => 'Campaign or Project not found'
+                    'message' => 'Please provide required data(campaign_id, project_id).'
                 );
             }
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Please provide required data(campaign_id, project_id).'
+                'message' => 'Permission denied',
             );
         }
 

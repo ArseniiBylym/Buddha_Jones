@@ -31,6 +31,20 @@ class RediSpotVersion
     private $versionId;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="version_status_id", type="integer", nullable=true)
+     */
+    private $versionStatusId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="version_note", type="text", nullable=true)
+     */
+    private $versionNote;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="billing_type", type="string", length=10, nullable=true)
@@ -83,6 +97,52 @@ class RediSpotVersion
     public function getVersionId()
     {
         return $this->versionId;
+    }
+
+    /**
+     * Set versionStatusId
+     *
+     * @param integer $versionStatusId
+     * @return RediSpotVersion
+     */
+    public function setVersionStatusId($versionStatusId)
+    {
+        $this->versionStatusId = $versionStatusId;
+
+        return $this;
+    }
+
+    /**
+     * Get versionStatusId
+     *
+     * @return integer 
+     */
+    public function getVersionStatusId()
+    {
+        return $this->versionStatusId;
+    }
+
+    /**
+     * Set versionNote
+     *
+     * @param string $versionNote
+     * @return RediSpotVersion
+     */
+    public function setVersionNote($versionNote)
+    {
+        $this->versionNote = $versionNote;
+
+        return $this;
+    }
+
+    /**
+     * Get versionNote
+     *
+     * @return string 
+     */
+    public function getVersionNote()
+    {
+        return $this->versionNote;
     }
 
     /**

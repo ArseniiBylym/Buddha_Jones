@@ -3,6 +3,7 @@ namespace Application\Controller;
 
 use Application\Entity\RediActivity;
 use Application\Entity\RediActivityToType;
+use Application\Entity\RediActivityToUserType;
 use Application\Entity\RediActivityTypeToActivity;
 use Zend\View\Model\JsonModel;
 
@@ -15,9 +16,11 @@ class ActivityController extends CustomAbstractActionController
     {
         $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
         $filter['type_id'] = (array)json_decode(trim($this->getRequest()->getQuery('type_id', '')), true);
-        $filter['user_type_id'] = $this->getRequest()->getQuery('user_type_id', null);
-
+        $filter['user_type_id'] = (array)json_decode(trim($this->getRequest()->getQuery('user_type_id', '')), true);
         $filter['customer_id'] = (int)trim($this->getRequest()->getQuery('customer_id', 0));
+        $filter['project_campaign_required'] = trim($this->getRequest()->getQuery('project_campaign_required', null));
+        $filter['project_campaign_spot_version_required'] = trim($this->getRequest()->getQuery('project_campaign_spot_version_required', null));
+        $filter['allowed_in_future'] = trim($this->getRequest()->getQuery('allowed_in_future', null));
 
         if($filter['customer_id']) {
             $data = $this->_activityRepo->searchWithPrice($filter);
@@ -31,6 +34,7 @@ class ActivityController extends CustomAbstractActionController
             'status' => 1,
             'message' => 'Request successful',
             'total_count' => $totalCount,
+            'object_count' => count($data),
             'data' => $data
         );
 
@@ -40,34 +44,42 @@ class ActivityController extends CustomAbstractActionController
     public function create($data)
     {
         $typeId = (array)json_decode(trim(isset($data['type_id']) ? $data['type_id'] : ''), true);
-        $userTypeId = (isset($data['user_type_id']) ? (int)trim($data['user_type_id']) : null);
+        $userTypeId = (array)json_decode(trim(isset($data['user_type_id']) ? $data['user_type_id'] : ''), true);
         $name = trim(isset($data['name']) ? $data['name'] : '');
         $status = (int)trim(isset($data['status']) ? $data['status'] : 1);
         $billable = (int)trim(isset($data['billable']) ? $data['billable'] : 0);
-        $descriptionRequired = ($typeId==2 && isset($data['description_required'])) ? (int)trim($data['description_required']) : null;
+        $descriptionRequired = (int)isset($data['description_required']) ? trim($data['description_required']) : 0;
+        $projectCampaignRequired = (int)isset($data['project_campaign_required']) ? trim($data['project_campaign_required']) : 0;
+        $projectCampaignSpotVersionRequired = (int)isset($data['project_campaign_spot_version_required']) ? trim($data['project_campaign_spot_version_required']) : 0;
+        $filesIncluded = (int)isset($data['files_included']) ? trim($data['files_included']) : 0;
+        $allowedInFuture = (int)isset($data['allowed_in_future']) ? trim($data['allowed_in_future']) : 0;
 
         if ($name && count($typeId) && (!in_array(2, $typeId) || $descriptionRequired!==null)) {
-           $checkActivity = $this->_activityRepository->findOneBy(array('name' => $name));
+            $checkActivity = $this->_activityRepository->findOneBy(array('name' => $name));
 
             if (!$checkActivity) {
                 $activity = new RediActivity();
                 $activity->setName($name);
                 $activity->setStatus($status);
                 $activity->setBillable($billable);
-
-                if($descriptionRequired!==null) {
-                    $descriptionRequired = $descriptionRequired?1:0;
-                    $activity->setDescriptionRequired($descriptionRequired);
-                }
-
-                if($userTypeId) {
-                    $activity->setUserTypeId($userTypeId);
-                }
+                $activity->setDescriptionRequired($descriptionRequired);
+                $activity->setProjectCampaignRequired($projectCampaignRequired);
+                $activity->setProjectCampaignSpotVersionRequired($projectCampaignSpotVersionRequired);
+                $activity->setFilesIncluded($filesIncluded);
+                $activity->setAllowedInFuture($allowedInFuture);
 
                 $this->_em->persist($activity);
                 $this->_em->flush();
 
                 $activityId = $activity->getId();
+
+                foreach($userTypeId as $userType) {
+                    $activityUserType = new RediActivityToUserType();
+                    $activityUserType->setActivityId($activityId);
+                    $activityUserType->setUserTypeId($userType);
+
+                    $this->_em->persist($activityUserType);
+                }
 
                 foreach($typeId as $type) {
                     $activityType = new RediActivityToType();
@@ -109,11 +121,15 @@ class ActivityController extends CustomAbstractActionController
     public function update($id, $data)
     {
         $typeId = (array)json_decode(trim(isset($data['type_id']) ? $data['type_id'] : ''), true);
-        $userTypeId = (isset($data['user_type_id']) ? (int)trim($data['user_type_id']) : null);
+        $userTypeId = (array)json_decode(trim(isset($data['user_type_id']) ? $data['user_type_id'] : ''), true);
         $name = isset($data['name']) ? trim($data['name']) : null;
         $status = isset($data['status']) ? (int)trim($data['status']) : null;
         $descriptionRequired = (isset($data['description_required'])) ? (int)trim($data['description_required']) : null;
         $billable = isset($data['billable']) ? (int)trim($data['billable']) : null;
+        $projectCampaignRequired = isset($data['project_campaign_required']) ? (int)trim($data['project_campaign_required']) : null;
+        $projectCampaignSpotVersionRequired = isset($data['project_campaign_spot_version_required']) ? (int)trim($data['project_campaign_spot_version_required']) : null;
+        $filesIncluded = isset($data['files_included']) ? (int)trim($data['files_included']) : null;
+        $allowedInFuture = isset($data['allowed_in_future']) ? trim($data['allowed_in_future']) : null;
 
         $activity = $this->_activityRepository->find($id);
 
@@ -135,8 +151,16 @@ class ActivityController extends CustomAbstractActionController
                     $activity->setStatus($status);
                 }
 
-                if($userTypeId) {
-                    $activity->setUserTypeId($userTypeId);
+                if($projectCampaignRequired !== null) {
+                    $activity->setProjectCampaignRequired($projectCampaignRequired);
+                }
+
+                if($projectCampaignSpotVersionRequired !== null) {
+                    $activity->setProjectCampaignSpotVersionRequired($projectCampaignSpotVersionRequired);
+                }
+
+                if($filesIncluded !== null) {
+                    $activity->setFilesIncluded($filesIncluded);
                 }
 
                 if(count($typeId)) {
@@ -149,11 +173,13 @@ class ActivityController extends CustomAbstractActionController
                     }
                 }
 
-                if(in_array(2, $existingActivityType) && $descriptionRequired!==null) {
-                    $descriptionRequired = $descriptionRequired?1:0;
+                if ($descriptionRequired !== null) {
+                    $descriptionRequired = $descriptionRequired? 1 : 0;
                     $activity->setDescriptionRequired($descriptionRequired);
-                } else if(!in_array(2, $existingActivityType)) {
-                    $activity->setDescriptionRequired(null);
+                }
+
+                if($allowedInFuture !== null) {
+                    $activity->setAllowedInFuture($allowedInFuture);
                 }
 
                 $this->_em->persist($activity);
@@ -174,6 +200,26 @@ class ActivityController extends CustomAbstractActionController
                         $activityType->setTypeId($type);
 
                         $this->_em->persist($activityType);
+                    }
+
+                    $this->_em->flush();
+                }
+
+                if(count($userTypeId)) {
+                    $existingUserType = $this->_activityToUserTypeRepository->findBy(array('activityId' => $activity->getId()));
+
+                    foreach ($existingUserType as $userType) {
+                        $this->_em->remove($userType);
+                    }
+
+                    $this->_em->flush();
+
+                    foreach ($userTypeId as $userType) {
+                        $activityUserType = new RediActivityToUserType();
+                        $activityUserType->setActivityId($activity->getId());
+                        $activityUserType->setUserTypeId($userType);
+
+                        $this->_em->persist($activityUserType);
                     }
 
                     $this->_em->flush();

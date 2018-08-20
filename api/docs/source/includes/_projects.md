@@ -10,80 +10,1064 @@ Retrieve list of projects.
 {
     "status": 1,
     "message": "Request successful",
-    "total_count": 20,
-    "object_count": 3,
+    "total_count": 19,
+    "object_count": 5,
     "data": [
         {
-            "id": 2,
-            "projectName": "Before I Wake",
-            "customerId": 1,
-            "customerName": "Test Customer 1",
+            "id": 48,
+            "projectName": null,
+            "projectCode": null,
+            "customerId": null,
+            "customerName": null,
+            "cardcode": null,
             "notes": null,
-            "lastUpdatedAt": "2017-03-12 19:04:22",
-            "lastUpdateUser": {
-                "userId": 1,
-                "name": "first",
-                "image": "http://buddhajonesapi.localhost/thumb/profile_image/1.png"
+            "projectRelease": {
+                "date": "2018-02-23 00:00:00.000000",
+                "timezone_type": 3,
+                "timezone": "US/Eastern"
             },
-            "campaign": [
-                {
-                    "campaignId": 53,
-                    "campaignName": "test campaign1"
-                },
-                {
-                    "campaignId": 54,
-                    "campaignName": "test campaign1"
-                },
-                {
-                    "campaignId": 55,
-                    "campaignName": "test campaign1"
-                }
-            ],
-            "comment": {
-                "count": 1,
-                "unread": 1
-            }
-        },
-        {
-            "id": 3,
-            "projectName": "Bravo 14",
-            "customerId": 1,
-            "customerName": "Test Customer 1",
-            "notes": null,
-            "lastUpdatedAt": "2017-03-11 17:12:13",
-            "lastUpdateUser": {
-                "userId": 1,
-                "name": "first",
-                "image": "http://buddhajonesapi.localhost/thumb/profile_image/1.png"
-            },
-            "campaign": [
-                {
-                    "campaignId": 55,
-                    "campaignName": "test campaign1"
-                }
-            ],
-            "comment": {
-                "count": 1,
-                "unread": 1
-            }
-        },
-        {
-            "id": 20,
-            "projectName": "test 1q",
-            "customerId": 9,
-            "customerName": "99customer",
-            "notes": null,
-            "lastUpdatedAt": "2017-03-09 16:05:21",
-            "lastUpdateUser": {
-                "userId": 1,
-                "name": "first",
-                "image": "http://buddhajonesapi.localhost/thumb/profile_image/1.png"
-            },
+            "lastUpdatedAt": null,
+            "lastUpdateUser": [],
             "campaign": [],
             "comment": {
                 "count": 0,
                 "unread": 0
-            }
+            },
+            "user": []
+        },
+        {
+            "id": 47,
+            "projectName": "Annihilation",
+            "projectCode": null,
+            "customerId": 134,
+            "customerName": "Paramount\r\n",
+            "cardcode": null,
+            "notes": "Job # 5195\nadding Customer Contact here: Anu Bhatia",
+            "projectRelease": {
+                "date": "2018-02-23 00:00:00.000000",
+                "timezone_type": 3,
+                "timezone": "US/Eastern"
+            },
+            "lastUpdatedAt": "2018-05-17 20:04:31",
+            "lastUpdateUser": {
+                "userId": 1,
+                "name": "Demo User",
+                "image": null
+            },
+            "campaign": [
+                {
+                    "projectCampaignId": 156,
+                    "campaignId": 4,
+                    "campaignName": "Krystle said this was questioning, which is odd, since she's omniscient.",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": true,
+                    "writingTeamNotes": "both conceptual ideas and copy",
+                    "requestMusicTeam": true,
+                    "musicTeamNotes": "cue sheets only as we're using cleared music from theatrical campaign to start",
+                    "note": "Krystle said this was questioning, which is odd, since she's omniscient.",
+                    "budget": "0",
+                    "budgetNote": "budget per spot",
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": "2018-05-05 07:00:00",
+                    "user": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 23,
+                            "username": "ABATES",
+                            "email": "ALEXB@BUDDHA-JONES.COM",
+                            "firstName": "ALEXANDRA",
+                            "lastName": "BATES",
+                            "image": null,
+                            "typeId": 6,
+                            "type": "Creative Manager/Coordinator",
+                            "roleId": null,
+                            "role": null,
+                            "fullName": "ALEXANDRA BATES"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 97,
+                            "username": "MLAFONTANT",
+                            "email": "MARK.LAFONTANT@BUDDHA-JONES.COM",
+                            "firstName": "MARK",
+                            "lastName": "LAFONTANT",
+                            "image": null,
+                            "typeId": 21,
+                            "type": "Producer",
+                            "roleId": null,
+                            "role": null,
+                            "fullName": "MARK LAFONTANT"
+                        }
+                    ],
+                    "designer": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 67,
+                            "username": "KPANG",
+                            "email": "KEITHP@BUDDHA-JONES.COM",
+                            "firstName": "KEITH",
+                            "lastName": "PANG",
+                            "image": null,
+                            "typeId": 12,
+                            "type": "Graphic Designer",
+                            "fullName": "KEITH PANG"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 64,
+                            "username": "BBERLING",
+                            "email": "BRADB@BUDDHA-JONES.COM",
+                            "firstName": "BRADFORD",
+                            "lastName": "BERLING",
+                            "image": null,
+                            "typeId": 14,
+                            "type": "Graphic Dept Head",
+                            "fullName": "BRADFORD BERLING"
+                        }
+                    ],
+                    "editor": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 44,
+                            "username": "JMOSKOW",
+                            "email": "jacobm@buddha-jones.com",
+                            "firstName": "JACOB LAWRENCE",
+                            "lastName": "MOSKOW",
+                            "image": null,
+                            "typeId": 7,
+                            "type": "Editor",
+                            "fullName": "JACOB LAWRENCE MOSKOW"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 48,
+                            "username": "WNEIL",
+                            "email": "BILLN@BUDDHA-JONES.COM",
+                            "firstName": "WILLIAM",
+                            "lastName": "NEIL",
+                            "image": null,
+                            "typeId": 7,
+                            "type": "Editor",
+                            "fullName": "WILLIAM NEIL"
+                        }
+                    ],
+                    "billingUser": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 9,
+                            "username": "JDAVIS",
+                            "email": "JULIED@BUDDHA-JONES.COM",
+                            "firstName": "JULIE",
+                            "lastName": "DAVIS",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "billingRole": null,
+                            "fullName": "JULIE DAVIS"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 40,
+                            "username": "JDADON",
+                            "email": "jessicad@buddha-jones.com",
+                            "firstName": "JESSICA",
+                            "lastName": "DADON",
+                            "image": null,
+                            "typeId": 7,
+                            "type": "Editor",
+                            "billingRole": null,
+                            "fullName": "JESSICA DADON"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 97,
+                            "username": "MLAFONTANT",
+                            "email": "MARK.LAFONTANT@BUDDHA-JONES.COM",
+                            "firstName": "MARK",
+                            "lastName": "LAFONTANT",
+                            "image": null,
+                            "typeId": 21,
+                            "type": "Producer",
+                            "billingRole": null,
+                            "fullName": "MARK LAFONTANT"
+                        }
+                    ]
+                },
+                {
+                    "projectCampaignId": 157,
+                    "campaignId": 2,
+                    "campaignName": "Trailer",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": true,
+                    "writingTeamNotes": "just a blurb",
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": 45000,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": "2018-01-18 08:00:00",
+                    "user": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 2,
+                            "userId": 6,
+                            "username": "JZAKOSKI",
+                            "email": "JAMIEZ@BUDDHA-JONES.COM",
+                            "firstName": "JAMIE",
+                            "lastName": "ZAKOSKI",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": null,
+                            "role": null,
+                            "fullName": "JAMIE ZAKOSKI"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 2,
+                            "userId": 11,
+                            "username": "MBYRNES",
+                            "email": "MARIEB@BUDDHA-JONES.COM",
+                            "firstName": "MARIE",
+                            "lastName": "BYRNES",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": null,
+                            "role": null,
+                            "fullName": "MARIE BYRNES"
+                        }
+                    ],
+                    "designer": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 2,
+                            "userId": 66,
+                            "username": "BSALZANO",
+                            "email": "bobs@buddha-jones.com",
+                            "firstName": "BOBBY",
+                            "lastName": "SALZANO",
+                            "image": null,
+                            "typeId": 12,
+                            "type": "Graphic Designer",
+                            "fullName": "BOBBY SALZANO"
+                        }
+                    ],
+                    "editor": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 2,
+                            "userId": 32,
+                            "username": "MWINBUSH",
+                            "email": "MEKOW@BUDDHA-JONES.COM",
+                            "firstName": "MEKO",
+                            "lastName": "WINBUSH",
+                            "image": null,
+                            "typeId": 7,
+                            "type": "Editor",
+                            "fullName": "MEKO WINBUSH"
+                        }
+                    ],
+                    "billingUser": []
+                },
+                {
+                    "projectCampaignId": 158,
+                    "campaignId": 71,
+                    "campaignName": "(:15) TV",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": true,
+                    "writingTeamNotes": "once upon a time",
+                    "requestMusicTeam": true,
+                    "musicTeamNotes": "do ta do",
+                    "note": "(:15) TV",
+                    "budget": "0",
+                    "budgetNote": "on spec; billable if revised",
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": "2017-12-02 08:00:00",
+                    "user": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 71,
+                            "userId": 19,
+                            "username": "ACAPUTO",
+                            "email": "ASHLEYC@BUDDHA-JONES.COM",
+                            "firstName": "ASHLEY",
+                            "lastName": "CAPUTO",
+                            "image": null,
+                            "typeId": 21,
+                            "type": "Producer",
+                            "roleId": null,
+                            "role": null,
+                            "fullName": "ASHLEY CAPUTO"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 71,
+                            "userId": 89,
+                            "username": "KKATAMBWA",
+                            "email": "KAZADIK@BUDDHA-JONES.COM",
+                            "firstName": "KAZADI",
+                            "lastName": "KATAMBWA",
+                            "image": null,
+                            "typeId": 21,
+                            "type": "Producer",
+                            "roleId": null,
+                            "role": null,
+                            "fullName": "KAZADI KATAMBWA"
+                        }
+                    ],
+                    "designer": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 71,
+                            "userId": 69,
+                            "username": "HFORSSTROM",
+                            "email": "HALF@BUDDHA-JONES.COM",
+                            "firstName": "HEINO",
+                            "lastName": "FORSSTROM",
+                            "image": null,
+                            "typeId": 12,
+                            "type": "Graphic Designer",
+                            "fullName": "HEINO FORSSTROM"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 71,
+                            "userId": 70,
+                            "username": "JREYES",
+                            "email": "JONATHANR@BUDDHA-JONES.COM",
+                            "firstName": "JONATHAN",
+                            "lastName": "REYES",
+                            "image": null,
+                            "typeId": 12,
+                            "type": "Graphic Designer",
+                            "fullName": "JONATHAN REYES"
+                        }
+                    ],
+                    "editor": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 71,
+                            "userId": 26,
+                            "username": "JONEIL",
+                            "email": "JOHNNYO@BUDDHA-JONES.COM",
+                            "firstName": "JOHN",
+                            "lastName": "ONEIL",
+                            "image": null,
+                            "typeId": 7,
+                            "type": "Editor",
+                            "fullName": "JOHN ONEIL"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 71,
+                            "userId": 86,
+                            "username": "DASMA",
+                            "email": "dan@buddha-jones.com",
+                            "firstName": "DANIEL",
+                            "lastName": "ASMA",
+                            "image": null,
+                            "typeId": 28,
+                            "type": "Co-owner",
+                            "fullName": "DANIEL ASMA"
+                        }
+                    ],
+                    "billingUser": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 71,
+                            "userId": 15,
+                            "username": "TFANG",
+                            "email": "TONYF@BUDDHA-JONES.COM",
+                            "firstName": "TONY",
+                            "lastName": "FANG",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "billingRole": null,
+                            "fullName": "TONY FANG"
+                        }
+                    ]
+                },
+                {
+                    "projectCampaignId": 160,
+                    "campaignId": 1,
+                    "campaignName": "Teaser",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                },
+                {
+                    "projectCampaignId": 161,
+                    "campaignId": 68,
+                    "campaignName": "TV 30 Stanford",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": "TV 30 Stanford",
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                }
+            ],
+            "comment": {
+                "count": 0,
+                "unread": 0
+            },
+            "user": []
+        },
+        {
+            "id": 1,
+            "projectName": "Babysitter",
+            "projectCode": "BAB",
+            "customerId": 1,
+            "customerName": "NBC Universal",
+            "cardcode": null,
+            "notes": "Project has no description",
+            "projectRelease": {
+                "date": "2018-06-05 00:00:00.000000",
+                "timezone_type": 3,
+                "timezone": "US/Eastern"
+            },
+            "lastUpdatedAt": "2018-05-02 16:47:33",
+            "lastUpdateUser": {
+                "userId": 1,
+                "name": "Demo User",
+                "image": null
+            },
+            "campaign": [
+                {
+                    "projectCampaignId": 105,
+                    "campaignId": 4,
+                    "campaignName": "(:30) TV Campaign",
+                    "firstPointOfContactId": 7,
+                    "requestWritingTeam": false,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": true,
+                    "musicTeamNotes": "This is the place for notes",
+                    "note": "(:30) TV Campaign",
+                    "budget": 5000,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 10,
+                            "username": "JFAGAN",
+                            "email": "JOHNF@BUDDHA-JONES.COM",
+                            "firstName": "JOHN",
+                            "lastName": "FAGAN",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 7,
+                            "role": "Graphics Coordinator",
+                            "fullName": "JOHN FAGAN"
+                        },
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 87,
+                            "username": "JGODFREY",
+                            "email": "jordang@buddha-jones.com",
+                            "firstName": "JORDAN MICHAEL",
+                            "lastName": "GODFREY",
+                            "image": null,
+                            "typeId": 21,
+                            "type": "Producer",
+                            "roleId": 8,
+                            "role": "Editorial Manager",
+                            "fullName": "JORDAN MICHAEL GODFREY"
+                        },
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 101,
+                            "username": "EDELK",
+                            "email": "emilyd@buddha-jones.com",
+                            "firstName": "EMILY COLETTE",
+                            "lastName": "DELK",
+                            "image": null,
+                            "typeId": 22,
+                            "type": "Production Assistant",
+                            "roleId": 1,
+                            "role": "Lead Producer",
+                            "fullName": "EMILY COLETTE DELK"
+                        }
+                    ],
+                    "designer": [
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 9,
+                            "username": "JDAVIS",
+                            "email": "JULIED@BUDDHA-JONES.COM",
+                            "firstName": "JULIE",
+                            "lastName": "DAVIS",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "fullName": "JULIE DAVIS"
+                        }
+                    ],
+                    "editor": [
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 6,
+                            "username": "JZAKOSKI",
+                            "email": "JAMIEZ@BUDDHA-JONES.COM",
+                            "firstName": "JAMIE",
+                            "lastName": "ZAKOSKI",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "fullName": "JAMIE ZAKOSKI"
+                        },
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 87,
+                            "username": "JGODFREY",
+                            "email": "jordang@buddha-jones.com",
+                            "firstName": "JORDAN MICHAEL",
+                            "lastName": "GODFREY",
+                            "image": null,
+                            "typeId": 21,
+                            "type": "Producer",
+                            "fullName": "JORDAN MICHAEL GODFREY"
+                        },
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 89,
+                            "username": "KKATAMBWA",
+                            "email": "KAZADIK@BUDDHA-JONES.COM",
+                            "firstName": "KAZADI",
+                            "lastName": "KATAMBWA",
+                            "image": null,
+                            "typeId": 21,
+                            "type": "Producer",
+                            "fullName": "KAZADI KATAMBWA"
+                        }
+                    ],
+                    "billingUser": [
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 13,
+                            "username": "SSISSON",
+                            "email": "SOPHIAS@BUDDHA-JONES.COM",
+                            "firstName": "SOPHIA",
+                            "lastName": "SISSON",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "billingRole": null,
+                            "fullName": "SOPHIA SISSON"
+                        }
+                    ]
+                },
+                {
+                    "projectCampaignId": 149,
+                    "campaignId": 1,
+                    "campaignName": "Teaser",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                },
+                {
+                    "projectCampaignId": 155,
+                    "campaignId": 2,
+                    "campaignName": "Trailer",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                }
+            ],
+            "comment": {
+                "count": 0,
+                "unread": 0
+            },
+            "user": []
+        },
+        {
+            "id": 2,
+            "projectName": "Before I Wake",
+            "projectCode": null,
+            "customerId": 2,
+            "customerName": "Warner Bros.",
+            "cardcode": null,
+            "notes": null,
+            "projectRelease": {
+                "date": "2018-06-05 00:00:00.000000",
+                "timezone_type": 3,
+                "timezone": "US/Eastern"
+            },
+            "lastUpdatedAt": "2018-05-29 13:22:27",
+            "lastUpdateUser": {
+                "userId": 1,
+                "name": "Demo User",
+                "image": null
+            },
+            "campaign": [
+                {
+                    "projectCampaignId": 162,
+                    "campaignId": 72,
+                    "campaignName": "test campaign1",
+                    "firstPointOfContactId": 1,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [
+                        {
+                            "projectId": 2,
+                            "campaignId": 72,
+                            "userId": 2,
+                            "username": "AZEIGLER",
+                            "email": "ashleyz@buddha-jones.com",
+                            "firstName": "ASHLEY",
+                            "lastName": "ZEIGLER",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "ASHLEY ZEIGLER"
+                        },
+                        {
+                            "projectId": 2,
+                            "campaignId": 72,
+                            "userId": 3,
+                            "username": "KBOTHWELL",
+                            "email": "katrinab@buddha-jones.com",
+                            "firstName": "KATRINA",
+                            "lastName": "BOTHWELL",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 1,
+                            "role": "Lead Producer",
+                            "fullName": "KATRINA BOTHWELL"
+                        },
+                        {
+                            "projectId": 2,
+                            "campaignId": 72,
+                            "userId": 6,
+                            "username": "JZAKOSKI",
+                            "email": "JAMIEZ@BUDDHA-JONES.COM",
+                            "firstName": "JAMIE",
+                            "lastName": "ZAKOSKI",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "JAMIE ZAKOSKI"
+                        },
+                        {
+                            "projectId": 2,
+                            "campaignId": 72,
+                            "userId": 7,
+                            "username": "MALBORN",
+                            "email": "MAXA@BUDDHA-JONES.COM",
+                            "firstName": "MAXWELL",
+                            "lastName": "ALBORN",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 4,
+                            "role": "Creative Manager",
+                            "fullName": "MAXWELL ALBORN"
+                        }
+                    ],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                },
+                {
+                    "projectCampaignId": 164,
+                    "campaignId": 73,
+                    "campaignName": "test campaign1",
+                    "firstPointOfContactId": 1,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [
+                        {
+                            "projectId": 2,
+                            "campaignId": 73,
+                            "userId": 2,
+                            "username": "AZEIGLER",
+                            "email": "ashleyz@buddha-jones.com",
+                            "firstName": "ASHLEY",
+                            "lastName": "ZEIGLER",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "ASHLEY ZEIGLER"
+                        },
+                        {
+                            "projectId": 2,
+                            "campaignId": 73,
+                            "userId": 3,
+                            "username": "KBOTHWELL",
+                            "email": "katrinab@buddha-jones.com",
+                            "firstName": "KATRINA",
+                            "lastName": "BOTHWELL",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 1,
+                            "role": "Lead Producer",
+                            "fullName": "KATRINA BOTHWELL"
+                        },
+                        {
+                            "projectId": 2,
+                            "campaignId": 73,
+                            "userId": 6,
+                            "username": "JZAKOSKI",
+                            "email": "JAMIEZ@BUDDHA-JONES.COM",
+                            "firstName": "JAMIE",
+                            "lastName": "ZAKOSKI",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "JAMIE ZAKOSKI"
+                        },
+                        {
+                            "projectId": 2,
+                            "campaignId": 73,
+                            "userId": 7,
+                            "username": "MALBORN",
+                            "email": "MAXA@BUDDHA-JONES.COM",
+                            "firstName": "MAXWELL",
+                            "lastName": "ALBORN",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 4,
+                            "role": "Creative Manager",
+                            "fullName": "MAXWELL ALBORN"
+                        }
+                    ],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                }
+            ],
+            "comment": {
+                "count": 1,
+                "unread": 1
+            },
+            "user": []
+        },
+        {
+            "id": 3,
+            "projectName": "Bravo 14",
+            "projectCode": null,
+            "customerId": 3,
+            "customerName": "HBO",
+            "cardcode": null,
+            "notes": null,
+            "projectRelease": {
+                "date": "2018-06-05 00:00:00.000000",
+                "timezone_type": 3,
+                "timezone": "US/Eastern"
+            },
+            "lastUpdatedAt": "2018-05-29 16:16:11",
+            "lastUpdateUser": {
+                "userId": 1,
+                "name": "Demo User",
+                "image": null
+            },
+            "campaign": [
+                {
+                    "projectCampaignId": 163,
+                    "campaignId": 72,
+                    "campaignName": "test campaign1",
+                    "firstPointOfContactId": 1,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [
+                        {
+                            "projectId": 3,
+                            "campaignId": 72,
+                            "userId": 2,
+                            "username": "AZEIGLER",
+                            "email": "ashleyz@buddha-jones.com",
+                            "firstName": "ASHLEY",
+                            "lastName": "ZEIGLER",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "ASHLEY ZEIGLER"
+                        },
+                        {
+                            "projectId": 3,
+                            "campaignId": 72,
+                            "userId": 3,
+                            "username": "KBOTHWELL",
+                            "email": "katrinab@buddha-jones.com",
+                            "firstName": "KATRINA",
+                            "lastName": "BOTHWELL",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 1,
+                            "role": "Lead Producer",
+                            "fullName": "KATRINA BOTHWELL"
+                        },
+                        {
+                            "projectId": 3,
+                            "campaignId": 72,
+                            "userId": 6,
+                            "username": "JZAKOSKI",
+                            "email": "JAMIEZ@BUDDHA-JONES.COM",
+                            "firstName": "JAMIE",
+                            "lastName": "ZAKOSKI",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "JAMIE ZAKOSKI"
+                        },
+                        {
+                            "projectId": 3,
+                            "campaignId": 72,
+                            "userId": 7,
+                            "username": "MALBORN",
+                            "email": "MAXA@BUDDHA-JONES.COM",
+                            "firstName": "MAXWELL",
+                            "lastName": "ALBORN",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 4,
+                            "role": "Creative Manager",
+                            "fullName": "MAXWELL ALBORN"
+                        }
+                    ],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                },
+                {
+                    "projectCampaignId": 165,
+                    "campaignId": 73,
+                    "campaignName": "test campaign1",
+                    "firstPointOfContactId": 1,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [
+                        {
+                            "projectId": 3,
+                            "campaignId": 73,
+                            "userId": 2,
+                            "username": "AZEIGLER",
+                            "email": "ashleyz@buddha-jones.com",
+                            "firstName": "ASHLEY",
+                            "lastName": "ZEIGLER",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "ASHLEY ZEIGLER"
+                        },
+                        {
+                            "projectId": 3,
+                            "campaignId": 73,
+                            "userId": 3,
+                            "username": "KBOTHWELL",
+                            "email": "katrinab@buddha-jones.com",
+                            "firstName": "KATRINA",
+                            "lastName": "BOTHWELL",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 1,
+                            "role": "Lead Producer",
+                            "fullName": "KATRINA BOTHWELL"
+                        },
+                        {
+                            "projectId": 3,
+                            "campaignId": 73,
+                            "userId": 6,
+                            "username": "JZAKOSKI",
+                            "email": "JAMIEZ@BUDDHA-JONES.COM",
+                            "firstName": "JAMIE",
+                            "lastName": "ZAKOSKI",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "JAMIE ZAKOSKI"
+                        },
+                        {
+                            "projectId": 3,
+                            "campaignId": 73,
+                            "userId": 7,
+                            "username": "MALBORN",
+                            "email": "MAXA@BUDDHA-JONES.COM",
+                            "firstName": "MAXWELL",
+                            "lastName": "ALBORN",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 4,
+                            "role": "Creative Manager",
+                            "fullName": "MAXWELL ALBORN"
+                        }
+                    ],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                },
+                {
+                    "projectCampaignId": 172,
+                    "campaignId": 2,
+                    "campaignName": "Trailer",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                },
+                {
+                    "projectCampaignId": 173,
+                    "campaignId": 70,
+                    "campaignName": "How",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                }
+            ],
+            "comment": {
+                "count": 0,
+                "unread": 0
+            },
+            "user": []
         }
     ]
 }
@@ -96,89 +1080,1059 @@ Retrieve list of projects.
 {
     "status": 1,
     "message": "Request successful",
-    "total_count": 20,
-    "object_count": 3,
+    "total_count": 19,
+    "object_count": 5,
     "data": [
         {
-            "id": 2,
-            "projectName": "Before I Wake",
-            "customerId": 1,
-            "customerName": "Test Customer 1",
+            "id": 48,
+            "projectName": null,
+            "projectCode": null,
+            "customerId": 0,
+            "projectRelease": "2018-02-23 00:00:00",
+            "customerName": null,
+            "cardcode": null,
             "notes": null,
-            "lastUpdatedAt": "2017-03-12 19:04:22",
-            "lastUpdateUserId": 1,
-            "lastUpdateUserName": "first",
-            "historyCount": 6,
-            "campaign": [
-                {
-                    "campaignId": 53,
-                    "campaignName": "test campaign1"
-                },
-                {
-                    "campaignId": 54,
-                    "campaignName": "test campaign1"
-                },
-                {
-                    "campaignId": 55,
-                    "campaignName": "test campaign1"
-                }
-            ],
-            "lastUpdateUser": {
-                "userId": 1,
-                "name": "first",
-                "image": "http://buddhajonesapi.localhost/thumb/profile_image/1.png"
-            },
-            "comment": {
-                "count": 1,
-                "unread": 1
-            }
-        },
-        {
-            "id": 3,
-            "projectName": "Bravo 14",
-            "customerId": 1,
-            "customerName": "Test Customer 1",
-            "notes": null,
-            "lastUpdatedAt": "2017-03-11 17:12:13",
-            "lastUpdateUserId": 1,
-            "lastUpdateUserName": "first",
-            "historyCount": 1,
-            "campaign": [
-                {
-                    "campaignId": 55,
-                    "campaignName": "test campaign1"
-                }
-            ],
-            "lastUpdateUser": {
-                "userId": 1,
-                "name": "first",
-                "image": "http://buddhajonesapi.localhost/thumb/profile_image/1.png"
-            },
-            "comment": {
-                "count": 1,
-                "unread": 1
-            }
-        },
-        {
-            "id": 20,
-            "projectName": "test 1q",
-            "customerId": 9,
-            "customerName": "99customer",
-            "notes": null,
-            "lastUpdatedAt": "2017-03-09 16:05:21",
-            "lastUpdateUserId": 1,
-            "lastUpdateUserName": "first",
-            "historyCount": 1,
+            "lastUpdatedAt": null,
+            "lastUpdateUserId": null,
+            "lastUpdateUserName": "",
+            "historyCount": 0,
             "campaign": [],
+            "lastUpdateUser": [],
+            "comment": {
+                "count": 0,
+                "unread": 0
+            },
+            "user": []
+        },
+        {
+            "id": 47,
+            "projectName": "Annihilation",
+            "projectCode": null,
+            "customerId": 134,
+            "projectRelease": "2018-02-23 00:00:00",
+            "customerName": "Paramount\r\n",
+            "cardcode": null,
+            "notes": "Job # 5195\nadding Customer Contact here: Anu Bhatia",
+            "lastUpdatedAt": "2018-05-17 20:04:31",
+            "lastUpdateUserId": 1,
+            "lastUpdateUserName": "Demo User",
+            "historyCount": 460,
+            "campaign": [
+                {
+                    "projectCampaignId": 156,
+                    "campaignId": 4,
+                    "campaignName": "Krystle said this was questioning, which is odd, since she's omniscient.",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": true,
+                    "writingTeamNotes": "both conceptual ideas and copy",
+                    "requestMusicTeam": true,
+                    "musicTeamNotes": "cue sheets only as we're using cleared music from theatrical campaign to start",
+                    "note": "Krystle said this was questioning, which is odd, since she's omniscient.",
+                    "budget": "0",
+                    "budgetNote": "budget per spot",
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": "2018-05-05 07:00:00",
+                    "user": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 23,
+                            "username": "ABATES",
+                            "email": "ALEXB@BUDDHA-JONES.COM",
+                            "firstName": "ALEXANDRA",
+                            "lastName": "BATES",
+                            "image": null,
+                            "typeId": 6,
+                            "type": "Creative Manager/Coordinator",
+                            "roleId": null,
+                            "role": null,
+                            "fullName": "ALEXANDRA BATES"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 97,
+                            "username": "MLAFONTANT",
+                            "email": "MARK.LAFONTANT@BUDDHA-JONES.COM",
+                            "firstName": "MARK",
+                            "lastName": "LAFONTANT",
+                            "image": null,
+                            "typeId": 21,
+                            "type": "Producer",
+                            "roleId": null,
+                            "role": null,
+                            "fullName": "MARK LAFONTANT"
+                        }
+                    ],
+                    "designer": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 67,
+                            "username": "KPANG",
+                            "email": "KEITHP@BUDDHA-JONES.COM",
+                            "firstName": "KEITH",
+                            "lastName": "PANG",
+                            "image": null,
+                            "typeId": 12,
+                            "type": "Graphic Designer",
+                            "fullName": "KEITH PANG"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 64,
+                            "username": "BBERLING",
+                            "email": "BRADB@BUDDHA-JONES.COM",
+                            "firstName": "BRADFORD",
+                            "lastName": "BERLING",
+                            "image": null,
+                            "typeId": 14,
+                            "type": "Graphic Dept Head",
+                            "fullName": "BRADFORD BERLING"
+                        }
+                    ],
+                    "editor": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 44,
+                            "username": "JMOSKOW",
+                            "email": "jacobm@buddha-jones.com",
+                            "firstName": "JACOB LAWRENCE",
+                            "lastName": "MOSKOW",
+                            "image": null,
+                            "typeId": 7,
+                            "type": "Editor",
+                            "fullName": "JACOB LAWRENCE MOSKOW"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 48,
+                            "username": "WNEIL",
+                            "email": "BILLN@BUDDHA-JONES.COM",
+                            "firstName": "WILLIAM",
+                            "lastName": "NEIL",
+                            "image": null,
+                            "typeId": 7,
+                            "type": "Editor",
+                            "fullName": "WILLIAM NEIL"
+                        }
+                    ],
+                    "billingUser": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 9,
+                            "username": "JDAVIS",
+                            "email": "JULIED@BUDDHA-JONES.COM",
+                            "firstName": "JULIE",
+                            "lastName": "DAVIS",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "billingRole": null,
+                            "fullName": "JULIE DAVIS"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 40,
+                            "username": "JDADON",
+                            "email": "jessicad@buddha-jones.com",
+                            "firstName": "JESSICA",
+                            "lastName": "DADON",
+                            "image": null,
+                            "typeId": 7,
+                            "type": "Editor",
+                            "billingRole": null,
+                            "fullName": "JESSICA DADON"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 4,
+                            "userId": 97,
+                            "username": "MLAFONTANT",
+                            "email": "MARK.LAFONTANT@BUDDHA-JONES.COM",
+                            "firstName": "MARK",
+                            "lastName": "LAFONTANT",
+                            "image": null,
+                            "typeId": 21,
+                            "type": "Producer",
+                            "billingRole": null,
+                            "fullName": "MARK LAFONTANT"
+                        }
+                    ]
+                },
+                {
+                    "projectCampaignId": 157,
+                    "campaignId": 2,
+                    "campaignName": "Trailer",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": true,
+                    "writingTeamNotes": "just a blurb",
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": 45000,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": "2018-01-18 08:00:00",
+                    "user": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 2,
+                            "userId": 6,
+                            "username": "JZAKOSKI",
+                            "email": "JAMIEZ@BUDDHA-JONES.COM",
+                            "firstName": "JAMIE",
+                            "lastName": "ZAKOSKI",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": null,
+                            "role": null,
+                            "fullName": "JAMIE ZAKOSKI"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 2,
+                            "userId": 11,
+                            "username": "MBYRNES",
+                            "email": "MARIEB@BUDDHA-JONES.COM",
+                            "firstName": "MARIE",
+                            "lastName": "BYRNES",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": null,
+                            "role": null,
+                            "fullName": "MARIE BYRNES"
+                        }
+                    ],
+                    "designer": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 2,
+                            "userId": 66,
+                            "username": "BSALZANO",
+                            "email": "bobs@buddha-jones.com",
+                            "firstName": "BOBBY",
+                            "lastName": "SALZANO",
+                            "image": null,
+                            "typeId": 12,
+                            "type": "Graphic Designer",
+                            "fullName": "BOBBY SALZANO"
+                        }
+                    ],
+                    "editor": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 2,
+                            "userId": 32,
+                            "username": "MWINBUSH",
+                            "email": "MEKOW@BUDDHA-JONES.COM",
+                            "firstName": "MEKO",
+                            "lastName": "WINBUSH",
+                            "image": null,
+                            "typeId": 7,
+                            "type": "Editor",
+                            "fullName": "MEKO WINBUSH"
+                        }
+                    ],
+                    "billingUser": []
+                },
+                {
+                    "projectCampaignId": 158,
+                    "campaignId": 71,
+                    "campaignName": "(:15) TV",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": true,
+                    "writingTeamNotes": "once upon a time",
+                    "requestMusicTeam": true,
+                    "musicTeamNotes": "do ta do",
+                    "note": "(:15) TV",
+                    "budget": "0",
+                    "budgetNote": "on spec; billable if revised",
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": "2017-12-02 08:00:00",
+                    "user": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 71,
+                            "userId": 19,
+                            "username": "ACAPUTO",
+                            "email": "ASHLEYC@BUDDHA-JONES.COM",
+                            "firstName": "ASHLEY",
+                            "lastName": "CAPUTO",
+                            "image": null,
+                            "typeId": 21,
+                            "type": "Producer",
+                            "roleId": null,
+                            "role": null,
+                            "fullName": "ASHLEY CAPUTO"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 71,
+                            "userId": 89,
+                            "username": "KKATAMBWA",
+                            "email": "KAZADIK@BUDDHA-JONES.COM",
+                            "firstName": "KAZADI",
+                            "lastName": "KATAMBWA",
+                            "image": null,
+                            "typeId": 21,
+                            "type": "Producer",
+                            "roleId": null,
+                            "role": null,
+                            "fullName": "KAZADI KATAMBWA"
+                        }
+                    ],
+                    "designer": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 71,
+                            "userId": 69,
+                            "username": "HFORSSTROM",
+                            "email": "HALF@BUDDHA-JONES.COM",
+                            "firstName": "HEINO",
+                            "lastName": "FORSSTROM",
+                            "image": null,
+                            "typeId": 12,
+                            "type": "Graphic Designer",
+                            "fullName": "HEINO FORSSTROM"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 71,
+                            "userId": 70,
+                            "username": "JREYES",
+                            "email": "JONATHANR@BUDDHA-JONES.COM",
+                            "firstName": "JONATHAN",
+                            "lastName": "REYES",
+                            "image": null,
+                            "typeId": 12,
+                            "type": "Graphic Designer",
+                            "fullName": "JONATHAN REYES"
+                        }
+                    ],
+                    "editor": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 71,
+                            "userId": 26,
+                            "username": "JONEIL",
+                            "email": "JOHNNYO@BUDDHA-JONES.COM",
+                            "firstName": "JOHN",
+                            "lastName": "ONEIL",
+                            "image": null,
+                            "typeId": 7,
+                            "type": "Editor",
+                            "fullName": "JOHN ONEIL"
+                        },
+                        {
+                            "projectId": 47,
+                            "campaignId": 71,
+                            "userId": 86,
+                            "username": "DASMA",
+                            "email": "dan@buddha-jones.com",
+                            "firstName": "DANIEL",
+                            "lastName": "ASMA",
+                            "image": null,
+                            "typeId": 28,
+                            "type": "Co-owner",
+                            "fullName": "DANIEL ASMA"
+                        }
+                    ],
+                    "billingUser": [
+                        {
+                            "projectId": 47,
+                            "campaignId": 71,
+                            "userId": 15,
+                            "username": "TFANG",
+                            "email": "TONYF@BUDDHA-JONES.COM",
+                            "firstName": "TONY",
+                            "lastName": "FANG",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "billingRole": null,
+                            "fullName": "TONY FANG"
+                        }
+                    ]
+                },
+                {
+                    "projectCampaignId": 160,
+                    "campaignId": 1,
+                    "campaignName": "Teaser",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                },
+                {
+                    "projectCampaignId": 161,
+                    "campaignId": 68,
+                    "campaignName": "TV 30 Stanford",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": "TV 30 Stanford",
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                }
+            ],
             "lastUpdateUser": {
                 "userId": 1,
-                "name": "first",
-                "image": "http://buddhajonesapi.localhost/thumb/profile_image/1.png"
+                "name": "Demo User",
+                "image": null
             },
             "comment": {
                 "count": 0,
                 "unread": 0
-            }
+            },
+            "user": []
+        },
+        {
+            "id": 1,
+            "projectName": "Babysitter",
+            "projectCode": "BAB",
+            "customerId": 1,
+            "projectRelease": "2018-06-05 00:00:00",
+            "customerName": "NBC Universal",
+            "cardcode": null,
+            "notes": "Project has no description",
+            "lastUpdatedAt": "2018-05-02 16:47:33",
+            "lastUpdateUserId": 1,
+            "lastUpdateUserName": "Demo User",
+            "historyCount": 321,
+            "campaign": [
+                {
+                    "projectCampaignId": 105,
+                    "campaignId": 4,
+                    "campaignName": "(:30) TV Campaign",
+                    "firstPointOfContactId": 7,
+                    "requestWritingTeam": false,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": true,
+                    "musicTeamNotes": "This is the place for notes",
+                    "note": "(:30) TV Campaign",
+                    "budget": 5000,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 10,
+                            "username": "JFAGAN",
+                            "email": "JOHNF@BUDDHA-JONES.COM",
+                            "firstName": "JOHN",
+                            "lastName": "FAGAN",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 7,
+                            "role": "Graphics Coordinator",
+                            "fullName": "JOHN FAGAN"
+                        },
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 87,
+                            "username": "JGODFREY",
+                            "email": "jordang@buddha-jones.com",
+                            "firstName": "JORDAN MICHAEL",
+                            "lastName": "GODFREY",
+                            "image": null,
+                            "typeId": 21,
+                            "type": "Producer",
+                            "roleId": 8,
+                            "role": "Editorial Manager",
+                            "fullName": "JORDAN MICHAEL GODFREY"
+                        },
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 101,
+                            "username": "EDELK",
+                            "email": "emilyd@buddha-jones.com",
+                            "firstName": "EMILY COLETTE",
+                            "lastName": "DELK",
+                            "image": null,
+                            "typeId": 22,
+                            "type": "Production Assistant",
+                            "roleId": 1,
+                            "role": "Lead Producer",
+                            "fullName": "EMILY COLETTE DELK"
+                        }
+                    ],
+                    "designer": [
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 9,
+                            "username": "JDAVIS",
+                            "email": "JULIED@BUDDHA-JONES.COM",
+                            "firstName": "JULIE",
+                            "lastName": "DAVIS",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "fullName": "JULIE DAVIS"
+                        }
+                    ],
+                    "editor": [
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 6,
+                            "username": "JZAKOSKI",
+                            "email": "JAMIEZ@BUDDHA-JONES.COM",
+                            "firstName": "JAMIE",
+                            "lastName": "ZAKOSKI",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "fullName": "JAMIE ZAKOSKI"
+                        },
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 87,
+                            "username": "JGODFREY",
+                            "email": "jordang@buddha-jones.com",
+                            "firstName": "JORDAN MICHAEL",
+                            "lastName": "GODFREY",
+                            "image": null,
+                            "typeId": 21,
+                            "type": "Producer",
+                            "fullName": "JORDAN MICHAEL GODFREY"
+                        },
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 89,
+                            "username": "KKATAMBWA",
+                            "email": "KAZADIK@BUDDHA-JONES.COM",
+                            "firstName": "KAZADI",
+                            "lastName": "KATAMBWA",
+                            "image": null,
+                            "typeId": 21,
+                            "type": "Producer",
+                            "fullName": "KAZADI KATAMBWA"
+                        }
+                    ],
+                    "billingUser": [
+                        {
+                            "projectId": 1,
+                            "campaignId": 4,
+                            "userId": 13,
+                            "username": "SSISSON",
+                            "email": "SOPHIAS@BUDDHA-JONES.COM",
+                            "firstName": "SOPHIA",
+                            "lastName": "SISSON",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "billingRole": null,
+                            "fullName": "SOPHIA SISSON"
+                        }
+                    ]
+                },
+                {
+                    "projectCampaignId": 149,
+                    "campaignId": 1,
+                    "campaignName": "Teaser",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                },
+                {
+                    "projectCampaignId": 155,
+                    "campaignId": 2,
+                    "campaignName": "Trailer",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                }
+            ],
+            "lastUpdateUser": {
+                "userId": 1,
+                "name": "Demo User",
+                "image": null
+            },
+            "comment": {
+                "count": 0,
+                "unread": 0
+            },
+            "user": []
+        },
+        {
+            "id": 2,
+            "projectName": "Before I Wake",
+            "projectCode": null,
+            "customerId": 2,
+            "projectRelease": "2018-06-05 00:00:00",
+            "customerName": "Warner Bros.",
+            "cardcode": null,
+            "notes": null,
+            "lastUpdatedAt": "2018-05-29 13:22:27",
+            "lastUpdateUserId": 1,
+            "lastUpdateUserName": "Demo User",
+            "historyCount": 22,
+            "campaign": [
+                {
+                    "projectCampaignId": 162,
+                    "campaignId": 72,
+                    "campaignName": "test campaign1",
+                    "firstPointOfContactId": 1,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [
+                        {
+                            "projectId": 2,
+                            "campaignId": 72,
+                            "userId": 2,
+                            "username": "AZEIGLER",
+                            "email": "ashleyz@buddha-jones.com",
+                            "firstName": "ASHLEY",
+                            "lastName": "ZEIGLER",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "ASHLEY ZEIGLER"
+                        },
+                        {
+                            "projectId": 2,
+                            "campaignId": 72,
+                            "userId": 3,
+                            "username": "KBOTHWELL",
+                            "email": "katrinab@buddha-jones.com",
+                            "firstName": "KATRINA",
+                            "lastName": "BOTHWELL",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 1,
+                            "role": "Lead Producer",
+                            "fullName": "KATRINA BOTHWELL"
+                        },
+                        {
+                            "projectId": 2,
+                            "campaignId": 72,
+                            "userId": 6,
+                            "username": "JZAKOSKI",
+                            "email": "JAMIEZ@BUDDHA-JONES.COM",
+                            "firstName": "JAMIE",
+                            "lastName": "ZAKOSKI",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "JAMIE ZAKOSKI"
+                        },
+                        {
+                            "projectId": 2,
+                            "campaignId": 72,
+                            "userId": 7,
+                            "username": "MALBORN",
+                            "email": "MAXA@BUDDHA-JONES.COM",
+                            "firstName": "MAXWELL",
+                            "lastName": "ALBORN",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 4,
+                            "role": "Creative Manager",
+                            "fullName": "MAXWELL ALBORN"
+                        }
+                    ],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                },
+                {
+                    "projectCampaignId": 164,
+                    "campaignId": 73,
+                    "campaignName": "test campaign1",
+                    "firstPointOfContactId": 1,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [
+                        {
+                            "projectId": 2,
+                            "campaignId": 73,
+                            "userId": 2,
+                            "username": "AZEIGLER",
+                            "email": "ashleyz@buddha-jones.com",
+                            "firstName": "ASHLEY",
+                            "lastName": "ZEIGLER",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "ASHLEY ZEIGLER"
+                        },
+                        {
+                            "projectId": 2,
+                            "campaignId": 73,
+                            "userId": 3,
+                            "username": "KBOTHWELL",
+                            "email": "katrinab@buddha-jones.com",
+                            "firstName": "KATRINA",
+                            "lastName": "BOTHWELL",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 1,
+                            "role": "Lead Producer",
+                            "fullName": "KATRINA BOTHWELL"
+                        },
+                        {
+                            "projectId": 2,
+                            "campaignId": 73,
+                            "userId": 6,
+                            "username": "JZAKOSKI",
+                            "email": "JAMIEZ@BUDDHA-JONES.COM",
+                            "firstName": "JAMIE",
+                            "lastName": "ZAKOSKI",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "JAMIE ZAKOSKI"
+                        },
+                        {
+                            "projectId": 2,
+                            "campaignId": 73,
+                            "userId": 7,
+                            "username": "MALBORN",
+                            "email": "MAXA@BUDDHA-JONES.COM",
+                            "firstName": "MAXWELL",
+                            "lastName": "ALBORN",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 4,
+                            "role": "Creative Manager",
+                            "fullName": "MAXWELL ALBORN"
+                        }
+                    ],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                }
+            ],
+            "lastUpdateUser": {
+                "userId": 1,
+                "name": "Demo User",
+                "image": null
+            },
+            "comment": {
+                "count": 1,
+                "unread": 1
+            },
+            "user": []
+        },
+        {
+            "id": 3,
+            "projectName": "Bravo 14",
+            "projectCode": null,
+            "customerId": 3,
+            "projectRelease": "2018-06-05 00:00:00",
+            "customerName": "HBO",
+            "cardcode": null,
+            "notes": null,
+            "lastUpdatedAt": "2018-05-29 16:16:11",
+            "lastUpdateUserId": 1,
+            "lastUpdateUserName": "Demo User",
+            "historyCount": 52,
+            "campaign": [
+                {
+                    "projectCampaignId": 163,
+                    "campaignId": 72,
+                    "campaignName": "test campaign1",
+                    "firstPointOfContactId": 1,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [
+                        {
+                            "projectId": 3,
+                            "campaignId": 72,
+                            "userId": 2,
+                            "username": "AZEIGLER",
+                            "email": "ashleyz@buddha-jones.com",
+                            "firstName": "ASHLEY",
+                            "lastName": "ZEIGLER",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "ASHLEY ZEIGLER"
+                        },
+                        {
+                            "projectId": 3,
+                            "campaignId": 72,
+                            "userId": 3,
+                            "username": "KBOTHWELL",
+                            "email": "katrinab@buddha-jones.com",
+                            "firstName": "KATRINA",
+                            "lastName": "BOTHWELL",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 1,
+                            "role": "Lead Producer",
+                            "fullName": "KATRINA BOTHWELL"
+                        },
+                        {
+                            "projectId": 3,
+                            "campaignId": 72,
+                            "userId": 6,
+                            "username": "JZAKOSKI",
+                            "email": "JAMIEZ@BUDDHA-JONES.COM",
+                            "firstName": "JAMIE",
+                            "lastName": "ZAKOSKI",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "JAMIE ZAKOSKI"
+                        },
+                        {
+                            "projectId": 3,
+                            "campaignId": 72,
+                            "userId": 7,
+                            "username": "MALBORN",
+                            "email": "MAXA@BUDDHA-JONES.COM",
+                            "firstName": "MAXWELL",
+                            "lastName": "ALBORN",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 4,
+                            "role": "Creative Manager",
+                            "fullName": "MAXWELL ALBORN"
+                        }
+                    ],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                },
+                {
+                    "projectCampaignId": 165,
+                    "campaignId": 73,
+                    "campaignName": "test campaign1",
+                    "firstPointOfContactId": 1,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [
+                        {
+                            "projectId": 3,
+                            "campaignId": 73,
+                            "userId": 2,
+                            "username": "AZEIGLER",
+                            "email": "ashleyz@buddha-jones.com",
+                            "firstName": "ASHLEY",
+                            "lastName": "ZEIGLER",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "ASHLEY ZEIGLER"
+                        },
+                        {
+                            "projectId": 3,
+                            "campaignId": 73,
+                            "userId": 3,
+                            "username": "KBOTHWELL",
+                            "email": "katrinab@buddha-jones.com",
+                            "firstName": "KATRINA",
+                            "lastName": "BOTHWELL",
+                            "image": null,
+                            "typeId": 1,
+                            "type": "Admin",
+                            "roleId": 1,
+                            "role": "Lead Producer",
+                            "fullName": "KATRINA BOTHWELL"
+                        },
+                        {
+                            "projectId": 3,
+                            "campaignId": 73,
+                            "userId": 6,
+                            "username": "JZAKOSKI",
+                            "email": "JAMIEZ@BUDDHA-JONES.COM",
+                            "firstName": "JAMIE",
+                            "lastName": "ZAKOSKI",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 2,
+                            "role": "Producer",
+                            "fullName": "JAMIE ZAKOSKI"
+                        },
+                        {
+                            "projectId": 3,
+                            "campaignId": 73,
+                            "userId": 7,
+                            "username": "MALBORN",
+                            "email": "MAXA@BUDDHA-JONES.COM",
+                            "firstName": "MAXWELL",
+                            "lastName": "ALBORN",
+                            "image": null,
+                            "typeId": 4,
+                            "type": "Assistant Editor",
+                            "roleId": 4,
+                            "role": "Creative Manager",
+                            "fullName": "MAXWELL ALBORN"
+                        }
+                    ],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                },
+                {
+                    "projectCampaignId": 172,
+                    "campaignId": 2,
+                    "campaignName": "Trailer",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                },
+                {
+                    "projectCampaignId": 173,
+                    "campaignId": 70,
+                    "campaignName": "How",
+                    "firstPointOfContactId": null,
+                    "requestWritingTeam": null,
+                    "writingTeamNotes": null,
+                    "requestMusicTeam": null,
+                    "musicTeamNotes": null,
+                    "note": null,
+                    "budget": null,
+                    "budgetNote": null,
+                    "por": null,
+                    "invoiceContact": null,
+                    "materialReceiveDate": null,
+                    "user": [],
+                    "designer": [],
+                    "editor": [],
+                    "billingUser": []
+                }
+            ],
+            "lastUpdateUser": {
+                "userId": 1,
+                "name": "Demo User",
+                "image": null
+            },
+            "comment": {
+                "count": 0,
+                "unread": 0
+            },
+            "user": []
         }
     ]
 }
@@ -213,72 +2167,1683 @@ Retrieve single project information.
     "status": 1,
     "message": "Request successful",
     "data": {
-        "id": 42,
-        "projectName": "test 1q",
-        "customerId": 1,
-        "customerName": "NBC Universal",
+        "id": 47,
+        "projectName": "Annihilation",
+        "projectCode": null,
+        "customerId": 134,
+        "customerName": "Paramount\r\n",
         "cardcode": null,
-        "notes": null,
-        "lastUpdatedAt": "2018-01-22 15:37:25",
+        "notes": "Job # 5195\nadding Customer Contact here: Anu Bhatia",
+        "projectRelease": {
+            "date": "2018-02-23 00:00:00.000000",
+            "timezone_type": 3,
+            "timezone": "US/Eastern"
+        },
+        "lastUpdatedAt": "2018-05-17 20:04:31",
         "lastUpdateUser": {
-            "userId": 51,
-            "name": "Sample Producer",
+            "userId": 1,
+            "name": "Demo User",
             "image": null
         },
-        "campaign": [],
+        "campaign": [
+            {
+                "projectCampaignId": 156,
+                "campaignId": 4,
+                "campaignName": "Krystle said this was questioning, which is odd, since she's omniscient.",
+                "firstPointOfContactId": null,
+                "requestWritingTeam": true,
+                "writingTeamNotes": "both conceptual ideas and copy",
+                "requestMusicTeam": true,
+                "musicTeamNotes": "cue sheets only as we're using cleared music from theatrical campaign to start",
+                "note": "Krystle said this was questioning, which is odd, since she's omniscient.",
+                "budget": "0",
+                "budgetNote": "budget per spot",
+                "por": null,
+                "invoiceContact": null,
+                "materialReceiveDate": "2018-05-05 07:00:00",
+                "spot": [
+                    {
+                        "id": "78",
+                        "spotName": "#1 Theory",
+                        "revisionNotCounted": null,
+                        "notes": "Kris Brown cut v.1",
+                        "revisions": 3,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "11000.00",
+                        "internalDeadline": null,
+                        "clientDeadline": "2018-05-14 00:00:00",
+                        "version": [
+                            {
+                                "id": 1,
+                                "versionName": "1",
+                                "seq": 1,
+                                "active": 1,
+                                "createdUserId": null,
+                                "createdAt": null,
+                                "updatedUserId": null,
+                                "updatedAt": null
+                            },
+                            {
+                                "id": 4,
+                                "versionName": "1 Alt",
+                                "seq": 4,
+                                "active": 1,
+                                "createdUserId": null,
+                                "createdAt": null,
+                                "updatedUserId": null,
+                                "updatedAt": null
+                            },
+                            {
+                                "id": 6,
+                                "versionName": "2",
+                                "seq": 6,
+                                "active": 1,
+                                "createdUserId": null,
+                                "createdAt": null,
+                                "updatedUserId": null,
+                                "updatedAt": null
+                            },
+                            {
+                                "id": 11,
+                                "versionName": "3",
+                                "seq": 11,
+                                "active": 1,
+                                "createdUserId": null,
+                                "createdAt": null,
+                                "updatedUserId": null,
+                                "updatedAt": null
+                            }
+                        ]
+                    },
+                    {
+                        "id": "79",
+                        "spotName": "#2 Saved",
+                        "revisionNotCounted": null,
+                        "notes": "null",
+                        "revisions": 3,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "11000.00",
+                        "internalDeadline": null,
+                        "clientDeadline": "2018-05-14 00:00:00",
+                        "version": []
+                    },
+                    {
+                        "id": "80",
+                        "spotName": "#3 Need",
+                        "revisionNotCounted": null,
+                        "notes": "null",
+                        "revisions": 3,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "11000.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    },
+                    {
+                        "id": "81",
+                        "spotName": "#4 Inside",
+                        "revisionNotCounted": null,
+                        "notes": "null",
+                        "revisions": 3,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "11000.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    },
+                    {
+                        "id": "82",
+                        "spotName": "#5 Threat",
+                        "revisionNotCounted": null,
+                        "notes": "null",
+                        "revisions": 3,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "11000.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    },
+                    {
+                        "id": "83",
+                        "spotName": "#6 Rescue",
+                        "revisionNotCounted": null,
+                        "notes": "OT billable",
+                        "revisions": 2,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "9000.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    },
+                    {
+                        "id": "92",
+                        "spotName": "New test spot",
+                        "revisionNotCounted": null,
+                        "notes": "Edit sample note",
+                        "revisions": 0,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "0.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    },
+                    {
+                        "id": "95",
+                        "spotName": "Test3",
+                        "revisionNotCounted": null,
+                        "notes": null,
+                        "revisions": 0,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "0.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    },
+                    {
+                        "id": "96",
+                        "spotName": "Test2",
+                        "revisionNotCounted": null,
+                        "notes": null,
+                        "revisions": 0,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "0.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    }
+                ],
+                "user": [
+                    {
+                        "projectId": 47,
+                        "campaignId": 4,
+                        "userId": 23,
+                        "username": "ABATES",
+                        "email": "ALEXB@BUDDHA-JONES.COM",
+                        "firstName": "ALEXANDRA",
+                        "lastName": "BATES",
+                        "image": null,
+                        "typeId": 6,
+                        "type": "Creative Manager/Coordinator",
+                        "roleId": null,
+                        "role": null,
+                        "fullName": "ALEXANDRA BATES"
+                    },
+                    {
+                        "projectId": 47,
+                        "campaignId": 4,
+                        "userId": 97,
+                        "username": "MLAFONTANT",
+                        "email": "MARK.LAFONTANT@BUDDHA-JONES.COM",
+                        "firstName": "MARK",
+                        "lastName": "LAFONTANT",
+                        "image": null,
+                        "typeId": 21,
+                        "type": "Producer",
+                        "roleId": null,
+                        "role": null,
+                        "fullName": "MARK LAFONTANT"
+                    }
+                ],
+                "designer": [
+                    {
+                        "projectId": 47,
+                        "campaignId": 4,
+                        "userId": 67,
+                        "username": "KPANG",
+                        "email": "KEITHP@BUDDHA-JONES.COM",
+                        "firstName": "KEITH",
+                        "lastName": "PANG",
+                        "image": null,
+                        "typeId": 12,
+                        "type": "Graphic Designer",
+                        "fullName": "KEITH PANG"
+                    },
+                    {
+                        "projectId": 47,
+                        "campaignId": 4,
+                        "userId": 64,
+                        "username": "BBERLING",
+                        "email": "BRADB@BUDDHA-JONES.COM",
+                        "firstName": "BRADFORD",
+                        "lastName": "BERLING",
+                        "image": null,
+                        "typeId": 14,
+                        "type": "Graphic Dept Head",
+                        "fullName": "BRADFORD BERLING"
+                    }
+                ],
+                "editor": [
+                    {
+                        "projectId": 47,
+                        "campaignId": 4,
+                        "userId": 44,
+                        "username": "JMOSKOW",
+                        "email": "jacobm@buddha-jones.com",
+                        "firstName": "JACOB LAWRENCE",
+                        "lastName": "MOSKOW",
+                        "image": null,
+                        "typeId": 7,
+                        "type": "Editor",
+                        "fullName": "JACOB LAWRENCE MOSKOW"
+                    },
+                    {
+                        "projectId": 47,
+                        "campaignId": 4,
+                        "userId": 48,
+                        "username": "WNEIL",
+                        "email": "BILLN@BUDDHA-JONES.COM",
+                        "firstName": "WILLIAM",
+                        "lastName": "NEIL",
+                        "image": null,
+                        "typeId": 7,
+                        "type": "Editor",
+                        "fullName": "WILLIAM NEIL"
+                    }
+                ],
+                "billingUser": [
+                    {
+                        "projectId": 47,
+                        "campaignId": 4,
+                        "userId": 9,
+                        "username": "JDAVIS",
+                        "email": "JULIED@BUDDHA-JONES.COM",
+                        "firstName": "JULIE",
+                        "lastName": "DAVIS",
+                        "image": null,
+                        "typeId": 4,
+                        "type": "Assistant Editor",
+                        "billingRole": null,
+                        "fullName": "JULIE DAVIS"
+                    },
+                    {
+                        "projectId": 47,
+                        "campaignId": 4,
+                        "userId": 40,
+                        "username": "JDADON",
+                        "email": "jessicad@buddha-jones.com",
+                        "firstName": "JESSICA",
+                        "lastName": "DADON",
+                        "image": null,
+                        "typeId": 7,
+                        "type": "Editor",
+                        "billingRole": null,
+                        "fullName": "JESSICA DADON"
+                    },
+                    {
+                        "projectId": 47,
+                        "campaignId": 4,
+                        "userId": 97,
+                        "username": "MLAFONTANT",
+                        "email": "MARK.LAFONTANT@BUDDHA-JONES.COM",
+                        "firstName": "MARK",
+                        "lastName": "LAFONTANT",
+                        "image": null,
+                        "typeId": 21,
+                        "type": "Producer",
+                        "billingRole": null,
+                        "fullName": "MARK LAFONTANT"
+                    }
+                ]
+            },
+            {
+                "projectCampaignId": 157,
+                "campaignId": 2,
+                "campaignName": "Trailer",
+                "firstPointOfContactId": null,
+                "requestWritingTeam": true,
+                "writingTeamNotes": "just a blurb",
+                "requestMusicTeam": null,
+                "musicTeamNotes": null,
+                "note": null,
+                "budget": 45000,
+                "budgetNote": null,
+                "por": null,
+                "invoiceContact": null,
+                "materialReceiveDate": "2018-01-18 08:00:00",
+                "spot": [
+                    {
+                        "id": "84",
+                        "spotName": "#1 Interrogation",
+                        "revisionNotCounted": null,
+                        "notes": "null",
+                        "revisions": 5,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "45000.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    },
+                    {
+                        "id": "91",
+                        "spotName": "Test",
+                        "revisionNotCounted": null,
+                        "notes": "null",
+                        "revisions": 0,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "0.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    }
+                ],
+                "user": [
+                    {
+                        "projectId": 47,
+                        "campaignId": 2,
+                        "userId": 6,
+                        "username": "JZAKOSKI",
+                        "email": "JAMIEZ@BUDDHA-JONES.COM",
+                        "firstName": "JAMIE",
+                        "lastName": "ZAKOSKI",
+                        "image": null,
+                        "typeId": 4,
+                        "type": "Assistant Editor",
+                        "roleId": null,
+                        "role": null,
+                        "fullName": "JAMIE ZAKOSKI"
+                    },
+                    {
+                        "projectId": 47,
+                        "campaignId": 2,
+                        "userId": 11,
+                        "username": "MBYRNES",
+                        "email": "MARIEB@BUDDHA-JONES.COM",
+                        "firstName": "MARIE",
+                        "lastName": "BYRNES",
+                        "image": null,
+                        "typeId": 4,
+                        "type": "Assistant Editor",
+                        "roleId": null,
+                        "role": null,
+                        "fullName": "MARIE BYRNES"
+                    }
+                ],
+                "designer": [
+                    {
+                        "projectId": 47,
+                        "campaignId": 2,
+                        "userId": 66,
+                        "username": "BSALZANO",
+                        "email": "bobs@buddha-jones.com",
+                        "firstName": "BOBBY",
+                        "lastName": "SALZANO",
+                        "image": null,
+                        "typeId": 12,
+                        "type": "Graphic Designer",
+                        "fullName": "BOBBY SALZANO"
+                    }
+                ],
+                "editor": [
+                    {
+                        "projectId": 47,
+                        "campaignId": 2,
+                        "userId": 32,
+                        "username": "MWINBUSH",
+                        "email": "MEKOW@BUDDHA-JONES.COM",
+                        "firstName": "MEKO",
+                        "lastName": "WINBUSH",
+                        "image": null,
+                        "typeId": 7,
+                        "type": "Editor",
+                        "fullName": "MEKO WINBUSH"
+                    }
+                ],
+                "billingUser": []
+            },
+            {
+                "projectCampaignId": 158,
+                "campaignId": 71,
+                "campaignName": "(:15) TV",
+                "firstPointOfContactId": null,
+                "requestWritingTeam": true,
+                "writingTeamNotes": "once upon a time",
+                "requestMusicTeam": true,
+                "musicTeamNotes": "do ta do",
+                "note": "(:15) TV",
+                "budget": "0",
+                "budgetNote": "on spec; billable if revised",
+                "por": null,
+                "invoiceContact": null,
+                "materialReceiveDate": "2017-12-02 08:00:00",
+                "spot": [
+                    {
+                        "id": "85",
+                        "spotName": "#1 Reason",
+                        "revisionNotCounted": null,
+                        "notes": "null",
+                        "revisions": 3,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "5000.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    },
+                    {
+                        "id": "86",
+                        "spotName": "#2 Creation",
+                        "revisionNotCounted": null,
+                        "notes": "null",
+                        "revisions": 3,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "5000.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    },
+                    {
+                        "id": "87",
+                        "spotName": "#3 Everywhere",
+                        "revisionNotCounted": null,
+                        "notes": "null",
+                        "revisions": 3,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "5000.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    },
+                    {
+                        "id": "88",
+                        "spotName": "#4 Need",
+                        "revisionNotCounted": null,
+                        "notes": "based on digital :15 v.6",
+                        "revisions": 0,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "5000.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    },
+                    {
+                        "id": "89",
+                        "spotName": "#3 Everywhere",
+                        "revisionNotCounted": null,
+                        "notes": "based on digital 15 v.6",
+                        "revisions": 0,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "0.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    },
+                    {
+                        "id": "90",
+                        "spotName": "#5 Succeed/YouTube",
+                        "revisionNotCounted": null,
+                        "notes": "based on digital 15 v.3",
+                        "revisions": 0,
+                        "graphicsRevisions": 0,
+                        "firstRevisionCost": "5000.00",
+                        "internalDeadline": null,
+                        "clientDeadline": null,
+                        "version": []
+                    }
+                ],
+                "user": [
+                    {
+                        "projectId": 47,
+                        "campaignId": 71,
+                        "userId": 19,
+                        "username": "ACAPUTO",
+                        "email": "ASHLEYC@BUDDHA-JONES.COM",
+                        "firstName": "ASHLEY",
+                        "lastName": "CAPUTO",
+                        "image": null,
+                        "typeId": 21,
+                        "type": "Producer",
+                        "roleId": null,
+                        "role": null,
+                        "fullName": "ASHLEY CAPUTO"
+                    },
+                    {
+                        "projectId": 47,
+                        "campaignId": 71,
+                        "userId": 89,
+                        "username": "KKATAMBWA",
+                        "email": "KAZADIK@BUDDHA-JONES.COM",
+                        "firstName": "KAZADI",
+                        "lastName": "KATAMBWA",
+                        "image": null,
+                        "typeId": 21,
+                        "type": "Producer",
+                        "roleId": null,
+                        "role": null,
+                        "fullName": "KAZADI KATAMBWA"
+                    }
+                ],
+                "designer": [
+                    {
+                        "projectId": 47,
+                        "campaignId": 71,
+                        "userId": 69,
+                        "username": "HFORSSTROM",
+                        "email": "HALF@BUDDHA-JONES.COM",
+                        "firstName": "HEINO",
+                        "lastName": "FORSSTROM",
+                        "image": null,
+                        "typeId": 12,
+                        "type": "Graphic Designer",
+                        "fullName": "HEINO FORSSTROM"
+                    },
+                    {
+                        "projectId": 47,
+                        "campaignId": 71,
+                        "userId": 70,
+                        "username": "JREYES",
+                        "email": "JONATHANR@BUDDHA-JONES.COM",
+                        "firstName": "JONATHAN",
+                        "lastName": "REYES",
+                        "image": null,
+                        "typeId": 12,
+                        "type": "Graphic Designer",
+                        "fullName": "JONATHAN REYES"
+                    }
+                ],
+                "editor": [
+                    {
+                        "projectId": 47,
+                        "campaignId": 71,
+                        "userId": 26,
+                        "username": "JONEIL",
+                        "email": "JOHNNYO@BUDDHA-JONES.COM",
+                        "firstName": "JOHN",
+                        "lastName": "ONEIL",
+                        "image": null,
+                        "typeId": 7,
+                        "type": "Editor",
+                        "fullName": "JOHN ONEIL"
+                    },
+                    {
+                        "projectId": 47,
+                        "campaignId": 71,
+                        "userId": 86,
+                        "username": "DASMA",
+                        "email": "dan@buddha-jones.com",
+                        "firstName": "DANIEL",
+                        "lastName": "ASMA",
+                        "image": null,
+                        "typeId": 28,
+                        "type": "Co-owner",
+                        "fullName": "DANIEL ASMA"
+                    }
+                ],
+                "billingUser": [
+                    {
+                        "projectId": 47,
+                        "campaignId": 71,
+                        "userId": 15,
+                        "username": "TFANG",
+                        "email": "TONYF@BUDDHA-JONES.COM",
+                        "firstName": "TONY",
+                        "lastName": "FANG",
+                        "image": null,
+                        "typeId": 4,
+                        "type": "Assistant Editor",
+                        "billingRole": null,
+                        "fullName": "TONY FANG"
+                    }
+                ]
+            },
+            {
+                "projectCampaignId": 160,
+                "campaignId": 1,
+                "campaignName": "Teaser",
+                "firstPointOfContactId": null,
+                "requestWritingTeam": null,
+                "writingTeamNotes": null,
+                "requestMusicTeam": null,
+                "musicTeamNotes": null,
+                "note": null,
+                "budget": null,
+                "budgetNote": null,
+                "por": null,
+                "invoiceContact": null,
+                "materialReceiveDate": null,
+                "spot": [],
+                "user": [],
+                "designer": [],
+                "editor": [],
+                "billingUser": []
+            },
+            {
+                "projectCampaignId": 161,
+                "campaignId": 68,
+                "campaignName": "TV 30 Stanford",
+                "firstPointOfContactId": null,
+                "requestWritingTeam": null,
+                "writingTeamNotes": null,
+                "requestMusicTeam": null,
+                "musicTeamNotes": null,
+                "note": "TV 30 Stanford",
+                "budget": null,
+                "budgetNote": null,
+                "por": null,
+                "invoiceContact": null,
+                "materialReceiveDate": null,
+                "spot": [],
+                "user": [],
+                "designer": [],
+                "editor": [],
+                "billingUser": []
+            }
+        ],
         "comment": {
             "count": 0,
             "unread": 0
         },
-        "user": [
-            {
-                "userId": 2,
-                "firstName": "Hans",
-                "lastName": "Kant",
-                "roleId": 2,
-                "role": "Designer",
-                "image": "http://buddhajonesapi.localhost/thumb/profile_image/2.jpeg",
-                "fullName": "Hans Kant"
-            },
-            {
-                "userId": 3,
-                "firstName": "Rizwan",
-                "lastName": "Kader",
-                "roleId": 1,
-                "role": "Editor",
-                "image": "http://buddhajonesapi.localhost/thumb/profile_image/three.png",
-                "fullName": "Rizwan Kader"
-            },
-            {
-                "userId": 6,
-                "firstName": "Alex",
-                "lastName": "Wagner",
-                "roleId": 2,
-                "role": "Designer",
-                "image": null,
-                "fullName": "Alex Wagner"
-            },
-            {
-                "userId": 7,
-                "firstName": "Balinda",
-                "lastName": "Huang",
-                "roleId": 4,
-                "role": "Writer",
-                "image": null,
-                "fullName": "Balinda Huang"
-            }
-        ],
+        "user": [],
         "history": [
             {
-                "id": "236",
-                "message": "Project \"test 1q\" created for client \"NBC Universal\"",
-                "userId": 51,
-                "username": "producer",
-                "firstName": "Sample",
-                "lastName": "Producer",
-                "fullName": "Sample Producer",
+                "id": "425",
+                "message": "Version \"3\" was added to spot \"#1 Theory\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
                 "image": null,
-                "createdAt": "2018-01-22 15:37:25"
+                "createdAt": "2018-05-17 20:04:31"
+            },
+            {
+                "id": "423",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 20:00:45"
+            },
+            {
+                "id": "424",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 20:00:45"
+            },
+            {
+                "id": "421",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 20:00:09"
+            },
+            {
+                "id": "422",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 20:00:09"
+            },
+            {
+                "id": "420",
+                "message": "Billing user \"MAXWELL ALBORN\" was removed from campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 19:47:50"
+            },
+            {
+                "id": "419",
+                "message": "Billing user \"MARK LAFONTANT\" was added to campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 19:47:34"
+            },
+            {
+                "id": "417",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 19:42:50"
+            },
+            {
+                "id": "418",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 19:42:50"
+            },
+            {
+                "id": "415",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 19:42:49"
+            },
+            {
+                "id": "416",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 19:42:49"
+            },
+            {
+                "id": "413",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 19:41:47"
+            },
+            {
+                "id": "414",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 19:41:47"
+            },
+            {
+                "id": "411",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 19:41:46"
+            },
+            {
+                "id": "412",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 19:41:46"
+            },
+            {
+                "id": "409",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 19:40:33"
+            },
+            {
+                "id": "410",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-17 19:40:33"
+            },
+            {
+                "id": "408",
+                "message": "Campaign \"Why\" was added to project \"Annihilation\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-16 16:35:06"
+            },
+            {
+                "id": "406",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-16 16:34:06"
+            },
+            {
+                "id": "407",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-16 16:34:06"
+            },
+            {
+                "id": "405",
+                "message": "Campaign \"Teaser\" was added to project \"Annihilation\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-16 16:27:10"
+            },
+            {
+                "id": "403",
+                "message": "Music team request was changed on campaign \"Test\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-16 16:17:51"
+            },
+            {
+                "id": "404",
+                "message": "Writing team request was changed on campaign \"Test\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-16 16:17:51"
+            },
+            {
+                "id": "402",
+                "message": "Spot \"Test2\" was added to \"(:30) TV\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 23:38:42"
+            },
+            {
+                "id": "401",
+                "message": "Spot \"Test\" was added to \"(:30) TV\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 23:34:23"
+            },
+            {
+                "id": "397",
+                "message": "Spot \"New test spot\" was added to \"(:30) TV\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 06:45:06"
+            },
+            {
+                "id": "395",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 06:06:47"
+            },
+            {
+                "id": "396",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 06:06:47"
+            },
+            {
+                "id": "393",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 06:06:18"
+            },
+            {
+                "id": "394",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 06:06:18"
+            },
+            {
+                "id": "389",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 06:03:11"
+            },
+            {
+                "id": "390",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 06:03:11"
+            },
+            {
+                "id": "391",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 06:03:11"
+            },
+            {
+                "id": "392",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 06:03:11"
+            },
+            {
+                "id": "387",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 06:01:03"
+            },
+            {
+                "id": "388",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 06:01:03"
+            },
+            {
+                "id": "385",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 06:01:02"
+            },
+            {
+                "id": "386",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-14 06:01:02"
+            },
+            {
+                "id": "384",
+                "message": "Version \"2\" was added to spot \"#1 Theory\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-11 13:03:44"
+            },
+            {
+                "id": "383",
+                "message": "Version \"1 Alt\" was added to spot \"#1 Theory\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-11 13:03:41"
+            },
+            {
+                "id": "382",
+                "message": "Version \"1\" was added to spot \"#1 Theory\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-11 13:03:40"
+            },
+            {
+                "id": "381",
+                "message": "Spot \"Test\" was added to \"Trailer\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-11 05:00:08"
+            },
+            {
+                "id": "380",
+                "message": "Version \"1\" was removed from spot \"#1 Theory\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-11 03:32:55"
+            },
+            {
+                "id": "379",
+                "message": "Version \"1\" was added to spot \"#1 Theory\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-11 03:28:39"
+            },
+            {
+                "id": "378",
+                "message": "Spot \"#5 Succeed/YouTube\" was added to \"Test\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 17:21:25"
+            },
+            {
+                "id": "377",
+                "message": "Spot \"#3 Everywhere\" was added to \"Test\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:49:33"
+            },
+            {
+                "id": "376",
+                "message": "Spot \"#4 Need\" was added to \"Test\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:48:38"
+            },
+            {
+                "id": "375",
+                "message": "Spot \"#3 Everywhere\" was added to \"Test\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:47:48"
+            },
+            {
+                "id": "374",
+                "message": "Spot \"#2 Creation\" was added to \"Test\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:46:22"
+            },
+            {
+                "id": "373",
+                "message": "Spot \"#1 Reason\" was added to \"Test\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:46:04"
+            },
+            {
+                "id": "372",
+                "message": "Writing team request was changed on campaign \"Test\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:45:33"
+            },
+            {
+                "id": "371",
+                "message": "Music team request was changed on campaign \"Test\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:45:32"
+            },
+            {
+                "id": "370",
+                "message": "Music team request was changed on campaign \"Test\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:45:24"
+            },
+            {
+                "id": "369",
+                "message": "Designer \"JONATHAN REYES\" was added to campaign \"Test\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:45:15"
+            },
+            {
+                "id": "368",
+                "message": "Designer \"HEINO FORSSTROM\" was added to campaign \"Test\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:45:05"
+            },
+            {
+                "id": "367",
+                "message": "Editor \"JOHN ONEIL\" was added to campaign \"Test\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:32:43"
+            },
+            {
+                "id": "366",
+                "message": "Editor \"DANIEL ASMA\" was added to campaign \"Test\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:32:34"
+            },
+            {
+                "id": "365",
+                "message": "Billing user \"TONY FANG\" was added to campaign \"Test\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:32:19"
+            },
+            {
+                "id": "364",
+                "message": "User \"ASHLEY CAPUTO\" was added to campaign \"Test\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:32:13"
+            },
+            {
+                "id": "363",
+                "message": "User \"KAZADI KATAMBWA\" was added to campaign \"Test\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:32:09"
+            },
+            {
+                "id": "362",
+                "message": "Spot \"#1 Interrogation\" was added to \"Trailer\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:26:26"
+            },
+            {
+                "id": "361",
+                "message": "Writing team request was changed on campaign \"Trailer\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:25:46"
+            },
+            {
+                "id": "360",
+                "message": "Designer \"BOBBY SALZANO\" was added to campaign \"Trailer\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:25:30"
+            },
+            {
+                "id": "359",
+                "message": "Editor \"MEKO WINBUSH\" was added to campaign \"Trailer\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:25:17"
+            },
+            {
+                "id": "358",
+                "message": "Billing user \"JULIE DAVIS\" was added to campaign \"Trailer\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:24:48"
+            },
+            {
+                "id": "357",
+                "message": "Billing user \"JESSICA DADON\" was added to campaign \"Trailer\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:24:25"
+            },
+            {
+                "id": "356",
+                "message": "User \"MARIE BYRNES\" was added to campaign \"Trailer\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:23:57"
+            },
+            {
+                "id": "355",
+                "message": "User \"JAMIE ZAKOSKI\" was added to campaign \"Trailer\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:23:47"
+            },
+            {
+                "id": "351",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:19:39"
+            },
+            {
+                "id": "352",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:19:39"
+            },
+            {
+                "id": "353",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:19:39"
+            },
+            {
+                "id": "354",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:19:39"
+            },
+            {
+                "id": "350",
+                "message": "Spot \"#6 Rescue\" was added to \"(:30) TV\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:17:55"
+            },
+            {
+                "id": "349",
+                "message": "Spot \"#5 Threat\" was added to \"(:30) TV\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:17:20"
+            },
+            {
+                "id": "348",
+                "message": "Spot \"#4 Inside\" was added to \"(:30) TV\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:17:03"
+            },
+            {
+                "id": "347",
+                "message": "Spot \"#3 Need\" was added to \"(:30) TV\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:16:40"
+            },
+            {
+                "id": "346",
+                "message": "Spot \"#2 Saved\" was added to \"(:30) TV\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:15:31"
+            },
+            {
+                "id": "345",
+                "message": "Spot \"#1 Theory\" was added to \"(:30) TV\" campaign",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:13:31"
+            },
+            {
+                "id": "343",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:09:23"
+            },
+            {
+                "id": "344",
+                "message": "Writing team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:09:23"
+            },
+            {
+                "id": "342",
+                "message": "Music team request was changed on campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:08:58"
+            },
+            {
+                "id": "341",
+                "message": "Designer \"KEITH PANG\" was added to campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:08:14"
+            },
+            {
+                "id": "340",
+                "message": "Designer \"BRADFORD BERLING\" was added to campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:08:08"
+            },
+            {
+                "id": "339",
+                "message": "Billing user \"MAXWELL ALBORN\" was added to campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:07:45"
+            },
+            {
+                "id": "338",
+                "message": "Editor \"JACOB LAWRENCE MOSKOW\" was added to campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:01:41"
+            },
+            {
+                "id": "337",
+                "message": "Editor \"WILLIAM NEIL\" was added to campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 16:00:04"
+            },
+            {
+                "id": "336",
+                "message": "User \"ALEXANDRA BATES\" was added to campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 15:58:32"
+            },
+            {
+                "id": "335",
+                "message": "User \"MARK LAFONTANT\" was added to campaign \"(:30) TV\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 15:58:26"
+            },
+            {
+                "id": "334",
+                "message": "Campaign \"Test\" was added to project \"Annihilation\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 15:35:05"
+            },
+            {
+                "id": "333",
+                "message": "Campaign \"Trailer\" was added to project \"Annihilation\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 15:34:46"
+            },
+            {
+                "id": "332",
+                "message": "Campaign \"(:30) TV\" was added to project \"Annihilation\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 15:34:38"
+            },
+            {
+                "id": "331",
+                "message": "Project \"Annihilation\" created for client \"Paramount\r\n\"",
+                "userId": 1,
+                "username": "demo",
+                "firstName": "Demo",
+                "lastName": "User",
+                "fullName": "Demo User",
+                "image": null,
+                "createdAt": "2018-05-03 15:34:28"
             }
         ]
     }
@@ -725,6 +4290,7 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 false | project_id | int | null | Narrow returned spots to a relation with specific single project
 false | campaign_id | int | null | Narrow returned spots to a relation with specific single campaign
+false | project_campaign_id | int | null | Narrow returned spots to a relation with specific single project campaign id
 false | search | string | null | Search query to narrow returned results by their name
 false | length | int | null | Limit number of returned results
 false | offset | int | null | Offset returned results
@@ -827,14 +4393,15 @@ axios.post('/spot', {
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | name | string | null | Spot name
-**true** | project_id | int | null | Project id
-**true** | campaign_id | int | null | Campaign id
+**true** | project_campaign_id | int | null | Project campaign id
 false | notes | string | null | Spot note
 false | revisions | int | null | Number of revisions (null=revision not included, 0=unlimited, any other number to set number of revision)
 false | graphics_revisions | int | 0 | Is it a Graphics Revision or not. Send 0 or 1 (0=not a graphics revision, 1=it is a graphics revision)
 false | first_revision_cost | float | null | Cost of version 1 of the spot
-false | initial_deadline | Date string | null | Initial deadline
+false | internal_deadline | Date string | null | Internal deadline
 false | client_deadline | Date string | null | Client deadline
+false | billing_type | char | null | Billing type. Send B/N/S/R. B = Billable, N = Non-billable, S = Spec unless revised, R = Spec revised billable
+false | billing_note | string | null | billing note
 
 
 
@@ -871,12 +4438,13 @@ axios.put('/spot/[:spot_id]', {
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 false | name | string | null | Spot name
-false | project_id | int | null | Project id
-false | campaign_id | int | null | Campaign id
+false | project_campaign_id | int | null | Project campaign id
 false | notes | string | null | Spot note
 false | revisions | int | null | Number of revisions (null=revision not included, 0=unlimited, any other number to set number of revision)
 false | graphics_revisions | int | 0 | Is it a Graphics Revision or not. Send 0 or 1 (0=not a graphics revision, 1=it is a graphics revision)
 false | first_revision_cost | float | null | Cost of version 1 of the spot
+false | billing_type | char | null | Billing type. Send B/N/S/R. B = Billable, N = Non-billable, S = Spec unless revised, R = Spec revised billable
+false | billing_note | string | null | billing note
 
 
 ## Delete spot
@@ -942,290 +4510,6 @@ Retrieve list of sent spot via method list.
     ]
 }
 ```
-
-### HTTP Request
-
-`GET /spot-sent-via-method`
-
-Sent request like bellow(for Audio/Visual):
-
-`GET /spot-sent-via-method?work_type_id=2`
-
-### Query Parameters
-
-Required | Parameter | Type | Default | Description
--------- | --------- | ---- | ------- | -----------
-**true** | work_type_id | integer | null | Work type id (obtained from /work-type GET method. Generally 1=Design or graphics, 2= audio/visual)
-
-## Get Spot Sent list 
-
-get spot sent entry.
-
-
-> 200: success response
-
-```json
-{
-    "status": 1,
-    "message": "Request successful",
-    "total_count": 4,
-    "object_count": 2,
-    "data": [
-        {
-            "id": "3",
-            "workTypeId": 1,
-            "workType": "Design",
-            "sentViaMethodId": 3,
-            "sentViaMethod": "Wiredrive",
-            "sentViaMethodParentId": null,
-            "sentViaMethodParent": null,
-            "date": "2017-05-14",
-            "notes": "some note",
-            "statusId": 5,
-            "status": "Sent To Customer",
-            "project_spot_version": []
-        },
-        {
-            "id": "4",
-            "workTypeId": 1,
-            "workType": "Design",
-            "sentViaMethodId": 6,
-            "sentViaMethod": "Fiber",
-            "sentViaMethodParentId": null,
-            "sentViaMethodParent": null,
-            "date": "2017-05-14",
-            "notes": "some note",
-            "statusId": 5,
-            "status": "Sent To Customer",
-            "project_spot_version": [
-                {
-                    "spotId": "1",
-                    "spotName": "Take Over :10",
-                    "versionId": "2",
-                    "versionName": "1A",
-                    "projectId": 23,
-                    "projectName": "Test2",
-                    "campaignId": null,
-                    "campaignName": null
-                },
-                {
-                    "spotId": "2",
-                    "spotName": "Vertical Footage",
-                    "versionId": "3",
-                    "versionName": "1B",
-                    "projectId": 23,
-                    "projectName": "Test2",
-                    "campaignId": "2",
-                    "campaignName": "Trailer"
-                }
-            ]
-        }
-    ]
-}
-```
-
-### HTTP Request
-
-`GET /spot-sent`
-
-### Query Parameters
-
-Required | Parameter | Type | Default | Description
--------- | --------- | ---- | ------- | -----------
-false | work_type | int | null | Work type ID 
-false | sent_via_method | int | null | Sent via method ID 
-false | status | string | null | Status id
-false | length | int | null | Limit number of returned results
-false | offset | int | null | Offset returned results
-
-## Get Single Spot Sent 
-
-Get single spot sent entry.
-
-
-> 200: success response
-
-```json
-{
-    "status": 1,
-    "message": "Request successful",
-    "data": {
-        "id": 4,
-        "workTypeId": 1,
-        "workType": "Design",
-        "sentViaMethodId": 6,
-        "sentViaMethod": "Fiber",
-        "sentViaMethodParentId": null,
-        "sentViaMethodParent": null,
-        "date": "2017-05-14",
-        "notes": "some note",
-        "statusId": 5,
-        "status": "Sent To Customer",
-        "final": 0,
-        "projectSpotVersion": [
-            {
-                "spotId": "1",
-                "spotName": "Take Over :10",
-                "versionId": "2",
-                "versionName": "1A",
-                "projectId": 23,
-                "projectName": "Test2",
-                "campaignId": null,
-                "campaignName": null,
-                "worker": {
-                    "editor": [
-                        {
-                            "id": 2,
-                            "username": "kansoftkant",
-                            "email": "kansoftkant@gmail.com",
-                            "firstName": "Hans",
-                            "lastName": "Kant",
-                            "typeName": "Editor"
-                        },
-                        {
-                            "id": 3,
-                            "username": "webhkp",
-                            "email": "webhkp@gmail.com",
-                            "firstName": "Rizwan",
-                            "lastName": "Kader",
-                            "typeName": "Editor"
-                        }
-                    ]
-                }
-            },
-            {
-                "spotId": "2",
-                "spotName": "Vertical Footage",
-                "versionId": "4",
-                "versionName": "1 Alt",
-                "projectId": 23,
-                "projectName": "Test2",
-                "campaignId": "2",
-                "campaignName": "Trailer",
-                "worker": {
-                    "editor": [
-                        {
-                            "id": 4,
-                            "username": "AndyAustin",
-                            "email": null,
-                            "firstName": "Andy",
-                            "lastName": "Austin",
-                            "typeName": "Editor"
-                        },
-                        {
-                            "id": 9,
-                            "username": "BethRoy",
-                            "email": null,
-                            "firstName": "Beth",
-                            "lastName": "Roy",
-                            "typeName": "Editor"
-                        },
-                        {
-                            "id": 10,
-                            "username": "BillRude",
-                            "email": null,
-                            "firstName": "Bill",
-                            "lastName": "Rude",
-                            "typeName": "Editor"
-                        }
-                    ]
-                }
-            }
-        ],
-        "customerContact": [
-            {
-                "id": 1,
-                "customerId": 1,
-                "name": "customer one",
-                "email": null,
-                "mobilePhone": "8888877",
-                "officePhone": null,
-                "postalAddress": "some not for custmer contact 1"
-            },
-            {
-                "id": 2,
-                "customerId": 1,
-                "name": "customer two",
-                "email": "ea@cc.com",
-                "mobilePhone": null,
-                "officePhone": null,
-                "postalAddress": null
-            }
-        ],
-        "workStage": [
-            {
-                "id": 4,
-                "workStage": "Audio Prep",
-                "parentId": 2,
-                "parentWorkStage": "Finishing Prep"
-            },
-            {
-                "id": 5,
-                "workStage": "Picture Prep",
-                "parentId": 2,
-                "parentWorkStage": "Finishing Prep"
-            }
-        ]
-    }
-}
-```
-
-### HTTP Request
-
-`GET /spot-sent/[:spot_sent_id]`
-
-### Query Parameters
-
-Required | Parameter | Type | Default | Description
--------- | --------- | ---- | ------- | -----------
-**true** | spot_sent_id | int | null | Spot sent ID
-
-## Create Spot Sent 
-
-Create a new spot sent entry.
-
-> Sample request
-
-```javascript
-axios.post('/spot-sent', {
-    date:"2017-05-14",
-    work_type:1,
-    sent_via_method:3,
-    notes:"some note",
-    status:5,
-    spot_version:[{"spot_id":1,"version_id":2,"worker":[1,2,3]},{"spot_id":2,"version_id":3,"worker":[4]}],
-    customer_contact:[1,2,3]
-});
-```
-
-> 200: success response
-
-```json
-{
-  "status": 1,
-  "message": "Request successful.",
-  "data": {
-    "spot_sent_id": 4
-  }
-}
-```
-
-### HTTP Request
-
-`POST /spot-sent`
-
-### Query Parameters
-
-Required | Parameter | Type | Default | Description
--------- | --------- | ---- | ------- | -----------
-**true** | work_type | int | null | Work type id (from /work-type GET api)
-**true** | sent_via_method | int or JSON string| null | Sent via method id (from /spot-sent-via-method GET api)
-false | date | string | Current date | Date
-false | notes | string | null | Notes
-false | status | string | null | Status id (from /status GET api)
-false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id and array of designer or editor like: [{"spot_id":1,"version_id":2,"worker":[1,2,3]},{"spot_id":2,"version_id":3,"workder":[4]}])  
-false | customer_contact | JSON encoded string | null | Customer contact list (sent value like: [1,2,3])
-
 
 ## Validate Spot Sent 
 
@@ -1301,6 +4585,7 @@ Retreive list of versions.
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 false | spot_id | number | null | Spot ID to get only versions assigned to specific spot
+false | custom | number | null | Get custom or standard version. send custom=0 for standard version, send custom=1 for custom versions. send null or dont send value for getting all.
 false | search | string | null | Search query to narrow returned results by their name
 false | length | int | null | Limit number of returned results
 false | offset | int | null | Offset returned results
@@ -1341,9 +4626,73 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | name | string | null | Version name
 false | spot_id | int or JSON string| null | Spot id. send integer or JSON encoded string of spot id(like 10 or [9,4,3])
+false | custom | 1 | only available for user user
 false | billing_type | string | null | Billing type
 
 
+## Update version
+
+update version.
+
+> Sample request
+
+```javascript
+axios.put('/version', {
+    name: 'test version',
+    spot_id: [2,3,6]
+});
+```
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request successful.",
+    "data": {
+        "version_id": 18
+    }
+}
+```
+
+### HTTP Request
+
+`PUT /version/[:version_id]`
+
+### Query Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+false | name | string | null | Version name (it will not be chnaged if version is already used in any time entry)
+false | spot_id | int or JSON string| null | Spot id. send integer or JSON encoded string of spot id(like 10 or [9,4,3])
+false | custom | 1 | only available for user user
+false | billing_type | string | null | Billing type
+
+
+# Delete version
+
+delete version.
+
+> Sample request
+
+```javascript
+axios.delete('/version/52');
+```
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request successful.",
+}
+```
+
+### HTTP Request
+
+`DELETE /version/[:version_id]`
+
+** version will not be deleted if it is already used in any time entry
 
 
 ## Assign Campaign to Project
@@ -1365,6 +4714,67 @@ axios.post('/assign-campaign-to-project', {
     "message": "Request successful."
 }
 ```
+
+## Get versions  status list
+
+Retrieve list of version status.
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request successful",
+    "data": [
+        {
+            "id": 1,
+            "name": "Finished"
+        },
+        {
+            "id": 2,
+            "name": "Graphics work in progress"
+        },
+        {
+            "id": 3,
+            "name": "Need to Assign"
+        },
+        {
+            "id": 4,
+            "name": "On Hold/or spot killed"
+        },
+        {
+            "id": 5,
+            "name": "Prepping"
+        },
+        {
+            "id": 6,
+            "name": "Ready to send"
+        },
+        {
+            "id": 7,
+            "name": "Sent"
+        },
+        {
+            "id": 8,
+            "name": "Waiting on Producer"
+        },
+        {
+            "id": 9,
+            "name": "Work in progress"
+        }
+    ]
+}
+```
+
+### HTTP Request
+
+`GET /version-status`
+
+### Query Parameters
+
+NONE
+
+
 
 ### HTTP Request
 
@@ -1445,6 +4855,8 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | spot_id | int | null | Spot ID
 **true** | version_id | int | null | Version ID
+false | version_status_id | int | null | Version status id
+false | version_note | string | null | Version ID
 
 
 ## Delete Version to Spot association

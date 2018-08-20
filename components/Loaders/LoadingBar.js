@@ -1,40 +1,42 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import { connect } from 'react-redux';
-import { getFormattedLabel } from './LoadingBarSelectors';
+import React from "react";
+import PropTypes from "prop-types";
+import classNames from "classnames";
+import { connect } from "react-redux";
+import { getFormattedLabel } from "./LoadingBarSelectors";
 
 // Styles
-import s from './LoadingBar.css';
+import s from "./LoadingBar.css";
 
 // Props
 const propTypes = {
+    className: PropTypes.string,
     background: PropTypes.string,
     width: PropTypes.number,
-    size: PropTypes.oneOf(['default', 'big']),
+    size: PropTypes.oneOf(["default", "big"]),
     height: PropTypes.number,
     opacity: PropTypes.number,
     progress: PropTypes.number,
     showProgress: PropTypes.bool,
-    label: PropTypes.string
+    label: PropTypes.string,
 };
 
 // Default props
 const defaultProps = {
-    background: '#EEEAE7',
+    className: null,
+    background: "#EEEAE7",
     width: 0,
-    size: 'default',
+    size: "default",
     opacity: 0.3,
     progress: 100,
     showProgress: false,
-    label: ''
+    label: "",
 };
 
 // Derived props
 const mapStateToProps = (state, props) => {
     return {
         ...props,
-        formattedLabel: getFormattedLabel(props)
+        formattedLabel: getFormattedLabel(props),
     };
 };
 
@@ -46,7 +48,7 @@ class LoadingBarComponent extends React.Component {
         this.exists = true;
 
         this.state = {
-            visible: false
+            visible: false,
         };
     }
 
@@ -55,7 +57,7 @@ class LoadingBarComponent extends React.Component {
         setTimeout(() => {
             if (typeof this.exists !== typeof undefined && this.exists) {
                 this.setState({
-                    visible: true
+                    visible: true,
                 });
             }
         }, 128);
@@ -68,18 +70,18 @@ class LoadingBarComponent extends React.Component {
     render() {
         return (
             <div
-                className={classNames(s.container, {
+                className={classNames(s.container, this.props.className, {
                     [s.visible]: this.state.visible,
-                    [s.sizeBig]: this.props.size === 'big',
-                    [s.sizeNormal]: this.props.size !== 'default'
+                    [s.sizeBig]: this.props.size === "big",
+                    [s.sizeNormal]: this.props.size === "default",
                 })}
                 style={{
-                    width: this.props.width > 0 ? this.props.width + 'px' : null,
-                    background: this.props.background
+                    width: this.props.width > 0 ? this.props.width + "px" : null,
+                    background: this.props.background,
                 }}
             >
-                <div className={s.progress} style={{ width: this.props.progress + '%' }}>
-                    <div className={s.bar} style={{ opacity: this.props.opacity }}></div>
+                <div className={s.progress} style={{ width: this.props.progress + "%" }}>
+                    <div className={s.bar} style={{ opacity: this.props.opacity }} />
                 </div>
 
                 {(this.props.showProgress || this.props.label) && (

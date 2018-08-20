@@ -196,7 +196,7 @@ class BillingRepository extends EntityRepository
         if($processExtraColumn) {
             foreach($data as &$row) {
                 $row['id'] = (int)$row['id'];
-                $row['createdAt'] = $row['createdAt']->format('Y-m-d H:i:s');
+//                $row['createdAt'] = $row['createdAt']->format('Y-m-d H:i:s');
                 $row['total'] = $this->getBillingTotal($row['id']);
 //                $row['approver'] = $this->getManagerByProjectAndCampaign($row['projectId'], $row['campaignId'], $row['id'], false);
                 $row['approver'] = $this->getUserByProjectAndCampaign($row['projectId'], $row['campaignId'], $row['id'], false);

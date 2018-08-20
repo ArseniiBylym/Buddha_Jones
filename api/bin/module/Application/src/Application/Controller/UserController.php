@@ -10,7 +10,8 @@ use Application\Entity\RediUpsLine;
 class UserController extends CustomAbstractActionController
 {
     public function getList() {
-        $user = $this->_usersRepo->getUser($this->_user_id);
+        $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
+        $user = $this->_usersRepo->getUser($this->_user_id, $userAccess);
 
         if($user && isset($user['image']) && $user['image']) {
             $user['image'] = $this->_siteUrl . 'thumb/profile_image/' . $user['image'];

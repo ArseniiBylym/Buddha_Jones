@@ -114,7 +114,7 @@ false | get_user | int | 0 | Send 0 or 1. Send 1 to get user, editor, designer a
 ## Project campaign single entry
 
 ```javascript
-axios.get('/project-campaign/11/2');
+axios.get('/project-campaign/156');
 ```
 
 > 200: success response
@@ -124,37 +124,47 @@ axios.get('/project-campaign/11/2');
     "status": 1,
     "message": "Request successful",
     "data": {
-        "id": 5,
-        "projectId": 11,
-        "projectName": "Silicon Valley",
-        "campaignId": 2,
-        "campaignName": "Trailer",
-        "firstPointOfContactId": 4,
+        "id": 156,
+        "projectId": 47,
+        "projectName": "Annihilation",
+        "campaignId": 4,
+        "campaignName": "Krystle said this was questioning, which is odd, since she's omniscient.",
+        "firstPointOfContactId": null,
         "requestWritingTeam": true,
-        "writingTeamNotes": "",
-        "requestMusicTeam": null,
-        "musicTeamNotes": null
+        "writingTeamNotes": "both conceptual ideas and copy",
+        "requestMusicTeam": true,
+        "musicTeamNotes": "cue sheets only as we're using cleared music from theatrical campaign to start",
+        "maxHistoryCreatedAt": "2018-05-17 20:00:45",
+        "note": "Krystle said this was questioning, which is odd, since she's omniscient.",
+        "budget": "0",
+        "budgetNote": "budget per spot",
+        "por": null,
+        "invoiceContact": null,
+        "materialReceiveDate": {
+            "date": "2018-05-05 07:00:00.000000",
+            "timezone_type": 3,
+            "timezone": "US/Eastern"
+        }
     }
 }
 ```
 
 ### HTTP Request
 
-`GET /project-campaign/[:project_id]/[:campaign_id]`
+`GET /project-campaign/[:project_campaign_id]`
 
 
 ### Query Parameters
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true** | project_id | int | null | Project id
-**true** | campaign_id | int | null | Campaign id
+**true** | project_campaign_id | int | null | Project campaign relation id
 false | por | string | null | POR
 false | invoice_contact | string | null | Invoice contact
 
 
 
-## Create/Update Project campaign
+## Update Project campaign
 
 Create/Update Campaign to Project
 
@@ -162,7 +172,7 @@ Create/Update Campaign to Project
 
 
 ```javascript
-axios.put('/project-campaign/1/12', {
+axios.put('/project-campaign/156', {
     first_point_of_contact_id:4,
     request_writing_team:1,
     writing_team_notes:"some note here 111",
@@ -183,14 +193,13 @@ axios.put('/project-campaign/1/12', {
 
 ### HTTP Request
 
-`PUT /project-campaign/[:project_id]/[:campaign_id]`
+`PUT /project-campaign/[:project_campaign_id]`
 
 ### Query Parameters
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true** | project_id | int | null | Project ID
-**true** | campaign_id | int | null | Campaign ID
+**true** | project_campaign_id | int | null | Project Campaign ID
 false | first_point_of_contact_id | int | null | First point of contact id
 false | request_writing_team | boolean | null | Request to writing team, send 0 or 1
 false | request_music_team | boolean | null | Request to music team, send 0 or 1
@@ -209,7 +218,7 @@ false | material_receive_date | string | null | material receive date
 Delete Campaign to Project
 
 ```javascript
-axios.delete('/project-campaign/1/2');
+axios.delete('/project-campaign/156');
 ```
 
 > 200: success response
@@ -223,11 +232,10 @@ axios.delete('/project-campaign/1/2');
 
 ### HTTP Request
 
-`DELETE /project-campaign/[:project_id]/[:campaign_id]`
+`DELETE /project-campaign/[:project_campaign_id]`
 
 ### Query Parameters
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true** | project_id | int | null | Project ID
-**true** | campaign_id | int | null | Campaign ID
+**true** | project_campaign_id | int | null | Project campaign ID

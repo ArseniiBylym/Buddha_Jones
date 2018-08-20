@@ -15,8 +15,13 @@ class AssignVersionToSpotController extends CustomAbstractActionController
 {
     public function create($data)
     {
+        $canEditSpotVersionStatus = $this->_usersRepo->extractPermission($this->_user_permission, 29, 'edit');
+        $canEditSpotVersionNote = $this->_usersRepo->extractPermission($this->_user_permission, 30, 'edit');
+
         $versionId = (int)(isset($data['version_id']) ? trim($data['version_id']) : 0);
         $spotId = (int)(isset($data['spot_id']) ? trim($data['spot_id']) : 0);
+        $versionStatusId = isset($data['version_status_id']) ? trim($data['version_status_id']) : null;
+        $versionNote = isset($data['version_note']) ? trim($data['version_note']) : null;
 
         if ($versionId && $spotId) {
             $version = $this->_versionRepository->find($versionId);
@@ -32,20 +37,30 @@ class AssignVersionToSpotController extends CustomAbstractActionController
                         $existingSpotVersion->setVersionId($versionId);
                         $existingSpotVersion->setSpotId($spotId);
 
-                        $this->_em->persist($existingSpotVersion);
-
-                        // project history
-                        $historyMessage = 'Version "' . $version->getVersionName() . '" was added to spot "' . $spot->getSpotName(). '"';
-                        $projectHistory = new RediProjectHistory();
-                        $projectHistory->setProjectId($spot->getProjectId());
-                        $projectHistory->setUserId($this->_user_id);
-                        $projectHistory->setMessage($historyMessage);
-                        $projectHistory->setCreatedAt(new \DateTime('now'));
-                        $this->_em->persist($projectHistory);
-
-                        $this->_em->flush();
+                        if($spot->getProjectCampaignId()) {
+                            // project history
+                            $projectCampaign = $this->_projectToCampaignRepository->find($spot->getProjectCampaignId());
+                            $historyMessage = 'Version "' . $version->getVersionName() . '" was added to spot "' . $spot->getSpotName() . '"';
+                            $projectHistory = new RediProjectHistory();
+                            $projectHistory->setProjectId($projectCampaign->getProjectId());
+                            $projectHistory->setCampaignId($projectCampaign->getCampaignId());
+                            $projectHistory->setUserId($this->_user_id);
+                            $projectHistory->setMessage($historyMessage);
+                            $projectHistory->setCreatedAt(new \DateTime('now'));
+                            $this->_em->persist($projectHistory);
+                        }
                     }
 
+                    if($canEditSpotVersionStatus && $versionStatusId !== null) {
+                        $existingSpotVersion->setVersionStatusId($versionStatusId);
+                    }
+
+                    if($canEditSpotVersionNote && $versionNote !== null) {
+                        $existingSpotVersion->setVersionNote($versionNote);
+                    }
+
+                    $this->_em->persist($existingSpotVersion);
+                    $this->_em->flush();
 
                     $response = array(
                         'status' => 1,
@@ -94,9 +109,11 @@ class AssignVersionToSpotController extends CustomAbstractActionController
                         $this->_em->remove($existingSpotVersion);
 
                         // project history
+                        $projectCampaign = $this->_projectToCampaignRepository->find($spot->getProjectCampaignId());
                         $historyMessage = 'Version "' . $version->getVersionName() . '" was removed from spot "' . $spot->getSpotName(). '"';
                         $projectHistory = new RediProjectHistory();
-                        $projectHistory->setProjectId($spot->getProjectId());
+                        $projectHistory->setProjectId($projectCampaign->getProjectId());
+                        $projectHistory->setCampaignId($projectCampaign->getCampaignId());
                         $projectHistory->setUserId($this->_user_id);
                         $projectHistory->setMessage($historyMessage);
                         $projectHistory->setCreatedAt(new \DateTime('now'));

@@ -1,0 +1,114 @@
+.fieldGroup {
+  position: relative;
+}
+
+.fieldGroup input {
+  box-sizing: border-box;
+  background: #f7f5f3;
+  border: 1px solid #cac7c4;
+  border-radius: 3px;
+  padding: 10px 16px;
+  color: #0768d8;
+  font-size: 0.9em;
+  width: 100%;
+  transition: 300ms background 0ms cubic-bezier(0.455, 0.03, 0.515, 0.955),
+    300ms border 0ms cubic-bezier(0.455, 0.03, 0.515, 0.955), 300ms color 0ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+.fieldGroup input:focus {
+  outline: none;
+  background: #ffffff;
+  border-color: #0768d8;
+}
+
+.fieldGroupBrown input {
+  color: #5a4d3f;
+}
+
+.fieldGroup input:hover {
+  background: #fdfcfc;
+}
+
+.fieldGroupBrown input:focus {
+  border-color: #5a4d3f;
+}
+
+.fieldGroupBlueFill input {
+  background: #3999be;
+  border-color: #2d7895;
+  color: #ffffff;
+}
+
+.fieldGroupBlueFill input:hover {
+  background: #348bad;
+}
+
+.fieldGroupBlueFill input:focus {
+  background: #337d99;
+  border-color: #226077;
+  color: #ffffff;
+}
+
+.fieldGroupBrownFill input {
+  background: #e9e0d7;
+  border-color: #ddd6cf;
+  color: #af8a64;
+}
+
+.fieldGroupBrownFill input:hover {
+  background: #ded1c4;
+}
+
+.fieldGroupBrownFill input:focus {
+  background: #c1ad9a;
+  border-color: #af8a64;
+  color: #ffffff;
+}
+
+.fieldGroupBrownFill input:disabled {
+  background: #f0ebe5;
+  border-color: #ddd6cf;
+  color: #ffffff;
+}
+
+.fieldGroupGreenFill input {
+  background: #5db67b;
+  border-color: #469b62;
+  color: #ffffff;
+}
+
+.fieldGroupGreenFill input:hover {
+  background: #469b62;
+}
+
+.fieldGroupGreenFill input:focus {
+  background: #47905f;
+  border-color: #2e7645;
+  color: #ffffff;
+}
+
+.fieldGroupRed input {
+  border-color: #d75b2b;
+}
+
+.fieldGroupRed input:hover,
+.fieldGroupRed input:focus {
+  border-color: #d30c0c;
+}
+
+.fieldGroup input[disabled] {
+  color: #e5dbd0;
+  cursor: not-allowed;
+}
+
+.fieldGroup input[readonly] {
+  color: #0b0c32;
+  cursor: not-allowed;
+}
+
+.fieldGroup i {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: 12px;
+}

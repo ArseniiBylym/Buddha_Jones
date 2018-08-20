@@ -42,7 +42,7 @@ class CampaignRepository extends EntityRepository
         }
 
         $dql .= " ORDER BY a.campaignName ASC";
-        
+
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setFirstResult($offset);
         $query->setMaxResults($length);
@@ -146,7 +146,7 @@ class CampaignRepository extends EntityRepository
         return (isset($result[0]['total_count'])?(int)$result[0]['total_count']:0);
     }
 
-    public function getCampaignProjectPeople($tableSuffix, $projectId, $campaignId, $offset=0, $length=10, $type=null, $userImagesBaseUrl=null)
+    public function getCampaignProjectPeople($tableSuffix, $projectCampaignId, $offset=0, $length=10, $type=null, $userImagesBaseUrl=null)
     {
         if($type && count($type)) {
             $typeCondition = ' AND u.type_id IN (' . implode(',', $type) . ') ';
@@ -169,6 +169,7 @@ class CampaignRepository extends EntityRepository
         }
 
         $dql = "SELECT DISTINCT
+                    ptc.id AS projectCampaignId,
                     ptc.project_id AS projectId,
                     ptc.campaign_id AS campaignId,
                     ptcu.user_id AS userId,
@@ -191,8 +192,7 @@ class CampaignRepository extends EntityRepository
                     redi_user_type ut ON u.type_id = ut.id
                     " . $additionalColumnJoin . "
                 WHERE
-                    ptc.project_id = :project_id
-                        AND ptc.campaign_id = :campaign_id
+                    ptc.id = :project_to_campaign_id
                         " . $typeCondition . "
                         ORDER BY typeId, username ";
 
@@ -203,8 +203,7 @@ class CampaignRepository extends EntityRepository
         }
 
         $query = $this->getEntityManager()->getConnection()->prepare($dql);
-        $query->bindParam('project_id', $projectId);
-        $query->bindParam('campaign_id', $campaignId);
+        $query->bindParam('project_to_campaign_id', $projectCampaignId);
 //        $query->bindParam('type_in', $typeIn);
         $query->execute();
 
@@ -226,7 +225,7 @@ class CampaignRepository extends EntityRepository
         return $data;
     }
 
-    public function getCampaignProjectPeopleCount($tableSuffix, $projectId, $campaignId, $type=null)
+    public function getCampaignProjectPeopleCount($tableSuffix, $projectCampaignId, $type=null)
     {
         if($type && count($type)) {
             $typeCondition = ' AND u.type_id IN (' . implode(',', $type) . ') ';
@@ -245,13 +244,11 @@ class CampaignRepository extends EntityRepository
                         INNER JOIN
                     redi_user u ON u.id = ptcu.user_id
                 WHERE
-                    ptc.project_id = :project_id
-                        AND ptc.campaign_id = :campaign_id
+                    ptc.id = :project_to_campaign_id
                         " . $typeCondition ;
 
         $query = $this->getEntityManager()->getConnection()->prepare($dql);
-        $query->bindParam('project_id', $projectId);
-        $query->bindParam('campaign_id', $campaignId);
+        $query->bindParam('project_to_campaign_id', $projectCampaignId);
         $query->execute();
 
         $data = $query->fetchAll();

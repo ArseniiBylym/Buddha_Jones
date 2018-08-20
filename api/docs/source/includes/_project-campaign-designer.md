@@ -11,60 +11,36 @@ Get designer associated with project-campaign
 {
     "status": 1,
     "message": "Request successful",
-    "total_count": 4,
-    "object_count": 4,
+    "total_count": 2,
+    "object_count": 2,
     "data": [
         {
-            "projectId": 9,
-            "campaignId": 2,
-            "userId": 5,
-            "username": "AlexKroll",
-            "email": null,
-            "firstName": "Alex",
-            "lastName": "Kroll",
+            "projectCampaignId": "156",
+            "projectId": 47,
+            "campaignId": 4,
+            "userId": 67,
+            "username": "KPANG",
+            "email": "KEITHP@BUDDHA-JONES.COM",
+            "firstName": "KEITH",
+            "lastName": "PANG",
             "image": null,
-            "typeId": 1,
-            "type": "Editor",
-            "fullName": "Alex Kroll"
+            "typeId": 12,
+            "type": "Graphic Designer",
+            "fullName": "KEITH PANG"
         },
         {
-            "projectId": 9,
-            "campaignId": 2,
-            "userId": 4,
-            "username": "AndyAustin",
-            "email": null,
-            "firstName": "Andy",
-            "lastName": "Austin",
+            "projectCampaignId": "156",
+            "projectId": 47,
+            "campaignId": 4,
+            "userId": 64,
+            "username": "BBERLING",
+            "email": "BRADB@BUDDHA-JONES.COM",
+            "firstName": "BRADFORD",
+            "lastName": "BERLING",
             "image": null,
-            "typeId": 1,
-            "type": "Editor",
-            "fullName": "Andy Austin"
-        },
-        {
-            "projectId": 9,
-            "campaignId": 2,
-            "userId": 3,
-            "username": "webhkp",
-            "email": "webhkp11889@gmail.com",
-            "firstName": "Rizwan",
-            "lastName": "Kader",
-            "image": "http://buddhajonesapi.localhost/thumb/profile_image/three.png",
-            "typeId": 1,
-            "type": "Editor",
-            "fullName": "Rizwan Kader"
-        },
-        {
-            "projectId": 9,
-            "campaignId": 2,
-            "userId": 1,
-            "username": "suda",
-            "email": "suda.sampath@indydutch.com",
-            "firstName": "Suda",
-            "lastName": "Sampath",
-            "image": "http://buddhajonesapi.localhost/thumb/profile_image/1.jpeg",
-            "typeId": 100,
-            "type": "Super Administrator",
-            "fullName": "Suda Sampath"
+            "typeId": 14,
+            "type": "Graphic Dept Head",
+            "fullName": "BRADFORD BERLING"
         }
     ]
 }
@@ -72,14 +48,13 @@ Get designer associated with project-campaign
 
 ### HTTP Request
 
-`GET /project-campaign-designer/[:project_id]/[:campaign_id]`
+`GET /project-campaign-designer/[:project_campaign_id]`
 
 ### Query Parameters
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true** | project_id | int | null | Project Id
-**true** | campaign_id | int | null | campaign Id
+**true** | project_campaign_id | int | null | project campaign Id
 false | length | int | null | Limit number of returned results
 false | offset | int | null | Offset returned results
 
@@ -92,8 +67,7 @@ Add designer to project campaign
 
 ```javascript
 axios.post('/project-campaign-designer', {
-    project_id:12,
-    campaign_id:1,
+    project_campaign_id:1,
     user_id:5
 });
 ```
@@ -115,8 +89,7 @@ axios.post('/project-campaign-designer', {
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true** | project_id | int | null | Project id
-**true** | campaign_id | int | null | Campaign id
+**true** | project_campaign_id | int | null | Project campaign id
 **true** | user_id | int | null | User id
 
 
@@ -136,13 +109,12 @@ Delete project to campaign designer
 
 ### HTTP Request
 
-`DELETE /project-campaign-designer/[:project_id]/[:campaign_id]/[:user_id]`
+`DELETE /project-campaign-designer/[:project_campaign_id]/[:user_id]`
 
 ### Query Parameters
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true* | campaign_id | int | null | Campaign ID
-**true* | project_id | int | null | Project ID
+**true* | project_campaign_id | int | null | Project campaign ID
 **true* | user_id | int | null | User Id
 

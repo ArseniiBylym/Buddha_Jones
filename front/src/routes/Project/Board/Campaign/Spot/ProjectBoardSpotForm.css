@@ -1,0 +1,27 @@
+.spotNotes {
+  margin-top: 12px;
+}
+
+:global(.row).spotDates {
+  margin-top: 12px;
+}
+
+.revisionsContainer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  align-items: center;
+}
+
+.firstRevisionCostContainer {
+  margin-top: 12px;
+}
+
+:global(.row).summary {
+  margin-top: 12px;
+}
+
+:global(.button).cancelSpotFormButton {
+  margin-top: 6px;
+}
