@@ -256,10 +256,8 @@ Update/Create project permission of user type
 
 ```javascript
 axios.post('/user-type-project-permissions', {
-    project_permission_id: 1,
     user_type_id: 100,
-    can_view: 1,
-    can_edit: 1
+    permissions: [{"project_permission_id":1,"can_view":1,"can_edit":0},{"project_permission_id":2,"can_view":1,"can_edit":0},{"project_permission_id":3,"can_view":1,"can_edit":0},{"project_permission_id":4,"can_view":1,"can_edit":0},{"project_permission_id":5,"can_view":1,"can_edit":0},{"project_permission_id":6,"can_view":1,"can_edit":0},{"project_permission_id":7,"can_view":1,"can_edit":0},{"project_permission_id":8,"can_view":1,"can_edit":0},{"project_permission_id":9,"can_view":1,"can_edit":0},{"project_permission_id":10,"can_view":1,"can_edit":0},{"project_permission_id":11,"can_view":1,"can_edit":0},{"project_permission_id":12,"can_view":1,"can_edit":0},{"project_permission_id":13,"can_view":1,"can_edit":0},{"project_permission_id":14,"can_view":1,"can_edit":0},{"project_permission_id":15,"can_view":1,"can_edit":0},{"project_permission_id":17,"can_view":1,"can_edit":0},{"project_permission_id":18,"can_view":1,"can_edit":0},{"project_permission_id":19,"can_view":1,"can_edit":0},{"project_permission_id":20,"can_view":1,"can_edit":0},{"project_permission_id":21,"can_view":1,"can_edit":0},{"project_permission_id":22,"can_view":1,"can_edit":0},{"project_permission_id":23,"can_view":1,"can_edit":0},{"project_permission_id":24,"can_view":1,"can_edit":0},{"project_permission_id":25,"can_view":1,"can_edit":0},{"project_permission_id":26,"can_view":1,"can_edit":0},{"project_permission_id":27,"can_view":1,"can_edit":0},{"project_permission_id":28,"can_view":1,"can_edit":0},{"project_permission_id":29,"can_view":1,"can_edit":1},{"project_permission_id":30,"can_view":1,"can_edit":1},{"project_permission_id":31,"can_view":1,"can_edit":0},{"project_permission_id":100,"can_view":1,"can_edit":0},{"project_permission_id":200,"can_view":0,"can_edit":1}]
 });
 ```
 
@@ -289,8 +287,5 @@ axios.post('/user-type-project-permissions', {
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true** | project_permission_id | int | null | project permission id
 **true** | user_type_id | int | null |  User type id
-false | can_view | int | 0 | Can view or not (send 0/1)
-false | can_edit | int | 0 | Can edit/create or not. (send 0/1)
-
+**true** | permissions | JSON encoded string | null | array of (project_permission_id, can_view, can_edit)
