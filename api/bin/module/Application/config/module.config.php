@@ -188,6 +188,8 @@ return array(
             'Application\Controller\TimeEntryOfUser'                                => 'Application\Controller\TimeEntryOfUserController',
             'Application\Controller\TimeEntrySubmitForReview'                       => 'Application\Controller\TimeEntrySubmitForReviewController',
             'Application\Controller\TimeEntryApprove'                               => 'Application\Controller\TimeEntryApproveController',
+            'Application\Controller\TimeApprovalPermission'                         => 'Application\Controller\TimeApprovalPermissionController',
+            'Application\Controller\TimeEntryPermission'                            => 'Application\Controller\TimeEntryPermissionController',
             'Application\Controller\User'                                           => 'Application\Controller\UserController',
             'Application\Controller\Users'                                          => 'Application\Controller\UsersController',
             'Application\Controller\UserProjectPermissions'                         => 'Application\Controller\UserProjectPermissionsController',            

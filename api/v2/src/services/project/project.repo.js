@@ -1,7 +1,6 @@
 module.exports = function(app){
   return {
     sequelizeClient: app.get('sequelizeClient'),
-    
     getProjectName: async function (projectId, projectPermission, projectNameOnly = false) {
       // Get project data
       const projectQuery = `SELECT p.project_name as projectName, p.project_code AS projectCode
@@ -22,15 +21,11 @@ module.exports = function(app){
     
       project = project[0];
     
-      const result = this.decideProjectName(projectPermission, project['projectName'], project['projectCode'], projectNameOnly);
-    
-      return result;
-    },
-
-    decideProjectName: function(projectPermission, projectName, projectCodeName, projectNameOnly = false) {
       const projectNameView = projectPermission.PROJECT_NAME.canView;
       const projectCodeNameView = projectPermission.PROJECT_CODENAME.canView;
     
+      const projectName = project['projectName'];
+      const projectCodeName = project['projectCode'];
       let result = {};
     
       if(projectNameView && projectCodeNameView) {
@@ -44,13 +39,11 @@ module.exports = function(app){
       }
     
       if(projectNameOnly) {
-        if(!result['projectName'] && projectCodeName) {
+        if(!result['projectName'] && project['projectCode']) {
           result = {projectName: projectCodeName};
-        } else {
-          result = {projectName};
         }
       }
-
+    
       return result;
     },
 

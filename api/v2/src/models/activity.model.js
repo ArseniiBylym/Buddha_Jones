@@ -16,39 +16,34 @@ module.exports = function (app) {
       type: DataTypes.STRING(255),
       allowNull: true
     },
-    typeId: {
+    type_id: {
       type: DataTypes.INTEGER(11),
-      allowNull: true,
-      field: 'type_id'
+      allowNull: true
     },
-    descriptionRequired: {
+    description_required: {
       type: DataTypes.INTEGER(1),
       allowNull: true,
-      defaultValue: '0',
-      field: 'description_required'
+      defaultValue: '0'
     },
     billable: {
       type: DataTypes.INTEGER(1),
       allowNull: true,
       defaultValue: '1'
     },
-    projectCampaignRequired: {
+    project_campaign_required: {
       type: DataTypes.INTEGER(1),
       allowNull: true,
-      defaultValue: '0',
-      field: 'project_campaign_required'
+      defaultValue: '0'
     },
-    projectCampaignSpotVersionRequired: {
+    project_campaign_spot_version_required: {
       type: DataTypes.INTEGER(1),
       allowNull: true,
-      defaultValue: '0',
-      field: 'project_campaign_spot_version_required'
+      defaultValue: '0'
     },
-    filesIncluded: {
+    files_included: {
       type: DataTypes.INTEGER(1),
       allowNull: true,
-      defaultValue: '0',
-      field: 'files_included'
+      defaultValue: '0'
     },
     status: {
       type: DataTypes.INTEGER(1),
@@ -56,7 +51,6 @@ module.exports = function (app) {
       defaultValue: '1'
     }
   }, {
-    timestamps: false,
     hooks: {
       beforeCount(options) {
         options.raw = true;

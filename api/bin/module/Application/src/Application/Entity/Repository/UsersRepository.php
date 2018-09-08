@@ -331,8 +331,15 @@ class UsersRepository extends EntityRepository
             'project-board' => $this->getUserProjectBoardAccess($userTypeId),
             'project-create' => $this->getUserProjectCreateAccess($userTypeId),
             'time-entry' => $this->getUserTimeEntryAccess($userTypeId),
+            'time-card' => $this->getUserTimeCardAccess($userTypeId),
             'activities-definition' => true
         );
+    }
+
+    public function getUserTimeCardAccess($userTypeId) {
+        $response = (bool) ($userTypeId == 100);
+
+        return $response;
     }
 
     public function getUserProjectBoardAccess($userTypeId) {

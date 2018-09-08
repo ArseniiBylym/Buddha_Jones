@@ -23,9 +23,6 @@ const projectPermissions = require('./project-permissions/project-permissions.se
 const customerPrice = require('./customer-price/customer-price.service.js');
 const project = require('./project/project.service.js');
 const status = require('./status/status.service.js');
-const projectToCampaign = require('./project-to-campaign/project-to-campaign.service.js');
-const projectHistory = require('./project-history/project-history.service.js');
-const projectToCampaignUser = require('./project-to-campaign-user/project-to-campaign-user.service.js');
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(users);
@@ -53,7 +50,4 @@ module.exports = function (app) {
   app.configure(customerPrice);
   app.configure(project);
   app.configure(status);
-  app.configure(projectToCampaign);
-  app.configure(projectHistory);
-  app.configure(projectToCampaignUser);
 };

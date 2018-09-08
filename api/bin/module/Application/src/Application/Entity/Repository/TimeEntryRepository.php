@@ -530,4 +530,74 @@ class TimeEntryRepository extends EntityRepository
 
         return array_column($result, 'id');
     }
+
+    public function getTimeEntryPermissionList()
+    {
+        $dql = "SELECT
+                  ut
+                FROM \Application\Entity\RediUserTypeTimeEntryPermission a 
+                INNER JOIN \Application\Entity\RediUserType ut
+                    WITH ut.id = a.userTypeId
+                ORDER BY ut.typeName ";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $result =  $query->getArrayResult();
+
+        return $result;
+    }
+
+    public function getTimeApprovalPermissionList()
+    {
+        $dql = "SELECT
+                  a.approverUserTypeId, 
+                  ut1.typeName AS approverUserTypeName,  
+                  a.submittingUserTypeId,
+                  ut2.typeName AS submittingUserTypeName
+                FROM \Application\Entity\RediUserTypeTimeApprovalPermission a 
+                INNER JOIN \Application\Entity\RediUserType ut1
+                    WITH ut1.id = a.approverUserTypeId
+                INNER JOIN \Application\Entity\RediUserType ut2
+                    WITH ut2.id = a.submittingUserTypeId ";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $result =  $query->getArrayResult();
+
+        $data = array();
+
+        foreach($result as $row) {
+            if(empty($data[$row['approverUserTypeId']])) {
+                $data[$row['approverUserTypeId']] = array(
+                    'approverUserTypeId' => $row['approverUserTypeId'],
+                    'approverUserTypeName' => $row['approverUserTypeName'],
+                    'submittingUserType' => array(),
+                );
+            }
+
+            $data[$row['approverUserTypeId']]['submittingUserType'][] = array(
+                'submittingUserTypeId' => $row['submittingUserTypeId'],
+                'submittingUserTypeName' => $row['submittingUserTypeName']
+            );
+        }
+
+        return array_values($data);
+    }
+
+    public function deleteApproverTimeApprovalPermission($approverIds)
+    {
+        $dql = "DELETE
+                FROM \Application\Entity\RediUserTypeTimeApprovalPermission a
+                WHERE a.approverUserTypeId IN (:approver_user_type_id)
+                ";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('approver_user_type_id', $approverIds);
+        $query->execute();
+    }
+
+    public function truncateTimeEntryPermissionTable()
+    {
+        $dql = "TRUNCATE redi_user_type_time_entry_permission";
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->execute();
+    }
 }

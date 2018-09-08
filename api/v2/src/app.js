@@ -18,14 +18,11 @@ const channels = require('./channels');
 const authentication = require('./authentication');
 const sequelize = require('./sequelize');
 const proxyConfig = require('../../../config/proxy.json');
-const multer = require('multer');
-const multerHandler = multer();
 
 const app = express(feathers());
 
 // Load app configuration
 app.configure(configuration());
-
 // Enable security, CORS, compression, favicon and body parsing
 app.use(helmet());
 app.use(cors());
@@ -59,13 +56,12 @@ app.use(proxy(app.get('v1_api_url'), {
   }
 }));
 
-// handle form data
-app.use(multerHandler.array());
-
 // Set up our services (see `services/index.js`)
 app.configure(services);
 // Set up event channels (see channels.js)
 app.configure(channels);
+
+
 
 // Configure a middleware for 404s and the error handler
 app.use(express.notFound());
