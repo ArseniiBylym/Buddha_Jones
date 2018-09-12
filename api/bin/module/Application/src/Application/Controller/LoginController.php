@@ -137,8 +137,8 @@ class LoginController extends AbstractRestfulController
     {
         $authService = $this->getServiceLocator()->get('Zend\Authentication\AuthenticationService');
 
-        $username = isset($data['username']) ? $data['username'] : '';
-        $password = isset($data['password']) ? $data['password'] : '';
+        $username = trim($this->getRequest()->getPost('username', ''));
+        $password = trim($this->getRequest()->getPost('password', ''));
         $authFailed = 0;
 
         if ($username && $password) {
