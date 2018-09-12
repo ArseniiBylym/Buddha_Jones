@@ -32,7 +32,7 @@ class UsersRepository extends EntityRepository
         $selectColumn = ' a.id ';
 
         if($userAccess['can_access_basic_data']) {
-            $selectColumn = " a.id, a.username, a.firstName as first_name, a.lastName as last_name,
+            $selectColumn = " a.id, a.username, a.firstName as first_name, a.lastName as last_name, 
                             a.image, a.email,
                             a.initials, a.typeId as type_id, ut.typeName as type_name, utc.class,
                             a.lastLoginDate AS last_login_date, a.createdDate AS created_date,
@@ -40,7 +40,7 @@ class UsersRepository extends EntityRepository
         }
 
         if($userAccess['can_access_extra_data']) {
-            $selectColumn = " a.id, a.username, a.firstName as first_name, a.lastName as last_name,
+            $selectColumn = " a.id, a.username, a.firstName as first_name, a.lastName as last_name, 
                             a.image, a.email,
                             a.initials, a.typeId as type_id, ut.typeName as type_name, utc.class,
                             a.hourlyRate as hourly_rate, a.salaryType as salary_type,
@@ -111,15 +111,15 @@ class UsersRepository extends EntityRepository
         $selectColumn = ' a.id ';
 
         if($userAccess['can_access_basic_data']) {
-            $selectColumn = " a.id, a.username, a.firstName as first_name, a.lastName as last_name,
+            $selectColumn = " a.id, a.username, a.firstName as first_name, a.lastName as last_name, 
                             a.image, a.email,
-                            a.initials, a.typeId as type_id, ut.typeName as type_name,
+                            a.initials, a.typeId as type_id, ut.typeName as type_name, 
                             a.lastLoginDate AS last_login_date, a.createdDate AS created_date,
                             a.status ";
         }
 
         if($userAccess['can_access_extra_data']) {
-            $selectColumn = " a.id, a.username, a.firstName as first_name, a.lastName as last_name,
+            $selectColumn = " a.id, a.username, a.firstName as first_name, a.lastName as last_name, 
                             a.image, a.email,
                             a.initials, a.typeId as type_id, ut.typeName as type_name,
                             a.hourlyRate as hourly_rate, a.salaryType as salary_type,
@@ -274,16 +274,16 @@ class UsersRepository extends EntityRepository
     }
 
     public function getUserPermission($userTypeId, $setKey = false) {
-        $dql = "select
+        $dql = "select 
                     pp.id,
                     pp.key,
                     utpp.canView,
                     utpp.canEdit
                 FROM
-                \Application\Entity\RediProjectPermissions pp
+                \Application\Entity\RediProjectPermissions pp 
                 LEFT JOIN
                     \Application\Entity\RediUserTypeProjectPermission utpp WITH pp.id = utpp.projectPermissionId AND utpp.userTypeId = :user_type_id
-                GROUP BY pp.id
+                GROUP BY pp.id 
                 ORDER BY pp.id ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -331,29 +331,15 @@ class UsersRepository extends EntityRepository
             'project-board' => $this->getUserProjectBoardAccess($userTypeId),
             'project-create' => $this->getUserProjectCreateAccess($userTypeId),
             'time-entry' => $this->getUserTimeEntryAccess($userTypeId),
-            'time-card' => $this->getUserTimeCardAccess($userTypeId),
-            'activities-definition' => true,
-            'project-board-permission' => $this->getProjectBoardPermissionAccess($userTypeId),
+            'activities-definition' => true
         );
-    }
-
-    public function getUserTimeCardAccess($userTypeId) {
-        $response = (bool) ($userTypeId == 100);
-
-        return $response;
-    }
-
-    public function getProjectBoardPermissionAccess($userTypeId) {
-        $response = (bool) ($userTypeId == 100);
-
-        return $response;
     }
 
     public function getUserProjectBoardAccess($userTypeId) {
         $dql = "SELECT
                     COUNT(utpp.userTypeId) AS totalCount
                 FROM
-                    \Application\Entity\RediUserTypeProjectPermission utpp
+                    \Application\Entity\RediUserTypeProjectPermission utpp 
                 WHERE
                     utpp.canView = 1 and utpp.userTypeId = :user_type_id";
 
@@ -374,10 +360,10 @@ class UsersRepository extends EntityRepository
         $dql = "SELECT
                     COUNT(utpp.userTypeId) AS totalCount
                 FROM
-                    \Application\Entity\RediUserTypeProjectPermission utpp
+                    \Application\Entity\RediUserTypeProjectPermission utpp 
                 WHERE
                     utpp.canEdit = 1
-                    AND utpp.projectPermissionId = 1
+                    AND utpp.projectPermissionId = 1 
                     AND utpp.userTypeId = :user_type_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -397,7 +383,7 @@ class UsersRepository extends EntityRepository
         $dql = "SELECT
                     COUNT(uttep.id) AS totalCount
                 FROM
-                    \Application\Entity\RediUserTypeTimeEntryPermission uttep
+                    \Application\Entity\RediUserTypeTimeEntryPermission uttep 
                 WHERE
                     uttep.userTypeId = :user_type_id";
 
@@ -418,7 +404,7 @@ class UsersRepository extends EntityRepository
         $dql = "SELECT
                     ua
                 FROM
-                    \Application\Entity\RediUserAccess ua
+                    \Application\Entity\RediUserAccess ua 
                 WHERE
                     ua.userTypeId = :user_type_id";
 
@@ -440,7 +426,7 @@ class UsersRepository extends EntityRepository
         $dql = "SELECT
                     uttap.submittingUserTypeId
                 FROM
-                    \Application\Entity\RediUserTypeTimeApprovalPermission uttap
+                    \Application\Entity\RediUserTypeTimeApprovalPermission uttap 
                 WHERE
                     uttap.approverUserTypeId = :approver_user_type_id";
 
@@ -451,48 +437,6 @@ class UsersRepository extends EntityRepository
         $response = array_column($result, 'submittingUserTypeId');
 
         return $response;
-    }
-
-    public function searchProjectPermission() {
-        $dql = "SELECT
-                    pp
-                FROM
-                    \Application\Entity\RediProjectPermissions pp";
-
-        $query = $this->getEntityManager()->createQuery($dql);
-        $result = $query->getArrayResult();
-
-        return $result;
-    }
-
-    public function getUserTypeProjectPermission($userTypeId) {
-        $dql = "select
-                    " . $userTypeId . " AS userTypeId,
-                    pp.id AS projectPermissionId,
-                    pp.key AS projectPermsisionKey,
-                    pp.label AS projectPermissionLabel,
-                    utpp.canView,
-                    utpp.canEdit
-                FROM
-                    \Application\Entity\RediProjectPermissions pp
-                LEFT JOIN
-                    \Application\Entity\RediUserTypeProjectPermission utpp
-                    WITH pp.id = utpp.projectPermissionId
-                        AND utpp.userTypeId = :user_type_id
-                GROUP BY pp.id
-                ORDER BY pp.id ASC";
-
-        $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('user_type_id', $userTypeId);
-        $result = $query->getArrayResult();
-
-        foreach ($result as &$row) {
-            $row['userTypeId'] = (int)$row['userTypeId'];
-            $row['canView'] = (int)$row['canView'];
-            $row['canEdit'] = (int)$row['canEdit'];
-        }
-
-        return $result;
     }
 
 }

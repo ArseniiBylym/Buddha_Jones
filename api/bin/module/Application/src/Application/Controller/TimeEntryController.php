@@ -27,12 +27,12 @@ class TimeEntryController extends CustomAbstractActionController
         $filter['exclude_user_time_entry'] = (bool)($this->getRequest()->getQuery('exclude_user_time_entry', 0));
         $filter['current_user_id'] = $this->_user_id;
 
-        if($filter['project_id'] === "" || $filter['project_id'] === 'null') {
+        if ($filter['project_id'] === "" || $filter['project_id'] === 'null') {
             $filter['project_id'] = null;
         }
 
-        if(!$allTimeEntryPermission) {
-            if(count($canApproveTimeEntryOfUser)) {
+        if (!$allTimeEntryPermission) {
+            if (count($canApproveTimeEntryOfUser)) {
                 $filter['user_type_id'] = $canApproveTimeEntryOfUser;
             } else {
                 $filter['user_id'] = $this->_user_id;
@@ -52,7 +52,7 @@ class TimeEntryController extends CustomAbstractActionController
         $data = $this->_timeEntryRepo->search($offset, $length, $filter);
         $totalCount = $this->_timeEntryRepo->searchCount($filter);
 
-        foreach($data as &$row) {
+        foreach ($data as &$row) {
             // set project name
             $projectName = $this->_projectRepo->getProjectName($row['projectId'], $this->_user_type_id, true);
             $row = array_merge($row, $projectName);
@@ -134,9 +134,9 @@ class TimeEntryController extends CustomAbstractActionController
 
 
             // if file details are sent enter that in redi_time_entry_file table
-            if(count($files)) {
-                foreach($files as $file) {
-                    if(!empty($file['filename'])) {
+            if (count($files)) {
+                foreach ($files as $file) {
+                    if (!empty($file['filename'])) {
                         // if duration is not provided then default duration is 1
                         $duration = (!empty($file['duration']) && (float)$file['duration']) ? (float)$file['duration'] : 1;
 
@@ -145,7 +145,7 @@ class TimeEntryController extends CustomAbstractActionController
                         $timeEntryFile->setFileName($file['filename']);
                         $timeEntryFile->setDuration($duration);
 
-                        if(!empty($file['description'])) {
+                        if (!empty($file['description'])) {
                             $timeEntryFile->setDescription($file['description']);
                         }
 
@@ -182,7 +182,6 @@ class TimeEntryController extends CustomAbstractActionController
         $allTimeEntryPermission = $this->_usersRepo->getUserTimeEntryAccess($this->_user_type_id);
         $canApproveTimeEntryOfUser = $this->_usersRepo->getUserToApproveTimeEntry($this->_user_type_id);
 
-//        $workerId = (int)trim(isset($data['worker_id']) ? $data['worker_id'] : $this->_user_id);
         $projectCampaignId = isset($data['project_campaign_id']) ? (int)$data['project_campaign_id'] : null;
         $spotId = isset($data['spot_id']) ? (int)$data['spot_id'] : null;
         $versionId = isset($data['version_id']) ? (int)$data['version_id'] : null;
@@ -193,18 +192,19 @@ class TimeEntryController extends CustomAbstractActionController
 
         $activityDescription = isset($data['activity_description']) ? trim($data['activity_description']) : null;
         $notes = isset($data['notes']) ? trim($data['notes']) : null;
-        $nonBillable = (isset($data['non_billable']))?((strtolower(trim($data['non_billable'])) == 'true')?1:0):null;
+        $nonBillable = (isset($data['non_billable'])) ? ((strtolower(trim($data['non_billable'])) == 'true') ? 1 : 0) : null;
         $files = (array)json_decode(trim(isset($data['files']) ? $data['files'] : ''), true);
 
         if ($id) {
             $timeEntry = $this->_timeEntryRepository->find($id);
 
-            if($timeEntry) {
+            if ($timeEntry) {
                 $timeEntryUserType = $this->_userRepository->find($timeEntry->getUserId());
 
-                if ($allTimeEntryPermission || ($timeEntryUserType && in_array($timeEntryUserType->getTypeId(), $canApproveTimeEntryOfUser)) || $timeEntry->getStatus() == 1) {
+                if ($allTimeEntryPermission || ($timeEntryUserType && in_array($timeEntryUserType->getTypeId(), $canApproveTimeEntryOfUser)) ||
+                    $timeEntry->getUserId() == $this->_user_id ||
+                    $timeEntry->getCreatedBy() == $this->_user_id) {
 
-                    if($timeEntry->getUserId()==$this->_user_id || $timeEntry->getCreatedBy()==$this->_user_id) {
                         if ($projectCampaignId !== null) {
                             $timeEntry->setProjectCampaignId($projectCampaignId);
                         }
@@ -242,6 +242,12 @@ class TimeEntryController extends CustomAbstractActionController
                             $timeEntry->setNonBillable($nonBillable);
                         }
 
+                        if (($allTimeEntryPermission || ($timeEntryUserType && in_array($timeEntryUserType->getTypeId(), $canApproveTimeEntryOfUser))) &&
+                            $status == 4) {
+                            $timeEntry->setStatus($status);
+                            $timeEntry->setApprovedBy($this->_user_id);
+                            $timeEntry->setApprovedAt(new \DateTime('now'));
+                        }
 
                         $this->_em->persist($timeEntry);
                         $this->_em->flush();
@@ -251,28 +257,28 @@ class TimeEntryController extends CustomAbstractActionController
                         // if file informations are sent then
                         // remove previous entry
                         // and add new entry
-                        if(count($files)) {
+                        if (count($files)) {
                             // delete existing
                             $existingTimeEntryFiles = $this->_timeEntryFileRepository->findBy(array('timeEntryId' => $timeEntryId));
 
-                            foreach($existingTimeEntryFiles as $existingTimeEntryFile) {
+                            foreach ($existingTimeEntryFiles as $existingTimeEntryFile) {
                                 $this->_em->remove($existingTimeEntryFile);
                             }
 
                             $this->_em->flush();
 
                             //add new ones
-                            foreach($files as $file) {
-                                if(!empty($file['filename'])) {
+                            foreach ($files as $file) {
+                                if (!empty($file['filename'])) {
                                     $timeEntryFile = new RediTimeEntryFile();
                                     $timeEntryFile->setTimeEntryId($timeEntryId);
                                     $timeEntryFile->setFileName($file['filename']);
 
-                                    if(!empty($file['description'])) {
+                                    if (!empty($file['description'])) {
                                         $timeEntryFile->setDescription($file['description']);
                                     }
 
-                                    if(!empty($file['duration'])) {
+                                    if (!empty($file['duration'])) {
                                         $timeEntryFile->setDuration($file['duration']);
                                     }
 
@@ -290,148 +296,125 @@ class TimeEntryController extends CustomAbstractActionController
                             'message' => 'Request successful.',
                             'data' => $data
                         );
-                    } else {
-                        if ($allTimeEntryPermission || ($timeEntryUserType && in_array($timeEntryUserType->getTypeId(), $canApproveTimeEntryOfUser))) {
-                            if($status == 4) {
-                                $timeEntry->setStatus($status);
-                                $timeEntry->setApprovedBy($this->_user_id);
-                                $timeEntry->setApprovedAt(new \DateTime('now'));
 
-                                $this->_em->persist($timeEntry);
-                                $this->_em->flush();
+                    } else {
+                        $response = array(
+                            'status' => 0,
+                            'message' => 'Access denied.'
+                        );
+                    }
+                } else {
+                    $response = array(
+                        'status' => 0,
+                        'message' => 'Time entry does not exist.'
+                    );
+                }
+            } else {
+                $response = array(
+                    'status' => 0,
+                    'message' => 'Please provide required data.'
+                );
+            }
+
+            if ($response['status'] == 0) {
+                $this->getResponse()->setStatusCode(400);
+            }
+
+            return new JsonModel($response);
+        }
+
+        public function delete($id)
+        {
+            $allTimeEntryPermission = $this->_usersRepo->getUserTimeEntryAccess($this->_user_type_id);
+            $canApproveTimeEntryOfUser = $this->_usersRepo->getUserToApproveTimeEntry($this->_user_type_id);
+
+            if ($id) {
+                $timeEntry = $this->_timeEntryRepository->find($id);
+
+                if ($timeEntry) {
+                    $timeEntryUserType = $this->_userRepository->find($timeEntry->getUserId());
+
+                    if ($allTimeEntryPermission
+                        || $timeEntry->getUserId() == $this->_user_id
+                        || $timeEntry->getCreatedBy() == $this->_user_id
+                        || ($timeEntryUserType && in_array($timeEntryUserType->getTypeId(), $canApproveTimeEntryOfUser))) {
+
+                        if (in_array($timeEntry->getStatus(), array(1, 3))) {
+                            $this->_em->remove($timeEntry);
+
+                        // delete existing
+                            $existingTimeEntryFiles = $this->_timeEntryFileRepository->findBy(array('timeEntryId' => $id));
+
+                            foreach ($existingTimeEntryFiles as $existingTimeEntryFile) {
+                                $this->_em->remove($existingTimeEntryFile);
                             }
 
-                            $data = $this->getSingleData($id);
+                            $this->_em->flush();
 
                             $response = array(
                                 'status' => 1,
                                 'message' => 'Request successful.',
-                                'data' => $data
                             );
                         } else {
                             $response = array(
                                 'status' => 0,
-                                'message' => 'Time entry does not belong to this user user.'
+                                'message' => 'Time entry can not be deleted now. Status not in draft or pending'
                             );
                         }
-                    }
-                } else {
-                    $response = array(
-                        'status' => 0,
-                        'message' => 'Time entry can not be changed now. It is not in draft status.'
-                    );
-                }
-            } else {
-                $response = array(
-                    'status' => 0,
-                    'message' => 'Time entry does not exist.'
-                );
-            }
-        } else {
-            $response = array(
-                'status' => 0,
-                'message' => 'Please provide required data.'
-            );
-        }
-
-        if ($response['status'] == 0) {
-            $this->getResponse()->setStatusCode(400);
-        }
-
-        return new JsonModel($response);
-    }
-
-    public function delete($id)
-    {
-        $allTimeEntryPermission = $this->_usersRepo->getUserTimeEntryAccess($this->_user_type_id);
-        $canApproveTimeEntryOfUser = $this->_usersRepo->getUserToApproveTimeEntry($this->_user_type_id);
-
-        if ($id) {
-            $timeEntry = $this->_timeEntryRepository->find($id);
-
-            if($timeEntry) {
-                $timeEntryUserType = $this->_userRepository->find($timeEntry->getUserId());
-
-                if ($allTimeEntryPermission 
-                    || $timeEntry->getUserId()==$this->_user_id 
-                    || $timeEntry->getCreatedBy()==$this->_user_id 
-                    || ($timeEntryUserType && in_array($timeEntryUserType->getTypeId(), $canApproveTimeEntryOfUser))) {
-
-                    if(in_array($timeEntry->getStatus(), array(1, 3))) {
-                        $this->_em->remove($timeEntry);
-
-                        // delete existing
-                        $existingTimeEntryFiles = $this->_timeEntryFileRepository->findBy(array('timeEntryId' => $id));
-
-                        foreach($existingTimeEntryFiles as $existingTimeEntryFile) {
-                            $this->_em->remove($existingTimeEntryFile);
-                        }
-
-                        $this->_em->flush();
-
-                        $response = array(
-                            'status' => 1,
-                            'message' => 'Request successful.',
-                        );
                     } else {
                         $response = array(
                             'status' => 0,
-                            'message' => 'Time entry can not be deleted now. Status not in draft or pending'
+                            'message' => 'Time entry can not be deleted. Permission denied.'
                         );
                     }
                 } else {
                     $response = array(
                         'status' => 0,
-                        'message' => 'Time entry can not be deleted. Permission denied.'
+                        'message' => 'Time entry does not exist.'
                     );
                 }
             } else {
                 $response = array(
                     'status' => 0,
-                    'message' => 'Time entry does not exist.'
+                    'message' => 'Please provide required data.'
                 );
             }
-        } else {
-            $response = array(
-                'status' => 0,
-                'message' => 'Please provide required data.'
-            );
-        }
 
-        if ($response['status'] == 0) {
-            $this->getResponse()->setStatusCode(400);
-        }
-
-        return new JsonModel($response);
-    }
-
-    private function getSingleData($id) {
-        $allTimeEntryPermission = $this->_usersRepo->getUserTimeEntryAccess($this->_user_type_id);
-        $canApproveTimeEntryOfUser = $this->_usersRepo->getUserToApproveTimeEntry($this->_user_type_id);
-
-        $filter = array(
-            'id' => $id,
-            'get_details' => true,
-            'get_single' => true,
-        );
-
-        if(!$allTimeEntryPermission) {
-            if(count($canApproveTimeEntryOfUser)) {
-                $filter['user_type_id'] = $canApproveTimeEntryOfUser;
-            } else {
-                $filter['user_id'] = $this->_user_id;
+            if ($response['status'] == 0) {
+                $this->getResponse()->setStatusCode(400);
             }
+
+            return new JsonModel($response);
         }
 
-        $data = $this->_timeEntryRepo->search(0, 1, $filter);
-        $data = count($data)?$data[0]:array();
+        private function getSingleData($id)
+        {
+            $allTimeEntryPermission = $this->_usersRepo->getUserTimeEntryAccess($this->_user_type_id);
+            $canApproveTimeEntryOfUser = $this->_usersRepo->getUserToApproveTimeEntry($this->_user_type_id);
 
-        if($data) {
+            $filter = array(
+                'id' => $id,
+                'get_details' => true,
+                'get_single' => true,
+            );
+
+            if (!$allTimeEntryPermission) {
+                if (count($canApproveTimeEntryOfUser)) {
+                    $filter['user_type_id'] = $canApproveTimeEntryOfUser;
+                } else {
+                    $filter['user_id'] = $this->_user_id;
+                }
+            }
+
+            $data = $this->_timeEntryRepo->search(0, 1, $filter);
+            $data = count($data) ? $data[0] : array();
+
+            if ($data) {
             // set project name
-            $projectName = $this->_projectRepo->getProjectName($data['projectId'], $this->_user_type_id, true);
-            $data = array_merge($data, $projectName);
-        }
+                $projectName = $this->_projectRepo->getProjectName($data['projectId'], $this->_user_type_id, true);
+                $data = array_merge($data, $projectName);
+            }
 
-        return $data;
+            return $data;
+        }
     }
-}
