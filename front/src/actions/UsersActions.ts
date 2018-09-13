@@ -9,9 +9,10 @@ import {
     UserProjectRoleFromApi,
     OtherUserDetails,
     OtherUsersFromApi,
-    UserTypeFromApi,
+    UserTypeFromApi, ProjectPermissionsTypeSingleFromApi,
 } from 'types/users';
 import { UserTypeClassId } from 'types/user';
+import { ProjectPermissionData, ProjectPermissionsTypeFromApi } from '../types/users';
 
 export class UsersActionsClass {
     @action
@@ -212,21 +213,21 @@ export class UsersActionsClass {
             const typesIdsToRefresh: number[] = forceFetch
                 ? typesIds
                 : typesIds.filter(typeId => {
-                      const userFetchByTypeIndex = UsersStore.peopleFetchedByTypeFlatIds.indexOf(typeId);
-                      if (
-                          userFetchByTypeIndex === -1 ||
-                          (userFetchByTypeIndex !== -1 &&
-                              UsersStore.peopleFetchesByType[userFetchByTypeIndex].loading === false &&
-                              DateHandler.checkIfTimeStampIsOlderThanXMinutes(
-                                  5,
-                                  UsersStore.peopleFetchesByType[userFetchByTypeIndex].lastFetchTimestamp
-                              ))
-                      ) {
-                          return true;
-                      }
+                    const userFetchByTypeIndex = UsersStore.peopleFetchedByTypeFlatIds.indexOf(typeId);
+                    if (
+                        userFetchByTypeIndex === -1 ||
+                        (userFetchByTypeIndex !== -1 &&
+                            UsersStore.peopleFetchesByType[userFetchByTypeIndex].loading === false &&
+                            DateHandler.checkIfTimeStampIsOlderThanXMinutes(
+                                5,
+                                UsersStore.peopleFetchesByType[userFetchByTypeIndex].lastFetchTimestamp
+                            ))
+                    ) {
+                        return true;
+                    }
 
-                      return false;
-                  });
+                    return false;
+                });
 
             if (typesIdsToRefresh.length > 0) {
                 typesIdsToRefresh.map(typeId => {
@@ -443,4 +444,57 @@ export class UsersActionsClass {
             throw error;
         }
     };
+
+    @action
+    public fetchProjectPermissionsTypes = async (id: number, forceFetch: boolean = false): Promise<boolean> => {
+        try {
+            if (
+                forceFetch ||
+                (UsersStore.projectPermissionsTypesLoading === false &&
+                    DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, UsersStore.projectPermissionsTypesLastFetchTimestamp))
+            ) {
+                UsersStore.projectPermissionsTypesLoading = true;
+
+                const response = (await API.getData(APIPath.USER_PROJECT_TYPE_PERMISSIONS, {
+                    user_type_id: id,
+                })) as ProjectPermissionsTypeFromApi;
+
+                UsersStore.projectPermissionsTypes = response.permissions
+                    .sort((permA: ProjectPermissionsTypeSingleFromApi, permB: ProjectPermissionsTypeSingleFromApi) => {
+                            return (permA.projectPermissionId < permB.projectPermissionId) ? -1 : ((permA.projectPermissionId > permB.projectPermissionId) ? 1 : 0);
+                        }
+                    )
+                    .map((perm: ProjectPermissionsTypeSingleFromApi) => ({
+                        projectPermissionId: perm.projectPermissionId,
+                        projectPermsisionKey: perm.projectPermsisionKey,
+                        projectPermissionLabel: perm.projectPermissionLabel,
+                        canView: perm.canView,
+                        canEdit: perm.canEdit
+                    }));
+                UsersStore.projectPermissionsTypesLastFetchTimestamp = Date.now();
+                UsersStore.projectPermissionsTypesLoading = false;
+            }
+
+            return true;
+        } catch (error) {
+            setTimeout(() => {
+                this.fetchProjectPermissionsTypes(id, true);
+            }, 512);
+            throw error;
+        }
+    };
+
+    @action
+    public saveProjectBoardPermission = async (projectBoardPermissionData: ProjectPermissionData): Promise<boolean> => {
+        try {
+            await API.postData(
+                APIPath.USER_PROJECT_TYPE_PERMISSIONS,
+                projectBoardPermissionData
+            );
+            return true;
+        } catch (error) {
+            throw error;
+        }
+    };
+
 }

@@ -1,0 +1,171 @@
+import * as React from 'react';
+import { AppState } from '../../../../store/AllStores';
+import { HeaderActions, UsersActions } from '../../../../actions';
+import { inject, observer } from 'mobx-react';
+import { action, computed, observable } from 'mobx';
+import { Col, Row, Section } from '../../../../components/Section';
+import { InputSearch } from '../../../../components/Form';
+import { Table, TableCell, TableRow } from '../../../../components/Table';
+import { LoadingSpinner } from '../../../../components/Loaders';
+import { UserType } from '../../../../types/users';
+import { Paragraph } from '../../../../components/Content';
+import { history } from '../../../../App';
+import { ButtonEdit } from '../../../../components/Button';
+
+// Props
+interface ProjectBoardPermissionListProps {}
+
+// Props types
+type ProjectBoardPermissionListPropsTypes = ProjectBoardPermissionListProps & AppState;
+
+// Component
+@inject('store')
+@observer
+class ProjectBoardPermissionList extends React.Component<ProjectBoardPermissionListPropsTypes, {}> {
+
+    @observable private userTypesArrFiltered: UserType[] | null = null;
+
+    @computed
+    private get essentialDataIsLoading(): boolean {
+        if (this.props.store) {
+            return this.props.store.users.typesLoading ? true : false;
+        }
+        return true;
+    }
+
+    // Load data by API when component mounted
+    public componentDidMount(): void {
+        this.setHeaderAndInitialData();
+    }
+
+    public render() {
+        if (!this.props.store) {
+            return null;
+        }
+        return this.essentialDataIsLoading === false ? (
+            <Section
+                noSeparator={true}
+                title="User types"
+                headerElements={[
+                    {
+                        key: 'search-filter',
+                        element: (
+                            <InputSearch
+                                onChange={this.handleUserTypeSearchChange}
+                                label="Search user type..."
+                            />
+                        ),
+                    },
+                ]}
+            >
+                {this.getTableWithData()}
+            </Section>
+        ) : (
+            <>
+                {this.getTableWithLoadingSpinner()}
+            </>
+        );
+    }
+
+    // Load data by API when component mounted
+    private setHeaderAndInitialData = (): void => {
+        // Fetch required data
+        UsersActions.fetchUsersTypes();
+
+        // Set header
+        HeaderActions.setMainHeaderTitlesAndElements(
+            'Project Board permissions',
+            'Configuration',
+            null,
+            null
+        );
+    };
+
+    private searchInArrByKeysArrAndValue (arr: UserType[], keysArr: string[], value: string | number): UserType[] {
+        return arr.filter((obj: UserType) => {
+            return keysArr.some((key: string) => {
+                return obj[key].includes(value);
+            });
+        });
+    }
+
+    @action
+    private handleUserTypeSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        if (this.props.store) {
+            this.userTypesArrFiltered = (e.target.value) ? this.searchInArrByKeysArrAndValue(this.props.store.users.types, ['name'], e.target.value) : null;
+        }
+    };
+
+    private getTableWithLoadingSpinner(): JSX.Element {
+        return (
+            <Row justifyContent="center">
+                <Col width={64}>
+                    <LoadingSpinner size={64} />
+                </Col>
+            </Row>
+        );
+    }
+
+    private getTableWithNoMatchingText(): JSX.Element {
+        return (
+            <TableRow>
+                <TableCell colSpan={2} align="center">
+                    <Paragraph type="dim" align="center">
+                        No user types matching filters exist.
+                    </Paragraph>
+                </TableCell>
+            </TableRow>
+        );
+    }
+
+    // check if search results are empty
+    private isSearchResultsEmpty(): boolean {
+        return this.userTypesArrFiltered !== null && this.userTypesArrFiltered.length === 0;
+    }
+
+    // render table data
+    private getTableWithData(): JSX.Element {
+        if (this.props.store) {
+            let userTypesArr = (this.userTypesArrFiltered === null) ? this.props.store.users.types : this.userTypesArrFiltered;
+            let tableRowsArr: JSX.Element[] = userTypesArr.map((userType: UserType, ind: number) => {
+                return (
+                    <TableRow key={`user-type-${ind}`}>
+                        <TableCell align="left">
+                            {userType.name}
+                        </TableCell>
+                        <TableCell align="right">
+                            <ButtonEdit
+                                onClick={this.handlePermissionEdit(userType.id, userType.name)}
+                                iconBackground="yellow"
+                                label="Edit"
+                                labelOnLeft={false}
+                                float="right"
+                            />
+                        </TableCell>
+                    </TableRow>
+                );
+            });
+            return (
+                <Table
+                    header={[
+                        { title: 'User type', align: 'left' },
+                        { title: 'Set permissions', align: 'right' }
+                    ]}
+                    columnsWidths={['70%', '30%']}
+                >
+                    {(this.isSearchResultsEmpty()) ? this.getTableWithNoMatchingText() : tableRowsArr}
+                </Table>
+            );
+        } else {
+            return (
+                <></>
+            );
+        }
+    }
+
+    private handlePermissionEdit = (userTypeId: number, userTypeName: string) => (e: React.MouseEvent<HTMLButtonElement>): void => {
+        history.push(`/portal/configuration/project-board-permission/${userTypeId}/?type_name=${encodeURIComponent(userTypeName)}`);
+    };
+}
+
+export default ProjectBoardPermissionList;
