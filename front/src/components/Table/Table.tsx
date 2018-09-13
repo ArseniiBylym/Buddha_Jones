@@ -15,8 +15,8 @@ interface TableProps {
         title: string;
         align?: 'left' | 'center' | 'right';
         colSpan?: number;
-    }>;
-    columnsWidths?: string[];
+    }> | null;
+    columnsWidths?: string[] | null;
     footerRows?: JSX.Element[];
     removeFirstRowTopPadding?: boolean;
     removeLastRowBottomPadding?: boolean;

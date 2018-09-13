@@ -1,5 +1,5 @@
 import { observable, computed } from 'mobx';
-import { UserProjectRole, UserType, OtherUserDetails } from 'types/users';
+import { UserProjectRole, UserType, OtherUserDetails, ProjectPermissionsType } from 'types/users';
 import { UserTypeClassId } from 'types/user';
 
 export class Users {
@@ -10,6 +10,10 @@ export class Users {
     @observable public typesLastFetchTimestamp: number = 0;
     @observable public types: UserType[] = [];
     @observable public typesLoading: boolean = false;
+
+    @observable public projectPermissionsTypesLastFetchTimestamp: number = 0;
+    @observable public projectPermissionsTypes: ProjectPermissionsType[] = [];
+    @observable public projectPermissionsTypesLoading: boolean = false;
 
     @observable
     public peopleFetchesByClass: Array<{
@@ -42,6 +46,11 @@ export class Users {
     @computed
     public get loadingUserTypes(): boolean {
         return this.typesLoading && this.types.length <= 0;
+    }
+
+    @computed
+    public get loadingProjectPermissionsTypes(): boolean {
+        return this.projectPermissionsTypesLoading && this.projectPermissionsTypes.length <= 0;
     }
 
     @computed

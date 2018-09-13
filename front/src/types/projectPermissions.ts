@@ -10,7 +10,7 @@ export interface UserPermissionFromApi {
     canView: 1 | 0;
     userTypeId: number;
     projectPermissionId: number;
-    projectPermissionLable: string;
+    projectPermissionLabel: string;
     projectPermsisionKey: string;
 }
 

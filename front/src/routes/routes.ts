@@ -2,11 +2,13 @@ import { Route, RouteAccessKey } from 'types/routes';
 import { DashboardAsync } from './Dashboard';
 import { ProjectsListAsync } from './Projects';
 import { ProjectsBoardAsync, ProjectCreateAsync } from './Project';
-import { ActivitiesDefinitionListAsync, ActivityDefinitionFormAsync } from './Configuration';
+import { ActivitiesDefinitionListAsync, ActivityDefinitionFormAsync } from './Configuration/ActivitiesDefinition/index';
 import { TimeEntryAsync } from './TimeTracking';
 import { UserAccountAsync } from './User';
 import { TimeApprovalAsync } from './TimeTracking/Approval';
 import { ProducerSpotSentListAsync, ProducerSpotSentFormAsync } from './SpotSent';
+import { ProjectBoardPermissionListAsync } from './Configuration/ProjectBoardPermission/List/ProjectBoardPermissionListAsync';
+import { ProjectBoardPermissionEditAsync } from './Configuration/ProjectBoardPermission/Form/ProjectBoardPermissionEditAsync';
 
 // Icons
 const dashboardIcon = require('../assets/images/navigation/navigation-icon-dashboard.png');
@@ -120,6 +122,26 @@ export const routes: Route[] = [
         accessKey: RouteAccessKey.ActivitiesDefinition,
         name: 'Define activity',
         path: '/portal/configuration/activity/:id',
+        exact: false,
+        allowAllUsers: false,
+    },
+    {
+        component: ProjectBoardPermissionEditAsync,
+        key: 'project-board-permission',
+        accessKey: RouteAccessKey.ProjectBoardPermission,
+        name: 'Define project board permission',
+        path: '/portal/configuration/project-board-permission/:id',
+        exact: false,
+        allowAllUsers: false,
+    },
+    {
+        component: ProjectBoardPermissionListAsync,
+        key: 'project-board-permission',
+        accessKey: RouteAccessKey.ProjectBoardPermission,
+        group: configurationGroup,
+        name: 'Project board permission',
+        path: '/portal/configuration/project-board-permission',
+        entry: '/portal/configuration/project-board-permission',
         exact: false,
         allowAllUsers: false,
     },

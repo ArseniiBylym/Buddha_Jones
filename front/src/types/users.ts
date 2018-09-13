@@ -36,6 +36,14 @@ export interface OtherUser {
     status: boolean;
 }
 
+export interface ProjectPermissionsType {
+    projectPermissionId: number;
+    projectPermsisionKey: string;
+    projectPermissionLabel: string;
+    canView: 1 | 0;
+    canEdit: 1 | 0;
+}
+
 export interface OtherUsersFromApi {
     total_count: number;
     users: OtherUserFromApi[];
@@ -69,4 +77,28 @@ export interface UsersListFromApi {
 export interface UserTypeFromApi {
     id: number;
     type_name: string;
+}
+
+export interface ProjectPermissionsTypeFromApi {
+    permissions: ProjectPermissionsTypeSingleFromApi[];
+}
+
+export interface ProjectPermissionsTypeSingleFromApi {
+    userTypeId: number;
+    projectPermissionId: number;
+    projectPermsisionKey: string;
+    projectPermissionLabel: string;
+    canView: 1 | 0;
+    canEdit: 1 | 0;
+}
+
+export interface ProjectPermissionData {
+    user_type_id: number;
+    permissions: string;
+}
+
+export interface ProjectPermissionDataSingle {
+    project_permission_id: number;
+    can_view: 1 | 0;
+    can_edit: 1 | 0;
 }
