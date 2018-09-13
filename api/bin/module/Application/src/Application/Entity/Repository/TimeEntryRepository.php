@@ -27,9 +27,9 @@ class TimeEntryRepository extends EntityRepository
             $filter['id'] = array_merge($filter['id'], $activityDateFilter);
         }
 
-        $dql = "SELECT 
-                  a.id, 
-                  a.userId, 
+        $dql = "SELECT
+                  a.id,
+                  a.userId,
                   ut.id AS userTypeId, ut.typeName AS userTypeName,
                   u.username,
                   u.initials,
@@ -38,19 +38,19 @@ class TimeEntryRepository extends EntityRepository
                   u.minHour,
                   a.projectCampaignId,
                   ptc.projectId,
-                  ptc.campaignId, c.campaignName, 
+                  ptc.campaignId, c.campaignName,
                   a.spotId, s.spotName,
-                  a.versionId, v.versionName, 
-                  a.activityId, 
-                  ac.name AS activityValue, 
-                  a.activityDescription, 
+                  a.versionId, v.versionName,
+                  a.activityId,
+                  ac.name AS activityValue,
+                  a.activityDescription,
                   atp.id AS activityTypeId,
                   atp.activityType,
                   cu.id AS customerId, cu.customerName,
-                  a.startDate, a.duration, 
+                  a.startDate, a.duration,
                   a.approvedBy, a.approvedAt,
                   a.notes, a.status, st.status as statusName
-                FROM \Application\Entity\RediTimeEntry a 
+                FROM \Application\Entity\RediTimeEntry a
                 LEFT JOIN \Application\Entity\RediSpot s
                   WITH a.spotId=s.id
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
@@ -63,19 +63,19 @@ class TimeEntryRepository extends EntityRepository
                   WITH v.id=a.versionId
                 LEFT JOIN \Application\Entity\RediStatus st
                   WITH a.status=st.id
-                LEFT JOIN \Application\Entity\RediUser u 
+                LEFT JOIN \Application\Entity\RediUser u
                     WITH u.id=a.userId
                 LEFT JOIN \Application\Entity\RediUserType ut
                     WITH ut.id=u.typeId
                 LEFT JOIN \Application\Entity\RediUserTypeTimeApprovalPermission tap
-                    WITH u.typeId=tap.submittingUserTypeId 
+                    WITH u.typeId=tap.submittingUserTypeId
                 LEFT JOIN \Application\Entity\RediActivity ac
                   WITH ac.id=a.activityId
                 LEFT JOIN \Application\Entity\RediActivityToType att
                     WITH att.activityId=a.activityId
                 LEFT JOIN \Application\Entity\RediActivityType  atp
-                    WITH att.typeId=atp.id 
-                LEFT JOIN \Application\Entity\RediCustomer cu 
+                    WITH att.typeId=atp.id
+                LEFT JOIN \Application\Entity\RediCustomer cu
                     WITH cu.id=p.customerId ";
 
         $dqlFilter = [];
@@ -118,7 +118,7 @@ class TimeEntryRepository extends EntityRepository
             $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " GROUP BY a.id 
+        $dql .= " GROUP BY a.id
                 ORDER BY a.startDate ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -176,13 +176,13 @@ class TimeEntryRepository extends EntityRepository
             $filter['id'] = array_merge($filter['id'], $activityDateFilter);
         }
 
-        $dql = "SELECT 
+        $dql = "SELECT
                   COUNT(DISTINCT a.id) AS total_count
-                FROM \Application\Entity\RediTimeEntry a 
-                LEFT JOIN \Application\Entity\RediUser u 
+                FROM \Application\Entity\RediTimeEntry a
+                LEFT JOIN \Application\Entity\RediUser u
                     WITH u.id=a.userId
                 LEFT JOIN \Application\Entity\RediUserTypeTimeApprovalPermission tap
-                    WITH u.typeId=tap.submittingUserTypeId 
+                    WITH u.typeId=tap.submittingUserTypeId
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
                   WITH ptc.id=a.projectCampaignId";
 
@@ -199,7 +199,7 @@ class TimeEntryRepository extends EntityRepository
         if (!empty($filter['exclude_user_time_entry'])) {
             $dqlFilter[] = " a.userId!=:current_user_id ";
         }
-        
+
         if (isset($filter['user_type_id']) && count($filter['user_type_id'])) {
             $dqlFilter[] = " tap.submittingUserTypeId IN (" . implode(',', $filter['user_type_id']) . ") ";
         }
@@ -256,11 +256,11 @@ class TimeEntryRepository extends EntityRepository
     public function getPool($filter=array())
     {
         $dql = "SELECT
-                    id 
-                FROM redi_time_entry 
-                WHERE DATE(start_date) IN (SELECT 
+                    id
+                FROM redi_time_entry
+                WHERE DATE(start_date) IN (SELECT
                   DISTINCT DATE(a.start_date) AS start_date
-                FROM redi_time_entry a 
+                FROM redi_time_entry a
                 INNER JOIN redi_project_to_campaign ptc
                     ON ptc.id=a.project_campaign_id ";
 
@@ -335,18 +335,30 @@ class TimeEntryRepository extends EntityRepository
         $startDate = $startDate->format('Y-m-d 00:00:00');
         $endDate = $endDate->format('Y-m-d 23:59:59');
 
-        $dql = "SELECT 
-                  a.id, 
-                  a.projectCampaignId,
-                  ptc.projectId,
-                  ptc.campaignId, c.campaignName,
-                  cu.id AS customerId, cu.customerName,
-                  a.spotId, s.spotName,
-                  a.versionId, v.versionName, 
-                  a.activityId, ac.name AS activityValue, a.activityDescription,
-                  a.startDate, a.duration, 
-                  a.notes, a.status, st.status as statusName
-                FROM \Application\Entity\RediTimeEntry a 
+        $dql = "SELECT
+                    a.id,
+                    a.userId,
+                    u.typeId AS userTypeId,
+                    ut.typeName AS userTypeName,
+                    a.projectCampaignId,
+                    ptc.projectId,
+                    ptc.campaignId,
+                    c.campaignName,
+                    cu.id AS customerId,
+                    cu.customerName,
+                    a.spotId,
+                    s.spotName,
+                    a.versionId,
+                    v.versionName,
+                    a.activityId,
+                    ac.name AS activityValue,
+                    a.activityDescription,
+                    a.startDate,
+                    a.duration,
+                    a.notes,
+                    a.status,
+                    st.status as statusName
+                FROM \Application\Entity\RediTimeEntry a
                 LEFT JOIN \Application\Entity\RediSpot s
                   WITH a.spotId=s.id
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
@@ -356,7 +368,7 @@ class TimeEntryRepository extends EntityRepository
                 LEFT JOIN \Application\Entity\RediCampaign c
                   WITH c.id=ptc.campaignId
                 LEFT JOIN \Application\Entity\RediVersion v
-                  WITH v.id=a.versionId 
+                  WITH v.id=a.versionId
                 LEFT JOIN \Application\Entity\RediStatus st
                   WITH a.status=st.id
                 LEFT JOIN \Application\Entity\RediActivity ac
@@ -365,9 +377,13 @@ class TimeEntryRepository extends EntityRepository
                     WITH att.activityId=a.activityId
                 LEFT JOIN \Application\Entity\RediActivityType  atp
                     WITH att.typeId=atp.id
-                LEFT JOIN \Application\Entity\RediCustomer cu 
+                LEFT JOIN \Application\Entity\RediCustomer cu
                     WITH cu.id=p.customerId
-                WHERE 
+                LEFT JOIN \Application\Entity\RediUser u
+                    WITH u.id=a.userId
+                LEFT JOIN \Application\Entity\RediUserType ut
+                    WITH ut.id=u.typeId
+                WHERE
                   a.userId=:user_id
                 AND a.startDate>=:start_date
                 AND a.startDate<=:end_date
@@ -396,21 +412,21 @@ class TimeEntryRepository extends EntityRepository
 
     public function getById($id)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                 a.id, a.userId,
                 a.projectCampaignId,
                   ptc.projectId,
-                  ptc.campaignId, c.campaignName, 
+                  ptc.campaignId, c.campaignName,
                   a.spotId, s.spotName,
-                  a.versionId, v.versionName, 
-                  a.activityId, 
-                  ac.name AS activityValue, 
-                  a.activityDescription, 
+                  a.versionId, v.versionName,
+                  a.activityId,
+                  ac.name AS activityValue,
+                  a.activityDescription,
                   atp.id AS activityTypeId,
                   atp.activityType,
-                  a.startDate, a.duration, 
+                  a.startDate, a.duration,
                   a.notes, a.status, st.status as statusName
-                FROM \Application\Entity\RediTimeEntry a 
+                FROM \Application\Entity\RediTimeEntry a
                 LEFT JOIN \Application\Entity\RediSpot s
                   WITH a.spotId=s.id
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
@@ -447,9 +463,9 @@ class TimeEntryRepository extends EntityRepository
 
         $dql = "SELECT
                   a
-                FROM \Application\Entity\RediTimeEntry a 
-                WHERE 
-                  a.userId=:user_id 
+                FROM \Application\Entity\RediTimeEntry a
+                WHERE
+                  a.userId=:user_id
                   AND a.startDate>=:date_start
                   AND a.startDate<=:date_end ";
 
@@ -467,8 +483,8 @@ class TimeEntryRepository extends EntityRepository
     {
         $dql = "SELECT
                   a.fileName, a.description, a.duration
-                FROM \Application\Entity\RediTimeEntryFile a 
-                WHERE 
+                FROM \Application\Entity\RediTimeEntryFile a
+                WHERE
                   a.timeEntryId=:time_entry_id
                 ORDER BY a.id ASC";
 
@@ -481,12 +497,12 @@ class TimeEntryRepository extends EntityRepository
 
     public function getFilterForActivity($filter)
     {
-        $dql = "SELECT id 
+        $dql = "SELECT id
                 FROM redi_time_entry a
                 WHERE DATE(start_date) IN (SELECT
                   DATE(a.start_date)
-                FROM redi_time_entry a 
-                WHERE 
+                FROM redi_time_entry a
+                WHERE
                   a.activity_id=:activity_id)
                 AND ";
 
@@ -535,7 +551,7 @@ class TimeEntryRepository extends EntityRepository
     {
         $dql = "SELECT
                   ut
-                FROM \Application\Entity\RediUserTypeTimeEntryPermission a 
+                FROM \Application\Entity\RediUserTypeTimeEntryPermission a
                 INNER JOIN \Application\Entity\RediUserType ut
                     WITH ut.id = a.userTypeId
                 ORDER BY ut.typeName ";
@@ -549,11 +565,11 @@ class TimeEntryRepository extends EntityRepository
     public function getTimeApprovalPermissionList()
     {
         $dql = "SELECT
-                  a.approverUserTypeId, 
-                  ut1.typeName AS approverUserTypeName,  
+                  a.approverUserTypeId,
+                  ut1.typeName AS approverUserTypeName,
                   a.submittingUserTypeId,
                   ut2.typeName AS submittingUserTypeName
-                FROM \Application\Entity\RediUserTypeTimeApprovalPermission a 
+                FROM \Application\Entity\RediUserTypeTimeApprovalPermission a
                 INNER JOIN \Application\Entity\RediUserType ut1
                     WITH ut1.id = a.approverUserTypeId
                 INNER JOIN \Application\Entity\RediUserType ut2
@@ -591,6 +607,18 @@ class TimeEntryRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('approver_user_type_id', $approverIds);
+        $query->execute();
+    }
+
+    public function deleteSubmitterTimeApprovalPermission($submitterId) {
+        $dql = "
+            DELETE
+            FROM \Application\Entity\RediUserTypeTimeApprovalPermission a
+            WHERE a.submittingUserTypeId = :submitter_user_type_id
+        ";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('submitter_user_type_id', $submitterId);
         $query->execute();
     }
 

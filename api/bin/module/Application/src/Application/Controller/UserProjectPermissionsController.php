@@ -17,9 +17,7 @@ class UserProjectPermissionsController extends CustomAbstractActionController
         $response = array(
             'status' => 1,
             'message' => 'Request successful',
-            'data' => array(
-                'permissions' => $permission
-            )
+            'data' => $permission
         );
 
         return new JsonModel($response);

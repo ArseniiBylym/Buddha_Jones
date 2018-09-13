@@ -1,6 +1,5 @@
 # Time approval permission
 
-
 ## Get time approval permission of user type
 
 Retrieve list of time approval permission of user type.
@@ -204,7 +203,6 @@ Retrieve list of time approval permission of user type.
 
 `GET /time-approval-permission`
 
-
 ## Add/change time approval permission
 
 Add or change time approval permission of user type
@@ -220,11 +218,11 @@ Add or change time approval permission of user type
 
 ### HTTP Request
 
-`POST /time-approval-permission`
-
+`PUT /time-approval-permission/[:submittingUserTypeId]`
 
 ### Query Parameters
 
-Required | Parameter | Type | Default | Description
--------- | --------- | ---- | ------- | -----------
-true | permissions | JSON string | null | JSON encoded string data (like [{"approverUserTypeId":2,"submittingUserTypeId":[1,22]},{"approverUserTypeId":3,"submittingUserTypeId":[4,9,10]},{"approverUserTypeId":5,"submittingUserTypeId":[6,21]}])
+| Required | Parameter            | Type  | Default | Description                                                                                   |
+| -------- | -------------------- | ----- | ------- | --------------------------------------------------------------------------------------------- |
+| **true** | submittingUserTypeId | Int   | null    | ID of the submitting user type for which approvers should be changed                          |
+| false    | approversUserTypeIds | Int[] | []      | Array of IDs of allowed to approve user types, if empty previous permissions will get removed |

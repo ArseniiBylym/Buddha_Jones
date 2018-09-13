@@ -182,6 +182,7 @@ class TimeEntryController extends CustomAbstractActionController
         $allTimeEntryPermission = $this->_usersRepo->getUserTimeEntryAccess($this->_user_type_id);
         $canApproveTimeEntryOfUser = $this->_usersRepo->getUserToApproveTimeEntry($this->_user_type_id);
 
+//        $workerId = (int)trim(isset($data['worker_id']) ? $data['worker_id'] : $this->_user_id);
         $projectCampaignId = isset($data['project_campaign_id']) ? (int)$data['project_campaign_id'] : null;
         $spotId = isset($data['spot_id']) ? (int)$data['spot_id'] : null;
         $versionId = isset($data['version_id']) ? (int)$data['version_id'] : null;

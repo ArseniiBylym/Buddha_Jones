@@ -40,29 +40,25 @@ class TimeApprovalPermissionController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    public function create($data)
+    public function update($submittingUserTypeId, $data)
     {
-        $permissionData = (array)json_decode(trim(isset($data['permissions']) ? $data['permissions'] : ''), true);
+        $submittingUserTypeId = (int)(isset($submittingUserTypeId) ? $submittingUserTypeId : 0);
+        $approversUserTypeIds = (array)(isset($data['approversUserTypeIds']) ? $data['approversUserTypeIds'] : []);
 
-        if ($this->_user_type_id == 100 && $permissionData) {
-            $approverUserTypeIds = array_column($permissionData, 'approverUserTypeId');
+        if ($this->_user_type_id == 100 && $submittingUserTypeId) {
+            $this->_timeEntryRepo->deleteSubmitterTimeApprovalPermission($submittingUserTypeId);
 
-            if($approverUserTypeIds) {
-              $this->_timeEntryRepo->deleteApproverTimeApprovalPermission($approverUserTypeIds);
-
-              foreach($permissionData as $permissionRow) {
-                  if(!empty($permissionRow['approverUserTypeId']) && !empty($permissionRow['submittingUserTypeId'])) {
-                      foreach($permissionRow['submittingUserTypeId'] as $submittingId) {
-                          $permission = new RediUserTypeTimeApprovalPermission();
-                          $permission->setApproverUserTypeId($permissionRow['approverUserTypeId']);
-                          $permission->setSubmittingUserTypeId($submittingId);
-                          $this->_em->persist($permission);
-                      }
-                  }
-              }
-
-              $this->_em->flush();
+            if ($approversUserTypeIds && count($approversUserTypeIds) > 0) {
+                foreach ($approversUserTypeIds as $approverUserTypeId) {
+                    $permission = new RediUserTypeTimeApprovalPermission();
+                    $permission->setApproverUserTypeId($approverUserTypeId);
+                    $permission->setSubmittingUserTypeId($submittingUserTypeId);
+                    $this->_em->persist($permission);
+                }
             }
+
+            $this->_em->flush();
+
             $data = $this->_timeEntryRepo->getTimeApprovalPermissionList();
 
             $response = array(
