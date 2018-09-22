@@ -1,7 +1,8 @@
 import { action } from 'mobx';
 import { API, APIPath } from 'fetch';
 import { ProjectPermissionsStore } from 'store/AllStores';
-import { UserPermissionsResponse, UserPermission } from 'types/projectPermissions';
+import { UserPermission } from 'types/projectPermissions';
+import { UserPermissionFromApi } from '../types/projectPermissions';
 
 export class ProjectPermissionsActionsClass {
     @action
@@ -9,8 +10,8 @@ export class ProjectPermissionsActionsClass {
         try {
             ProjectPermissionsStore.loadingCount++;
 
-            const response = (await API.getData(APIPath.USER_PROJECT_PERMISSIONS)) as UserPermissionsResponse;
-            ProjectPermissionsStore.loggedInUserPermissions = response.permissions.reduce(
+            const response = (await API.getData(APIPath.USER_PROJECT_PERMISSIONS)) as UserPermissionFromApi[];
+            ProjectPermissionsStore.loggedInUserPermissions = response.reduce(
                 (allPermissions: { [key: string]: UserPermission }, permission) => {
                     allPermissions[permission.projectPermsisionKey] = {
                         id: permission.projectPermissionId,

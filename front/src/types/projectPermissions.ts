@@ -14,10 +14,6 @@ export interface UserPermissionFromApi {
     projectPermsisionKey: string;
 }
 
-export interface UserPermissionsResponse {
-    permissions: UserPermissionFromApi[];
-}
-
 export enum UserPermissionKey {
     ProjectCreate = 'project-create',
     ProjectName = 'project-name',
