@@ -50,6 +50,7 @@ class VersionController extends CustomAbstractActionController
     public function create($data)
     {
         $name = trim(isset($data['name']) ? $data['name'] : '');
+        $name = str_replace(" ", "", $name);
         $billType = isset($data['billing_type']) ? $data['billing_type'] : null;
         $spotId = isset($data['spot_id']) ? $data['spot_id'] : null;
         $custom = isset($data['custom']) ? $data['custom'] : null;
@@ -142,6 +143,7 @@ class VersionController extends CustomAbstractActionController
     public function update($id, $data)
     {
         $name = trim(isset($data['name']) ? $data['name'] : '');
+        $name = str_replace(" ", "", $name);
         $billType = isset($data['billing_type']) ? $data['billing_type'] : null;
         $spotId = isset($data['spot_id']) ? $data['spot_id'] : null;
         $custom = isset($data['custom']) ? $data['custom'] : null;
