@@ -51,9 +51,12 @@ class BillingApproveController extends CustomAbstractActionController
                         $this->_em->persist($billing);
                         $this->_em->flush();
 
+                        $data = $this->_billingRepo->getById($id);
+
                         $response = array(
                             'status' => 1,
-                            'message' => 'Request successful.'
+                            'message' => 'Request successful.',
+                            'data' => $data,
                         );
                     } else {
                         $response = array(

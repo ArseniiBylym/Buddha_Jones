@@ -138,6 +138,293 @@ class ProjectController extends CustomAbstractActionController
     }
 
     public function get($projectId) {
+        $responseData = $this->getSingle($projectId);
+
+        if(count($responseData)) {
+            $response = array(
+                'status' => 1,
+                'message' => "Request successful",
+                'data' => $responseData
+            );
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Project not found'
+            );
+        }
+
+
+        if($response['status']==0) {
+            $this->getResponse()->setStatusCode(400);
+        }
+
+        return new JsonModel($response);
+    }
+
+    public function create($data)
+    {
+        $canCreateProject = $this->_usersRepo->extractPermission($this->_user_permission, 1, 'edit');
+        $canEditReleaseDate = $this->_usersRepo->extractPermission($this->_user_permission, 3, 'edit');
+        $canEditProjectName = $this->_usersRepo->extractPermission($this->_user_permission, 2, 'edit');
+        $canEditProjectCodeName = $this->_usersRepo->extractPermission($this->_user_permission, 31, 'edit');
+
+        if($canCreateProject) {
+            $customerId = (int)(isset($data['customer_id']) ? trim($data['customer_id']) : 0);
+            $projectName = trim(($canEditProjectName && !empty($data['name'])) ? $data['name'] : '');
+            $notes = trim(isset($data['notes']) ? $data['notes'] : '');
+            $projectCode = ($canEditProjectCodeName && !empty($data['project_code'])) ? $data['project_code'] : null;
+            $projectRelease = ($canEditReleaseDate && !empty($data['project_release'])) ? $data['project_release'] : null;
+            $users = json_decode(isset($data['user']) ? $data['user'] : null, true);
+
+            if ($customerId && ($projectName || $projectCode)) {
+                $customer = $this->_customerRepository->find($customerId);
+
+                if ($customer) {
+                    $project = new RediProject();
+                    $project->setCustomerId($customerId);
+
+                    if ($projectName) {
+                        $project->setProjectName($projectName);
+                    }
+
+                    if ($projectCode) {
+                        $project->setProjectCode($projectCode);
+                    }
+
+                    if ($projectRelease) {
+                        $projectRelease = new \DateTime($projectRelease);
+
+                        if ($projectRelease) {
+                            $project->setProjectRelease($projectRelease);
+                        }
+                    }
+
+                    if ($notes) {
+                        $project->setNotes($notes);
+                    }
+
+                    $project->setCreatedByUserId($this->_user_id);
+                    $this->_em->persist($project);
+                    $this->_em->flush();
+
+                    $projectId = $project->getId();
+
+                    if ($projectId && $users && count($users)) {
+                        foreach ($users as $user) {
+                            if (isset($user['id'], $user['role_id'])) {
+                                $projectUser = new RediProjectUser();
+                                $projectUser->setProjectId($projectId);
+                                $projectUser->setUserId($user['id']);
+                                $projectUser->setRoleId($user['role_id']);
+                                $this->_em->persist($projectUser);
+                            }
+                        }
+
+                        $this->_em->flush();
+                    }
+                    // project history
+                    if ($projectName && $projectCode) {
+                        $projectNameString = '"' . $projectName . '" (codename: "' . $projectCode . '")';
+                    } else if ($projectName) {
+                        $projectNameString = '"' . $projectName . '"';
+                    } else if ($projectCode) {
+                        $projectNameString = '"' . $projectCode . '"';
+                    }
+
+                    $historyMessage = 'Project ' . $projectNameString . ' created for client "' . $customer->getCustomerName() . '"';
+                    $projectHistory = new RediProjectHistory();
+                    $projectHistory->setProjectId($projectId);
+                    $projectHistory->setUserId($this->_user_id);
+                    $projectHistory->setMessage($historyMessage);
+                    $projectHistory->setCreatedAt(new \DateTime('now'));
+                    $this->_em->persist($projectHistory);
+                    $this->_em->flush();
+
+                    $data = $this->getSingle($projectId);
+                    $data['project_id'] = $projectId;
+
+                    $response = array(
+                        'status' => 1,
+                        'message' => 'Request successful.',
+                        'data' => $data,
+                    );
+                } else {
+                    $response = array(
+                        'status' => 0,
+                        'message' => 'Customer not found.'
+                    );
+                }
+            } else {
+                $response = array(
+                    'status' => 0,
+                    'message' => 'Please provide required data(project_name or project_code and customer_id).'
+                );
+            }
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Permission denied',
+            );
+        }
+
+        if ($response['status'] == 0) {
+            $this->getResponse()->setStatusCode(400);
+        }
+
+        return new JsonModel($response);
+    }
+
+    public function update($id, $data)
+    {
+        $canCreateProject = $this->_usersRepo->extractPermission($this->_user_permission, 1, 'edit');
+        $canEditReleaseDate = $this->_usersRepo->extractPermission($this->_user_permission, 3, 'edit');
+        $canEditProjectName = $this->_usersRepo->extractPermission($this->_user_permission, 2, 'edit');
+        $canEditProjectCodeName = $this->_usersRepo->extractPermission($this->_user_permission, 31, 'edit');
+
+        if($canCreateProject) {
+            $customerId = isset($data['customer_id']) ? (int)trim($data['customer_id']) : null;
+            $projectName = ($canEditProjectName && isset($data['name'])) ? trim($data['name']) : null;
+            $notes = isset($data['notes']) ? trim($data['notes']) : null;
+            $projectCode = ($canEditProjectCodeName && !empty($data['project_code'])) ? $data['project_code'] : null;
+            $projectRelease = ($canEditReleaseDate && !empty($data['project_release'])) ? $data['project_release'] : null;
+            $users = json_decode(isset($data['user']) ? $data['user'] : null, true);
+
+            $project = $this->_projectRepository->find($id);
+
+            if ($project) {
+                if ($customerId || $projectName || $projectCode || $notes) {
+                    if ($projectName || $projectCode) {
+                        if ($project->getProjectName() != $projectName || $project->getProjectCode() != $projectCode) {
+                            // project history
+                            if (!$projectName) {
+                                $projectName = $project->getProjectName();
+                            }
+
+                            if (!$projectCode) {
+                                $projectCode = $project->getProjectCode();
+                            }
+
+                            $projectNameString = '"' . $projectName . '"';
+
+                            if ($projectName && $projectCode) {
+                                $projectNameString = '"' . $projectName . '" (codename: "' . $projectCode . '")';
+                            }
+                            if ($projectCode) {
+                                $projectNameString = '"' . $projectCode . '"';
+                            }
+
+                            if ($projectName && $projectCode) {
+                                $projectNameString = '"' . $projectName . '" (codename: "' . $projectCode . '")';
+                            } else if ($projectName) {
+                                $projectNameString = '"' . $projectName . '"';
+                            } else if ($projectCode) {
+                                $projectNameString = '"' . $projectCode . '"';
+                            }
+
+                            $historyMessage = 'Project renamed to "' . $projectNameString . '" from "' . $project->getProjectName() . '"';
+                            $projectHistory = new RediProjectHistory();
+                            $projectHistory->setProjectId($id);
+                            $projectHistory->setMessage($historyMessage);
+                            $projectHistory->setCreatedAt(new \DateTime('now'));
+                            $this->_em->persist($projectHistory);
+                        }
+
+                        if ($projectName) {
+                            $project->setProjectName($projectName);
+                        }
+
+                        if ($projectCode) {
+                            $project->setProjectCode($projectCode);
+                        }
+                    }
+
+                    if ($customerId) {
+                        $customer = $this->_customerRepository->find($customerId);
+
+                        if ($customer) {
+                            if ($project->getCustomerId() != $customerId) {
+                                $previousCustomer = $this->_customerRepository->find($project->getCustomerId());
+
+                                // project history
+                                $historyMessage = 'Project customer changed to "' . $customer->getCustomerName() . '" from "' . $previousCustomer->getCustomerName() . '"';
+                                $projectHistory = new RediProjectHistory();
+                                $projectHistory->setProjectId($id);
+                                $projectHistory->setUserId($this->_user_id);
+                                $projectHistory->setMessage($historyMessage);
+                                $projectHistory->setCreatedAt(new \DateTime('now'));
+                                $this->_em->persist($projectHistory);
+                            }
+
+                            $project->setCustomerId($customerId);
+                        }
+                    }
+
+                    if ($notes) {
+                        $project->setNotes($notes);
+                    }
+
+                    if ($projectRelease) {
+                        $projectRelease = new \DateTime($projectRelease);
+
+                        if ($projectRelease) {
+                            $project->setProjectRelease($projectRelease);
+                        }
+                    }
+
+                    $this->_em->persist($project);
+                    $this->_em->flush();
+
+                    if ($users && count($users)) {
+                        $this->_projectRepo->deleteProjectUser($id);
+
+                        foreach ($users as $user) {
+                            if (isset($user['id'], $user['role_id'])) {
+                                $projectUser = new RediProjectUser();
+                                $projectUser->setProjectId($id);
+                                $projectUser->setUserId($user['id']);
+                                $projectUser->setRoleId($user['role']);
+                                $this->_em->persist($projectUser);
+                            }
+                        }
+
+                        $this->_em->flush();
+                    }
+
+                    $data = $this->getSingle($id);
+
+                    $response = array(
+                        'status' => 1,
+                        'message' => 'Project updated successfully.',
+                        'data' => $data
+                    );
+
+                } else {
+                    $response = array(
+                        'status' => 0,
+                        'message' => 'Please provide required data.'
+                    );
+                }
+            } else {
+                $response = array(
+                    'status' => 0,
+                    'message' => 'Project not found.'
+                );
+            }
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Permission denied',
+            );
+        }
+
+        if ($response['status'] == 0) {
+            $this->getResponse()->setStatusCode(400);
+        }
+
+        return new JsonModel($response);
+    }
+
+    private function getSingle($projectId) {
         $filter['project_id'] = $projectId;
         $filter['sort'] = 'id';
         $filter['detailed'] = $this->getRequest()->getQuery('detailed', 0);
@@ -246,287 +533,6 @@ class ProjectController extends CustomAbstractActionController
             $responseData = array_merge($responseData, $projectName);
         }
 
-        if(count($data)) {
-            $response = array(
-                'status' => 1,
-                'message' => "Request successful",
-                'data' => $responseData
-            );
-        } else {
-            $response = array(
-                'status' => 0,
-                'message' => 'Project not found'
-            );
-        }
-
-
-        if($response['status']==0) {
-            $this->getResponse()->setStatusCode(400);
-        }
-
-        return new JsonModel($response);
+        return $responseData;
     }
-
-
-    public function create($data)
-    {
-        $canCreateProject = $this->_usersRepo->extractPermission($this->_user_permission, 1, 'edit');
-        $canEditReleaseDate = $this->_usersRepo->extractPermission($this->_user_permission, 3, 'edit');
-        $canEditProjectName = $this->_usersRepo->extractPermission($this->_user_permission, 2, 'edit');
-        $canEditProjectCodeName = $this->_usersRepo->extractPermission($this->_user_permission, 31, 'edit');
-
-        if($canCreateProject) {
-            $customerId = (int)(isset($data['customer_id']) ? trim($data['customer_id']) : 0);
-            $projectName = trim(($canEditProjectName && !empty($data['name'])) ? $data['name'] : '');
-            $notes = trim(isset($data['notes']) ? $data['notes'] : '');
-            $projectCode = ($canEditProjectCodeName && !empty($data['project_code'])) ? $data['project_code'] : null;
-            $projectRelease = ($canEditReleaseDate && !empty($data['project_release'])) ? $data['project_release'] : null;
-            $users = json_decode(isset($data['user']) ? $data['user'] : null, true);
-
-            if ($customerId && ($projectName || $projectCode)) {
-                $customer = $this->_customerRepository->find($customerId);
-
-                if ($customer) {
-                    $project = new RediProject();
-                    $project->setCustomerId($customerId);
-
-                    if ($projectName) {
-                        $project->setProjectName($projectName);
-                    }
-
-                    if ($projectCode) {
-                        $project->setProjectCode($projectCode);
-                    }
-
-                    if ($projectRelease) {
-                        $projectRelease = new \DateTime($projectRelease);
-
-                        if ($projectRelease) {
-                            $project->setProjectRelease($projectRelease);
-                        }
-                    }
-
-                    if ($notes) {
-                        $project->setNotes($notes);
-                    }
-
-                    $project->setCreatedByUserId($this->_user_id);
-                    $this->_em->persist($project);
-                    $this->_em->flush();
-
-                    $projectId = $project->getId();
-
-                    if ($projectId && $users && count($users)) {
-                        foreach ($users as $user) {
-                            if (isset($user['id'], $user['role_id'])) {
-                                $projectUser = new RediProjectUser();
-                                $projectUser->setProjectId($projectId);
-                                $projectUser->setUserId($user['id']);
-                                $projectUser->setRoleId($user['role_id']);
-                                $this->_em->persist($projectUser);
-                            }
-                        }
-
-                        $this->_em->flush();
-                    }
-                    // project history
-                    if ($projectName && $projectCode) {
-                        $projectNameString = '"' . $projectName . '" (codename: "' . $projectCode . '")';
-                    } else if ($projectName) {
-                        $projectNameString = '"' . $projectName . '"';
-                    } else if ($projectCode) {
-                        $projectNameString = '"' . $projectCode . '"';
-                    }
-
-                    $historyMessage = 'Project ' . $projectNameString . ' created for client "' . $customer->getCustomerName() . '"';
-                    $projectHistory = new RediProjectHistory();
-                    $projectHistory->setProjectId($projectId);
-                    $projectHistory->setUserId($this->_user_id);
-                    $projectHistory->setMessage($historyMessage);
-                    $projectHistory->setCreatedAt(new \DateTime('now'));
-                    $this->_em->persist($projectHistory);
-                    $this->_em->flush();
-
-                    $response = array(
-                        'status' => 1,
-                        'message' => 'Request successful.',
-                        'data' => array(
-                            'project_id' => $projectId
-                        ),
-                    );
-                } else {
-                    $response = array(
-                        'status' => 0,
-                        'message' => 'Customer not found.'
-                    );
-                }
-            } else {
-                $response = array(
-                    'status' => 0,
-                    'message' => 'Please provide required data(project_name or project_code and customer_id).'
-                );
-            }
-        } else {
-            $response = array(
-                'status' => 0,
-                'message' => 'Permission denied',
-            );
-        }
-
-        if ($response['status'] == 0) {
-            $this->getResponse()->setStatusCode(400);
-        }
-
-        return new JsonModel($response);
-    }
-
-    public function update($id, $data)
-    {
-        $canCreateProject = $this->_usersRepo->extractPermission($this->_user_permission, 1, 'edit');
-        $canEditReleaseDate = $this->_usersRepo->extractPermission($this->_user_permission, 3, 'edit');
-        $canEditProjectName = $this->_usersRepo->extractPermission($this->_user_permission, 2, 'edit');
-        $canEditProjectCodeName = $this->_usersRepo->extractPermission($this->_user_permission, 31, 'edit');
-
-        if($canCreateProject) {
-            $customerId = isset($data['customer_id']) ? (int)trim($data['customer_id']) : null;
-            $projectName = ($canEditProjectName && isset($data['name'])) ? trim($data['name']) : null;
-            $notes = isset($data['notes']) ? trim($data['notes']) : null;
-            $projectCode = ($canEditProjectCodeName && !empty($data['project_code'])) ? $data['project_code'] : null;
-            $projectRelease = ($canEditReleaseDate && !empty($data['project_release'])) ? $data['project_release'] : null;
-            $users = json_decode(isset($data['user']) ? $data['user'] : null, true);
-
-            $project = $this->_projectRepository->find($id);
-
-            if ($project) {
-                if ($customerId || $projectName || $projectCode || $notes) {
-                    if ($projectName || $projectCode) {
-                        if ($project->getProjectName() != $projectName || $project->getProjectCode() != $projectCode) {
-                            // project history
-                            if (!$projectName) {
-                                $projectName = $project->getProjectName();
-                            }
-
-                            if (!$projectCode) {
-                                $projectCode = $project->getProjectCode();
-                            }
-
-                            $projectNameString = '"' . $projectName . '"';
-
-                            if ($projectName && $projectCode) {
-                                $projectNameString = '"' . $projectName . '" (codename: "' . $projectCode . '")';
-                            }
-                            if ($projectCode) {
-                                $projectNameString = '"' . $projectCode . '"';
-                            }
-
-                            if ($projectName && $projectCode) {
-                                $projectNameString = '"' . $projectName . '" (codename: "' . $projectCode . '")';
-                            } else if ($projectName) {
-                                $projectNameString = '"' . $projectName . '"';
-                            } else if ($projectCode) {
-                                $projectNameString = '"' . $projectCode . '"';
-                            }
-
-                            $historyMessage = 'Project renamed to "' . $projectNameString . '" from "' . $project->getProjectName() . '"';
-                            $projectHistory = new RediProjectHistory();
-                            $projectHistory->setProjectId($id);
-                            $projectHistory->setMessage($historyMessage);
-                            $projectHistory->setCreatedAt(new \DateTime('now'));
-                            $this->_em->persist($projectHistory);
-//                        $this->_em->flush();
-                        }
-
-                        if ($projectName) {
-                            $project->setProjectName($projectName);
-                        }
-
-                        if ($projectCode) {
-                            $project->setProjectCode($projectCode);
-                        }
-                    }
-
-                    if ($customerId) {
-                        $customer = $this->_customerRepository->find($customerId);
-
-                        if ($customer) {
-                            if ($project->getCustomerId() != $customerId) {
-                                $previousCustomer = $this->_customerRepository->find($project->getCustomerId());
-
-                                // project history
-                                $historyMessage = 'Project customer changed to "' . $customer->getCustomerName() . '" from "' . $previousCustomer->getCustomerName() . '"';
-                                $projectHistory = new RediProjectHistory();
-                                $projectHistory->setProjectId($id);
-                                $projectHistory->setUserId($this->_user_id);
-                                $projectHistory->setMessage($historyMessage);
-                                $projectHistory->setCreatedAt(new \DateTime('now'));
-                                $this->_em->persist($projectHistory);
-//                            $this->_em->flush();
-                            }
-
-                            $project->setCustomerId($customerId);
-                        }
-                    }
-
-                    if ($notes) {
-                        $project->setNotes($notes);
-                    }
-
-                    if ($projectRelease) {
-                        $projectRelease = new \DateTime($projectRelease);
-
-                        if ($projectRelease) {
-                            $project->setProjectRelease($projectRelease);
-                        }
-                    }
-
-                    $this->_em->persist($project);
-                    $this->_em->flush();
-
-                    if ($users && count($users)) {
-                        $this->_projectRepo->deleteProjectUser($id);
-
-                        foreach ($users as $user) {
-                            if (isset($user['id'], $user['role_id'])) {
-                                $projectUser = new RediProjectUser();
-                                $projectUser->setProjectId($id);
-                                $projectUser->setUserId($user['id']);
-                                $projectUser->setRoleId($user['role']);
-                                $this->_em->persist($projectUser);
-                            }
-                        }
-
-                        $this->_em->flush();
-                    }
-
-                    $response = array(
-                        'status' => 1,
-                        'message' => 'Project updated successfully.'
-                    );
-
-                } else {
-                    $response = array(
-                        'status' => 0,
-                        'message' => 'Please provide required data.'
-                    );
-                }
-            } else {
-                $response = array(
-                    'status' => 0,
-                    'message' => 'Project not found.'
-                );
-            }
-        } else {
-            $response = array(
-                'status' => 0,
-                'message' => 'Permission denied',
-            );
-        }
-
-        if ($response['status'] == 0) {
-            $this->getResponse()->setStatusCode(400);
-        }
-
-        return new JsonModel($response);
-    }
-
 }

@@ -54,12 +54,7 @@ class UsersController extends CustomAbstractActionController
 
     public function get($id)
     {
-        $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
-        $user = $this->_usersRepo->getUser($id, $userAccess);
-
-        if ($user && isset($user['image']) && $user['image']) {
-            $user['image'] = $this->_siteUrl . 'thumb/profile_image/' . $user['image'];
-        }
+        $user = $this->getSingle($id);
 
         $response = array(
             'status' => 1,
@@ -134,12 +129,13 @@ class UsersController extends CustomAbstractActionController
                             }
                         }
 
+                        $data = $this->getSingle($userId);
+                        $data['user_id'] = $userId;
+
                         $response = array(
                             'status' => 1,
                             'message' => 'User created successfully',
-                            'data' => array(
-                                'user_id' => $userId
-                            )
+                            'data' => $data,
                         );
                     } else {
                         $response = array(
@@ -278,11 +274,8 @@ class UsersController extends CustomAbstractActionController
                                 $this->_em->persist($user);
                                 $this->_em->flush();
 
-                                $updatedUser = $this->_usersRepo->getUser($id, $userAccess);
+                                $updatedUser = $this->getSingle($id);
 
-                                if($updatedUser && isset($updatedUser['image']) && $updatedUser['image']) {
-                                    $updatedUser['image'] = $this->_siteUrl . 'thumb/profile_image/' . $updatedUser['image'];
-                                }
                                 $response = array(
                                     'status' => 1,
                                     'message' => 'User updated successfully',
@@ -356,6 +349,17 @@ class UsersController extends CustomAbstractActionController
         }
 
         return new JsonModel($response);
+    }
+
+    private function getSingle($id) {
+        $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
+        $user = $this->_usersRepo->getUser($id, $userAccess);
+
+        if ($user && isset($user['image']) && $user['image']) {
+            $user['image'] = $this->_siteUrl . 'thumb/profile_image/' . $user['image'];
+        }
+
+        return $user;
     }
 
     private function _save_base64_image($base64_image_string, $output_file_without_extentnion, $path_with_end_slash = "")

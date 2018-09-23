@@ -78,9 +78,12 @@ class CustomerPriceController extends CustomAbstractActionController
                 $this->_em->persist($customerPrice);
                 $this->_em->flush();
 
+                $data = $this->_customerRepo->getCustomerPriceById($customerId, $activityId);
+
                 $response = array(
                     'status' => 1,
-                    'message' => 'Request successful.'
+                    'message' => 'Request successful.',
+                    'data' => $data,
                 );
             }
         } else {

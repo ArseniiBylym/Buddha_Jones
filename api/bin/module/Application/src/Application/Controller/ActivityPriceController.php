@@ -50,9 +50,12 @@ class ActivityPriceController extends CustomAbstractActionController
                     $this->_em->persist($customerPrice);
                     $this->_em->flush();
 
+                    $data = $this->_activityRepo->getById($activityId);
+
                     $response = array(
                         'status' => 1,
-                        'message' => 'Request successful.'
+                        'message' => 'Request successful.',
+                        'data' => $data
                     );
                 } else {
                     $response = array(

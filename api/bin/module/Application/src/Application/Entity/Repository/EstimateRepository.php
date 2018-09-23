@@ -451,6 +451,10 @@ class EstimateRepository extends EntityRepository
             $dqlFilter[] = " et.active=:active ";
         }
 
+        if (!empty($filter['id'])) {
+            $dqlFilter[] = " et.id=:id ";
+        }
+
         if (count($dqlFilter)) {
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
@@ -461,6 +465,10 @@ class EstimateRepository extends EntityRepository
 
         if (isset($filter['active']) && $filter['active']) {
             $query->setParameter('active', $filter['active']);
+        }
+
+        if (!empty($filter['id'])) {
+            $query->setParameter('id', $filter['id']);
         }
 
         $result = $query->getArrayResult();

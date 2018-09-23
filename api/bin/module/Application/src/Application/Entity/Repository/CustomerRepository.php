@@ -304,4 +304,23 @@ class CustomerRepository extends EntityRepository
 
         return $data;
     }
+
+    public function getCustomerPriceById($customerId, $activityId)
+    {
+        $dql = "SELECT  
+                  cp
+                FROM \Application\Entity\RediCustomerPrice cp
+                WHERE 
+                    cp.customerId=:customer_id
+                    AND cp.activityId=:activity_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('customer_id', $customerId);
+        $query->setParameter('activity_id', $activityId);
+        $query->setMaxResults(1);
+
+        $data = $query->getArrayResult();
+
+        return (!empty($data[0]) ? $data[0] : null);
+    }
 }

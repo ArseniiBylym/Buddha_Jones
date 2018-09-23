@@ -435,7 +435,7 @@ class ProjectRepository extends EntityRepository
 
     public function getCampaignByProjectId($projectId)
     {
-        $dql = "SELECT ptc.id AS projectCampaignId, c.id AS campaignId, c.campaignName, ptc.firstPointOfContactId,
+        $dql = "SELECT ptc.id AS id, ptc.id AS projectCampaignId, c.id AS campaignId, c.campaignName, ptc.firstPointOfContactId,
                 ptc.requestWritingTeam, ptc.writingTeamNotes,
                 ptc.requestMusicTeam, ptc.musicTeamNotes, ptc.note,
                 ptc.budget, ptc.budgetNote, ptc.por, ptc.invoiceContact, ptc.materialReceiveDate
@@ -724,7 +724,7 @@ class ProjectRepository extends EntityRepository
     {
         $dql = "SELECT v.id, v.versionName, v.custom,
                 sv.versionStatusId, vs.name AS versionStatusName, 
-                sv.versionNote
+                sv.versionNote, sv.id AS spotVersionId
                 FROM \Application\Entity\RediSpotVersion sv
                 INNER JOIN \Application\Entity\RediVersion v
                   WITH sv.versionId=v.id
@@ -736,6 +736,25 @@ class ProjectRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('spot_id', $spotId);
+        $data =  $query->getArrayResult();
+
+        foreach($data as &$row) {
+            $row['editors'] = $this->getSpotVersionEditors($row['spotVersionId']);
+        }
+
+        return $data;
+    }
+
+    public function getSpotVersionEditors($spotVersionId) {
+        $dql = "SELECT u.id, u.username, u.email, u.firstName, u.lastName, u.initials, u.typeId
+                FROM \Application\Entity\RediSpotVersionEditor sve
+                INNER JOIN \Application\Entity\RediUser u
+                  WITH sve.userId = u.id
+                WHERE
+                  sve.spotVersionId=:spot_version_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('spot_version_id', $spotVersionId);
         $data =  $query->getArrayResult();
 
         return $data;

@@ -4857,6 +4857,7 @@ Required | Parameter | Type | Default | Description
 **true** | version_id | int | null | Version ID
 false | version_status_id | int | null | Version status id
 false | version_note | string | null | Version ID
+false | editors | JSON | null | JSON encoded string of user list as editors
 
 
 ## Delete Version to Spot association
