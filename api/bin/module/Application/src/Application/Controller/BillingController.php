@@ -24,10 +24,8 @@ class BillingController extends CustomAbstractActionController
 
         $filter['sort'] = trim($this->getRequest()->getQuery('sort', ''));
         $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
-//        $filter['spot_id'] = (int)trim($this->getRequest()->getQuery('spot_id', 0));
         $filter['project_id'] = (int)trim($this->getRequest()->getQuery('project_id', 0));
         $filter['campaign_id'] = (int)trim($this->getRequest()->getQuery('campaign_id', 0));
-//        $filter['work_type_id'] = (int)trim($this->getRequest()->getQuery('work_type_id', 0));
         $filter['status_id'] = (int)trim($this->getRequest()->getQuery('status_id', 0));
         $filter['customer_id'] = (int)trim($this->getRequest()->getQuery('customer_id', 0));
         $filter['approver_id'] = (int)trim($this->getRequest()->getQuery('approver_id', 0));
@@ -50,7 +48,7 @@ class BillingController extends CustomAbstractActionController
 
     public function get($billId)
     {
-        $data = $this->_billingRepo->getById($billId);
+        $data = $this->getSingle($billId);
 
         $response = array(
             'status' => 1,
@@ -142,29 +140,31 @@ class BillingController extends CustomAbstractActionController
                 }
             }
 
-//            $projectManager = $this->_billingRepo->getManagerByProjectAndCampaign($projectId, $campaignId);
-//            $projectProducer = $this->_billingRepo->getProducerByProjectAndCampaign($projectId, $campaignId);
+            $projectCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectId, 'campaignId' => $campaignId));
 
-            $projectCampaignUser = $this->_campaignRepo->getCampaignProjectPeople($projectId, $campaignId);
+            if($projectCampaign) {
+                $projectCampaignUser = $this->_campaignRepo->getCampaignProjectPeople('user', $projectCampaign->getId());
 
-            foreach($projectCampaignUser as $user) {
-                $billingApprovel = new RediBillingApproval();
-                $billingApprovel->setBillId($billingId);
-                $billingApprovel->setUserId($user['id']);
-                $billingApprovel->setApproved(0);
+                foreach($projectCampaignUser as $user) {
+                    $billingApprovel = new RediBillingApproval();
+                    $billingApprovel->setBillId($billingId);
+                    $billingApprovel->setUserId($user['id']);
+                    $billingApprovel->setApproved(0);
 
-                $this->_em->persist($billingApprovel);
+                    $this->_em->persist($billingApprovel);
+                }
+
+                $this->_em->flush();
             }
 
-            $this->_em->flush();
-
+            $data = array_merge($this->getSingle($billingId), array(
+                'billing_id' => $billingId,
+            ));
 
             $response = array(
                 'status' => 1,
                 'message' => 'Request successful.',
-                'data' => array(
-                    'billing_id' => $billingId
-                )
+                'data' => $data,
             );
         } else {
             $response = array(
@@ -178,5 +178,9 @@ class BillingController extends CustomAbstractActionController
         }
 
         return new JsonModel($response);
+    }
+
+    private function getSingle($billId) {
+        return $this->_billingRepo->getById($billId);
     }
 }

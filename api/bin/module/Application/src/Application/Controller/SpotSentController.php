@@ -58,19 +58,7 @@ class SpotSentController extends CustomAbstractActionController
 
     public function get($spotSentId)
     {
-        $data = $this->_spotRepo->searchSpotSent(array("id" => $spotSentId));
-
-        if(count($data)) {
-            $data = $data[0];
-
-            foreach ($data['projectSpotVersion'] as &$projectSpotVersion) {
-                // set project name
-                $projectName = $this->_projectRepo->getProjectName($projectSpotVersion['projectId'], $this->_user_type_id, true);
-                $projectSpotVersion = array_merge($projectSpotVersion, $projectName);
-
-                unset($projectSpotVersion['projectCode']);
-            }
-        }
+        $data = $this->getSingle($spotSentId);
 
         $response = array(
             'status' => 1,
@@ -191,12 +179,14 @@ class SpotSentController extends CustomAbstractActionController
                 }
             }
 
+            $data = array_merge($this->getSingle($spotSentId), array(
+                'spot_sent_id' => $spotSentId
+            ));
+
             $response = array(
                 'status' => 1,
                 'message' => 'Request successful.',
-                'data' => array(
-                    'spot_sent_id' => $spotSentId
-                ),
+                'data' => $data,
             );
         } else {
             $response = array(
@@ -376,12 +366,14 @@ class SpotSentController extends CustomAbstractActionController
                     }
                 }
 
+                $data = array_merge($this->getSingle($id), array(
+                    'spot_sent_id' => $id
+                ));
+
                 $response = array(
                     'status' => 1,
                     'message' => 'Request successful.',
-                    'data' => array(
-                        'spot_sent_id' => $spotSentId
-                    ),
+                    'data' => $data,
                 );
             } else {
                 $response = array(
@@ -427,5 +419,24 @@ class SpotSentController extends CustomAbstractActionController
         }
 
         return new JsonModel($response);
+    }
+
+    private function getSingle($spotSentId) {
+        $searchResult = $this->_spotRepo->searchSpotSent(array("id" => $spotSentId));
+        $data = null;
+
+        if(count($searchResult)) {
+            $data = $searchResult[0];
+
+            foreach ($data['projectSpotVersion'] as &$projectSpotVersion) {
+                // set project name
+                $projectName = $this->_projectRepo->getProjectName($projectSpotVersion['projectId'], $this->_user_type_id, true);
+                $projectSpotVersion = array_merge($projectSpotVersion, $projectName);
+
+                unset($projectSpotVersion['projectCode']);
+            }
+        }
+
+        return $data;
     }
 }

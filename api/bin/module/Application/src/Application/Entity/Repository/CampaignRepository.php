@@ -20,7 +20,7 @@ class CampaignRepository extends EntityRepository
         parent::__construct($entityManager, $classMetaData);
     }
 
-    public function search($projectId, $search = '', $offset = 0, $length = 10)
+    public function search($filter=array(), $offset = 0, $length = 10)
     {
         $dql = "SELECT DISTINCT a 
                 FROM \Application\Entity\RediCampaign a 
@@ -29,12 +29,16 @@ class CampaignRepository extends EntityRepository
 
         $dqlFilter = [];
 
-        if ($projectId) {
-            $dqlFilter[] = "ptc.projectId= " . (int)$projectId;
+        if (!empty($filter['project_id'])) {
+            $dqlFilter[] = "ptc.projectId= " . (int)$filter['project_id'];
         }
 
-        if ($search) {
-            $dqlFilter[] = "(a.campaignName LIKE '%" . $search . "%' )";
+        if (!empty($filter['campaign_id'])) {
+            $dqlFilter[] = "ptc.campaignId= " . (int)$filter['campaign_id'];
+        }
+
+        if (!empty($filter['search'])) {
+            $dqlFilter[] = "(a.campaignName LIKE '%" . $filter['search'] . "%' )";
         }
 
         if(count($dqlFilter)) {
@@ -119,7 +123,7 @@ class CampaignRepository extends EntityRepository
         return $result;
     }
 
-    public function searchCount($projectId, $search = '')
+    public function searchCount($filter = array())
     {
         $dql = "SELECT  COUNT(DISTINCT a.id) AS total_count 
                 FROM \Application\Entity\RediCampaign a 
@@ -128,12 +132,16 @@ class CampaignRepository extends EntityRepository
 
         $dqlFilter = [];
 
-        if ($projectId) {
-            $dqlFilter[] = "ptc.projectId= " . (int)$projectId;
+        if (!empty($filter['project_id'])) {
+            $dqlFilter[] = "ptc.projectId= " . (int)$filter['project_id'];
         }
 
-        if ($search) {
-            $dqlFilter[] = "(a.campaignName LIKE '%" . $search . "%' )";
+        if (!empty($filter['campaign_id'])) {
+            $dqlFilter[] = "ptc.campaignId= " . (int)$filter['campaign_id'];
+        }
+
+        if (!empty($filter['search'])) {
+            $dqlFilter[] = "(a.campaignName LIKE '%" . $filter['search'] . "%' )";
         }
 
         if(count($dqlFilter)) {

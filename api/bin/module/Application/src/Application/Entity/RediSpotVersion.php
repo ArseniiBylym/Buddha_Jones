@@ -15,9 +15,16 @@ class RediSpotVersion
     /**
      * @var integer
      *
-     * @ORM\Column(name="spot_id", type="integer", nullable=false)
+     * @ORM\Column(name="id", type="bigint", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="spot_id", type="integer", nullable=false)
      */
     private $spotId;
 
@@ -25,8 +32,6 @@ class RediSpotVersion
      * @var integer
      *
      * @ORM\Column(name="version_id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      */
     private $versionId;
 
@@ -52,6 +57,16 @@ class RediSpotVersion
     private $billingType;
 
 
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
     /**
      * Set spotId

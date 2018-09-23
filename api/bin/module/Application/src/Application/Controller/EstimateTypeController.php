@@ -46,12 +46,12 @@ class EstimateTypeController extends CustomAbstractActionController
 
             $estimateTypeId = $estimateType->getId();
 
+            $data = $this->getSingle($estimateTypeId);
+
             $response = array(
                 'status' => 1,
                 'message' => 'Request successful.',
-                'data' => array(
-                    'id' => $estimateTypeId
-                ),
+                'data' => $data,
             );
         } else {
             $response = array(
@@ -87,9 +87,12 @@ class EstimateTypeController extends CustomAbstractActionController
             $this->_em->persist($estimateType);
             $this->_em->flush();
 
+            $data = $this->getSingle($id);
+
             $response = array(
                 'status' => 1,
-                'message' => 'Request successful.'
+                'message' => 'Request successful.',
+                'data' => $data,
             );
         } else {
             $response = array(
@@ -105,4 +108,11 @@ class EstimateTypeController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
+    private function getSingle($id) {
+        $filter['id'] = $id;
+
+        $data = $this->_estimateRepo->searchEstimateType($filter);
+
+        return (!empty($data[0]) ? $data[0] : null);
+    }
 }

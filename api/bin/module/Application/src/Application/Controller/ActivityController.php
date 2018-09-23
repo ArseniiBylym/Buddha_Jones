@@ -94,9 +94,7 @@ class ActivityController extends CustomAbstractActionController
                 $response = array(
                     'status' => 1,
                     'message' => 'Request successful.',
-                    'data' => array(
-                        'activity_id' => $activityId
-                    ),
+                    'data' => $this->_activityRepo->getActivityByActivityId($activityId),
                 );
             } else {
                 $response = array(
@@ -227,7 +225,8 @@ class ActivityController extends CustomAbstractActionController
 
                 $response = array(
                     'status' => 1,
-                    'message' => 'Activity updated successfully.'
+                    'message' => 'Activity updated successfully.',
+                    'data' => $this->_activityRepo->getActivityByActivityId($id)
                 );
 
             } else {
@@ -250,4 +249,16 @@ class ActivityController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
+    private function getSingle($id) {
+        $filter['customer_id'] = (int)trim($this->getRequest()->getQuery('customer_id', 0));
+        $filter['id'] = (int)trim($this->getRequest()->getQuery('id', 0));
+
+        if($filter['customer_id']) {
+            $data = $this->_activityRepo->searchWithPrice($filter);
+        } else {
+            $data = $this->_activityRepo->search($filter);
+        }
+
+        return $data;
+    }
 }

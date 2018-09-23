@@ -37,6 +37,10 @@ class VersionRepository extends EntityRepository
             $dqlFilter[] = " a.custom = :custom ";
         }
 
+        if(!empty($filter['id'])) {
+            $dqlFilter[] = " a.id = :id ";
+        }
+
         if(count($dqlFilter)) {
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
@@ -47,6 +51,10 @@ class VersionRepository extends EntityRepository
 
         if(isset($filter['custom']) && $filter['custom'] !== null) {
             $query->setParameter('custom', $filter['custom']);
+        }
+
+        if(!empty($filter['id'])) {
+            $query->setParameter('id', $filter['id']);
         }
 
         $query->setFirstResult($offset);

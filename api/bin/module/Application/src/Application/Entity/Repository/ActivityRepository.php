@@ -23,10 +23,10 @@ class ActivityRepository extends EntityRepository
 
     public function search($filter)
     {
-        $dql = "SELECT a.id, a.name, a.descriptionRequired, a.billable, 
+        $dql = "SELECT a.id, a.name, a.descriptionRequired, a.billable,
                     a.projectCampaignRequired, a.projectCampaignSpotVersionRequired,
                     a.filesIncluded, a.status, a.allowedInFuture
-                FROM \Application\Entity\RediActivity a 
+                FROM \Application\Entity\RediActivity a
                 LEFT JOIN \Application\Entity\RediActivityToType att
                   WITH att.activityId=a.id
                 LEFT JOIN \Application\Entity\RediActivityToUserType atut
@@ -64,7 +64,7 @@ class ActivityRepository extends EntityRepository
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " GROUP BY a.id 
+        $dql .= " GROUP BY a.id
                 ORDER BY a.name ASC, at.activityType ASC ";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -97,10 +97,10 @@ class ActivityRepository extends EntityRepository
 
     public function searchWithPrice($filter)
     {
-        $dql = "SELECT a.id, a.name, a.descriptionRequired, a.billable, 
+        $dql = "SELECT a.id, a.name, a.descriptionRequired, a.billable,
                     a.projectCampaignRequired, a.projectCampaignSpotVersionRequired,
                     a.filesIncluded, a.status, a.allowedInFuture, cp.price
-                FROM \Application\Entity\RediActivity a 
+                FROM \Application\Entity\RediActivity a
                 LEFT JOIN \Application\Entity\RediActivityToType att
                   WITH att.activityId=a.id
                 LEFT JOIN \Application\Entity\RediActivityType at
@@ -175,9 +175,9 @@ class ActivityRepository extends EntityRepository
     public function searchCount($filter)
     {
         $dql = "SELECT COUNT(DISTINCT a.id) AS total_count
-                FROM \Application\Entity\RediActivity a 
+                FROM \Application\Entity\RediActivity a
                 LEFT JOIN \Application\Entity\RediActivityToType att
-                  WITH att.activityId=a.id  
+                  WITH att.activityId=a.id
                 LEFT JOIN \Application\Entity\RediActivityToUserType atut
                   WITH atut.activityId=a.id";
 
@@ -234,10 +234,54 @@ class ActivityRepository extends EntityRepository
         return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
     }
 
+    public function getActivityByActivityId($activityId)
+    {
+        $dql = "SELECT a.id, a.name, a.descriptionRequired, a.billable,
+                a.projectCampaignRequired, a.projectCampaignSpotVersionRequired,
+                a.filesIncluded, a.status, a.allowedInFuture
+            FROM \Application\Entity\RediActivity a
+            LEFT JOIN \Application\Entity\RediActivityToType att
+            WITH att.activityId=a.id
+            LEFT JOIN \Application\Entity\RediActivityToUserType atut
+            WITH atut.activityId=a.id
+            LEFT JOIN \Application\Entity\RediActivityType at
+            WITH at.id=att.typeId ";
+        $dql .= " WHERE a.id = :activity_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('activity_id', $activityId);
+        $query->setMaxResults(1);
+        $data = $query->getArrayResult();
+
+        if(isset($data[0])) {
+            $response = $data[0];
+            $response['type'] = $this->getActivityTypeByActivityId($activityId);
+            $response['userType'] = $this->getUserTypeByActivityId($activityId);
+        } else {
+            $response = null;
+        }
+
+        return $response;
+    }
+
+    public function getById($activityId)
+    {
+        $dql = "SELECT a
+            FROM \Application\Entity\RediActivity a
+            WHERE a.id = :activity_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('activity_id', $activityId);
+        $query->setMaxResults(1);
+        $data = $query->getArrayResult();
+
+        return (!empty($data[0]) ? $data[0] : null);
+    }
+
     public function getAllActivityType()
     {
-        $dql = "SELECT a 
-                FROM \Application\Entity\RediActivityType a 
+        $dql = "SELECT a
+                FROM \Application\Entity\RediActivityType a
                 ORDER BY a.id ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -249,7 +293,7 @@ class ActivityRepository extends EntityRepository
         $dql = "SELECT at
                 FROM \Application\Entity\RediActivityToType att
                 INNER JOIN \Application\Entity\RediActivityType at
-                  WITH at.id=att.typeId 
+                  WITH at.id=att.typeId
                 WHERE att.activityId=:activity_id
                 GROUP BY at.id
                 ORDER BY at.activityType ASC";
@@ -264,7 +308,7 @@ class ActivityRepository extends EntityRepository
         $dql = "SELECT ut
                 FROM \Application\Entity\RediActivityToUserType atut
                 INNER JOIN \Application\Entity\RediUserType ut
-                  WITH ut.id=atut.userTypeId 
+                  WITH ut.id=atut.userTypeId
                 WHERE atut.activityId=:activity_id
                 GROUP BY ut.id
                 ORDER BY ut.id ASC";

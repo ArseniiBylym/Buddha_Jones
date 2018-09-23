@@ -122,12 +122,14 @@ class CustomerContactController extends CustomAbstractActionController
                     $this->_em->flush();
                 }
 
+                $data = array_merge($this->_customerRepo->getCustomerContactById($customerContactId), array(
+                    'customer_contact_id' => $customerContactId
+                ));
+
                 $response = array(
                     'status' => 1,
                     'message' => 'Request successful.',
-                    'data' => array(
-                        'customer_contact_id' => $customerContactId
-                    ),
+                    'data' => $data,
                 );
             } else {
                 $response = array(
@@ -234,9 +236,14 @@ class CustomerContactController extends CustomAbstractActionController
                     $this->_em->flush();
                 }
 
+                $data = array_merge($this->_customerRepo->getCustomerContactById($id), array(
+                    'customer_contact_id' => $id
+                ));
+
                 $response = array(
                     'status' => 1,
-                    'message' => 'Request successful.'
+                    'message' => 'Request successful.',
+                    'data' => $data,
                 );
             } else {
                 $response = array(
@@ -332,9 +339,14 @@ class CustomerContactController extends CustomAbstractActionController
                     $this->_em->flush();
                 }
 
+                $data = array_merge($this->_customerRepo->getCustomerContactById($id), array(
+                    'customer_contact_id' => $id
+                ));
+
                 $response = array(
                     'status' => 1,
-                    'message' => 'Request successful.'
+                    'message' => 'Request successful.',
+                    'data' => $data,
                 );
             } else {
                 $response = array(

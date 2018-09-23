@@ -78,49 +78,9 @@ class SpotController extends CustomAbstractActionController
     public function get($spotId)
     {
         $canViewSpot = $this->_usersRepo->extractPermission($this->_user_permission, 22, 'view_or_edit');
-        $canViewFirstRevisionCost = $this->_usersRepo->extractPermission($this->_user_permission, 23, 'view_or_edit');
-        $canViewInternalDeadline = $this->_usersRepo->extractPermission($this->_user_permission, 24, 'view_or_edit');
-        $canViewClientDeadline = $this->_usersRepo->extractPermission($this->_user_permission, 25, 'view_or_edit');
-        $canViewSpotRevision = $this->_usersRepo->extractPermission($this->_user_permission, 26, 'view_or_edit');
-        $canViewSpotGraphicsRevision = $this->_usersRepo->extractPermission($this->_user_permission, 27, 'view_or_edit');
 
         if($canViewSpot) {
-            $data = $this->_spotRepo->getById($spotId);
-
-            if($data) {
-                $projectCampaign = $this->_projectToCampaignRepository->find($data['projectCampaignId']);
-
-                if($projectCampaign) {
-                    $data['projectId'] = $projectCampaign->getProjectId();
-                    $data['campaignId'] = $projectCampaign->getCampaignId();
-                }
-
-                if (isset($data['id'])) {
-                    $data['id'] = (int)$data['id'];
-                }
-
-                if(!$canViewFirstRevisionCost) {
-                    unset($data['firstRevisionCost']);
-                    unset($data['billingType']);
-                    unset($data['billingNote']);
-                }
-
-                if(!$canViewInternalDeadline) {
-                    unset($data['internalDeadline']);
-                }
-
-                if(!$canViewClientDeadline) {
-                    unset($data['clientDeadline']);
-                }
-
-                if(!$canViewSpotRevision) {
-                    unset($data['revisions']);
-                }
-
-                if(!$canViewSpotGraphicsRevision) {
-                    unset($data['graphicsRevisions']);
-                }
-            }
+            $data = $this->getSingle($spotId);
 
             $response = array(
                 'status' => 1,
@@ -210,12 +170,14 @@ class SpotController extends CustomAbstractActionController
 
                     $this->_em->flush();
 
+                    $spotId = $spot->getId();
+                    $data = $this->getSingle($spotId);
+                    $data['spot_id'] = $spotId;
+
                     $response = array(
                         'status' => 1,
                         'message' => 'Request successful.',
-                        'data' => array(
-                            'spot_id' => $spot->getId()
-                        ),
+                        'data' => $data,
                     );
                 } else {
                     $response = array(
@@ -322,9 +284,14 @@ class SpotController extends CustomAbstractActionController
                 $this->_em->persist($spot);
                 $this->_em->flush();
 
+                $spotId = $spot->getId();
+                $data = $this->getSingle($spotId);
+                $data['spot_id'] = $spotId;
+
                 $response = array(
                     'status' => 1,
-                    'message' => 'Request successful.'
+                    'message' => 'Request successful.',
+                    'data' => $data,
                 );
             } else {
                 $response = array(
@@ -394,4 +361,56 @@ class SpotController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
+    private function getSingle($spotId) {
+        $canViewSpot = $this->_usersRepo->extractPermission($this->_user_permission, 22, 'view_or_edit');
+        $canViewFirstRevisionCost = $this->_usersRepo->extractPermission($this->_user_permission, 23, 'view_or_edit');
+        $canViewInternalDeadline = $this->_usersRepo->extractPermission($this->_user_permission, 24, 'view_or_edit');
+        $canViewClientDeadline = $this->_usersRepo->extractPermission($this->_user_permission, 25, 'view_or_edit');
+        $canViewSpotRevision = $this->_usersRepo->extractPermission($this->_user_permission, 26, 'view_or_edit');
+        $canViewSpotGraphicsRevision = $this->_usersRepo->extractPermission($this->_user_permission, 27, 'view_or_edit');
+
+        $data = array();
+
+        if($canViewSpot) {
+            $data = $this->_spotRepo->getById($spotId);
+
+            if($data) {
+                $projectCampaign = $this->_projectToCampaignRepository->find($data['projectCampaignId']);
+
+                if($projectCampaign) {
+                    $data['projectId'] = $projectCampaign->getProjectId();
+                    $data['campaignId'] = $projectCampaign->getCampaignId();
+                }
+
+                if (isset($data['id'])) {
+                    $data['id'] = (int)$data['id'];
+                }
+
+                if(!$canViewFirstRevisionCost) {
+                    unset($data['firstRevisionCost']);
+                    unset($data['billingType']);
+                    unset($data['billingNote']);
+                }
+
+                if(!$canViewInternalDeadline) {
+                    unset($data['internalDeadline']);
+                }
+
+                if(!$canViewClientDeadline) {
+                    unset($data['clientDeadline']);
+                }
+
+                if(!$canViewSpotRevision) {
+                    unset($data['revisions']);
+                }
+
+                if(!$canViewSpotGraphicsRevision) {
+                    unset($data['graphicsRevisions']);
+                }
+            }
+        }
+
+        return $data;
+            
+    }
 }

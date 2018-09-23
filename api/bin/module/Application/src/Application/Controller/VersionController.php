@@ -113,14 +113,16 @@ class VersionController extends CustomAbstractActionController
 
                 $this->_em->flush();
 
+                $data = array_merge($this->getSingle($versionId), array(
+                    'id' => $versionId,
+                    'versionName' => $name,
+                    'custom' => $custom,
+                ));
+
                 $response = array(
                     'status' => 1,
                     'message' => 'Request successful.',
-                    'data' => array(
-                        'id' => $versionId,
-                        'versionName' => $name,
-                        'custom' => $custom,
-                    ),
+                    'data' => $data,
                 );
             }
         } else {
@@ -158,9 +160,9 @@ class VersionController extends CustomAbstractActionController
                     // check for unique name
                     $existingVersion = $this->_versionRepository->findOneBy(array('versionName' => $name));
 
-                    if($existingVersion->getId() != $id) {
+                    if(!$existingVersion || $existingVersion->getId() != $id) {
                         // check if version is already used for any time entry or not
-                        $versionExistsInTimeEntry = $this->_timeEntryFileRepository->findOneBy(array('versionId' => $id));
+                        $versionExistsInTimeEntry = $this->_timeEntryFileRepository->findOneBy(array('id' => $id));
 
                         if(!$versionExistsInTimeEntry) {
                             $version->setVersionName($name);
@@ -204,12 +206,14 @@ class VersionController extends CustomAbstractActionController
 
                 $this->_em->flush();
 
+                $data = array_merge($this->getSingle($id), array(
+                    'version_id' => (int)$id,
+                ));
+
                 $response = array(
                     'status' => 1,
                     'message' => 'Request successful.',
-                    'data' => array(
-                        'version_id' => $versionId
-                    ),
+                    'data' => $data,
                 );
             } else {
                 $response = array(
@@ -275,4 +279,13 @@ class VersionController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
+    private function getSingle($id) {
+        $filter = array(
+            'id' => $id,
+        );
+
+        $data = $this->_versionRepo->search($filter, 0, 1);
+
+        return (count($data)) ? $data[0] : null;
+    }
 }

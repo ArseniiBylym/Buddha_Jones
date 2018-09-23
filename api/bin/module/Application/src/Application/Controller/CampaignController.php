@@ -16,16 +16,16 @@ class CampaignController extends CustomAbstractActionController
     {
         $canViewMaterialReceived = $this->_usersRepo->extractPermission($this->_user_permission, 17, 'view_or_edit');
 
-        $search = trim($this->getRequest()->getQuery('search', ''));
-        $projectId = (int)trim($this->getRequest()->getQuery('project_id', 0));
+        $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
+        $filter['project_id'] = (int)trim($this->getRequest()->getQuery('project_id', 0));
         $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
         $length = (int)trim($this->getRequest()->getQuery('length', 10));
 
-        $data = $this->_campaignRepo->search($projectId, $search, $offset, $length);
-        $totalCount = $this->_campaignRepo->searchCount($projectId, $search);
+        $data = $this->_campaignRepo->search($filter, $offset, $length);
+        $totalCount = $this->_campaignRepo->searchCount($filter);
 
-        foreach($data as &$row) {
-            if(!$canViewMaterialReceived) {
+        foreach ($data as &$row) {
+            if (!$canViewMaterialReceived) {
                 unset($row['materialReceived']);
             }
         }
@@ -47,7 +47,7 @@ class CampaignController extends CustomAbstractActionController
         $canEditMaterialReceived = $this->_usersRepo->extractPermission($this->_user_permission, 17, 'edit');
         $canCreateCampaign = $this->_usersRepo->extractPermission($this->_user_permission, 6, 'edit');
 
-        if($canCreateCampaign) {
+        if ($canCreateCampaign) {
             $name = trim(isset($data['name']) ? $data['name'] : '');
             $description = isset($data['description']) ? trim($data['description']) : null;
             $project = isset($data['project']) ? $data['project'] : null;
@@ -141,12 +141,13 @@ class CampaignController extends CustomAbstractActionController
 
                 $this->_em->flush();
 
+                $data = $this->getSingle($campaignId);
+                $data['campaign_id'] = $campaignId;
+
                 $response = array(
                     'status' => 1,
                     'message' => 'Request successful.',
-                    'data' => array(
-                        'campaign_id' => $campaignId
-                    ),
+                    'data' => $data,
                 );
             } else {
                 $response = array(
@@ -173,7 +174,7 @@ class CampaignController extends CustomAbstractActionController
         $canEditMaterialReceived = $this->_usersRepo->extractPermission($this->_user_permission, 17, 'edit');
         $canCreateCampaign = $this->_usersRepo->extractPermission($this->_user_permission, 6, 'edit');
 
-        if($canCreateCampaign) {
+        if ($canCreateCampaign) {
             $name = trim(isset($data['name']) ? $data['name'] : '');
             $description = isset($data['description']) ? trim($data['description']) : null;
             $project = isset($data['project']) ? $data['project'] : null;
@@ -255,7 +256,7 @@ class CampaignController extends CustomAbstractActionController
                                             if (!$projectCampaignUser) {
                                                 $projectCampaignUser = new RediProjectToCampaignUser();
                                                 $projectCampaignUser->setProjectCampaignId($projectCampaignEntryId);
-                                                $projectCampaignUser->setManagerId($user['id']);
+                                                $projectCampaignUser->setUserId($user['id']);
                                                 $projectCampaignUser->setRoleId($user['role_id']);
                                                 $this->_em->persist($projectCampaignUser);
 
@@ -279,12 +280,13 @@ class CampaignController extends CustomAbstractActionController
 
                 $this->_em->flush();
 
+                $data = $this->getSingle($campaignId);
+                $data['campaign_id'] = $campaignId;
+
                 $response = array(
                     'status' => 1,
                     'message' => 'Request successful.',
-                    'data' => array(
-                        'campaign_id' => $campaignId
-                    ),
+                    'data' => $data,
                 );
             } else {
                 $response = array(
@@ -308,10 +310,9 @@ class CampaignController extends CustomAbstractActionController
 
     public function delete($campaignId)
     {
-
         $canCreateCampaign = $this->_usersRepo->extractPermission($this->_user_permission, 6, 'edit');
 
-        if($canCreateCampaign) {
+        if ($canCreateCampaign) {
             $projectId = $this->params()->fromRoute('param1', 0);
 
             if ($campaignId && $projectId) {
@@ -383,5 +384,18 @@ class CampaignController extends CustomAbstractActionController
 
     }
 
+    private function getSingle($id)
+    {
+        $canViewMaterialReceived = $this->_usersRepo->extractPermission($this->_user_permission, 17, 'view_or_edit');
+        $filter['campaign_id'] = $id;
+        $data = $this->_campaignRepo->search($filter, 0, 1);
 
+        foreach ($data as &$row) {
+            if (!$canViewMaterialReceived) {
+                unset($row['materialReceived']);
+            }
+        }
+
+        return !empty($data[0]) ? $data[0] : null;
+    }
 }
