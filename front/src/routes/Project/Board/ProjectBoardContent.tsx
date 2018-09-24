@@ -255,6 +255,7 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                     }
                     closeButton={true}
                     onClose={this.handleVersionEditModalClose}
+                    size={'content-wide'}
                 >
                     {projectsDetails.versionEditModal && (
                         <div>
@@ -299,7 +300,7 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                                     label="Version note"
                                     value={projectsDetails.versionEditModal.versionNote || ''}
                                     width={1152}
-                                    height={64}
+                                    height={400}
                                 />
                             )}
 
