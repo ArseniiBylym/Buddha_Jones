@@ -144,6 +144,7 @@ export class ProjectDetailsActionsClass {
                                                           }
                                                         : null,
                                                 isCustom: v.custom ? true : false,
+                                                editors: (v.editors) ? v.editors : []
                                             }))
                                           : [],
                                   justAdded: false,
