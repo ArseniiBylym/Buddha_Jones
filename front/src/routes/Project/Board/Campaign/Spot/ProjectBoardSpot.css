@@ -43,6 +43,9 @@
   padding-right: 48px;
   display: flex;
   flex-wrap: wrap;
+  & .separator {
+    margin: 5px 0;
+  }
   & .versionName,
   & .addVersion {
     margin: 6px;

@@ -8,6 +8,7 @@ import {
     ProjectBoardEditableCore,
     ProjectBoardReleaseDate,
     ProjectBoardCampaigns,
+    ProjectBoardFilter,
 } from '.';
 import { HeaderActions, ProjectsDetailsActions } from 'actions';
 import { ButtonEdit, ButtonSave } from 'components/Button';
@@ -228,6 +229,13 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                         onExpansionToggle={this.handleProjectHistoryToggle}
                         isExpanded={this.projectHistoryIsExpanded}
                         history={project.history}
+                    />
+
+                    <ProjectBoardFilter
+                        label={'Version status'}
+                        value={'No status'}
+                        width={300}
+                        float={'right'}
                     />
 
                     <ProjectBoardDescription
