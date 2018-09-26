@@ -109,6 +109,12 @@ export interface VersionDetails {
     note: string | null;
     status: VersionStatus | null;
     isCustom: boolean;
+    editors?: VersionEditors[];
+}
+
+export interface VersionEditors {
+    id: number;
+    name: string;
 }
 
 export interface VersionStatus {
@@ -192,6 +198,12 @@ interface ProjectDetailsVersionFromApi {
     versionStatusId: number | null;
     versionStatusName: string | null;
     custom: 1 | 0 | null;
+    editors: ProjectDetailsVersionEditorsFromApi[];
+}
+
+interface ProjectDetailsVersionEditorsFromApi {
+    id: number;
+    name: string;
 }
 
 interface ProjectDetailsHistoryFromApi {

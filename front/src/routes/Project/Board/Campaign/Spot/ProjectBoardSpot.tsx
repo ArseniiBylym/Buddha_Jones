@@ -15,6 +15,8 @@ import { AppOnlyStoreState } from 'store/AllStores';
 import { ProjectBoardSpotForm } from './ProjectBoardSpotForm';
 import { ProjectsDetailsActions, ProjectsVersionsActions } from 'actions';
 import { SpotBillingTypeName } from 'types/projectDetailsEnums';
+import { Tooltip } from '../../../../../components/Content';
+import { VersionDetails, VersionEditors } from '../../../../../types/projectDetails';
 
 // Styles
 const s = require('./ProjectBoardSpot.css');
@@ -152,26 +154,81 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                         </Col>
                     </Row>
 
-                    <Row className={s.campaignSpotVersions} justifyContent="flex-start">
+                    <Row className={s.campaignSpotVersions}>
                         {this.props.userCanViewNumberOfRevisionsAndVersions &&
                             spot.versions.length > 0 && (
-                                <Tag className={s.versionName} title="Versions:" isTitleDim={true} isBig={true} />
+                                <React.Fragment>
+                                    <Tag className={s.versionName} title="Versions:" isTitleDim={true} isBig={true} />
+                                    <hr style={{margin: '5px 0'}} />
+                                </React.Fragment>
                             )}
+                    </Row>
 
-                        {this.props.userCanViewNumberOfRevisionsAndVersions &&
-                            spot.versions.map((version, versionIndex) => (
-                                <ProjectBoardSpotVersion
-                                    key={`version-${version.value}-from-spot-${spot.id}`}
-                                    projectId={this.props.projectId}
-                                    projectCampaignId={this.props.projectCampaignId}
-                                    spotId={spot.id}
-                                    id={version.value}
-                                    name={version.label}
-                                    note={version.note}
-                                    status={version.status}
-                                    isEditFormVisible={this.isEditFormVisible}
-                                />
-                            ))}
+                    {this.props.userCanViewNumberOfRevisionsAndVersions &&
+                    spot.versions.map((version: VersionDetails, versionIndex: number) => (
+                        <Row key={`version-${version.value}-from-spot-${spot.id}`} className={s.campaignSpotVersions} justifyContent="flex-start">
+
+                            <ProjectBoardSpotVersion
+                                key={`version-${version.value}-from-spot-${spot.id}`}
+                                projectId={this.props.projectId}
+                                projectCampaignId={this.props.projectCampaignId}
+                                spotId={spot.id}
+                                id={version.value}
+                                name={version.label}
+                                note={version.note}
+                                status={version.status}
+                                isEditFormVisible={this.isEditFormVisible}
+                            />
+
+                            {version.editors && version.editors.length > 0 &&
+                                <Tooltip text={this.spotVersionsEditors(version.editors)}>
+                                    <Tag
+                                        className={s.versionName}
+                                        title="Editors:"
+                                        isTitleDim={true}
+                                        isBig={true}
+                                        otherLabels={[{text: version.editors[0].name.substring(0, 8) + '...'}]}
+                                    />
+                                </Tooltip>
+                            }
+
+                            <hr style={{margin: '5px 0'}} />
+
+                        </Row>
+                    ))}
+
+                    <Row className={s.campaignSpotVersions} justifyContent="flex-start">
+
+                        {/*{this.props.userCanViewNumberOfRevisionsAndVersions &&
+                            spot.versions.map((version: VersionDetails, versionIndex: number) => (
+                                <React.Fragment>
+
+                                    <ProjectBoardSpotVersion
+                                        key={`version-${version.value}-from-spot-${spot.id}`}
+                                        projectId={this.props.projectId}
+                                        projectCampaignId={this.props.projectCampaignId}
+                                        spotId={spot.id}
+                                        id={version.value}
+                                        name={version.label}
+                                        note={version.note}
+                                        status={version.status}
+                                        isEditFormVisible={this.isEditFormVisible}
+                                    />
+
+                                    {version.editors && version.editors.length > 0 &&
+                                        <Tooltip text={this.spotVersionsEditors(version.editors)}>
+                                            <Tag
+                                                className={s.versionName}
+                                                title="Editors:"
+                                                isTitleDim={true}
+                                                isBig={true}
+                                                otherLabels={[{text: version.editors[0].name + '...'}]}
+                                            />
+                                        </Tooltip>
+                                    }
+
+                                </React.Fragment>
+                            ))}*/}
 
                         {this.props.userCanViewNumberOfRevisionsAndVersions &&
                             spot.numberOfRevisions !== 0 &&
@@ -228,6 +285,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                                 </DropdownContainer>
                             </div>
                         )}
+
                     </Row>
 
                     <Row className={s.spotDetailsContainer}>
@@ -414,4 +472,12 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
     private handleEditHide = () => {
         this.isEditFormVisible = false;
     };
+
+    private spotVersionsEditors = (editors: VersionEditors[]): string => {
+        let names: string[] = editors.map((editor: VersionEditors) => {
+            return editor.name;
+        });
+        return names.join(', ');
+    };
+
 }
