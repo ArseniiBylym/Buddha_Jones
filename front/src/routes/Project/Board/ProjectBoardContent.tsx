@@ -233,9 +233,9 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
 
                     <ProjectBoardFilter
                         label={'Version status'}
+                        options={projectsVersions.allVersionStatuses}
                         value={'No status'}
                         width={300}
-                        float={'right'}
                     />
 
                     <ProjectBoardDescription

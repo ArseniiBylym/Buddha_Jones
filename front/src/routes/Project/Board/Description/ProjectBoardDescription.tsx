@@ -30,18 +30,23 @@ export class ProjectBoardDescription extends React.Component<ProjectBoardDescrip
             <Section
                 title="Description"
                 noSeparator={true}
-                headerElements={[]}
-            >
-                {this.props.userCanEdit &&
-                    <Row>
-                        <Col size={12}>
-                            <ButtonEdit
-                                onClick={this.handleProjectDescriptionEditModeToggle}
-                                label={this.isInEditMode ? 'Cancel edit' : 'Edit project description'}
-                            />
-                        </Col>
-                    </Row>
+                headerElements={
+                    this.props.userCanEdit
+                        ? [
+                            {
+                                key: 'edit-note-button',
+                                element: (
+                                    <ButtonEdit
+                                        float="right"
+                                        onClick={this.handleProjectDescriptionEditModeToggle}
+                                        label={this.isInEditMode ? 'Cancel edit' : 'Edit project description'}
+                                    />
+                                ),
+                            },
+                        ]
+                        : []
                 }
+            >
                 <Row>
                     <Col size={12}>
                         <CommentForm
