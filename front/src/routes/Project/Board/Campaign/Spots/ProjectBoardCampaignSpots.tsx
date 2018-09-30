@@ -147,12 +147,24 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
 
     @computed
     private get spotsFromColumn1(): SpotDetails[] {
-        return this.props.spots.filter((spot, spotIndex) => spotIndex % 2 <= 0);
+        return this.props.spots.filter((spot, spotIndex) => {
+            if (spot.hidden) {
+                return false;
+            } else {
+                return spotIndex % 2 <= 0;
+            }
+        });
     }
 
     @computed
     private get spotsFromColumn2(): SpotDetails[] {
-        return this.props.spots.filter((spot, spotIndex) => spotIndex % 2 > 0);
+        return this.props.spots.filter((spot, spotIndex) => {
+            if (spot.hidden) {
+                return false;
+            } else {
+                return spotIndex % 2 > 0;
+            }
+        });
     }
 
     private spotForm: HTMLDivElement | null = null;
@@ -201,15 +213,8 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
         return (
             <>
                 <div className={s.spotsInlineList}>
-                    {this.props.spots.map(spot => (
-                        <Tag
-                            key={spot.id}
-                            isBig={true}
-                            title={spot.name}
-                            className={s.spotName}
-                            onTagClick={this.handleExpandSpotsFromSpotClick(spot.id)}
-                        />
-                    ))}
+
+                    {this.renderSpotsList()}
 
                     {this.props.spots.length <= 0 && <Tag className={s.spotName} isBig={true} title="No spots" />}
                 </div>
@@ -355,4 +360,24 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
     private handleNewSpotFormHide = () => {
         this.addingNewSpotFormVisible = false;
     };
+
+    private renderSpotsList = (): JSX.Element[] => {
+        let spotsList: SpotDetails[] = this.props.spots;
+        return spotsList
+            .filter((spot: SpotDetails) => {
+                return !spot.hidden;
+            })
+            .map((spot: SpotDetails) => {
+                    return (
+                        <Tag
+                            key={spot.id}
+                            isBig={true}
+                            title={spot.name}
+                            className={s.spotName}
+                            onTagClick={this.handleExpandSpotsFromSpotClick(spot.id)}
+                        />
+                    );
+                }
+            );
+    }
 }

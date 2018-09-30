@@ -306,6 +306,7 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
     private handleProjectFetchRetry = (e: React.MouseEvent<HTMLButtonElement>) => {
         this.fetchProject();
     };
+
 }
 
 export default ProjectBoard;

@@ -1,13 +1,15 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { action, observable } from 'mobx';
+import { action } from 'mobx';
 import { DropdownContainer, OptionsList, OptionsListValuePropType } from '../../../../components/Form';
+import { ProjectsVersionsActions } from '../../../../actions';
+import { ProjectVersionStatus } from '../../../../types/projectVersions';
 
 // Props
 interface ProjectBoardFilterProps {
     label: string;
+    value: ProjectVersionStatus;
     options: ProjectBoardFilterOption[];
-    value?: OptionsListValuePropType;
     width?: number;
     float?: 'left' | 'right' | 'none';
 }
@@ -18,7 +20,7 @@ interface ProjectBoardFilterOption {
 }
 
 interface ProjectBoardFilterOptionSelected {
-    value: OptionsListValuePropType;
+    value: number | null;
     label: string;
 }
 
@@ -26,16 +28,15 @@ interface ProjectBoardFilterOptionSelected {
 @observer
 export class ProjectBoardFilter extends React.Component<ProjectBoardFilterProps, {}> {
 
-    @observable private selectedOption: ProjectBoardFilterOptionSelected = {
-        value: null,
-        label: ''
-    };
+    private versionStatusDropdown: DropdownContainer | null = null;
 
     static get defaultProps(): ProjectBoardFilterProps {
         return {
             label: '',
-            value: '',
-            width: 200,
+            value: {
+                id: null,
+                name: 'No status'
+            },
             float: 'none',
             options: []
         };
@@ -45,13 +46,14 @@ export class ProjectBoardFilter extends React.Component<ProjectBoardFilterProps,
         return (
             <section style={{width: this.props.width, float: this.props.float}}>
                 <DropdownContainer
+                    ref={this.referenceVersionStatusDropdown}
                     label={this.props.label}
-                    value={'test'}
+                    value={this.props.value.name}
                     type="field"
                 >
                     <OptionsList
                         onChange={this.handleVersionStatusChange}
-                        value={this.selectedOption ? this.selectedOption.value : 'No status'}
+                        value={this.props.value.name}
                         options={[
                             ...[
                                 {
@@ -72,7 +74,16 @@ export class ProjectBoardFilter extends React.Component<ProjectBoardFilterProps,
 
     @action
     private handleVersionStatusChange = (option: ProjectBoardFilterOptionSelected) => {
-        this.selectedOption = option;
+        let selectedVersionStatus: ProjectVersionStatus = {
+            id: option.value
+            , name: option.label
+        };
+        ProjectsVersionsActions.changeFilterVersionStatus(selectedVersionStatus);
+        if (this.versionStatusDropdown) {
+            this.versionStatusDropdown.closeDropdown();
+        }
     };
+
+    private referenceVersionStatusDropdown = (ref: DropdownContainer) => (this.versionStatusDropdown = ref);
 
 }

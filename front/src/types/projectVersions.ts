@@ -19,6 +19,6 @@ export interface ProjectVersionCreateFromApi {
 }
 
 export interface ProjectVersionStatus {
-    id: number;
+    id: number | null;
     name: string;
 }

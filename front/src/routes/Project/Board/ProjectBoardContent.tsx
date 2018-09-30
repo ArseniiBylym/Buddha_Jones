@@ -203,6 +203,7 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
         return (
             <>
                 <div>
+
                     <ProjectBoardEditableCore
                         userCanEditProjectName={this.userCanEditProjectName}
                         userCanEditProjectCodeName={this.userCanEditProjectCodeName}
@@ -231,19 +232,20 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                         history={project.history}
                     />
 
-                    <ProjectBoardFilter
-                        label={'Version status'}
-                        options={projectsVersions.allVersionStatuses}
-                        value={'No status'}
-                        width={300}
-                    />
-
                     <ProjectBoardDescription
                         userCanView={this.userCanViewProjectDescription}
                         userCanEdit={this.userCanEditProjectDescription}
                         projectId={project.projectId}
                         note={project.notes}
-                    />
+                    >
+                        <ProjectBoardFilter
+                            label={'Version status'}
+                            options={projectsVersions.allVersionStatuses}
+                            value={projectsVersions.filterVersionStatus}
+                            width={350}
+                            float={'right'}
+                        />
+                    </ProjectBoardDescription>
 
                     <ProjectBoardCampaigns project={project} projectIsUpdating={project.loading} />
                 </div>
@@ -468,4 +470,5 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
             );
         }
     };
+
 }

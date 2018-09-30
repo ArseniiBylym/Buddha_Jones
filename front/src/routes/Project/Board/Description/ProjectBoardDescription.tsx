@@ -49,6 +49,7 @@ export class ProjectBoardDescription extends React.Component<ProjectBoardDescrip
             >
                 <Row>
                     <Col size={12}>
+                        {this.props.children}
                         <CommentForm
                             onChange={this.handleNotesChange}
                             onSubmit={this.handleNotesSubmit}

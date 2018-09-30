@@ -13,11 +13,12 @@ import {
     ProjectSpotCreateFromApi,
     ProjectDetailsVersionModalData,
     ProjectDetailsVersionModalUploadStatus,
-    VersionStatus,
+    VersionStatus, ProjectDetails,
 } from 'types/projectDetails';
 import { ProjectBoardCampaignPeopleType } from 'routes/Project/Board/Campaign/People/ProjectBoardCampaignPeople';
 import { ProjectBoardCampaignWritingOrMusicTeamTypeProp } from 'routes/Project/Board/Campaign/WritingAndMusicTeams';
 import { SpotBillingType } from 'types/projectDetailsEnums';
+import { ProjectVersionStatus } from '../types/projectVersions';
 
 export class ProjectDetailsActionsClass {
     private fetchAttemptRetry: number = 0;
@@ -114,6 +115,7 @@ export class ProjectDetailsActionsClass {
                     billingTeam: c.billingUser,
                     designTeam: c.designer,
                     editorialTeam: c.editor,
+                    hidden: false,
                     spots:
                         typeof c.spot !== 'undefined' && c.spot
                             ? c.spot.map(s => ({
@@ -144,10 +146,12 @@ export class ProjectDetailsActionsClass {
                                                           }
                                                         : null,
                                                 isCustom: v.custom ? true : false,
-                                                editors: (v.editors) ? v.editors : []
+                                                editors: (v.editors) ? v.editors : [],
+                                                hidden: false,
                                             }))
                                           : [],
                                   justAdded: false,
+                                  hidden: false,
                               }))
                             : [],
                 }));
@@ -812,6 +816,50 @@ export class ProjectDetailsActionsClass {
         }
     };
 
+    @action
+    public dropFilterByVersionStatus = (isHidden: boolean): void => {
+        ProjectsDetailsStore.fetchedProjects.forEach((project: ProjectDetails) => {
+            project.campaigns = project.campaigns.map((campaign: CampaignDetails) => {
+                for (let i = 0; i < campaign.spots.length; i++) {
+                    campaign.spots[i].hidden = isHidden;
+                    if (campaign.spots[i].versions && campaign.spots[i].versions.length > 0) {
+                        for (let k = 0; k < campaign.spots[i].versions.length; k++) {
+                            campaign.spots[i].versions[k].hidden = isHidden;
+                        }
+                    }
+                }
+                campaign.hidden = isHidden;
+                return campaign;
+            });
+        });
+    };
+
+    @action
+    public applyFilterByVersionStatus = (selectedVersionStatus: ProjectVersionStatus) => {
+        if (selectedVersionStatus && selectedVersionStatus.id) {
+            this.dropFilterByVersionStatus(true);
+            ProjectsDetailsStore.fetchedProjects.forEach((project: ProjectDetails) => {
+                project.campaigns = project.campaigns.map((campaign: CampaignDetails) => {
+                    for (let i = 0; i < campaign.spots.length; i++) {
+                        if (campaign.spots[i].versions && campaign.spots[i].versions.length > 0) {
+                            for (let k = 0; k < campaign.spots[i].versions.length; k++) {
+                                if (campaign.spots[i].versions[k] && campaign.spots[i].versions[k].status && (campaign.spots[i].versions[k].status as VersionStatus).id === selectedVersionStatus.id) {
+                                    campaign.hidden = false;
+                                    campaign.spots[i].hidden = false;
+                                    campaign.spots[i].versions[k].hidden = false;
+                                }
+                            }
+
+                        }
+                    }
+                    return campaign;
+                });
+            });
+        } else {
+            this.dropFilterByVersionStatus(false);
+        }
+    };
+
     private findCampaign = (projectId: number, projectCampaignId: number): CampaignDetails | null => {
         const projectIndex = ProjectsDetailsStore.fetchedProjectsIdsFlat.indexOf(projectId);
         if (projectIndex !== -1) {
@@ -835,4 +883,5 @@ export class ProjectDetailsActionsClass {
 
         return null;
     };
+
 }
