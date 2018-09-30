@@ -86,6 +86,7 @@ export interface CampaignDetails {
     billingTeam: ProjectCampaignBillingUser[];
     designTeam: ProjectCampaignUser[];
     editorialTeam: ProjectCampaignUser[];
+    hidden?: boolean;
 }
 
 export interface SpotDetails {
@@ -101,6 +102,7 @@ export interface SpotDetails {
     v1ClientDeadline: Date | null;
     justAdded: boolean;
     versions: VersionDetails[];
+    hidden?: boolean;
 }
 
 export interface VersionDetails {
@@ -110,6 +112,7 @@ export interface VersionDetails {
     status: VersionStatus | null;
     isCustom: boolean;
     editors?: VersionEditors[];
+    hidden?: boolean;
 }
 
 export interface VersionEditors {

@@ -8,6 +8,7 @@ import {
     ProjectBoardEditableCore,
     ProjectBoardReleaseDate,
     ProjectBoardCampaigns,
+    ProjectBoardFilter,
 } from '.';
 import { HeaderActions, ProjectsDetailsActions } from 'actions';
 import { ButtonEdit, ButtonSave } from 'components/Button';
@@ -202,6 +203,7 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
         return (
             <>
                 <div>
+
                     <ProjectBoardEditableCore
                         userCanEditProjectName={this.userCanEditProjectName}
                         userCanEditProjectCodeName={this.userCanEditProjectCodeName}
@@ -235,7 +237,15 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                         userCanEdit={this.userCanEditProjectDescription}
                         projectId={project.projectId}
                         note={project.notes}
-                    />
+                    >
+                        <ProjectBoardFilter
+                            label={'Version status'}
+                            options={projectsVersions.allVersionStatuses}
+                            value={projectsVersions.filterVersionStatus}
+                            width={350}
+                            float={'right'}
+                        />
+                    </ProjectBoardDescription>
 
                     <ProjectBoardCampaigns project={project} projectIsUpdating={project.loading} />
                 </div>
@@ -460,4 +470,5 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
             );
         }
     };
+
 }

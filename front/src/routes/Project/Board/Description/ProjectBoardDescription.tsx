@@ -33,22 +33,23 @@ export class ProjectBoardDescription extends React.Component<ProjectBoardDescrip
                 headerElements={
                     this.props.userCanEdit
                         ? [
-                              {
-                                  key: 'edit-note-button',
-                                  element: (
-                                      <ButtonEdit
-                                          float="right"
-                                          onClick={this.handleProjectDescriptionEditModeToggle}
-                                          label={this.isInEditMode ? 'Cancel edit' : 'Edit project description'}
-                                      />
-                                  ),
-                              },
-                          ]
+                            {
+                                key: 'edit-note-button',
+                                element: (
+                                    <ButtonEdit
+                                        float="right"
+                                        onClick={this.handleProjectDescriptionEditModeToggle}
+                                        label={this.isInEditMode ? 'Cancel edit' : 'Edit project description'}
+                                    />
+                                ),
+                            },
+                        ]
                         : []
                 }
             >
                 <Row>
                     <Col size={12}>
+                        {this.props.children}
                         <CommentForm
                             onChange={this.handleNotesChange}
                             onSubmit={this.handleNotesSubmit}

@@ -11,12 +11,15 @@ import { Paragraph } from 'components/Content';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { UserPermissionKey } from 'types/projectPermissions';
 import { UsersActions } from 'actions';
+import { CampaignDetails } from '../../../../types/projectDetails';
+import { ProjectsVersionsActions } from '../../../../actions';
+import { ProjectVersionStatus } from '../../../../types/projectVersions';
 
 // Styles
 const s = require('./ProjectBoardCampaigns.css');
 
 // Props
-interface ProjectBoardCampaignsProps {
+interface ProjectBoardCampaignsProps extends AppOnlyStoreState {
     project: ProjectDetails;
     projectIsUpdating: boolean;
 }
@@ -59,6 +62,28 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
         return false;
     }
 
+    @computed
+    private get selectedVersionStatus(): ProjectVersionStatus | null {
+        if (this.props.store
+            && this.props.store.projectsVersions
+            && this.props.store.projectsVersions.filterVersionStatus
+            && this.props.store.projectsVersions.filterVersionStatus.id
+        ) {
+            return this.props.store.projectsVersions.filterVersionStatus;
+        }
+        return null;
+    }
+
+    @computed
+    private get areCampaignsContainVisibleElements(): boolean {
+        for (let i = 0; i < this.props.project.campaigns.length; i++) {
+            if (!this.props.project.campaigns[i].hidden) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private campaignsContainers: {
         [campaignId: number]: CampaignContainers;
     } = {};
@@ -93,6 +118,10 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
     }
 
     public render() {
+        if (!this.props.store) {
+            return null;
+        }
+
         const { project, projectIsUpdating } = this.props;
 
         return (
@@ -111,17 +140,16 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
             >
                 <Row className={s.campaigns}>
                     <Col size={12}>
-                        {project.campaigns.map(campaign => (
-                            <ProjectBoardCampaign
-                                key={'campaign-' + campaign.projectCampaignId}
-                                innerRef={this.referenceCampaignContainer(campaign.projectCampaignId)}
-                                innerHeaderRef={this.referenceCampaignHeader(campaign.projectCampaignId)}
-                                clientId={project.clientId}
-                                projectId={project.projectId}
-                                campaign={campaign}
-                                isHeaderFixed={this.campaignsWithFixedHeader.indexOf(campaign.projectCampaignId) !== -1}
-                            />
-                        ))}
+
+                        {this.renderCampaignsList()}
+
+                        {!this.areCampaignsContainVisibleElements && this.selectedVersionStatus && (
+                            <Paragraph type="dim" align={'center'}>
+                                There are no projects for selected filter: {this.selectedVersionStatus.name}
+                                <br/>
+                                <a href="#" onClick={this.handleDropVersionStatusFilter}>Try to drop filter</a>
+                            </Paragraph>
+                        )}
 
                         {project.campaigns.length <= 0 && (
                             <Paragraph type="dim">No campaigns added to the project</Paragraph>
@@ -183,7 +211,7 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
     };
 
     private checkWhichCampaignHeadersShouldBeFixed = () => {
-        Object.keys(this.campaignsContainers).map(campaignId => {
+        /*Object.keys(this.campaignsContainers).map(campaignId => {
             const campaignIdNumber = parseInt(campaignId, 10);
             const campaignContainers: CampaignContainers = this.campaignsContainers[campaignId];
             const container = campaignContainers.container;
@@ -212,7 +240,7 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
                     ];
                 }
             }
-        });
+        });*/
     };
 
     private fetchUsersFromCampaignTeams = async () => {
@@ -243,5 +271,32 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
         } catch (error) {
             throw error;
         }
+    };
+
+    private renderCampaignsList = (): JSX.Element[] => {
+        let campaignsList: CampaignDetails[] = this.props.project.campaigns;
+        return campaignsList
+            .filter((campaign: CampaignDetails) => {
+                return !campaign.hidden;
+            })
+            .map((campaign: CampaignDetails) => {
+                return (
+                    <ProjectBoardCampaign
+                        key={'campaign-' + campaign.projectCampaignId}
+                        innerRef={this.referenceCampaignContainer(campaign.projectCampaignId)}
+                        innerHeaderRef={this.referenceCampaignHeader(campaign.projectCampaignId)}
+                        clientId={this.props.project.clientId}
+                        projectId={this.props.project.projectId}
+                        campaign={campaign}
+                        isHeaderFixed={this.campaignsWithFixedHeader.indexOf(campaign.projectCampaignId) !== -1}
+                    />
+                );
+            }
+        );
+    };
+
+    private handleDropVersionStatusFilter = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        ProjectsVersionsActions.changeFilterVersionStatus({id: null, name: 'No status'});
     };
 }

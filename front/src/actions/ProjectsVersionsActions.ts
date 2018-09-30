@@ -137,4 +137,9 @@ export class ProjectsVersionsActionsClass {
             throw error;
         }
     };
+
+    @action
+    public changeFilterVersionStatus = (status: ProjectVersionStatus) => {
+        ProjectsVersionsStore.filterVersionStatus = status;
+    };
 }

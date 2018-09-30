@@ -159,7 +159,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                             spot.versions.length > 0 && (
                                 <React.Fragment>
                                     <Tag className={s.versionName} title="Versions:" isTitleDim={true} isBig={true} />
-                                    <hr style={{margin: '5px 0'}} />
+                                    <hr className={s.separator}/>
                                 </React.Fragment>
                             )}
                     </Row>
@@ -192,43 +192,12 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                                 </Tooltip>
                             }
 
-                            <hr style={{margin: '5px 0'}} />
+                            <hr className={s.separator}/>
 
                         </Row>
                     ))}
 
                     <Row className={s.campaignSpotVersions} justifyContent="flex-start">
-
-                        {/*{this.props.userCanViewNumberOfRevisionsAndVersions &&
-                            spot.versions.map((version: VersionDetails, versionIndex: number) => (
-                                <React.Fragment>
-
-                                    <ProjectBoardSpotVersion
-                                        key={`version-${version.value}-from-spot-${spot.id}`}
-                                        projectId={this.props.projectId}
-                                        projectCampaignId={this.props.projectCampaignId}
-                                        spotId={spot.id}
-                                        id={version.value}
-                                        name={version.label}
-                                        note={version.note}
-                                        status={version.status}
-                                        isEditFormVisible={this.isEditFormVisible}
-                                    />
-
-                                    {version.editors && version.editors.length > 0 &&
-                                        <Tooltip text={this.spotVersionsEditors(version.editors)}>
-                                            <Tag
-                                                className={s.versionName}
-                                                title="Editors:"
-                                                isTitleDim={true}
-                                                isBig={true}
-                                                otherLabels={[{text: version.editors[0].name + '...'}]}
-                                            />
-                                        </Tooltip>
-                                    }
-
-                                </React.Fragment>
-                            ))}*/}
 
                         {this.props.userCanViewNumberOfRevisionsAndVersions &&
                             spot.numberOfRevisions !== 0 &&

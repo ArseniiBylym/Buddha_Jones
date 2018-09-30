@@ -8,3 +8,4 @@ export * from './EditableCore';
 export * from './ReleaseDate';
 export * from './Campaigns';
 export * from './Campaign';
+export * from './Filter';
