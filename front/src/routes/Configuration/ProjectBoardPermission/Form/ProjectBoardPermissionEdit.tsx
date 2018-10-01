@@ -160,12 +160,14 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
                             <Checkmark
                                 onClick={e => this.handleProjectBoardPermissionToggle(ind, permissionType.canView, permissionType.projectPermissionId, 'canView')}
                                 checked={(permissionType.canView === 1) ? true : false}
+                                type={'no-icon'}
                             />
                         </TableCell>
                         <TableCell align="center">
                             <Checkmark
                                 onClick={e => this.handleProjectBoardPermissionToggle(ind, permissionType.canEdit, permissionType.projectPermissionId, 'canEdit')}
                                 checked={(permissionType.canEdit === 1) ? true : false}
+                                type={'no-icon'}
                             />
                         </TableCell>
                     </TableRow>
