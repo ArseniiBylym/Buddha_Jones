@@ -165,7 +165,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                     </Row>
 
                     {this.props.userCanViewNumberOfRevisionsAndVersions &&
-                    spot.versions.map((version: VersionDetails, versionIndex: number) => (
+                    spot.versions.filter((version: VersionDetails) => {return !version.hidden; }).map((version: VersionDetails, versionIndex: number) => (
                         <Row key={`version-${version.value}-from-spot-${spot.id}`} className={s.campaignSpotVersions} justifyContent="flex-start">
 
                             <ProjectBoardSpotVersion
