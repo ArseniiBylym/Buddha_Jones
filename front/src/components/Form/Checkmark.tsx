@@ -8,7 +8,7 @@ import { IconTickBlue, IconTickGreen, IconTickWhite } from '../Icons';
 import { observer } from 'mobx-react';
 
 // Types
-type CheckmarkTypeProp = 'default' | 'green' | 'blue';
+type CheckmarkTypeProp = 'default' | 'green' | 'blue' | 'no-icon';
 type CheckmarkSizeProp = 'default' | 'small';
 
 // Props
@@ -65,7 +65,7 @@ export class Checkmark extends React.Component<CheckmarkProps, {}> {
             this.props.readOnly ? 'p' : 'button',
             {
                 className: classNames(s.checkmark, {
-                    [s.active]: this.props.checked,
+                    [s.active]: (this.props.type !== 'no-icon') ? this.props.checked : null,
                     [s.readonly]: this.props.readOnly,
                 }),
             },
@@ -77,14 +77,21 @@ export class Checkmark extends React.Component<CheckmarkProps, {}> {
         return this.props.label ? <span className={s.name}>{this.props.label}</span> : null;
     }
 
-    private renderIcon() {
-        return this.props.checked ? (
+    private renderIcon(): JSX.Element | null {
+        let renderWithIcon: JSX.Element = this.props.checked ? (
             <IconTickWhite width={11} height={9} />
         ) : this.props.type === 'green' ? (
             <IconTickGreen width={11} height={9} />
         ) : (
             <IconTickBlue width={11} height={9} />
         );
+        if (!this.props.checked && this.props.type === 'no-icon') {
+            return null;
+        } else if (this.props.checked && this.props.type === 'no-icon') {
+            return (<IconTickBlue width={11} height={9} />);
+        } else {
+            return renderWithIcon;
+        }
     }
 
     private handleCheckmarkClick = (e: React.MouseEvent<HTMLLabelElement>) => {
