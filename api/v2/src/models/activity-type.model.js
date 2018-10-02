@@ -12,11 +12,13 @@ module.exports = function (app) {
       primaryKey: true,
       autoIncrement: true
     },
-    activity_type: {
+    activityType: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: true,
+      field: 'activity_type'
     }
   }, {
+    timestamps: false,
     hooks: {
       beforeCount(options) {
         options.raw = true;

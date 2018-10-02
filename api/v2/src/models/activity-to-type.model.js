@@ -6,17 +6,20 @@ const DataTypes = Sequelize.DataTypes;
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
   const activityToType = sequelizeClient.define('redi_activity_to_type', {
-    activity_id: {
+    activityId: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'activity_id'
     },
-    type_id: {
+    typeId: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'type_id'
     }
   }, {
+    timestamps: false,
     hooks: {
       beforeCount(options) {
         options.raw = true;
