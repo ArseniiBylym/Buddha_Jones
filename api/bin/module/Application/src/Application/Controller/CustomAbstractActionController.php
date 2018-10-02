@@ -72,7 +72,6 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_spotSentOptionRepository;
     protected $_spotSentToWorkStage;
     protected $_spotVersionRepository;
-    protected $_spotVersionEditorRepository;
     protected $_staffRepository;
     protected $_statusRepository;
     protected $_timeEntryRepository;
@@ -152,7 +151,6 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_projectPermissionsRepository = $this->_em->getRepository('Application\Entity\RediProjectPermissions');
         $this->_spotRepository = $this->_em->getRepository('Application\Entity\RediSpot');
         $this->_spotVersionRepository = $this->_em->getRepository('Application\Entity\RediSpotVersion');
-        $this->_spotVersionEditorRepository = $this->_em->getRepository('Application\Entity\RediSpotVersionEditor');
         $this->_spotSentOptionRepository = $this->_em->getRepository('Application\Entity\RediSpotSentOption');
         $this->_spotSentRepository = $this->_em->getRepository('Application\Entity\RediSpotSent');
         $this->_spotSentToWorkStage = $this->_em->getRepository('Application\Entity\RediSpotSentToWorkStage');

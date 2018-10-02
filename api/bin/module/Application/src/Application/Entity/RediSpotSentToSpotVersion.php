@@ -31,16 +31,9 @@ class RediSpotSentToSpotVersion
     /**
      * @var integer
      *
-     * @ORM\Column(name="spot_id", type="bigint", nullable=true)
+     * @ORM\Column(name="spot_version_id", type="bigint", nullable=true)
      */
-    private $spotId;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="version_id", type="bigint", nullable=true)
-     */
-    private $versionId;
+    private $spotVersionId;
 
 
 
@@ -78,48 +71,25 @@ class RediSpotSentToSpotVersion
     }
 
     /**
-     * Set spotId
+     * Set spotVersionId
      *
-     * @param integer $spotId
+     * @param integer $spotVersionId
      * @return RediSpotSentToSpotVersion
      */
-    public function setSpotId($spotId)
+    public function setSpotVersionId($spotVersionId)
     {
-        $this->spotId = $spotId;
+        $this->spotVersionId = $spotVersionId;
 
         return $this;
     }
 
     /**
-     * Get spotId
+     * Get spotVersionId
      *
      * @return integer 
      */
-    public function getSpotId()
+    public function getSpotVersionId()
     {
-        return $this->spotId;
-    }
-
-    /**
-     * Set versionId
-     *
-     * @param integer $versionId
-     * @return RediSpotSentToSpotVersion
-     */
-    public function setVersionId($versionId)
-    {
-        $this->versionId = $versionId;
-
-        return $this;
-    }
-
-    /**
-     * Get versionId
-     *
-     * @return integer 
-     */
-    public function getVersionId()
-    {
-        return $this->versionId;
+        return $this->spotVersionId;
     }
 }
