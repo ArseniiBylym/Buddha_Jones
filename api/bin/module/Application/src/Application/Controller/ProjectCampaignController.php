@@ -229,6 +229,7 @@ class ProjectCampaignController extends CustomAbstractActionController
         $canEditWrittingTeam = $this->_usersRepo->extractPermission($this->_user_permission, 14, 'edit');
         $canEditPor = $this->_usersRepo->extractPermission($this->_user_permission, 20, 'edit');
         $canEditInvoice = $this->_usersRepo->extractPermission($this->_user_permission, 21, 'edit');
+        $canEditMaterialReceived = $this->_usersRepo->extractPermission($this->_user_permission, 17, 'edit');
 
         if ($canEditCampaign) {
             $projectCampaignId = (int)$projectCampaignId;
@@ -243,7 +244,7 @@ class ProjectCampaignController extends CustomAbstractActionController
             $budget = ($canEditBudget && isset($data['budget']) ? trim($data['budget']) : null);
             $por = ($canEditPor && isset($data['por'])) ? $data['por'] : null;
             $invoiceContact = ($canEditInvoice && isset($data['invoice_contact'])) ? $data['invoice_contact'] : null;
-            $materialReceiveDate = isset($data['material_receive_date']) ? $data['material_receive_date'] : null;
+            $materialReceiveDate = ($canEditMaterialReceived && isset($data['material_receive_date'])) ? $data['material_receive_date'] : null;
 
             if ($projectCampaignId) {
                 $existingProjectToCampaign = $this->_projectToCampaignRepository->find($projectCampaignId);
