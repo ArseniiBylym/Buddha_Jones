@@ -45,7 +45,7 @@ class RediSpotSent
     /**
      * @var string
      *
-     * @ORM\Column(name="finish_option", type="string", length=100, nullable=true)
+     * @ORM\Column(name="finish_option", type="string", length=10, nullable=true)
      */
     private $finishOption;
 
@@ -64,18 +64,18 @@ class RediSpotSent
     private $deadline;
 
     /**
-     * @var string
+     * @var integer
      *
-     * @ORM\Column(name="finishing_house", type="text", nullable=true)
+     * @ORM\Column(name="finishing_house", type="integer", nullable=true)
      */
     private $finishingHouse;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="framerate_id", type="integer", nullable=true)
+     * @ORM\Column(name="framerate", type="string", length=100, nullable=true)
      */
-    private $framerateId;
+    private $framerate;
 
     /**
      * @var string
@@ -85,11 +85,11 @@ class RediSpotSent
     private $framerateNote;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="raster_size_id", type="integer", nullable=true)
+     * @ORM\Column(name="raster_size", type="string", length=100, nullable=true)
      */
-    private $rasterSizeId;
+    private $rasterSize;
 
     /**
      * @var string
@@ -342,7 +342,7 @@ class RediSpotSent
     /**
      * Set finishingHouse
      *
-     * @param string $finishingHouse
+     * @param integer $finishingHouse
      * @return RediSpotSent
      */
     public function setFinishingHouse($finishingHouse)
@@ -355,7 +355,7 @@ class RediSpotSent
     /**
      * Get finishingHouse
      *
-     * @return string 
+     * @return integer 
      */
     public function getFinishingHouse()
     {
@@ -363,26 +363,26 @@ class RediSpotSent
     }
 
     /**
-     * Set framerateId
+     * Set framerate
      *
-     * @param integer $framerateId
+     * @param string $framerate
      * @return RediSpotSent
      */
-    public function setFramerateId($framerateId)
+    public function setFramerate($framerate)
     {
-        $this->framerateId = $framerateId;
+        $this->framerate = $framerate;
 
         return $this;
     }
 
     /**
-     * Get framerateId
+     * Get framerate
      *
-     * @return integer 
+     * @return string 
      */
-    public function getFramerateId()
+    public function getFramerate()
     {
-        return $this->framerateId;
+        return $this->framerate;
     }
 
     /**
@@ -409,26 +409,26 @@ class RediSpotSent
     }
 
     /**
-     * Set rasterSizeId
+     * Set rasterSize
      *
-     * @param integer $rasterSizeId
+     * @param string $rasterSize
      * @return RediSpotSent
      */
-    public function setRasterSizeId($rasterSizeId)
+    public function setRasterSize($rasterSize)
     {
-        $this->rasterSizeId = $rasterSizeId;
+        $this->rasterSize = $rasterSize;
 
         return $this;
     }
 
     /**
-     * Get rasterSizeId
+     * Get rasterSize
      *
-     * @return integer 
+     * @return string 
      */
-    public function getRasterSizeId()
+    public function getRasterSize()
     {
-        return $this->rasterSizeId;
+        return $this->rasterSize;
     }
 
     /**
