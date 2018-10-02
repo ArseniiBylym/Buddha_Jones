@@ -159,6 +159,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
                                     checked={this.activity.isDescriptionRequired}
                                     label={this.activity.isDescriptionRequired ? 'Required' : 'Not required'}
                                     labelOnLeft={true}
+                                    type={'no-icon'}
                                 />
                             </TableCell>
                         </TableRow>
@@ -172,6 +173,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
                                     checked={this.activity.areFilesRequired}
                                     label={this.activity.areFilesRequired ? 'Required' : 'Not required'}
                                     labelOnLeft={true}
+                                    type={'no-icon'}
                                 />
                             </TableCell>
                         </TableRow>
@@ -185,6 +187,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
                                     checked={this.activity.isProjectCampaignRequired}
                                     label={this.activity.isProjectCampaignRequired ? 'Required' : 'Not required'}
                                     labelOnLeft={true}
+                                    type={'no-icon'}
                                 />
                             </TableCell>
                         </TableRow>
@@ -198,6 +201,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
                                     checked={this.activity.isSpotVersionRequired}
                                     label={this.activity.isSpotVersionRequired ? 'Required' : 'Not required'}
                                     labelOnLeft={true}
+                                    type={'no-icon'}
                                 />
                             </TableCell>
                         </TableRow>
@@ -221,6 +225,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
                                                 ? 'Hide for all users'
                                                 : 'Show for all users'
                                         }
+                                        type={'no-icon'}
                                     />
                                 ),
                             },
@@ -245,6 +250,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
                                             checked={type.isSelected}
                                             label="Visible: "
                                             labelOnLeft={true}
+                                            type={'no-icon'}
                                         />
                                     </TableCell>
                                 </TableRow>

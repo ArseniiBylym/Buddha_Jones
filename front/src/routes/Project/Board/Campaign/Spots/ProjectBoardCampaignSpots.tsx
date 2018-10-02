@@ -147,24 +147,22 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
 
     @computed
     private get spotsFromColumn1(): SpotDetails[] {
-        return this.props.spots.filter((spot, spotIndex) => {
-            if (spot.hidden) {
-                return false;
-            } else {
+        return this.props.spots
+            .filter((spot: SpotDetails) => { return !spot.hidden; })
+            .filter((spot, spotIndex) => {
                 return spotIndex % 2 <= 0;
             }
-        });
+        );
     }
 
     @computed
     private get spotsFromColumn2(): SpotDetails[] {
-        return this.props.spots.filter((spot, spotIndex) => {
-            if (spot.hidden) {
-                return false;
-            } else {
+        return this.props.spots
+            .filter((spot: SpotDetails) => { return !spot.hidden; })
+            .filter((spot, spotIndex) => {
                 return spotIndex % 2 > 0;
             }
-        });
+        );
     }
 
     private spotForm: HTMLDivElement | null = null;
@@ -211,7 +209,7 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
 
     private renderCollapsedSpots() {
         return (
-            <>
+            <React.Fragment>
                 <div className={s.spotsInlineList}>
 
                     {this.renderSpotsList()}
@@ -221,7 +219,7 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
                 {this.props.userCanCreateNewSpot && this.props.spots.length > 0
                     ? this.renderSpotNewButton('small')
                     : null}
-            </>
+            </React.Fragment>
         );
     }
 
