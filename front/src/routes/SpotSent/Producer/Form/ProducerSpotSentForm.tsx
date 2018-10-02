@@ -176,6 +176,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     onClick={this.handleSentViaMethodToggle(sentVia.key)}
                                     checked={sentVia.isSelected}
                                     label={sentVia.name}
+                                    type={'no-icon'}
                                 />
                             ))}
                         </div>
@@ -235,6 +236,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 checked={this.isFinal}
                                 label="Ready to be sent"
                                 labelOnLeft={true}
+                                type={'no-icon'}
                             />
 
                             <ButtonSend
