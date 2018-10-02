@@ -12,27 +12,32 @@ module.exports = function (app) {
       primaryKey: true,
       autoIncrement: true
     },
-    campaign_name: {
+    campaignName: {
       type: DataTypes.STRING(22),
-      allowNull: true
+      allowNull: true,
+      field: 'campaign_name'
     },
     description: {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    editor_req: {
+    editorReq: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: true,
+      field: 'editor_req'
     },
-    material_received: {
+    materialReceived: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: true,
+      field: 'material_received'
     },
-    created_by_user_id: {
+    createdByUserId: {
       type: DataTypes.INTEGER(11),
-      allowNull: true
+      allowNull: true,
+      field: 'created_by_user_id'
     }
   }, {
+    timestamps: false,
     hooks: {
       beforeCount(options) {
         options.raw = true;

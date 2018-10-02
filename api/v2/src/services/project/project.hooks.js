@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const populateProjectPermission = require('../../middleware/populate-project-permission');
 const { get } = require('lodash');
-const ProjectRepo = require('./project.repo');
+const ProjectRepo = require('../../repos/project.repo');
 const errors = require('@feathersjs/errors');
 
 module.exports = {

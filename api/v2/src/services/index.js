@@ -23,6 +23,22 @@ const projectPermissions = require('./project-permissions/project-permissions.se
 const customerPrice = require('./customer-price/customer-price.service.js');
 const project = require('./project/project.service.js');
 const status = require('./status/status.service.js');
+const projectHistory = require('./project-history/project-history.service.js');
+const activityLevel = require('./activity-level/activity-level.service.js');
+const activityPrice = require('./activity-price/activity-price.service.js');
+const timeEntryOfUser = require('./time-entry-of-user/time-entry-of-user.service.js');
+const timeEntryPermission = require('./time-entry-permission/time-entry-permission.service.js');
+const timeApprovalPermission = require('./time-approval-permission/time-approval-permission.service.js');
+const timeEntry = require('./time-entry/time-entry.service.js');
+const timeEntrySubmitForReview = require('./time-entry-submit-for-review/time-entry-submit-for-review.service.js');
+const timeEntryApprove = require('./time-entry-approve/time-entry-approve.service.js');
+const timeEntryFile = require('./time-entry-file/time-entry-file.service.js');
+const projectCampaignPeople = require('./project-campaign-people/project-campaign-people.service.js');
+const projectCampaignEditor = require('./project-campaign-editor/project-campaign-editor.service.js');
+const projectCampaignDesigner = require('./project-campaign-designer/project-campaign-designer.service.js');
+const projectCampaignBillingUser = require('./project-campaign-billing-user/project-campaign-billing-user.service.js');
+const projectCampaignOfUser = require('./project-campaign-of-user/project-campaign-of-user.service.js');
+const projectCampaign = require('./project-campaign/project-campaign.service.js');
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(users);
@@ -50,4 +66,20 @@ module.exports = function (app) {
   app.configure(customerPrice);
   app.configure(project);
   app.configure(status);
+  app.configure(projectHistory);
+  app.configure(activityLevel);
+  app.configure(activityPrice);
+  app.configure(timeEntryOfUser);
+  app.configure(timeEntryPermission);
+  app.configure(timeApprovalPermission);
+  app.configure(timeEntry);
+  app.configure(timeEntrySubmitForReview);
+  app.configure(timeEntryApprove);
+  app.configure(timeEntryFile);
+  app.configure(projectCampaignPeople);
+  app.configure(projectCampaignEditor);
+  app.configure(projectCampaignDesigner);
+  app.configure(projectCampaignBillingUser);
+  app.configure(projectCampaignOfUser);
+  app.configure(projectCampaign);
 };
