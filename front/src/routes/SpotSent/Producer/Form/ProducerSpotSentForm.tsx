@@ -155,6 +155,17 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     </Section>
 
                     <Section title="Finishing Type">
+                        <div className={s.summary}>
+                            {this.typeFinishingMethods().map((sentVia: SentViaOption) => (
+                                <Checkmark
+                                    key={sentVia.key}
+                                    onClick={this.handleSentViaMethodToggle(sentVia.key)}
+                                    checked={sentVia.isSelected}
+                                    label={sentVia.name}
+                                    type={'no-icon'}
+                                />
+                            ))}
+                        </div>
                         <Toggle
                             onChange={this.handleTogglingRequest}
                             toggleIsSetToRight={this.isInHouseFinish}
@@ -162,7 +173,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                             toggleOnRight={{ label: 'OOH Finish Prep', value: false }}
                             align="left"
                         />
-
                     </Section>
 
                     <Section title="Sent to">
@@ -395,6 +405,26 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                 name: 'In house presentation',
                 isSelected: this.values.sentVia.indexOf(SpotSentVia.InHousePresentation) !== -1,
             },
+        ];
+    }
+
+    private typeFinishingMethods(): SentViaOption[] {
+        return [
+            {
+                key: SpotSentVia.FiberFlex,
+                name: 'Theatrical',
+                isSelected: this.values.sentVia.indexOf(SpotSentVia.FiberFlex) !== -1,
+            },
+            {
+                key: SpotSentVia.Post,
+                name: 'TV Streaming',
+                isSelected: this.values.sentVia.indexOf(SpotSentVia.Post) !== -1,
+            },
+            {
+                key: SpotSentVia.EmailLink,
+                name: 'Games',
+                isSelected: this.values.sentVia.indexOf(SpotSentVia.EmailLink) !== -1,
+            }
         ];
     }
 
