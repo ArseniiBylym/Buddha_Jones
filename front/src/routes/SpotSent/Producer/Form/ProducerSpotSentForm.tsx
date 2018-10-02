@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { observable, computed } from 'mobx';
 import { HeaderActions, CampaignPeopleActions, ClientsActions } from 'actions';
 import { ProducerSpotSentFormProject } from './ProducerSpotSentFormProject';
-import { ProjectPickerValues, ProjectPickerGroupValues } from 'components/Buddha';
+import { ProjectPickerValues } from 'components/Buddha';
 import { ButtonBack, ButtonAdd, ButtonSend } from 'components/Button';
 import { history } from 'App';
 import AnimateHeight from 'react-animate-height';
@@ -12,9 +12,25 @@ import { Section } from 'components/Section';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { Paragraph } from 'components/Content';
 import { ProducerSpotSentFormSpotCard } from '.';
-import { Checkmark, TextArea } from 'components/Form';
+import { Checkmark, TextArea, Toggle } from 'components/Form';
 import { ClientContact } from 'types/clients';
 import { LoadingIndicator } from 'components/Loaders';
+import { ToggleSideContent } from '../../../../components/Form';
+import { SentViaOption } from '../../../../types/spotSent';
+import { ProjectPickerGroupValues } from '../../../../components/Buddha';
+
+export interface ProducerSpotSentValue {
+    date: Date;
+    project: {
+        selectedProject: ProjectPickerGroupValues | null;
+        clientId: number;
+    } | null;
+    spots: SpotSentSpot[];
+    sentVia: SpotSentVia[];
+    studioContacts: number[];
+    internalNotes: string;
+    studioNotes: string;
+}
 
 // Styles
 const s = require('./ProducerSpotSentForm.css');
@@ -30,18 +46,7 @@ type ProducerSpotSentFormPropsTypes = ProducerSpotSentFormProps & AppOnlyStoreSt
 @observer
 class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsTypes, {}> {
     @observable
-    private values: {
-        date: Date;
-        project: {
-            selectedProject: ProjectPickerGroupValues | null;
-            clientId: number;
-        } | null;
-        spots: SpotSentSpot[];
-        sentVia: SpotSentVia[];
-        studioContacts: number[];
-        internalNotes: string;
-        studioNotes: string;
-    } = {
+    private values: ProducerSpotSentValue = {
         date: new Date(),
         project: null,
         spots: [],
@@ -51,40 +56,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         studioNotes: '',
     };
 
-    @computed
-    private get sentViaMethods(): Array<{
-        key: SpotSentVia;
-        name: string;
-        isSelected: boolean;
-    }> {
-        return [
-            {
-                key: SpotSentVia.FiberFlex,
-                name: 'Fiber/Flex',
-                isSelected: this.values.sentVia.indexOf(SpotSentVia.FiberFlex) !== -1,
-            },
-            {
-                key: SpotSentVia.Post,
-                name: 'Post',
-                isSelected: this.values.sentVia.indexOf(SpotSentVia.Post) !== -1,
-            },
-            {
-                key: SpotSentVia.EmailLink,
-                name: 'Email link',
-                isSelected: this.values.sentVia.indexOf(SpotSentVia.EmailLink) !== -1,
-            },
-            {
-                key: SpotSentVia.InternalLink,
-                name: 'Internal link',
-                isSelected: this.values.sentVia.indexOf(SpotSentVia.InternalLink) !== -1,
-            },
-            {
-                key: SpotSentVia.InHousePresentation,
-                name: 'In house presentation',
-                isSelected: this.values.sentVia.indexOf(SpotSentVia.InHousePresentation) !== -1,
-            },
-        ];
-    }
+    @observable private isInHouseFinish: boolean = false;
 
     @computed
     private get clientContacts(): { isLoading: boolean; contacts: ClientContact[] } | null {
@@ -170,7 +142,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
                     <Section title="Sent via">
                         <div className={s.sentViaMethodsContainer}>
-                            {this.sentViaMethods.map(sentVia => (
+                            {this.sentViaMethods().map((sentVia: SentViaOption) => (
                                 <Checkmark
                                     key={sentVia.key}
                                     onClick={this.handleSentViaMethodToggle(sentVia.key)}
@@ -180,6 +152,17 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 />
                             ))}
                         </div>
+                    </Section>
+
+                    <Section title="Finishing Type">
+                        <Toggle
+                            onChange={this.handleTogglingRequest}
+                            toggleIsSetToRight={this.isInHouseFinish}
+                            toggleOnLeft={{ label: 'In House Finish', value: true }}
+                            toggleOnRight={{ label: 'OOH Finish Prep', value: false }}
+                            align="left"
+                        />
+
                     </Section>
 
                     <Section title="Sent to">
@@ -384,6 +367,40 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             selectedEditorsIds: [],
         };
     }
+
+    private sentViaMethods(): SentViaOption[] {
+        return [
+            {
+                key: SpotSentVia.FiberFlex,
+                name: 'Fiber/Flex',
+                isSelected: this.values.sentVia.indexOf(SpotSentVia.FiberFlex) !== -1,
+            },
+            {
+                key: SpotSentVia.Post,
+                name: 'Post',
+                isSelected: this.values.sentVia.indexOf(SpotSentVia.Post) !== -1,
+            },
+            {
+                key: SpotSentVia.EmailLink,
+                name: 'Email link',
+                isSelected: this.values.sentVia.indexOf(SpotSentVia.EmailLink) !== -1,
+            },
+            {
+                key: SpotSentVia.InternalLink,
+                name: 'Internal link',
+                isSelected: this.values.sentVia.indexOf(SpotSentVia.InternalLink) !== -1,
+            },
+            {
+                key: SpotSentVia.InHousePresentation,
+                name: 'In house presentation',
+                isSelected: this.values.sentVia.indexOf(SpotSentVia.InHousePresentation) !== -1,
+            },
+        ];
+    }
+
+    private handleTogglingRequest = (isSetToRight: boolean, selectedSideContent: ToggleSideContent) => {
+        /*this.form.toggle = isSetToRight;*/
+    };
 }
 
 export default ProducerSpotSentForm;

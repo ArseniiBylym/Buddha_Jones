@@ -8,6 +8,12 @@ export interface SpotSentSpot {
     selectedEditorsIds: number[];
 }
 
+export interface SentViaOption {
+    key: SpotSentVia;
+    name: string;
+    isSelected: boolean;
+}
+
 export enum SpotSentVia {
     FiberFlex = 'FF',
     Post = 'P',
