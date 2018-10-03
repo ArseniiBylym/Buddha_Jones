@@ -957,7 +957,7 @@ axios.put('/finishing-option/5', {
 
 ### HTTP Request
 
-`POST /finishing-house`
+`PUT /finishing-house/:id`
 
 ### Query Parameters
 
