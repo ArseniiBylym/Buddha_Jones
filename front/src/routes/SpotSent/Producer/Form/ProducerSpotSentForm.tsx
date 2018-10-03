@@ -19,6 +19,7 @@ import { ToggleSideContent } from '../../../../components/Form';
 import { SentViaOption, SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
 import { ProjectPickerGroupValues } from '../../../../components/Buddha';
 import { SpotSentStore } from '../../../../store/AllStores';
+import { DatePicker } from '../../../../components/Calendar';
 
 export interface ProducerSpotSentValue {
     date: Date;
@@ -55,6 +56,14 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         studioContacts: [],
         internalNotes: '',
         studioNotes: '',
+    };
+
+    @observable
+    private spotSentValues = {
+        full_lock: 0,
+        notes: '',
+        finishing_house: '',
+        deadline: new Date()
     };
 
     @observable private finishingOptionId: number | null = 1;
@@ -204,6 +213,41 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     align="left"
                                 />
                             </div>
+                            <div className={s.sentViaMethodsContainer} style={{marginTop: '30px'}}>
+                                <Checkmark
+                                    onClick={() => { this.spotSentValues.full_lock = 0; }}
+                                    checked={(this.spotSentValues.full_lock === 0) ? true : false}
+                                    label={'Soft Lock'}
+                                    type={'no-icon'}
+                                />
+                                <Checkmark
+                                    onClick={() => { this.spotSentValues.full_lock = 1; }}
+                                    checked={(this.spotSentValues.full_lock === 1) ? true : false}
+                                    label={'Hard Lock'}
+                                    type={'no-icon'}
+                                />
+                            </div>
+                            <DatePicker
+                                key="date-picker"
+                                onChange={this.handleDateChange}
+                                label="Deadline"
+                                value={this.spotSentValues.deadline}
+                                align="left"
+                                maxDate={new Date()}
+                            />
+                            <TextArea
+                                value={this.spotSentValues.notes}
+                                label="Notes..."
+                                width={1152}
+                                height={82}
+                            />
+                            {/*<TextArea
+                                value={this.spotSentValues.finishing_house}
+                                label="Finishing House..."
+                                width={1152}
+                                height={82}
+                            />*/}
+
                         </AnimateHeight>
                     </Section>
 
