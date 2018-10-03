@@ -52,6 +52,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_estimateToWorkerRepository;
     protected $_estimateToStaffRepository;
     protected $_estimateTemporaryStaffRepository;
+    protected $_finishingHouseRepository;
     protected $_graphicsRequestRepository;
     protected $_graphicsRequestAssignRepository;
     protected $_graphicsRequestDesignRepository;
@@ -134,6 +135,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_estimateTypeRepository = $this->_em->getRepository('Application\Entity\RediEstimateType');
         $this->_estimateToWorkerRepository = $this->_em->getRepository('Application\Entity\RediEstimateToWorker');
         $this->_estimateToStaffRepository = $this->_em->getRepository('Application\Entity\RediEstimateToStaff');
+        $this->_finishingHouseRepository = $this->_em->getRepository('Application\Entity\RediFinishingHouse');
         $this->_graphicsRequestRepository = $this->_em->getRepository('Application\Entity\RediGraphicsRequest');
         $this->_graphicsRequestAssignRepository = $this->_em->getRepository('Application\Entity\RediGraphicsRequestAssign');
         $this->_graphicsRequestDesignRepository = $this->_em->getRepository('Application\Entity\RediGraphicsRequestDesign');

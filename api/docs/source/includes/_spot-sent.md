@@ -822,3 +822,147 @@ false | spec_sheet_file | JSON encoded list base64 of file | null | json encoded
 false | tag_chart | string | null | Tag chart
 false | delivery_to_client_id | int | null | Delivery to client ID 
 false | delivery_note | string | null | Delivery note
+
+
+## Get all finishing house
+
+Retrieve list of finishing house.
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request successful",
+    "total_count": 4,
+    "object_count": 4,
+    "data": [
+        {
+            "id": 1,
+            "name": "fin house 1"
+        },
+        {
+            "id": 2,
+            "name": "fin house 2"
+        },
+        {
+            "id": 3,
+            "name": "fin house 3"
+        },
+        {
+            "id": 4,
+            "name": "fin house 4"
+        }
+    ]
+}
+```
+
+### HTTP Request
+
+`GET /finishing-house`
+
+**use who has spot permission can view this list**
+
+
+## Create finishing option
+
+Create a new finishing option.
+
+> Sample request
+
+```javascript
+axios.post('/finishing-option', {
+    name: fin house 1
+});
+```
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request successful.",
+    "data": [
+        {
+            "id": 1,
+            "name": "fin house 1"
+        },
+        {
+            "id": 2,
+            "name": "fin house 2"
+        },
+        {
+            "id": 3,
+            "name": "fin house 3"
+        },
+        {
+            "id": 5,
+            "name": "fin house 10"
+        }
+    ]
+}
+```
+
+### HTTP Request
+
+`POST /finishing-house`
+
+### Query Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+**true** | name | string| null | Finishing house namne
+
+**only admin can add new finishing hosue**
+
+
+## Update finishing option
+
+Update finishing option.
+
+> Sample request
+
+```javascript
+axios.put('/finishing-option/5', {
+    name: fin house 100
+});
+```
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request successful.",
+    "data": [
+        {
+            "id": 1,
+            "name": "fin house 1"
+        },
+        {
+            "id": 2,
+            "name": "fin house 2"
+        },
+        {
+            "id": 3,
+            "name": "fin house 3"
+        },
+        {
+            "id": 5,
+            "name": "fin house 100"
+        }
+    ]
+}
+```
+
+### HTTP Request
+
+`PUT /finishing-house/:id`
+
+### Query Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+**true** | name | string| null | Finishing house namne
+
+**only admin can update finishing hosue**
