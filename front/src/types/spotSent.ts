@@ -21,3 +21,46 @@ export enum SpotSentVia {
     InternalLink = 'IL',
     InHousePresentation = 'IHP',
 }
+
+export enum SpotSentForm {
+    Method = 'sent_via_method',
+    FinishOption = 'finish_option',
+    EmailLink = 'EL',
+    InternalLink = 'IL',
+    InHousePresentation = 'IHP',
+}
+
+export interface SpotSentOptionsFromApi {
+    delivery_to_client_option: SpotSentOptionsStdSectionFromApi[];
+    finishing_option: SpotSentOptionsStdSectionFromApi[];
+    framerate_option: string[];
+    raster_size_option: string[];
+    sent_via_method: SpotSentOptionsStdSectionFromApi[];
+    status: SpotSentOptionsStdSectionFromApi[];
+}
+
+export interface SpotSentOptionsStdSectionFromApi {
+    id: number;
+    name: string;
+    sort: number;
+    children: SpotSentOptionsChildrenFromApi[];
+}
+
+export interface SpotSentOptionsChildrenFromApi {
+    id: number;
+    name: string;
+    sort: number;
+}
+
+export interface SpotSentOptionsStore {
+
+}
+
+export interface SpotSentFinishingOptionsStore {
+    id: number;
+    name: string;
+    children: Array<{
+        id: number;
+        name: string;
+    }>;
+}

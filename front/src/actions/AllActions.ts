@@ -16,6 +16,7 @@ import {
     ActivitiesActionsClass,
     TimeEntryActionsClass,
     TimeApprovalActionsClass,
+    SpotSentActionsClass,
 } from './index';
 
 export const WindowActions = new WindowActionsClass();
@@ -35,3 +36,4 @@ export const ProjectPermissionsActions = new ProjectPermissionsActionsClass();
 export const ActivitiesActions = new ActivitiesActionsClass();
 export const TimeEntryActions = new TimeEntryActionsClass();
 export const TimeApprovalActions = new TimeApprovalActionsClass();
+export const SpotSentActions = new SpotSentActionsClass();

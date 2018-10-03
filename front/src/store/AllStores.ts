@@ -21,6 +21,7 @@ import {
     TimeEntry,
     TimeApproval,
     Time,
+    SpotSent,
 } from './index';
 
 // Construct individual stores
@@ -42,6 +43,7 @@ export const ActivitiesStore = new Activities();
 export const TimeEntryStore = new TimeEntry();
 export const TimeApprovalStore = new TimeApproval();
 export const TimeStore = new Time();
+export const SpotSentStore = new SpotSent();
 
 // Define combined store's interface
 export interface AppStoreState {
@@ -63,6 +65,7 @@ export interface AppStoreState {
     timeEntry: TimeEntry;
     timeApproval: TimeApproval;
     time: Time;
+    spotSent: SpotSent;
 }
 
 // Initialize combined stores
@@ -85,6 +88,7 @@ export const store: AppStoreState = {
     timeEntry: TimeEntryStore,
     timeApproval: TimeApprovalStore,
     time: TimeStore,
+    spotSent: SpotSentStore,
 };
 
 // App interface

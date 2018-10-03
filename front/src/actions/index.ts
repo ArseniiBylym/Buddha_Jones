@@ -16,4 +16,5 @@ export * from './ProjectPermissionsActions';
 export * from './ActivitiesActions';
 export * from './TimeEntryActions';
 export * from './TimeApprovalActions';
+export * from './SpotSentActions';
 export * from './AllActions';

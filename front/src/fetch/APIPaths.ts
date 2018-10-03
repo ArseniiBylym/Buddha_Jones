@@ -16,6 +16,7 @@ export enum APIPath {
     USER_PROJECT_TYPE_PERMISSIONS           = '/user-type-project-permissions',
     CAMPAIGN                                = '/campaign',
     SPOT                                    = '/spot',
+    SPOT_SENT_OPTIONS                       = '/spot-sent-options',
     VERSION                                 = '/version',
     VERSION_STATUS                          = '/version-status',
     TIME_ENTRY                              = '/time-entry',

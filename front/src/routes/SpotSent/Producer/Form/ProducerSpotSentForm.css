@@ -11,7 +11,8 @@
 }
 
 .sentViaMethodsContainer,
-.studioContactsContainer {
+.studioContactsContainer,
+.typeFinishingOptions {
   display: flex;
   flex-wrap: wrap;
   margin-top: -6px;
@@ -20,6 +21,10 @@
   &>label {
     margin: 6px 12px;
   }
+}
+
+.typeFinishingOptions {
+    float: right;
 }
 
 .summary {

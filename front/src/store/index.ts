@@ -17,3 +17,4 @@ export * from './Activities';
 export * from './TimeEntry';
 export * from './TimeApproval';
 export * from './Time';
+export * from './SpotSent';

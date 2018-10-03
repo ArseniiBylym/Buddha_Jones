@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observer, inject } from 'mobx-react';
-import { observable, computed } from 'mobx';
-import { HeaderActions, CampaignPeopleActions, ClientsActions } from 'actions';
+import { observable, computed, action } from 'mobx';
+import { HeaderActions, CampaignPeopleActions, ClientsActions, SpotSentActions } from 'actions';
 import { ProducerSpotSentFormProject } from './ProducerSpotSentFormProject';
 import { ProjectPickerValues } from 'components/Buddha';
 import { ButtonBack, ButtonAdd, ButtonSend } from 'components/Button';
@@ -16,8 +16,9 @@ import { Checkmark, TextArea, Toggle } from 'components/Form';
 import { ClientContact } from 'types/clients';
 import { LoadingIndicator } from 'components/Loaders';
 import { ToggleSideContent } from '../../../../components/Form';
-import { SentViaOption } from '../../../../types/spotSent';
+import { SentViaOption, SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
 import { ProjectPickerGroupValues } from '../../../../components/Buddha';
+import { SpotSentStore } from '../../../../store/AllStores';
 
 export interface ProducerSpotSentValue {
     date: Date;
@@ -56,7 +57,10 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         studioNotes: '',
     };
 
-    @observable private isInHouseFinish: boolean = false;
+    @observable private finishingOptionId: number | null = 1;
+    @observable private finishingOptionChildId: number | null = null;
+    @observable private isFinishingTypeSectionOpen: boolean = false;
+    @observable private isFinal: boolean = false;
 
     @computed
     private get clientContacts(): { isLoading: boolean; contacts: ClientContact[] } | null {
@@ -85,9 +89,27 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
     }
 
-    @observable private isFinal: boolean = false;
+    @computed
+    private get fetchedFinishingOptionsChildren(): SpotSentOptionsChildrenFromApi[] | null {
+        if (SpotSentStore.spotSentOptions && SpotSentStore.spotSentOptions.finishing_option) {
+            let children: SpotSentOptionsChildrenFromApi[] | null = null;
+            for (let i = 0; i < SpotSentStore.spotSentOptions.finishing_option.length; i++) {
+                if (SpotSentStore.spotSentOptions.finishing_option[i].id === this.finishingOptionId) {
+                    children = SpotSentStore.spotSentOptions.finishing_option[i].children;
+                    break;
+                }
+            }
+            return children;
+        } else {
+            return null;
+        }
+    }
 
     public componentDidMount() {
+
+        // Fetch spot options
+        SpotSentActions.fetchSpotSentOptions();
+
         HeaderActions.setMainHeaderTitlesAndElements('Initiate spot sent', null, null, null, [
             <ButtonBack
                 key="button-back-to-list"
@@ -142,7 +164,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
                     <Section title="Sent via">
                         <div className={s.sentViaMethodsContainer}>
-                            {this.sentViaMethods().map((sentVia: SentViaOption) => (
+                            {this.sentViaMethods.map((sentVia: SentViaOption) => (
                                 <Checkmark
                                     key={sentVia.key}
                                     onClick={this.handleSentViaMethodToggle(sentVia.key)}
@@ -154,25 +176,35 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         </div>
                     </Section>
 
-                    <Section title="Finishing Type">
-                        <div className={s.summary}>
-                            {this.typeFinishingMethods().map((sentVia: SentViaOption) => (
-                                <Checkmark
-                                    key={sentVia.key}
-                                    onClick={this.handleSentViaMethodToggle(sentVia.key)}
-                                    checked={sentVia.isSelected}
-                                    label={sentVia.name}
-                                    type={'no-icon'}
-                                />
-                            ))}
-                        </div>
-                        <Toggle
-                            onChange={this.handleTogglingRequest}
-                            toggleIsSetToRight={this.isInHouseFinish}
-                            toggleOnLeft={{ label: 'In House Finish', value: true }}
-                            toggleOnRight={{ label: 'OOH Finish Prep', value: false }}
-                            align="left"
+                    <Section title="Finish Request">
+                        <Checkmark
+                            onClick={this.showHideFinishingTypeSection}
+                            checked={this.isFinishingTypeSectionOpen}
+                            label={'Show details'}
+                            type={'no-icon'}
                         />
+                        <AnimateHeight
+                            height={(this.isFinishingTypeSectionOpen) ? 'auto' : 0}
+                        >
+                            <div style={{marginTop: '30px'}}>
+                                <div className={s.typeFinishingOptions}>
+                                    {this.getTypeFinishingChildren()}
+                                </div>
+                                <Toggle
+                                    onChange={this.handleTogglingRequest}
+                                    toggleIsSetToRight={(this.finishingOptionId === 1) ? false : true}
+                                    toggleOnLeft={{
+                                        label: (SpotSentStore.spotSentOptions) ? SpotSentStore.spotSentOptions.finishing_option[0].name : '',
+                                        value: (SpotSentStore.spotSentOptions) ? SpotSentStore.spotSentOptions.finishing_option[0].id : null
+                                    }}
+                                    toggleOnRight={{
+                                        label: (SpotSentStore.spotSentOptions) ? SpotSentStore.spotSentOptions.finishing_option[1].name : '',
+                                        value: (SpotSentStore.spotSentOptions) ? SpotSentStore.spotSentOptions.finishing_option[1].id : null
+                                    }}
+                                    align="left"
+                                />
+                            </div>
+                        </AnimateHeight>
                     </Section>
 
                     <Section title="Sent to">
@@ -378,7 +410,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         };
     }
 
-    private sentViaMethods(): SentViaOption[] {
+    private get sentViaMethods(): SentViaOption[] {
         return [
             {
                 key: SpotSentVia.FiberFlex,
@@ -408,29 +440,41 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         ];
     }
 
-    private typeFinishingMethods(): SentViaOption[] {
-        return [
-            {
-                key: SpotSentVia.FiberFlex,
-                name: 'Theatrical',
-                isSelected: this.values.sentVia.indexOf(SpotSentVia.FiberFlex) !== -1,
-            },
-            {
-                key: SpotSentVia.Post,
-                name: 'TV Streaming',
-                isSelected: this.values.sentVia.indexOf(SpotSentVia.Post) !== -1,
-            },
-            {
-                key: SpotSentVia.EmailLink,
-                name: 'Games',
-                isSelected: this.values.sentVia.indexOf(SpotSentVia.EmailLink) !== -1,
-            }
-        ];
+    private getTypeFinishingChildren(): JSX.Element[] {
+        let fetchedFinishingOptionsChildren: SpotSentOptionsChildrenFromApi[] | null = this.fetchedFinishingOptionsChildren;
+        if (fetchedFinishingOptionsChildren) {
+            return fetchedFinishingOptionsChildren.map((children: SpotSentOptionsChildrenFromApi, index: number) => {
+                return (
+                    <Checkmark
+                        key={'type-finishing-children-' + index}
+                        onClick={this.handleFinishingTypeChildSelect.bind(this, children.id)}
+                        checked={(children.id === this.finishingOptionChildId) ? true : false}
+                        label={children.name}
+                        type={'no-icon'}
+                    />
+                );
+            });
+        } else {
+            return [];
+        }
     }
 
+    @action
     private handleTogglingRequest = (isSetToRight: boolean, selectedSideContent: ToggleSideContent) => {
-        /*this.form.toggle = isSetToRight;*/
+        this.finishingOptionId = (selectedSideContent.value as number);
+        this.finishingOptionChildId = null;
     };
+
+    @action
+    private showHideFinishingTypeSection = (): void =>  {
+        this.isFinishingTypeSectionOpen = !this.isFinishingTypeSectionOpen;
+    };
+
+    @action
+    private handleFinishingTypeChildSelect = (finishingOptionChildId: number | null): void => {
+        this.finishingOptionChildId = finishingOptionChildId;
+    };
+
 }
 
 export default ProducerSpotSentForm;
