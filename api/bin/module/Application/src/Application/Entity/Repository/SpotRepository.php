@@ -515,5 +515,16 @@ class SpotRepository extends EntityRepository
         return $response;
     }
 
+    public function getAllFinishingHouse() {
+        $dql = "SELECT 
+                  fh
+                FROM \Application\Entity\RediFinishingHouse fh";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getArrayResult();
+
+        return $result;
+    }
+
 
 }
