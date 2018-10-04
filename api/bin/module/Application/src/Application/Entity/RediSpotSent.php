@@ -108,6 +108,13 @@ class RediSpotSent
     /**
      * @var integer
      *
+     * @ORM\Column(name="gfx_finish", type="smallint", nullable=true)
+     */
+    private $gfxFinish;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="audio_prep", type="smallint", nullable=true)
      */
     private $audioPrep;
@@ -125,6 +132,13 @@ class RediSpotSent
      * @ORM\Column(name="video_prep", type="smallint", nullable=true)
      */
     private $videoPrep;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="graphics_finish", type="smallint", nullable=true)
+     */
+    private $graphicsFinish;
 
     /**
      * @var string
@@ -485,6 +499,29 @@ class RediSpotSent
     }
 
     /**
+     * Set gfxFinish
+     *
+     * @param integer $gfxFinish
+     * @return RediSpotSent
+     */
+    public function setGfxFinish($gfxFinish)
+    {
+        $this->gfxFinish = $gfxFinish;
+
+        return $this;
+    }
+
+    /**
+     * Get gfxFinish
+     *
+     * @return integer 
+     */
+    public function getGfxFinish()
+    {
+        return $this->gfxFinish;
+    }
+
+    /**
      * Set audioPrep
      *
      * @param integer $audioPrep
@@ -551,6 +588,29 @@ class RediSpotSent
     public function getVideoPrep()
     {
         return $this->videoPrep;
+    }
+
+    /**
+     * Set graphicsFinish
+     *
+     * @param integer $graphicsFinish
+     * @return RediSpotSent
+     */
+    public function setGraphicsFinish($graphicsFinish)
+    {
+        $this->graphicsFinish = $graphicsFinish;
+
+        return $this;
+    }
+
+    /**
+     * Get graphicsFinish
+     *
+     * @return integer 
+     */
+    public function getGraphicsFinish()
+    {
+        return $this->graphicsFinish;
     }
 
     /**

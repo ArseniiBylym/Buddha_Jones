@@ -86,6 +86,8 @@ class SpotSentController extends CustomAbstractActionController
         $rasterSizeNote = (!empty($data['raster_size_note'])) ? trim($data['raster_size_note']) : null;
         $musicCueSheet = (!empty($data['music_cue_sheet'])) ? 1 : 0;
         $audioPrep = (!empty($data['audio_prep'])) ? 1 : 0;
+        $graphicsFinish = (!empty($data['graphics_finish'])) ? 1 : 0;
+        $gfxFinish = (!empty($data['gfx_finish'])) ? 1 : 0;
         $audio = (isset($data['audio'])) ? $data['audio'] : null;
         $videoPrep = (!empty($data['video_prep'])) ? 1 : 0;
         $specNote = (!empty($data['spec_note'])) ? trim($data['spec_note']) : null;
@@ -121,6 +123,8 @@ class SpotSentController extends CustomAbstractActionController
             $spotSent->setMusicCueSheet($musicCueSheet);
             $spotSent->setAudioPrep($audioPrep);
             $spotSent->setAudio($audio);
+            $spotSent->setGraphicsFinish($graphicsFinish);
+            $spotSent->setGfxFinish($gfxFinish);
             $spotSent->setVideoPrep($videoPrep);
             $spotSent->setSpecNote($specNote);
             $spotSent->setDeliveryToClientId($deliveryToClientId);
@@ -143,7 +147,10 @@ class SpotSentController extends CustomAbstractActionController
 
             if (count($files)) {
                 $newDir = $specSheetDir . $spotSentId;
-                mkdir($newDir);
+
+                if(!file_exists($newDir)) {
+                    mkdir($newDir);
+                }
 
                 foreach ($files as $key => $file) {
                     $newFileName = md5($key) . $file['extension'];
@@ -215,12 +222,14 @@ class SpotSentController extends CustomAbstractActionController
         $notes = (isset($data['notes'])) ? trim($data['notes']) : null;
         $deadline = (isset($data['deadline'])) ? trim($data['deadline']) : null;
         $finishingHouse = (isset($data['finishing_house'])) ? trim($data['finishing_house']) : null;
-        $framerate = (isset($data['framerate_id'])) ? trim($data['framerate']) : null;
+        $framerate = (isset($data['framerate'])) ? trim($data['framerate']) : null;
         $framerateNote = (isset($data['framerate_note'])) ? trim($data['framerate_note']) : null;
         $rasterSize = (isset($data['raster_size'])) ? trim($data['raster_size']) : null;
         $rasterSizeNote = (isset($data['raster_size_note'])) ? trim($data['raster_size_note']) : null;
         $musicCueSheet = (isset($data['music_cue_sheet'])) ? (int)$data['music_cue_sheet'] : null;
         $audioPrep = (isset($data['audio_prep'])) ? (int)$data['audio_prep'] : null;
+        $graphicsFinish = (isset($data['graphics_finish'])) ? (int)$data['graphics_finish'] : null;
+        $gfxFinish = (isset($data['gfx_finish'])) ? (int)$data['gfx_finish'] : null;
         $audio = (isset($data['audio'])) ? $data['audio'] : null;
         $videoPrep = (isset($data['video_prep'])) ? (int)$data['video_prep'] : null;
         $specNote = (isset($data['spec_note'])) ? trim($data['spec_note']) : null;
@@ -294,6 +303,14 @@ class SpotSentController extends CustomAbstractActionController
                     $spotSent->setAudio($audio);
                 }
 
+                if($graphicsFinish !== null) {
+                    $spotSent->setGraphicsFinish($graphicsFinish);
+                }
+
+                if($gfxFinish !== null) {
+                    $spotSent->setGfxFinish($gfxFinish);
+                }
+
                 if ($projectId !== null) {
                     $spotSent->setVideoPrep($videoPrep);
                 }
@@ -335,7 +352,10 @@ class SpotSentController extends CustomAbstractActionController
 
                 if (count($files)) {
                     $newDir = $specSheetDir . $spotSentId;
-                    mkdir($newDir);
+                    
+                    if(!file_exists($newDir)) {
+                        mkdir($newDir);
+                    }
 
                     foreach ($files as $key => $file) {
                         $newFileName = md5($key) . $file['extension'];
