@@ -776,7 +776,7 @@ axios.post('/spot-sent', {
     spec_note:some note
     spec_sheet_file:["file 1.jpg","file2.jpg"]
     tag_chart:
-    delivery_to_client_id:8
+    delivery_to_client:2,3
     delivery_note:some note
     status_id:2
 });
@@ -820,7 +820,7 @@ false | video_prep | int | 0 | send 0/1
 false | spec_note | string | null | Finishing house
 false | spec_sheet_file | JSON encoded list base64 of file | null | json encoded array of base64 encoded of file. like ["data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE.......","data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE......."]
 false | tag_chart | string | null | Tag chart
-false | delivery_to_client_id | int | null | Delivery to client ID 
+false | delivery_to_client | string| null | Sent delivery to client option, comman separated ids of parent and client, like "1,2" (parent_id,child_id)
 false | delivery_note | string | null | Delivery note
 false | audio | string | null | Sent audio option, comman separated ids like "1,2,3,4"
 false | graphics_finish | int | 0 | send 0/1
@@ -855,7 +855,7 @@ axios.put('/spot-sent/1', {
     spec_note:some note
     spec_sheet_file:["file 1.jpg","file2.jpg"]
     tag_chart:
-    delivery_to_client_id:8
+    delivery_to_client:2,3
     delivery_note:some note
     status_id:2
 });
@@ -899,7 +899,7 @@ false | video_prep | int | null | send 0/1
 false | spec_note | string | null | Finishing house
 false | spec_sheet_file | JSON encoded list base64 of file | null | json encoded array of base64 encoded of file. like ["data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE.......","data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE......."]
 false | tag_chart | string | null | Tag chart
-false | delivery_to_client_id | int | null | Delivery to client ID 
+false | delivery_to_client | string| null | Sent delivery to client option, comman separated ids of parent and client, like "2,3" (parent_id,child_id)
 false | delivery_note | string | null | Delivery note
 false | audio | string | null | Sent audio option, comman separated ids like "1,2,3,4"
 false | graphics_finish | int | null | send 0/1

@@ -177,6 +177,7 @@ class SpotRepository extends EntityRepository
         $methodes = $this->getSpotSentOption('sent_via_method');
         $finishingOptions = $this->getSpotSentOption('finishing_option');
         $audioOptions = $this->getSpotSentOption('audio_option');
+        $delToClientOption = $this->getSpotSentOption('delivery_to_client_option');
 
         foreach ($result as &$row) {
             $row['id'] = (int)$row['id'];
@@ -226,6 +227,29 @@ class SpotRepository extends EntityRepository
                     $row['audioList'] = array_values(array_filter($audioOptions, function ($option) use ($optionIds) {
                         return in_array($option['id'], $optionIds);
                     }));
+                }
+            }
+
+            if (!empty($row['deliveryToClient'])) {
+                $deliveryToClientIds = explode(',', $row['deliveryToClient']);
+
+                if (count($deliveryToClientIds)) {
+                    $deliveryToClientIds = array_map('trim', $deliveryToClientIds);
+
+                    if (count($deliveryToClientIds) === 2) {
+                        $row['deliveryToClientList'] = array_values(array_filter($delToClientOption, function ($option) use ($deliveryToClientIds) {
+                            return $option['id'] == $deliveryToClientIds[0];
+                        }));
+
+                        if (count($row['deliveryToClientList'])) {
+                            $row['deliveryToClientList'] = $row['deliveryToClientList'][0];
+                            $row['deliveryToClientList']['children'] = array_values(array_filter($row['deliveryToClientList']['children'], function ($option) use ($deliveryToClientIds) {
+                                return $option['id'] == $deliveryToClientIds[1];
+                            }));
+                        }
+                    } else {
+                        $row['finishOptionList'] = array();
+                    }
                 }
             }
 
@@ -535,7 +559,7 @@ class SpotRepository extends EntityRepository
             foreach ($result as $row) {
                 $response[] = $row;
 
-                if (!empty($row['children']) && $key !== 'finishing_option') {
+                if (!empty($row['children']) && !in_array($key, array('finishing_option', 'delivery_to_client_option'))) {
                     array_push($response, ...$row['children']);
                 }
             }

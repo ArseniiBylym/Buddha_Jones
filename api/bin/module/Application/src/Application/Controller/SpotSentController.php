@@ -92,7 +92,7 @@ class SpotSentController extends CustomAbstractActionController
         $videoPrep = (!empty($data['video_prep'])) ? 1 : 0;
         $specNote = (!empty($data['spec_note'])) ? trim($data['spec_note']) : null;
         $specSheetFile = (!empty($data['spec_sheet_file'])) ? trim($data['spec_sheet_file']) : null;
-        $deliveryToClientId = (!empty($data['delivery_to_client_id'])) ? trim($data['delivery_to_client_id']) : null;
+        $deliveryToClient = (!empty($data['delivery_to_client'])) ? trim($data['delivery_to_client']) : null;
         $deliveryNote = (!empty($data['delivery_note'])) ? trim($data['delivery_note']) : null;
         $statusId = (!empty($data['status_id'])) ? trim($data['status_id']) : null;
         $spotVersion = (array)json_decode(isset($data['spot_version']) ? trim($data['spot_version']) : null, true);
@@ -127,7 +127,7 @@ class SpotSentController extends CustomAbstractActionController
             $spotSent->setGfxFinish($gfxFinish);
             $spotSent->setVideoPrep($videoPrep);
             $spotSent->setSpecNote($specNote);
-            $spotSent->setDeliveryToClientId($deliveryToClientId);
+            $spotSent->setDeliveryToClient($deliveryToClient);
             $spotSent->setDeliveryNote($deliveryNote);
             $spotSent->setStatusId($statusId);
             $spotSent->setNotes($notes);
@@ -234,7 +234,7 @@ class SpotSentController extends CustomAbstractActionController
         $videoPrep = (isset($data['video_prep'])) ? (int)$data['video_prep'] : null;
         $specNote = (isset($data['spec_note'])) ? trim($data['spec_note']) : null;
         $specSheetFile = (isset($data['spec_sheet_file'])) ? trim($data['spec_sheet_file']) : null;
-        $deliveryToClientId = (isset($data['delivery_to_client_id'])) ? trim($data['delivery_to_client_id']) : null;
+        $deliveryToClient = (isset($data['delivery_to_client'])) ? trim($data['delivery_to_client']) : null;
         $deliveryNote = (isset($data['delivery_note'])) ? trim($data['delivery_note']) : null;
         $statusId = (isset($data['status_id'])) ? trim($data['status_id']) : null;
         $spotVersion = (array)json_decode(isset($data['spot_version']) ? trim($data['spot_version']) : null, true);
@@ -320,7 +320,7 @@ class SpotSentController extends CustomAbstractActionController
                 }
 
                 if ($deliveryToClientId !== null) {
-                    $spotSent->setDeliveryToClientId($deliveryToClientId);
+                    $spotSent->setDeliveryToClient($deliveryToClient);
                 }
 
                 if ($deliveryNote !== null) {
