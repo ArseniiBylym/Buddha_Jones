@@ -273,16 +273,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 />
                             </div>
                             <div className={s.finishRequestSection}>
-                                <DatePicker
-                                    key="date-picker"
-                                    onChange={this.handleDateChange}
-                                    label="Deadline"
-                                    value={this.spotSentValues.deadline}
-                                    align="left"
-                                    maxDate={new Date()}
-                                />
-                            </div>
-                            <div className={s.finishRequestSection}>
                                 <h3>Notes</h3>
                                 <TextArea
                                     value={this.spotSentValues.notes}
@@ -292,14 +282,26 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 />
                             </div>
                             <div className={s.finishRequestSection}>
-                                <h3>Finishing House</h3>
-                                <TextArea
-                                    value={this.spotSentValues.finishing_house}
-                                    label="Finishing House..."
-                                    width={1152}
-                                    height={82}
+                                <DatePicker
+                                    key="date-picker"
+                                    onChange={this.handleDateChange}
+                                    label="Deadline"
+                                    value={this.spotSentValues.deadline}
+                                    align="left"
+                                    maxDate={new Date()}
                                 />
                             </div>
+                            {this.finishingOptionId === 1 &&
+                                <div className={s.finishRequestSection}>
+                                    <h3>Finishing House</h3>
+                                    <TextArea
+                                        value={this.spotSentValues.finishing_house}
+                                        label="Finishing House..."
+                                        width={1152}
+                                        height={82}
+                                    />
+                                </div>
+                            }
                             {this.finishingOptionId === 2 &&
                                 <>
                                     <div className={s.finishRequestSection}>
