@@ -162,11 +162,11 @@ class RediSpotSent
     private $tagChart;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="delivery_to_client_id", type="integer", nullable=true)
+     * @ORM\Column(name="delivery_to_client", type="string", length=45, nullable=true)
      */
-    private $deliveryToClientId;
+    private $deliveryToClient;
 
     /**
      * @var string
@@ -683,26 +683,26 @@ class RediSpotSent
     }
 
     /**
-     * Set deliveryToClientId
+     * Set deliveryToClient
      *
-     * @param integer $deliveryToClientId
+     * @param string $deliveryToClient
      * @return RediSpotSent
      */
-    public function setDeliveryToClientId($deliveryToClientId)
+    public function setDeliveryToClient($deliveryToClient)
     {
-        $this->deliveryToClientId = $deliveryToClientId;
+        $this->deliveryToClient = $deliveryToClient;
 
         return $this;
     }
 
     /**
-     * Get deliveryToClientId
+     * Get deliveryToClient
      *
-     * @return integer 
+     * @return string 
      */
-    public function getDeliveryToClientId()
+    public function getDeliveryToClient()
     {
-        return $this->deliveryToClientId;
+        return $this->deliveryToClient;
     }
 
     /**
