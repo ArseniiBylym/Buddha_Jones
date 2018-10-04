@@ -213,7 +213,7 @@ class SpotRepository extends EntityRepository
                             }));
                         }
                     } else {
-                        $row['finishOptionList'] = array();
+                        $row['finishOptionList'] = null;
                     }
                 }
             }
@@ -248,7 +248,7 @@ class SpotRepository extends EntityRepository
                             }));
                         }
                     } else {
-                        $row['finishOptionList'] = array();
+                        $row['finishOptionList'] = null;
                     }
                 }
             }

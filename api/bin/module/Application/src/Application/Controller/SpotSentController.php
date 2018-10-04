@@ -319,7 +319,7 @@ class SpotSentController extends CustomAbstractActionController
                     $spotSent->setSpecNote($specNote);
                 }
 
-                if ($deliveryToClientId !== null) {
+                if ($deliveryToClient !== null) {
                     $spotSent->setDeliveryToClient($deliveryToClient);
                 }
 
