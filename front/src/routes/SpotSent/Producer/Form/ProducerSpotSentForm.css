@@ -34,3 +34,17 @@
     margin-left: 48px;
   }
 }
+
+.finishRequestSection {
+    margin: 15px 0;
+    text-align: left;
+    &>h3 {
+        margin: 0 0 5px 0;
+        font-size: 0.95em;
+        font-weight: 600;
+        color: #a59e97;
+    }
+    &>label {
+         margin: 6px 24px 6px 0;
+     }
+}

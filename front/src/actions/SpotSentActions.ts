@@ -8,10 +8,11 @@ export class SpotSentActionsClass {
     public fetchSpotSentOptions = async (): Promise<boolean> => {
         try {
             SpotSentStore.loadingCount++;
-
             const response = (await API.getData(APIPath.SPOT_SENT_OPTIONS)) as SpotSentOptionsFromApi;
-            SpotSentStore.spotSentOptions = response;
-
+            SpotSentStore.spotSentFinishingOptions = response.finishing_option;
+            SpotSentStore.spotSentFramerateOptions = response.framerate_option;
+            SpotSentStore.spotSentRasterSizeOptions = response.raster_size_option;
+            SpotSentStore.spotSentDeliveryToClientOptions = response.delivery_to_client_option;
             SpotSentStore.loadingCount--;
             return true;
         } catch (error) {

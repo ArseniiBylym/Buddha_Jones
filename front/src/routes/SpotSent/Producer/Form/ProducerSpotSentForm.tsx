@@ -34,6 +34,24 @@ export interface ProducerSpotSentValue {
     studioNotes: string;
 }
 
+export interface SpotSentValueForSubmit {
+    full_lock: 0 | 1;
+    notes: string;
+    finishing_house: string;
+    deadline: Date;
+    finishing_request: 0 | 1;
+    music_cue_sheet: 0 | 1;
+    audio_prep: 0 | 1;
+    video_prep: 0 | 1;
+    graphics_finish: 0 | 1;
+    framerate: string | null;
+    raster_size: string | null;
+    spec_note: string;
+    tag_chart: string;
+    delivery_to_client_id: number | null;
+    delivery_note: string;
+}
+
 // Styles
 const s = require('./ProducerSpotSentForm.css');
 
@@ -59,15 +77,26 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     @observable
-    private spotSentValues = {
+    private spotSentValues: SpotSentValueForSubmit = {
         full_lock: 0,
         notes: '',
         finishing_house: '',
-        deadline: new Date()
+        deadline: new Date(),
+        finishing_request: 0,
+        music_cue_sheet: 0,
+        audio_prep: 0,
+        video_prep: 0,
+        graphics_finish: 0,
+        framerate: null,
+        raster_size: null,
+        spec_note: '',
+        tag_chart: '',
+        delivery_to_client_id: null,
+        delivery_note: '',
     };
 
     @observable private finishingOptionId: number | null = 1;
-    @observable private finishingOptionChildId: number | null = null;
+    @observable private finishingOptionChildId: number | null = 1;
     @observable private isFinishingTypeSectionOpen: boolean = false;
     @observable private isFinal: boolean = false;
 
@@ -100,11 +129,27 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     @computed
     private get fetchedFinishingOptionsChildren(): SpotSentOptionsChildrenFromApi[] | null {
-        if (SpotSentStore.spotSentOptions && SpotSentStore.spotSentOptions.finishing_option) {
+        if (SpotSentStore.spotSentFinishingOptions && SpotSentStore.spotSentFinishingOptions.length > 0) {
             let children: SpotSentOptionsChildrenFromApi[] | null = null;
-            for (let i = 0; i < SpotSentStore.spotSentOptions.finishing_option.length; i++) {
-                if (SpotSentStore.spotSentOptions.finishing_option[i].id === this.finishingOptionId) {
-                    children = SpotSentStore.spotSentOptions.finishing_option[i].children;
+            for (let i = 0; i < SpotSentStore.spotSentFinishingOptions.length; i++) {
+                if (SpotSentStore.spotSentFinishingOptions[i].id === this.finishingOptionId) {
+                    children = SpotSentStore.spotSentFinishingOptions[i].children;
+                    break;
+                }
+            }
+            return children;
+        } else {
+            return null;
+        }
+    }
+
+    @computed
+    private get fetchedDeliverToClientOptionsChildren(): SpotSentOptionsChildrenFromApi[] | null {
+        if (SpotSentStore.spotSentDeliveryToClientOptions && SpotSentStore.spotSentDeliveryToClientOptions.length > 0) {
+            let children: SpotSentOptionsChildrenFromApi[] | null = null;
+            for (let i = 0; i < SpotSentStore.spotSentDeliveryToClientOptions.length; i++) {
+                if (SpotSentStore.spotSentDeliveryToClientOptions[i].id === this.finishingOptionChildId) {
+                    children = SpotSentStore.spotSentDeliveryToClientOptions[i].children;
                     break;
                 }
             }
@@ -203,17 +248,17 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     onChange={this.handleTogglingRequest}
                                     toggleIsSetToRight={(this.finishingOptionId === 1) ? false : true}
                                     toggleOnLeft={{
-                                        label: (SpotSentStore.spotSentOptions) ? SpotSentStore.spotSentOptions.finishing_option[0].name : '',
-                                        value: (SpotSentStore.spotSentOptions) ? SpotSentStore.spotSentOptions.finishing_option[0].id : null
+                                        label: (SpotSentStore.spotSentFinishingOptions) ? SpotSentStore.spotSentFinishingOptions[0].name : '',
+                                        value: (SpotSentStore.spotSentFinishingOptions) ? SpotSentStore.spotSentFinishingOptions[0].id : null
                                     }}
                                     toggleOnRight={{
-                                        label: (SpotSentStore.spotSentOptions) ? SpotSentStore.spotSentOptions.finishing_option[1].name : '',
-                                        value: (SpotSentStore.spotSentOptions) ? SpotSentStore.spotSentOptions.finishing_option[1].id : null
+                                        label: (SpotSentStore.spotSentFinishingOptions) ? SpotSentStore.spotSentFinishingOptions[1].name : '',
+                                        value: (SpotSentStore.spotSentFinishingOptions) ? SpotSentStore.spotSentFinishingOptions[1].id : null
                                     }}
                                     align="left"
                                 />
                             </div>
-                            <div className={s.sentViaMethodsContainer} style={{marginTop: '30px'}}>
+                            <div className={s.sentViaMethodsContainer} style={{marginTop: '30px', marginBottom: '15px'}}>
                                 <Checkmark
                                     onClick={() => { this.spotSentValues.full_lock = 0; }}
                                     checked={(this.spotSentValues.full_lock === 0) ? true : false}
@@ -227,27 +272,131 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     type={'no-icon'}
                                 />
                             </div>
-                            <DatePicker
-                                key="date-picker"
-                                onChange={this.handleDateChange}
-                                label="Deadline"
-                                value={this.spotSentValues.deadline}
-                                align="left"
-                                maxDate={new Date()}
-                            />
-                            <TextArea
-                                value={this.spotSentValues.notes}
-                                label="Notes..."
-                                width={1152}
-                                height={82}
-                            />
-                            {/*<TextArea
-                                value={this.spotSentValues.finishing_house}
-                                label="Finishing House..."
-                                width={1152}
-                                height={82}
-                            />*/}
-
+                            <div className={s.finishRequestSection}>
+                                <DatePicker
+                                    key="date-picker"
+                                    onChange={this.handleDateChange}
+                                    label="Deadline"
+                                    value={this.spotSentValues.deadline}
+                                    align="left"
+                                    maxDate={new Date()}
+                                />
+                            </div>
+                            <div className={s.finishRequestSection}>
+                                <h3>Notes</h3>
+                                <TextArea
+                                    value={this.spotSentValues.notes}
+                                    label="Notes..."
+                                    width={1152}
+                                    height={82}
+                                />
+                            </div>
+                            <div className={s.finishRequestSection}>
+                                <h3>Finishing House</h3>
+                                <TextArea
+                                    value={this.spotSentValues.finishing_house}
+                                    label="Finishing House..."
+                                    width={1152}
+                                    height={82}
+                                />
+                            </div>
+                            {this.finishingOptionId === 2 &&
+                                <>
+                                    <div className={s.finishRequestSection}>
+                                        <h3>Framerate</h3>
+                                        {this.getFrameRate()}
+                                    </div>
+                                    <div className={s.finishRequestSection}>
+                                        <h3>Raster Size</h3>
+                                        {this.getRasterSize()}
+                                    </div>
+                                </>
+                            }
+                            <div className={s.finishRequestSection}>
+                                <h3>Some title</h3>
+                                {this.finishingOptionId === 2 &&
+                                    <Checkmark
+                                        onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'finishing_request')}
+                                        checked={(this.spotSentValues.finishing_request === 0) ? true : false}
+                                        label={'GFX finishing request'}
+                                        type={'no-icon'}
+                                    />
+                                }
+                                <Checkmark
+                                    onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'music_cue_sheet')}
+                                    checked={(this.spotSentValues.music_cue_sheet === 0) ? true : false}
+                                    label={'Music Cue Sheet'}
+                                    type={'no-icon'}
+                                />
+                                {this.finishingOptionId === 1 &&
+                                    <>
+                                        <Checkmark
+                                            onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'audio_prep')}
+                                            checked={(this.spotSentValues.audio_prep === 0) ? true : false}
+                                            label={'Audio prep'}
+                                            type={'no-icon'}
+                                        />
+                                        <Checkmark
+                                            onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'video_prep')}
+                                            checked={(this.spotSentValues.video_prep === 0) ? true : false}
+                                            label={'Video prep'}
+                                            type={'no-icon'}
+                                        />
+                                        <Checkmark
+                                            onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'graphics_finish')}
+                                            checked={(this.spotSentValues.graphics_finish === 0) ? true : false}
+                                            label={'Graphics Finish'}
+                                            type={'no-icon'}
+                                        />
+                                    </>
+                                }
+                            </div>
+                            {this.finishingOptionId === 2 && this.finishingOptionChildId === 2 &&
+                                <div className={s.finishRequestSection}>
+                                    <h3>Tag chart</h3>
+                                    <TextArea
+                                        value={this.spotSentValues.tag_chart}
+                                        label="Tag chart..."
+                                        width={1152}
+                                        height={82}
+                                    />
+                                </div>
+                            }
+                            {this.finishingOptionId === 2 &&
+                                <>
+                                    <div className={s.finishRequestSection}>
+                                        <h3>Spec sheet</h3>
+                                        <input type="file" id="file" name="file" multiple={true} />
+                                    </div>
+                                    <div className={s.finishRequestSection}>
+                                        <h3>Spec Notes</h3>
+                                        <TextArea
+                                            value={this.spotSentValues.spec_note}
+                                            label="Spec Notes..."
+                                            width={1152}
+                                            height={82}
+                                        />
+                                    </div>
+                                </>
+                            }
+                            {this.finishingOptionId === 2 &&
+                            (this.finishingOptionChildId === 2 || this.finishingOptionChildId === 3) &&
+                                <>
+                                    <div className={s.finishRequestSection}>
+                                        <h3>Delivery to client</h3>
+                                        {this.getDeliveryToClientChildren()}
+                                    </div>
+                                    <div className={s.finishRequestSection}>
+                                        <h3>Delivery Notes</h3>
+                                        <TextArea
+                                            value={this.spotSentValues.delivery_note}
+                                            label="Delivery Notes..."
+                                            width={1152}
+                                            height={82}
+                                        />
+                                    </div>
+                                </>
+                            }
                         </AnimateHeight>
                     </Section>
 
@@ -503,10 +652,65 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
     }
 
+    private getDeliveryToClientChildren(): JSX.Element[] {
+        let fetchedDeliverToClientOptionsChildren: SpotSentOptionsChildrenFromApi[] | null = this.fetchedDeliverToClientOptionsChildren;
+        if (fetchedDeliverToClientOptionsChildren) {
+            return fetchedDeliverToClientOptionsChildren.map((children: SpotSentOptionsChildrenFromApi, index: number) => {
+                return (
+                    <Checkmark
+                        key={'delivery-to-client-option-' + index}
+                        onClick={() => { this.spotSentValues.delivery_to_client_id = children.id; }}
+                        checked={(children.id === this.spotSentValues.delivery_to_client_id) ? true : false}
+                        label={children.name}
+                        type={'no-icon'}
+                    />
+                );
+            });
+        } else {
+            return [];
+        }
+    }
+
+    private getFrameRate(): JSX.Element[] {
+        if (SpotSentStore.spotSentFramerateOptions && SpotSentStore.spotSentFramerateOptions.length > 0) {
+            return SpotSentStore.spotSentFramerateOptions.map((frameRate: string, index: number) => {
+                return (
+                    <Checkmark
+                        key={'frame-rate-' + index}
+                        onClick={() => { this.spotSentValues.framerate = frameRate; }}
+                        checked={(this.spotSentValues.framerate === frameRate) ? true : false}
+                        label={frameRate}
+                        type={'no-icon'}
+                    />
+                );
+            });
+        } else {
+            return [];
+        }
+    }
+
+    private getRasterSize(): JSX.Element[] {
+        if (SpotSentStore.spotSentRasterSizeOptions && SpotSentStore.spotSentRasterSizeOptions.length > 0) {
+            return SpotSentStore.spotSentRasterSizeOptions.map((rasterSize: string, index: number) => {
+                return (
+                    <Checkmark
+                        key={'raster-size-' + index}
+                        onClick={() => { this.spotSentValues.raster_size = rasterSize; }}
+                        checked={(this.spotSentValues.raster_size === rasterSize) ? true : false}
+                        label={rasterSize}
+                        type={'no-icon'}
+                    />
+                );
+            });
+        } else {
+            return [];
+        }
+    }
+
     @action
     private handleTogglingRequest = (isSetToRight: boolean, selectedSideContent: ToggleSideContent) => {
         this.finishingOptionId = (selectedSideContent.value as number);
-        this.finishingOptionChildId = null;
+        this.finishingOptionChildId = 1;
     };
 
     @action
@@ -517,6 +721,15 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     @action
     private handleFinishingTypeChildSelect = (finishingOptionChildId: number | null): void => {
         this.finishingOptionChildId = finishingOptionChildId;
+    };
+
+    @action
+    private handleFinishingTypeCheckmarkSelect = (param: string): void => {
+        if (this.spotSentValues[param] === 0) {
+            this.spotSentValues[param] = 1;
+        } else {
+            this.spotSentValues[param] = 0;
+        }
     };
 
 }
