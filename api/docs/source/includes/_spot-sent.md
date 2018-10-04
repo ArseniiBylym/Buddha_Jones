@@ -803,7 +803,7 @@ axios.post('/spot-sent', {
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | sent_via_method | string| null | Sent via method id. comman separated ids like "1,2,3,4"
-**true** | finish_option | string| null | Sent finish option, comman separated ids like "1,2,3,4"
+false | finish_option | string| null | Sent finish option, comman separated ids of parent and client, like "1,2" (parent_id,child_id)
 false | notes | string | null | Notes
 false | status_id | string | null | Status id 
 false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"spot_id":10,"version_id":2},{"spot_id":11}])  
@@ -880,7 +880,7 @@ axios.put('/spot-sent/1', {
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 false | sent_via_method | string| null | Sent via method id. comman separated ids like "1,2,3,4"
-false | finish_option | string| null | Sent finish option, comman separated ids like "1,2,3,4"
+false | finish_option | string| null | Sent finish option, comman separated ids of parent and client, like "1,2" (parent_id,child_id)
 false | notes | string | null | Notes
 false | status_id | string | null | Status id 
 false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"spot_id":10,"version_id":2},{"spot_id":11}])  

@@ -105,7 +105,7 @@ class SpotSentController extends CustomAbstractActionController
             }
         }
 
-        if ($sentViaMethod && $finishOption) {
+        if ($sentViaMethod || $finishOption) {
             $now = new \DateTime('now');
 
             $spotSent = new RediSpotSent();
@@ -240,7 +240,7 @@ class SpotSentController extends CustomAbstractActionController
             }
         }
 
-        if ($id && $sentViaMethod && $finishOption) {
+        if ($id) {
             $spotSent = $this->_spotSentRepository->find($id);
 
             if ($spotSent) {
