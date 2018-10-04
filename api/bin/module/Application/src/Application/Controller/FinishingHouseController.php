@@ -18,10 +18,7 @@ class FinishingHouseController extends CustomAbstractActionController
 {
   public function getList()
   {
-    // check permission
-    $canViewCreativeSpot = $this->_usersRepo->extractPermission($this->_user_permission, 22, 'view_or_edit');
-    $data = ($canViewCreativeSpot || $this->_user_type_id == 100)
-      ? $this->_spotRepo->getAllFinishingHouse() : array();
+    $data = $this->_spotRepo->getAllFinishingHouse();
 
     $response = array(
       'status' => 1,
@@ -37,7 +34,10 @@ class FinishingHouseController extends CustomAbstractActionController
 
   public function create($data)
   {
-    if ($this->_user_type_id == 100) {
+    $canViewSpot = $this->_usersRepo->extractPermission($this->_user_permission, 22, 'view_or_edit');
+    $canCreate = ($canViewSpot || $this->_user_type_id == 100);
+
+    if ($canCreate) {
       $name = trim(isset($data['name']) ? $data['name'] : '');
 
       if ($name) {
@@ -84,7 +84,10 @@ class FinishingHouseController extends CustomAbstractActionController
 
   public function update($id, $data)
   {
-    if ($this->_user_type_id == 100) {
+    $canViewSpot = $this->_usersRepo->extractPermission($this->_user_permission, 22, 'view_or_edit');
+    $canCreate = ($canViewSpot || $this->_user_type_id == 100);
+
+    if ($canCreate) {
       $name = trim(isset($data['name']) ? $data['name'] : '');
 
       $checkExisting = $this->_finishingHouseRepository->find($id);

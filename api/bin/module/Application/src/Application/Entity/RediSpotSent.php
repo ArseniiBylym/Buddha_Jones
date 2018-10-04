@@ -113,6 +113,13 @@ class RediSpotSent
     private $audioPrep;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="audio", type="string", length=45, nullable=true)
+     */
+    private $audio;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="video_prep", type="smallint", nullable=true)
@@ -498,6 +505,29 @@ class RediSpotSent
     public function getAudioPrep()
     {
         return $this->audioPrep;
+    }
+
+    /**
+     * Set audio
+     *
+     * @param string $audio
+     * @return RediSpotSent
+     */
+    public function setAudio($audio)
+    {
+        $this->audio = $audio;
+
+        return $this;
+    }
+
+    /**
+     * Get audio
+     *
+     * @return string 
+     */
+    public function getAudio()
+    {
+        return $this->audio;
     }
 
     /**

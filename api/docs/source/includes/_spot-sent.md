@@ -766,9 +766,9 @@ axios.post('/spot-sent', {
     notes:some note
     deadline:9/3/2018
     finishing_house:test finishing house
-    framerate_id:11
+    framerate:11
     framerate_note:test note 1
-    raster_size_id:22
+    raster_size:22
     raster_size_note:some noe 222
     music_cue_sheet:1
     audio_prep:1
@@ -810,10 +810,10 @@ false | spot_version | JSON encoded string | null | Spot version information (se
 false | full_lock |  | null | send 0/1
 false | deadline | string | null | deadline date
 false | finishing_house | string | null | Finishing house
-false | framerate_id | int | null | Finishing house
-false | framerate_note | string | null | Finishing house
-false | raster_size_id | int | null | Finishing house
-false | raster_size_note | string | null | Finishing house
+false | framerate | string | null | framerate string, like '29.97i'
+false | framerate_note | string | null | Finishing note
+false | raster_size | int | null | raster size ,like '1x1'
+false | raster_size_note | string | null | raster size note
 false | music_cue_sheet | int | null | send 0/1
 false | audio_prep | int | null | send 0/1
 false | video_prep | int | null | send 0/1
@@ -822,6 +822,84 @@ false | spec_sheet_file | JSON encoded list base64 of file | null | json encoded
 false | tag_chart | string | null | Tag chart
 false | delivery_to_client_id | int | null | Delivery to client ID 
 false | delivery_note | string | null | Delivery note
+false | audio | string | null | Sent audio option, comman separated ids like "1,2,3,4"
+
+
+## Create Spot Sent 
+
+Create a new spot sent entry.
+
+> Sample request
+
+```javascript
+axios.put('/spot-sent/1', {
+    sent_via_method:3,4,5
+    notes:some note
+    status:5
+    spot_version:[{"spot_id":10,"version_id":2},{"spot_id":11}]
+    finish_option:1,2,3
+    project_id:1
+    full_lock:1
+    notes:some note
+    deadline:9/3/2018
+    finishing_house:test finishing house
+    framerate:11
+    framerate_note:test note 1
+    raster_size:22
+    raster_size_note:some noe 222
+    music_cue_sheet:1
+    audio_prep:1
+    video_prep:1
+    spec_note:some note
+    spec_sheet_file:["file 1.jpg","file2.jpg"]
+    tag_chart:
+    delivery_to_client_id:8
+    delivery_note:some note
+    status_id:2
+});
+```
+
+> 200: success response
+
+```json
+{
+  "status": 1,
+  "message": "Request successful.",
+  "data": {
+    "spot_sent_id": 4
+  }
+}
+```
+
+### HTTP Request
+
+`PUT /spot-sent/:spot_sent_id`
+
+### Query Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+false | sent_via_method | string| null | Sent via method id. comman separated ids like "1,2,3,4"
+false | finish_option | string| null | Sent finish option, comman separated ids like "1,2,3,4"
+false | notes | string | null | Notes
+false | status_id | string | null | Status id 
+false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"spot_id":10,"version_id":2},{"spot_id":11}])  
+false | full_lock |  | null | send 0/1
+false | deadline | string | null | deadline date
+false | finishing_house | string | null | Finishing house
+false | framerate | string | null | framerate string, like '29.97i'
+false | framerate_note | string | null | Finishing note
+false | raster_size | int | null | raster size ,like '1x1'
+false | raster_size_note | string | null | raster size note
+false | music_cue_sheet | int | null | send 0/1
+false | audio_prep | int | null | send 0/1
+false | video_prep | int | null | send 0/1
+false | spec_note | string | null | Finishing house
+false | spec_sheet_file | JSON encoded list base64 of file | null | json encoded array of base64 encoded of file. like ["data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE.......","data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE......."]
+false | tag_chart | string | null | Tag chart
+false | delivery_to_client_id | int | null | Delivery to client ID 
+false | delivery_note | string | null | Delivery note
+false | audio | string | null | Sent audio option, comman separated ids like "1,2,3,4"
 
 
 ## Get all finishing house
@@ -913,7 +991,7 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | name | string| null | Finishing house namne
 
-**only admin can add new finishing hosue**
+**only admin and user who has spot permission can add new finishing hosue**
 
 
 ## Update finishing option
@@ -965,4 +1043,4 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | name | string| null | Finishing house namne
 
-**only admin can update finishing hosue**
+**only admin and user who has spot permission can update new finishing hosue**
