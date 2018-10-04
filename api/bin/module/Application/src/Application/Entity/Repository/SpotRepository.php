@@ -16,7 +16,8 @@ class SpotRepository extends EntityRepository
 {
     private $_className = "\Application\Entity\RediSpot";
 
-    public function __construct(EntityManager $entityManager) {
+    public function __construct(EntityManager $entityManager)
+    {
         $classMetaData = $entityManager->getClassMetadata($this->_className);
         parent::__construct($entityManager, $classMetaData);
     }
@@ -59,7 +60,7 @@ class SpotRepository extends EntityRepository
             $dqlFilter[] = "(a.spotName LIKE '%" . $filter['search'] . "%' )";
         }
 
-        if(count($dqlFilter)) {
+        if (count($dqlFilter)) {
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
@@ -70,7 +71,7 @@ class SpotRepository extends EntityRepository
         $query->setMaxResults($length);
         $result = $query->getArrayResult();
 
-        foreach($result as &$row) {
+        foreach ($result as &$row) {
             $row['id'] = (int)$row['id'];
         }
 
@@ -102,16 +103,16 @@ class SpotRepository extends EntityRepository
             $dqlFilter[] = "(a.spotName LIKE '%" . $filter['search'] . "%' )";
         }
 
-        if(count($dqlFilter)) {
+        if (count($dqlFilter)) {
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $dql .= " ORDER BY a.id ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
-        $result =  $query->getArrayResult();
+        $result = $query->getArrayResult();
 
-        return (isset($result[0]['total_count'])?(int)$result[0]['total_count']:0);
+        return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
     }
 
     public function getById($spotId)
@@ -126,13 +127,13 @@ class SpotRepository extends EntityRepository
 
         $data = $query->getArrayResult();
 
-        return (isset($data[0])?$data[0]:null);
+        return (isset($data[0]) ? $data[0] : null);
     }
 
     public function searchSpotSent($filter = array())
     {
-        $offset = (!empty($filter['offset']))?(int)$filter['offset'] : 0;
-        $length = (!empty($filter['length']))?(int)$filter['length'] : 10;
+        $offset = (!empty($filter['offset'])) ? (int)$filter['offset'] : 0;
+        $length = (!empty($filter['length'])) ? (int)$filter['length'] : 10;
 
         $dql = "SELECT 
                   sc
@@ -142,24 +143,24 @@ class SpotRepository extends EntityRepository
 
         if (!empty($filter['id'])) {
             $dqlFilter[] = "sc.id= :id";
-        }    
+        }
 
         if (!empty($filter['status_id'])) {
             $dqlFilter[] = "sc.statusId = :status_id";
         }
 
-        if(count($dqlFilter)) {
+        if (count($dqlFilter)) {
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
-        if(!empty($filter['sort']) && $filter['sort'] === 'priority') {
+        if (!empty($filter['sort']) && $filter['sort'] === 'priority') {
             $orderBy = " ORDER BY sc.statusId ASC, sc.updatedAt DESC ";
         } else {
             $orderBy = " ORDER BY sc.updatedAt DESC ";
         }
 
         $dql .= $orderBy;
-        
+
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setFirstResult($offset);
         $query->setMaxResults($length);
@@ -175,34 +176,59 @@ class SpotRepository extends EntityRepository
         $result = $query->getArrayResult();
         $methodes = $this->getSpotSentOption('sent_via_method');
         $finishingOptions = $this->getSpotSentOption('finishing_option');
+        $audioOptions = $this->getSpotSentOption('audio_option');
 
-        foreach($result as &$row) {
+        foreach ($result as &$row) {
             $row['id'] = (int)$row['id'];
             $row['projectSpotVersion'] = $this->getSpotVersionBySpotSentId($row['id']);
 
-            if(!empty($row['sentViaMethod'])) {
+            if (!empty($row['sentViaMethod'])) {
                 $methodIds = explode(',', $row['sentViaMethod']);
 
-                if(count($methodIds)) {
+                if (count($methodIds)) {
                     $methodIds = array_map('trim', $methodIds);
 
-                    $row['sentViaMethodList'] = array_values(array_filter($methodes, function($method) use ($methodIds){
+                    $row['sentViaMethodList'] = array_values(array_filter($methodes, function ($method) use ($methodIds) {
                         return in_array($method['id'], $methodIds);
                     }));
                 }
             }
 
-            if(!empty($row['finishOption'])) {
+            if (!empty($row['finishOption'])) {
                 $finishingOptionIds = explode(',', $row['finishOption']);
 
-                if(count($finishingOptionIds)) {
+                if (count($finishingOptionIds)) {
                     $finishingOptionIds = array_map('trim', $finishingOptionIds);
 
-                    $row['finishOptionList'] = array_values(array_filter($finishingOptions, function($option) use ($finishingOptionIds){
-                        return in_array($option['id'], $finishingOptionIds);
+                    if (count($finishingOptionIds) === 2) {
+                        $row['finishOptionList'] = array_values(array_filter($finishingOptions, function ($option) use ($finishingOptionIds) {
+                            return $option['id'] == $finishingOptionIds[0];
+                        }));
+
+                        if (count($row['finishOptionList'])) {
+                            $row['finishOptionList'] = $row['finishOptionList'][0];
+                            $row['finishOptionList']['children'] = array_values(array_filter($row['finishOptionList']['children'], function ($option) use ($finishingOptionIds) {
+                                return $option['id'] == $finishingOptionIds[1];
+                            }));
+                        }
+                    } else {
+                        $row['finishOptionList'] = array();
+                    }
+                }
+            }
+
+            if (!empty($row['audio'])) {
+                $optionIds = explode(',', $row['audio']);
+
+                if (count($optionIds)) {
+                    $optionIds = array_map('trim', $optionIds);
+
+                    $row['audioList'] = array_values(array_filter($audioOptions, function ($option) use ($optionIds) {
+                        return in_array($option['id'], $optionIds);
                     }));
                 }
             }
+
         }
 
         return $result;
@@ -218,13 +244,13 @@ class SpotRepository extends EntityRepository
 
         if (!empty($filter['id'])) {
             $dqlFilter[] = "sc.id= :id";
-        }    
+        }
 
         if (!empty($filter['status_id'])) {
             $dqlFilter[] = "sc.statusId = :status_id";
         }
 
-        if(count($dqlFilter)) {
+        if (count($dqlFilter)) {
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
@@ -238,14 +264,14 @@ class SpotRepository extends EntityRepository
             $query->setParameter("status_id", $filter['status_id']);
         }
 
-        $result =  $query->getArrayResult();
+        $result = $query->getArrayResult();
 
-        return (isset($result[0]['total_count'])?(int)$result[0]['total_count']:0);
+        return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
     }
 
     public function validateWorkStageForSpotSent($workStage)
     {
-        if(count($workStage)) {
+        if (count($workStage)) {
             $dql = "SELECT DISTINCT COALESCE(ws.parentId, 0) as distinctParentId
                 FROM \Application\Entity\RediWorkStage ws 
                 WHERE ws.id IN (:work_stage_ids)";
@@ -253,9 +279,9 @@ class SpotRepository extends EntityRepository
             $query = $this->getEntityManager()->createQuery($dql);
             $query->setParameter("work_stage_ids", $workStage);
 
-            $result =  $query->getArrayResult();
+            $result = $query->getArrayResult();
 
-            $response = (count($result)<=1) ? true : false;
+            $response = (count($result) <= 1) ? true : false;
         } else {
             $response = true;
         }
@@ -263,23 +289,25 @@ class SpotRepository extends EntityRepository
         return $response;
     }
 
-    public function getSpotVersionBySpotSentId($spotSentId, $returnWorker=false)
+    public function getSpotVersionBySpotSentId($spotSentId, $returnWorker = false)
     {
-        if($returnWorker){
+        if ($returnWorker) {
             $extraSelect = ",sstsv.id ";
         } else {
             $extraSelect = "";
         }
         $dql = "SELECT 
-                  sstsv.spotId, s.spotName,
-                  sstsv.versionId, v.versionName,
+                  sv.spotId, s.spotName,
+                  sv.versionId, v.versionName,
                   p.id as projectId,
                   c.id as campaignId, c.campaignName" . $extraSelect . "
                 FROM \Application\Entity\RediSpotSentToSpotVersion sstsv 
+                INNER JOIN \Application\Entity\RediSpotVersion sv
+                  WITH sv.id = sstsv.spotVersionId
                 INNER JOIN \Application\Entity\RediSpotSent ss
                   WITH ss.id=:spot_sent_id
                 INNER JOIN \Application\Entity\RediSpot s
-                  WITH s.id=sstsv.spotId
+                  WITH s.id=sv.spotId
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
                     WITH ptc.id=s.projectCampaignId
                 LEFT JOIN \Application\Entity\RediProject p
@@ -287,16 +315,16 @@ class SpotRepository extends EntityRepository
                 LEFT JOIN \Application\Entity\RediCampaign c
                   WITH c.id=ptc.campaignId
                 LEFT JOIN \Application\Entity\RediVersion v 
-                   WITH v.id=sstsv.versionId
+                   WITH v.id=sv.versionId
                 WHERE sstsv.spotSentId=:spot_sent_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter("spot_sent_id", $spotSentId);
 
-        $result =  $query->getArrayResult();
+        $result = $query->getArrayResult();
 
-        if($returnWorker) {
-            foreach($result as &$row) {
+        if ($returnWorker) {
+            foreach ($result as &$row) {
                 $dql1 = "SELECT 
                   u.id, u.username, u.email, u.firstName, u.lastName, ut.typeName
                 FROM \Application\Entity\RediSpotSentToSpotVersionToEditorDesigner sed 
@@ -309,10 +337,10 @@ class SpotRepository extends EntityRepository
                 $query1 = $this->getEntityManager()->createQuery($dql1);
                 $query1->setParameter("spot_sent_spot_version_id", $row['id']);
 
-                $result1 =  $query1->getArrayResult();
+                $result1 = $query1->getArrayResult();
 
 
-                foreach($result1 as $row1) {
+                foreach ($result1 as $row1) {
                     $row['worker'][strtolower($row1['typeName'])][] = $row1;
                 }
 
@@ -335,7 +363,7 @@ class SpotRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter("spot_sent_id", $spotSentId);
 
-        $result =  $query->getArrayResult();
+        $result = $query->getArrayResult();
 
         return $result;
     }
@@ -355,7 +383,7 @@ class SpotRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter("spot_sent_id", $spotSentId);
 
-        $result =  $query->getArrayResult();
+        $result = $query->getArrayResult();
 
         return $result;
     }
@@ -389,7 +417,7 @@ class SpotRepository extends EntityRepository
 
     }
 
-    public function fullSearch($filter=[], $offset = 0, $length = 10)
+    public function fullSearch($filter = [], $offset = 0, $length = 10)
     {
         $dql = "SELECT 
                     cu.customerName,
@@ -417,7 +445,7 @@ class SpotRepository extends EntityRepository
             $dqlFilter[] = "(p.projectName LIKE :search OR  p.projectCode LIKE :search OR s.spotName LIKE :search)";
         }
 
-        if(count($dqlFilter)) {
+        if (count($dqlFilter)) {
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
@@ -426,7 +454,7 @@ class SpotRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery($dql);
 
-        if($filter['search']) {
+        if ($filter['search']) {
             $query->setParameter('search', $filter['search'] . '%');
         }
 
@@ -434,9 +462,9 @@ class SpotRepository extends EntityRepository
         $query->setMaxResults($length);
         $result = $query->getArrayResult();
 
-        foreach($result as &$row) {
-            $row['campaignId'] = $row['campaignId']?(int)$row['campaignId']:null;
-            $row['spotId'] = $row['spotId']?(int)$row['spotId']:null;
+        foreach ($result as &$row) {
+            $row['campaignId'] = $row['campaignId'] ? (int)$row['campaignId'] : null;
+            $row['spotId'] = $row['spotId'] ? (int)$row['spotId'] : null;
 
             $versionDql = "SELECT 
                             v.versionName 
@@ -453,7 +481,7 @@ class SpotRepository extends EntityRepository
         return $result;
     }
 
-    public function fullSearchCount($filter=[])
+    public function fullSearchCount($filter = [])
     {
         $dql = "SELECT 
                     COUNT(DISTINCT s) AS total_count
@@ -473,22 +501,23 @@ class SpotRepository extends EntityRepository
             $dqlFilter[] = "(p.projectName LIKE :search OR  p.projectCode LIKE :search OR s.spotName LIKE :search)";
         }
 
-        if(count($dqlFilter)) {
+        if (count($dqlFilter)) {
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $query = $this->getEntityManager()->createQuery($dql);
 
-        if($filter['search']) {
+        if ($filter['search']) {
             $query->setParameter('search', $filter['search'] . '%');
         }
 
-        $result =  $query->getArrayResult();
+        $result = $query->getArrayResult();
 
-        return (isset($result[0]['total_count'])?(int)$result[0]['total_count']:0);
+        return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
     }
 
-    public function getSpotSentOption($key = null) {
+    public function getSpotSentOption($key = null)
+    {
         $dql = "SELECT 
                   sso.value
                 FROM \Application\Entity\RediSpotSentOption sso
@@ -500,13 +529,13 @@ class SpotRepository extends EntityRepository
 
         $response = null;
 
-        if( !empty($result[0])) {
+        if (!empty($result[0])) {
             $result = json_decode($result[0]['value'], true);
 
-            foreach($result as $row) {
+            foreach ($result as $row) {
                 $response[] = $row;
 
-                if(!empty($row['children'])) {
+                if (!empty($row['children']) && $key !== 'finishing_option') {
                     array_push($response, ...$row['children']);
                 }
             }
@@ -515,7 +544,8 @@ class SpotRepository extends EntityRepository
         return $response;
     }
 
-    public function getAllFinishingHouse() {
+    public function getAllFinishingHouse()
+    {
         $dql = "SELECT 
                   fh
                 FROM \Application\Entity\RediFinishingHouse fh";

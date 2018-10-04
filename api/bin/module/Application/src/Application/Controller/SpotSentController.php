@@ -27,16 +27,16 @@ class SpotSentController extends CustomAbstractActionController
         $data = $this->_spotRepo->searchSpotSent($filter);
         $totalCount = $this->_spotRepo->searchSpotSentCount($filter);
 
-        foreach($data as &$dataRow) {
-            if(!empty($dataRow['specSheetFile'])) {
+        foreach ($data as &$dataRow) {
+            if (!empty($dataRow['specSheetFile'])) {
                 $dataRow['specSheetFile'] = json_decode($dataRow['specSheetFile'], true);
 
-                foreach($dataRow['specSheetFile'] as &$file) {
+                foreach ($dataRow['specSheetFile'] as &$file) {
                     $file = $this->_config['site_url'] . 'spec_sheet/' . $dataRow['id'] . '/' . $file;
                 }
             }
 
-            if(!empty($dataRow['projectSpotVersion'])) {
+            if (!empty($dataRow['projectSpotVersion'])) {
                 foreach ($dataRow['projectSpotVersion'] as &$projectSpotVersion) {
                     // set project name
                     $projectName = $this->_projectRepo->getProjectName($projectSpotVersion['projectId'], $this->_user_type_id, true);
@@ -73,19 +73,20 @@ class SpotSentController extends CustomAbstractActionController
     {
         $specSheetDir = $this->_config['directory_path']['spot_sent_spec_sheet'];
 
-        $projectId = (!empty($data['project_id']))?(int)$data['project_id']: 0;
-        $fullLock = (!empty($data['full_lock']))? 1 : 0;
+        $projectId = (!empty($data['project_id'])) ? (int)$data['project_id'] : 0;
+        $fullLock = (!empty($data['full_lock'])) ? 1 : 0;
         $sentViaMethod = (!empty($data['sent_via_method'])) ? trim($data['sent_via_method']) : null;
         $finishOption = (!empty($data['finish_option'])) ? trim($data['finish_option']) : null;
         $notes = (!empty($data['notes'])) ? trim($data['notes']) : null;
         $deadline = (!empty($data['deadline'])) ? trim($data['deadline']) : null;
         $finishingHouse = (!empty($data['finishing_house'])) ? trim($data['finishing_house']) : null;
-        $framerateId = (!empty($data['framerate_id'])) ? (int)trim($data['framerate_id']) : null;
+        $framerate = (!empty($data['framerate'])) ? trim($data['framerate']) : null;
         $framerateNote = (!empty($data['framerate_note'])) ? trim($data['framerate_note']) : null;
-        $rasterSizeId = (!empty($data['raster_size_id'])) ? (int)trim($data['raster_size_id']) : null;
+        $rasterSize = (!empty($data['raster_size'])) ? trim($data['raster_size']) : null;
         $rasterSizeNote = (!empty($data['raster_size_note'])) ? trim($data['raster_size_note']) : null;
         $musicCueSheet = (!empty($data['music_cue_sheet'])) ? 1 : 0;
         $audioPrep = (!empty($data['audio_prep'])) ? 1 : 0;
+        $audio = (isset($data['audio'])) ? $data['audio'] : null;
         $videoPrep = (!empty($data['video_prep'])) ? 1 : 0;
         $specNote = (!empty($data['spec_note'])) ? trim($data['spec_note']) : null;
         $specSheetFile = (!empty($data['spec_sheet_file'])) ? trim($data['spec_sheet_file']) : null;
@@ -96,8 +97,8 @@ class SpotSentController extends CustomAbstractActionController
 
         $files = array();
 
-        if($specSheetFile) {
-            $files = json_decode($specSheetFile, true); 
+        if ($specSheetFile) {
+            $files = json_decode($specSheetFile, true);
 
             foreach ($files as $key => $file) {
                 $files[$key] = $this->_commonRepo->base64DecodeFile($file);
@@ -113,12 +114,13 @@ class SpotSentController extends CustomAbstractActionController
             $spotSent->setSentViaMethod($sentViaMethod);
             $spotSent->setDeadline($deadline);
             $spotSent->setFinishingHouse($finishingHouse);
-            $spotSent->setFramerateId($framerateId);
+            $spotSent->setFramerate($framerate);
             $spotSent->setFramerateNote($framerateNote);
-            $spotSent->setRasterSizeId($rasterSizeId);
+            $spotSent->setRasterSize($rasterSize);
             $spotSent->setRasterSizeNote($rasterSizeNote);
             $spotSent->setMusicCueSheet($musicCueSheet);
             $spotSent->setAudioPrep($audioPrep);
+            $spotSent->setAudio($audio);
             $spotSent->setVideoPrep($videoPrep);
             $spotSent->setSpecNote($specNote);
             $spotSent->setDeliveryToClientId($deliveryToClientId);
@@ -139,11 +141,11 @@ class SpotSentController extends CustomAbstractActionController
             // save files
             $fileNames = array();
 
-            if(count($files)) {
+            if (count($files)) {
                 $newDir = $specSheetDir . $spotSentId;
                 mkdir($newDir);
 
-                foreach($files as $key => $file) {
+                foreach ($files as $key => $file) {
                     $newFileName = md5($key) . $file['extension'];
                     $fileNames[] = $newFileName;
                     $newFileName = $newDir . '/' . $newFileName;
@@ -160,7 +162,7 @@ class SpotSentController extends CustomAbstractActionController
                 if (!empty($row['spot_id'])) {
                     $spot = $this->_spotRepository->find($row['spot_id']);
 
-                    if(!empty($row['version_id'])) {
+                    if (!empty($row['version_id'])) {
                         $version = $this->_versionRepository->find($row['version_id']);
                     }
 
@@ -169,7 +171,7 @@ class SpotSentController extends CustomAbstractActionController
                         $spotSentToSpotVersion->setSpotSentId($spotSentId);
                         $spotSentToSpotVersion->setSpotId($row['spot_id']);
 
-                        if(!empty($row['version_id']) && $version){
+                        if (!empty($row['version_id']) && $version) {
                             $spotSentToSpotVersion->setVersionId($row['version_id']);
                         }
 
@@ -206,19 +208,20 @@ class SpotSentController extends CustomAbstractActionController
     {
         $specSheetDir = $this->_config['directory_path']['spot_sent_spec_sheet'];
 
-        $projectId = (isset($data['project_id']))?(int)$data['project_id']: null;
-        $fullLock = (isset($data['full_lock']))? (int)$data['full_lock'] : null;
+        $projectId = (isset($data['project_id'])) ? (int)$data['project_id'] : null;
+        $fullLock = (isset($data['full_lock'])) ? (int)$data['full_lock'] : null;
         $sentViaMethod = (isset($data['sent_via_method'])) ? trim($data['sent_via_method']) : null;
         $finishOption = (isset($data['finish_option'])) ? trim($data['finish_option']) : null;
         $notes = (isset($data['notes'])) ? trim($data['notes']) : null;
         $deadline = (isset($data['deadline'])) ? trim($data['deadline']) : null;
         $finishingHouse = (isset($data['finishing_house'])) ? trim($data['finishing_house']) : null;
-        $framerateId = (isset($data['framerate_id'])) ? (int)trim($data['framerate_id']) : null;
+        $framerate = (isset($data['framerate_id'])) ? trim($data['framerate']) : null;
         $framerateNote = (isset($data['framerate_note'])) ? trim($data['framerate_note']) : null;
-        $rasterSizeId = (isset($data['raster_size_id'])) ? (int)trim($data['raster_size_id']) : null;
+        $rasterSize = (isset($data['raster_size'])) ? trim($data['raster_size']) : null;
         $rasterSizeNote = (isset($data['raster_size_note'])) ? trim($data['raster_size_note']) : null;
         $musicCueSheet = (isset($data['music_cue_sheet'])) ? (int)$data['music_cue_sheet'] : null;
         $audioPrep = (isset($data['audio_prep'])) ? (int)$data['audio_prep'] : null;
+        $audio = (isset($data['audio'])) ? $data['audio'] : null;
         $videoPrep = (isset($data['video_prep'])) ? (int)$data['video_prep'] : null;
         $specNote = (isset($data['spec_note'])) ? trim($data['spec_note']) : null;
         $specSheetFile = (isset($data['spec_sheet_file'])) ? trim($data['spec_sheet_file']) : null;
@@ -229,8 +232,8 @@ class SpotSentController extends CustomAbstractActionController
 
         $files = array();
 
-        if($specSheetFile) {
-            $files = json_decode($specSheetFile, true); 
+        if ($specSheetFile) {
+            $files = json_decode($specSheetFile, true);
 
             foreach ($files as $key => $file) {
                 $files[$key] = $this->_commonRepo->base64DecodeFile($file);
@@ -240,78 +243,82 @@ class SpotSentController extends CustomAbstractActionController
         if ($id && $sentViaMethod && $finishOption) {
             $spotSent = $this->_spotSentRepository->find($id);
 
-            if($spotSent) {
+            if ($spotSent) {
                 $now = new \DateTime('now');
 
-                if($projectId !== null) {
+                if ($projectId !== null) {
                     $spotSent->setProjectId($projectId);
                 }
 
-                if($fullLock !== null) {
+                if ($fullLock !== null) {
                     $spotSent->setFullLock($fullLock);
                 }
 
-                if($sentViaMethod !== null) {
+                if ($sentViaMethod !== null) {
                     $spotSent->setSentViaMethod($sentViaMethod);
                 }
 
-                if($deadline !== null) {
+                if ($deadline !== null) {
                     $spotSent->setDeadline($deadline);
                 }
 
-                if($finishingHouse !== null) {
+                if ($finishingHouse !== null) {
                     $spotSent->setFinishingHouse($finishingHouse);
                 }
 
-                if($framerateId !== null) {
-                    $spotSent->setFramerateId($framerateId);
+                if ($framerate !== null) {
+                    $spotSent->setFramerate($framerate);
                 }
 
-                if($framerateNote !== null) {
+                if ($framerateNote !== null) {
                     $spotSent->setFramerateNote($framerateNote);
                 }
 
-                if($rasterSizeId !== null) {
-                    $spotSent->setRasterSizeId($rasterSizeId);
+                if ($rasterSize !== null) {
+                    $spotSent->setRasterSize($rasterSize);
                 }
 
-                if($rasterSizeNote !== null) {
+                if ($rasterSizeNote !== null) {
                     $spotSent->setRasterSizeNote($rasterSizeNote);
                 }
 
-                if($musicCueSheet !== null) {
+                if ($musicCueSheet !== null) {
                     $spotSent->setMusicCueSheet($musicCueSheet);
                 }
 
-                if($audioPrep !== null) {
+                if ($audioPrep !== null) {
                     $spotSent->setAudioPrep($audioPrep);
                 }
 
-                if($projectId !== null) {
+                if ($audio !== null) {
+                    $spotSent->setAudio($audio);
+                }
+
+                if ($projectId !== null) {
                     $spotSent->setVideoPrep($videoPrep);
                 }
 
-                if($videoPrep !== null) {
+                if ($videoPrep !== null) {
                     $spotSent->setSpecNote($specNote);
                 }
 
-                if($deliveryToClientId !== null) {
+                if ($deliveryToClientId !== null) {
                     $spotSent->setDeliveryToClientId($deliveryToClientId);
                 }
 
-                if($deliveryNote !== null) {
+                if ($deliveryNote !== null) {
                     $spotSent->setDeliveryNote($deliveryNote);
                 }
 
-                if($statusId !== null) {
+                if ($statusId !== null) {
                     $spotSent->setStatusId($statusId);
                 }
 
-                if($notes !== null) {
+                if ($notes !== null) {
                     $spotSent->setNotes($notes);
                 }
 
-                if($finishOption !== null) {
+                if ($finishOption !== null) {
                     $spotSent->setFinishOption($finishOption);
                 }
 
@@ -326,11 +333,11 @@ class SpotSentController extends CustomAbstractActionController
                 // save files
                 $fileNames = array();
 
-                if(count($files)) {
+                if (count($files)) {
                     $newDir = $specSheetDir . $spotSentId;
                     mkdir($newDir);
 
-                    foreach($files as $key => $file) {
+                    foreach ($files as $key => $file) {
                         $newFileName = md5($key) . $file['extension'];
                         $fileNames[] = $newFileName;
                         $newFileName = $newDir . '/' . $newFileName;
@@ -347,7 +354,7 @@ class SpotSentController extends CustomAbstractActionController
                     if (!empty($row['spot_id'])) {
                         $spot = $this->_spotRepository->find($row['spot_id']);
 
-                        if(!empty($row['version_id'])) {
+                        if (!empty($row['version_id'])) {
                             $version = $this->_versionRepository->find($row['version_id']);
                         }
 
@@ -356,7 +363,7 @@ class SpotSentController extends CustomAbstractActionController
                             $spotSentToSpotVersion->setSpotSentId($spotSentId);
                             $spotSentToSpotVersion->setSpotId($row['spot_id']);
 
-                            if(!empty($row['version_id']) && $version){
+                            if (!empty($row['version_id']) && $version) {
                                 $spotSentToSpotVersion->setVersionId($row['version_id']);
                             }
 
@@ -421,11 +428,12 @@ class SpotSentController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    private function getSingle($spotSentId) {
+    private function getSingle($spotSentId)
+    {
         $searchResult = $this->_spotRepo->searchSpotSent(array("id" => $spotSentId));
         $data = null;
 
-        if(count($searchResult)) {
+        if (count($searchResult)) {
             $data = $searchResult[0];
 
             foreach ($data['projectSpotVersion'] as &$projectSpotVersion) {
