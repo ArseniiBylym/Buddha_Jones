@@ -31,6 +31,7 @@ export enum SpotSentForm {
 }
 
 export interface SpotSentOptionsFromApi {
+    audio_option: SpotSentAudioOptionsFromApi[];
     delivery_to_client_option: SpotSentOptionsStdSectionFromApi[];
     finishing_option: SpotSentOptionsStdSectionFromApi[];
     framerate_option: string[];
@@ -52,15 +53,7 @@ export interface SpotSentOptionsChildrenFromApi {
     sort: number;
 }
 
-export interface SpotSentOptionsStore {
-
-}
-
-export interface SpotSentFinishingOptionsStore {
+export interface SpotSentAudioOptionsFromApi {
     id: number;
     name: string;
-    children: Array<{
-        id: number;
-        name: string;
-    }>;
 }

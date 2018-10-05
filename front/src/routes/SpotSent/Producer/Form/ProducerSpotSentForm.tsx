@@ -16,10 +16,11 @@ import { Checkmark, TextArea, Toggle } from 'components/Form';
 import { ClientContact } from 'types/clients';
 import { LoadingIndicator } from 'components/Loaders';
 import { ToggleSideContent } from '../../../../components/Form';
-import { SentViaOption, SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
+import { SentViaOption, SpotSentAudioOptionsFromApi, SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
 import { ProjectPickerGroupValues } from '../../../../components/Buddha';
 import { SpotSentStore } from '../../../../store/AllStores';
 import { DatePicker } from '../../../../components/Calendar';
+import { FinishingHousesPicker } from '../../../../components/Buddha/FinishingHousesPicker';
 
 export interface ProducerSpotSentValue {
     date: Date;
@@ -39,17 +40,21 @@ export interface SpotSentValueForSubmit {
     notes: string;
     finishing_house: string;
     deadline: Date;
-    finishing_request: 0 | 1;
+    gfx_finish: 0 | 1;
     music_cue_sheet: 0 | 1;
     audio_prep: 0 | 1;
     video_prep: 0 | 1;
     graphics_finish: 0 | 1;
     framerate: string | null;
+    framerate_note: string;
     raster_size: string | null;
+    raster_size_note: string;
     spec_note: string;
     tag_chart: string;
     delivery_to_client_id: number | null;
     delivery_note: string;
+    audio: number | null;
+    audio_note: string;
 }
 
 // Styles
@@ -82,17 +87,21 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         notes: '',
         finishing_house: '',
         deadline: new Date(),
-        finishing_request: 0,
+        gfx_finish: 0,
         music_cue_sheet: 0,
         audio_prep: 0,
         video_prep: 0,
         graphics_finish: 0,
         framerate: null,
+        framerate_note: '',
         raster_size: null,
+        raster_size_note: '',
         spec_note: '',
         tag_chart: '',
         delivery_to_client_id: null,
         delivery_note: '',
+        audio: null,
+        audio_note: ''
     };
 
     @observable private finishingOptionId: number | null = 1;
@@ -230,6 +239,53 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         </div>
                     </Section>
 
+                    <Section title="Sent to">
+                        {this.clientContacts === null && <Paragraph type="dim">Project is not selected.</Paragraph>}
+
+                        {this.clientContacts &&
+                            this.clientContacts.isLoading && <LoadingIndicator label="Loading studio contacts" />}
+
+                        {this.clientContacts &&
+                            this.clientContacts.isLoading === false &&
+                            this.clientContacts.contacts.length <= 0 && (
+                                <Paragraph type="dim">Studio has no contacts.</Paragraph>
+                            )}
+
+                        {this.clientContacts &&
+                            this.clientContacts.isLoading === false && (
+                                <div className={s.studioContactsContainer}>
+                                    {this.clientContacts.contacts.map(contact => (
+                                        <Checkmark
+                                            key={contact.id}
+                                            onClick={this.handleSentToContactToggle(contact)}
+                                            label={contact.name || contact.email || contact.id.toString()}
+                                            checked={this.values.studioContacts.indexOf(contact.id) !== -1}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                    </Section>
+
+                    <Section title="Internal notes">
+                        <TextArea
+                            onChange={this.handleInternalNotesChange}
+                            value={this.values.internalNotes}
+                            label="Internal notes..."
+                            width={1152}
+                            height={82}
+                        />
+                    </Section>
+
+                    <Section title="Studio notes">
+                        <TextArea
+                            onChange={this.handleStudioNotesChange}
+                            value={this.values.studioNotes}
+                            label="Notes for the studio..."
+                            width={1152}
+                            height={82}
+                        />
+                    </Section>
+
                     <Section title="Finish Request">
                         <Checkmark
                             onClick={this.showHideFinishingTypeSection}
@@ -294,11 +350,13 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                             {this.finishingOptionId === 1 &&
                                 <div className={s.finishRequestSection}>
                                     <h3>Finishing House</h3>
-                                    <TextArea
-                                        value={this.spotSentValues.finishing_house}
-                                        label="Finishing House..."
-                                        width={1152}
-                                        height={82}
+                                    <FinishingHousesPicker
+                                        onChange={this.handleExistingFinishingHouseSelected}
+                                        value={0}
+                                        valueLabel=""
+                                        align="left"
+                                        label="Add new campaign"
+                                        projectId={1}
                                     />
                                 </div>
                             }
@@ -309,8 +367,26 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                         {this.getFrameRate()}
                                     </div>
                                     <div className={s.finishRequestSection}>
+                                        <h3>Framerate Notes</h3>
+                                        <TextArea
+                                            value={this.spotSentValues.framerate_note}
+                                            label="Framerate Notes..."
+                                            width={1152}
+                                            height={82}
+                                        />
+                                    </div>
+                                    <div className={s.finishRequestSection}>
                                         <h3>Raster Size</h3>
                                         {this.getRasterSize()}
+                                    </div>
+                                    <div className={s.finishRequestSection}>
+                                        <h3>Raster Size Notes</h3>
+                                        <TextArea
+                                            value={this.spotSentValues.raster_size_note}
+                                            label="Raster Size Notes..."
+                                            width={1152}
+                                            height={82}
+                                        />
                                     </div>
                                 </>
                             }
@@ -318,8 +394,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 <h3>Some title</h3>
                                 {this.finishingOptionId === 2 &&
                                     <Checkmark
-                                        onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'finishing_request')}
-                                        checked={(this.spotSentValues.finishing_request === 0) ? true : false}
+                                        onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'gfx_finish')}
+                                        checked={(this.spotSentValues.gfx_finish === 0) ? true : false}
                                         label={'GFX finishing request'}
                                         type={'no-icon'}
                                     />
@@ -352,6 +428,19 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                         />
                                     </>
                                 }
+                            </div>
+                            <div className={s.finishRequestSection}>
+                                <h3>Audio</h3>
+                                {this.getAudioOptions()}
+                            </div>
+                            <div className={s.finishRequestSection}>
+                                <h3>Audio Notes</h3>
+                                <TextArea
+                                    value={this.spotSentValues.audio_note}
+                                    label="Audio Notes..."
+                                    width={1152}
+                                    height={82}
+                                />
                             </div>
                             {this.finishingOptionId === 2 && this.finishingOptionChildId === 2 &&
                                 <div className={s.finishRequestSection}>
@@ -400,53 +489,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 </>
                             }
                         </AnimateHeight>
-                    </Section>
-
-                    <Section title="Sent to">
-                        {this.clientContacts === null && <Paragraph type="dim">Project is not selected.</Paragraph>}
-
-                        {this.clientContacts &&
-                            this.clientContacts.isLoading && <LoadingIndicator label="Loading studio contacts" />}
-
-                        {this.clientContacts &&
-                            this.clientContacts.isLoading === false &&
-                            this.clientContacts.contacts.length <= 0 && (
-                                <Paragraph type="dim">Studio has no contacts.</Paragraph>
-                            )}
-
-                        {this.clientContacts &&
-                            this.clientContacts.isLoading === false && (
-                                <div className={s.studioContactsContainer}>
-                                    {this.clientContacts.contacts.map(contact => (
-                                        <Checkmark
-                                            key={contact.id}
-                                            onClick={this.handleSentToContactToggle(contact)}
-                                            label={contact.name || contact.email || contact.id.toString()}
-                                            checked={this.values.studioContacts.indexOf(contact.id) !== -1}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-                    </Section>
-
-                    <Section title="Internal notes">
-                        <TextArea
-                            onChange={this.handleInternalNotesChange}
-                            value={this.values.internalNotes}
-                            label="Internal notes..."
-                            width={1152}
-                            height={82}
-                        />
-                    </Section>
-
-                    <Section title="Studio notes">
-                        <TextArea
-                            onChange={this.handleStudioNotesChange}
-                            value={this.values.studioNotes}
-                            label="Notes for the studio..."
-                            width={1152}
-                            height={82}
-                        />
                     </Section>
 
                     <Section>
@@ -635,6 +677,24 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         ];
     }
 
+    private getAudioOptions(): JSX.Element[] {
+        if (SpotSentStore.spotSentAudioOptions && SpotSentStore.spotSentAudioOptions.length > 0) {
+            return SpotSentStore.spotSentAudioOptions.map((audio: SpotSentAudioOptionsFromApi, index: number) => {
+                return (
+                    <Checkmark
+                        key={'audio-option-' + index}
+                        onClick={() => { this.spotSentValues.audio = audio.id; }}
+                        checked={(audio.id === this.spotSentValues.audio) ? true : false}
+                        label={audio.name}
+                        type={'no-icon'}
+                    />
+                );
+            });
+        } else {
+            return [];
+        }
+    }
+
     private getTypeFinishingChildren(): JSX.Element[] {
         let fetchedFinishingOptionsChildren: SpotSentOptionsChildrenFromApi[] | null = this.fetchedFinishingOptionsChildren;
         if (fetchedFinishingOptionsChildren) {
@@ -731,6 +791,12 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             this.spotSentValues[param] = 1;
         } else {
             this.spotSentValues[param] = 0;
+        }
+    };
+
+    private handleExistingFinishingHouseSelected = (campaign: { id: number; name: string }) => {
+        if (campaign) {
+
         }
     };
 

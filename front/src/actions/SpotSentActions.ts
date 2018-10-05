@@ -13,6 +13,7 @@ export class SpotSentActionsClass {
             SpotSentStore.spotSentFramerateOptions = response.framerate_option;
             SpotSentStore.spotSentRasterSizeOptions = response.raster_size_option;
             SpotSentStore.spotSentDeliveryToClientOptions = response.delivery_to_client_option;
+            SpotSentStore.spotSentAudioOptions = response.audio_option;
             SpotSentStore.loadingCount--;
             return true;
         } catch (error) {
