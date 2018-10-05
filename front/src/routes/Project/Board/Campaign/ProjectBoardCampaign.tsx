@@ -13,6 +13,7 @@ import { ProjectBoardCampaignMisc } from './Misc';
 import { ProjectBoardCampaignExecutive } from './Executive';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { UserPermission, UserPermissionKey } from 'types/projectPermissions';
+import { ProjectsVersionsStore } from '../../../../store/AllStores';
 const zenscroll = require('zenscroll');
 
 // Styles
@@ -264,6 +265,17 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
         return false;
     }
 
+    @computed
+    private get isVersionStatusFilterApplied(): boolean {
+        if (ProjectsVersionsStore &&
+            ProjectsVersionsStore.filterVersionStatus &&
+            ProjectsVersionsStore.filterVersionStatus.id
+        ) {
+            return true;
+        }
+        return false;
+    }
+
     private campaignContainer: HTMLDivElement | null = null;
     private spotsContainer: HTMLDivElement | null = null;
 
@@ -301,108 +313,112 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                     innerRef={this.referenceCampaignHeaderContainer}
                     projectId={this.props.projectId}
                     campaign={this.props.campaign}
-                    isExpanded={this.campaignIsExpanded}
+                    isExpanded={this.campaignIsExpanded || this.isVersionStatusFilterApplied}
                     isFixed={this.props.isHeaderFixed}
                     fixedWidth={this.containerWidth}
                     userCanViewNotes={this.userCanViewCampaignDescription}
                     onExpansionToggle={this.handleCampaignExpansionToggle}
                 />
 
-                <AnimateHeight height={this.campaignIsExpanded ? 'auto' : 0} duration={500}>
-                    <ProjectBoardCampaignDescription
-                        userCanView={this.userCanViewCampaignDescription}
-                        userCanEdit={this.userCanEditCampaignDescription}
-                        projectId={this.props.projectId}
-                        projectCampaignId={this.props.campaign.projectCampaignId}
-                        campaignId={this.props.campaign.campaignId}
-                        notes={this.props.campaign.notes || ''}
-                    />
+                <AnimateHeight height={(this.campaignIsExpanded || this.isVersionStatusFilterApplied) ? 'auto' : 0} duration={500}>
+                    {!this.isVersionStatusFilterApplied &&
+                        <>
+                            <ProjectBoardCampaignDescription
+                                userCanView={this.userCanViewCampaignDescription}
+                                userCanEdit={this.userCanEditCampaignDescription}
+                                projectId={this.props.projectId}
+                                projectCampaignId={this.props.campaign.projectCampaignId}
+                                campaignId={this.props.campaign.campaignId}
+                                notes={this.props.campaign.notes || ''}
+                            />
 
-                    <ProjectBoardCampaignMisc
-                        userCanViewBudget={this.userCanViewCampaignBudget}
-                        userCanEditBudget={this.userCanEditCampaignBudget}
-                        userCanViewMaterialsDate={this.userCanViewDateMaterialsWillBeReceived}
-                        userCanEditMaterialsDate={this.userCanEditDateMaterialsWillBeReceived}
-                        projectId={this.props.projectId}
-                        campaign={this.props.campaign}
-                    />
+                            <ProjectBoardCampaignMisc
+                                userCanViewBudget={this.userCanViewCampaignBudget}
+                                userCanEditBudget={this.userCanEditCampaignBudget}
+                                userCanViewMaterialsDate={this.userCanViewDateMaterialsWillBeReceived}
+                                userCanEditMaterialsDate={this.userCanEditDateMaterialsWillBeReceived}
+                                projectId={this.props.projectId}
+                                campaign={this.props.campaign}
+                            />
 
-                    <ProjectBoardCampaignExecutive
-                        userCanViewExecutive={this.userCanViewCreativeExecutive}
-                        userCanEditExecutive={this.userCanEditCreativeExecutive}
-                        userCanViewPORContact={this.userCanViewPORContact}
-                        userCanViewInvoiceContact={this.userCanViewInvoiceContact}
-                        clientId={this.props.clientId}
-                        projectId={this.props.projectId}
-                        projectCampaignId={this.props.campaign.projectCampaignId}
-                        campaignId={this.props.campaign.campaignId}
-                        executiveId={this.props.campaign.firstPointOfContactId}
-                    />
+                            <ProjectBoardCampaignExecutive
+                                userCanViewExecutive={this.userCanViewCreativeExecutive}
+                                userCanEditExecutive={this.userCanEditCreativeExecutive}
+                                userCanViewPORContact={this.userCanViewPORContact}
+                                userCanViewInvoiceContact={this.userCanViewInvoiceContact}
+                                clientId={this.props.clientId}
+                                projectId={this.props.projectId}
+                                projectCampaignId={this.props.campaign.projectCampaignId}
+                                campaignId={this.props.campaign.campaignId}
+                                executiveId={this.props.campaign.firstPointOfContactId}
+                            />
 
-                    <ProjectBoardCampaignPeople
-                        userCanView={this.userCanViewCreativeTeam}
-                        userCanEdit={this.userCanEditCreativeTeam}
-                        type="creative"
-                        projectId={this.props.projectId}
-                        projectCampaignId={this.props.campaign.projectCampaignId}
-                        campaignId={this.props.campaign.campaignId}
-                        selectedUsers={this.props.campaign.creativeTeam.map(user => ({
-                            userId: user.userId,
-                            fullName: user.fullName,
-                            image: user.image,
-                            creativeRole: {
-                                role: user.role,
-                                roleId: user.roleId,
-                            },
-                        }))}
-                    />
+                            <ProjectBoardCampaignPeople
+                                userCanView={this.userCanViewCreativeTeam}
+                                userCanEdit={this.userCanEditCreativeTeam}
+                                type="creative"
+                                projectId={this.props.projectId}
+                                projectCampaignId={this.props.campaign.projectCampaignId}
+                                campaignId={this.props.campaign.campaignId}
+                                selectedUsers={this.props.campaign.creativeTeam.map(user => ({
+                                    userId: user.userId,
+                                    fullName: user.fullName,
+                                    image: user.image,
+                                    creativeRole: {
+                                        role: user.role,
+                                        roleId: user.roleId,
+                                    },
+                                }))}
+                            />
 
-                    <ProjectBoardCampaignPeople
-                        userCanView={this.userCanViewBillingTeam}
-                        userCanEdit={this.userCanEditBillingTeam}
-                        type="billing"
-                        projectId={this.props.projectId}
-                        projectCampaignId={this.props.campaign.projectCampaignId}
-                        campaignId={this.props.campaign.campaignId}
-                        selectedUsers={this.props.campaign.billingTeam}
-                    />
+                            <ProjectBoardCampaignPeople
+                                userCanView={this.userCanViewBillingTeam}
+                                userCanEdit={this.userCanEditBillingTeam}
+                                type="billing"
+                                projectId={this.props.projectId}
+                                projectCampaignId={this.props.campaign.projectCampaignId}
+                                campaignId={this.props.campaign.campaignId}
+                                selectedUsers={this.props.campaign.billingTeam}
+                            />
 
-                    <ProjectBoardCampaignPeople
-                        userCanView={this.userCanViewEditorialTeam}
-                        userCanEdit={this.userCanEditEditorialTeam}
-                        type="editorial"
-                        projectId={this.props.projectId}
-                        projectCampaignId={this.props.campaign.projectCampaignId}
-                        campaignId={this.props.campaign.campaignId}
-                        selectedUsers={this.props.campaign.editorialTeam}
-                    />
+                            <ProjectBoardCampaignPeople
+                                userCanView={this.userCanViewEditorialTeam}
+                                userCanEdit={this.userCanEditEditorialTeam}
+                                type="editorial"
+                                projectId={this.props.projectId}
+                                projectCampaignId={this.props.campaign.projectCampaignId}
+                                campaignId={this.props.campaign.campaignId}
+                                selectedUsers={this.props.campaign.editorialTeam}
+                            />
 
-                    <ProjectBoardCampaignPeople
-                        userCanView={this.userCanViewGraphicsTeam}
-                        userCanEdit={this.userCanEditGraphicsTeam}
-                        type="design"
-                        projectId={this.props.projectId}
-                        projectCampaignId={this.props.campaign.projectCampaignId}
-                        campaignId={this.props.campaign.campaignId}
-                        selectedUsers={this.props.campaign.designTeam}
-                    />
+                            <ProjectBoardCampaignPeople
+                                userCanView={this.userCanViewGraphicsTeam}
+                                userCanEdit={this.userCanEditGraphicsTeam}
+                                type="design"
+                                projectId={this.props.projectId}
+                                projectCampaignId={this.props.campaign.projectCampaignId}
+                                campaignId={this.props.campaign.campaignId}
+                                selectedUsers={this.props.campaign.designTeam}
+                            />
 
-                    <ProjectBoardCampaignWritingAndMusicTeams
-                        userCanViewWriting={this.userCanViewWriting}
-                        userCanEditWriting={this.userCanEditWriting}
-                        userCanViewMusic={this.userCanViewMusic}
-                        userCanEditMusic={this.userCanEditMusic}
-                        projectId={this.props.projectId}
-                        projectCampaignId={this.props.campaign.projectCampaignId}
-                        campaignId={this.props.campaign.campaignId}
-                    />
+                            <ProjectBoardCampaignWritingAndMusicTeams
+                                userCanViewWriting={this.userCanViewWriting}
+                                userCanEditWriting={this.userCanEditWriting}
+                                userCanViewMusic={this.userCanViewMusic}
+                                userCanEditMusic={this.userCanEditMusic}
+                                projectId={this.props.projectId}
+                                projectCampaignId={this.props.campaign.projectCampaignId}
+                                campaignId={this.props.campaign.campaignId}
+                            />
+                        </>
+                    }
 
                     <ProjectBoardCampaignsSpots
                         userCanViewSpots={this.userCanViewSpots}
                         userCanCreateNewSpot={this.userCanCreateSpots}
                         innerRef={this.referenceSpotsContainer}
                         onExpansionToggle={this.handleSpotsExpansionToggle}
-                        spotsAreExpanded={this.spotsAreExpanded}
+                        spotsAreExpanded={this.spotsAreExpanded || this.isVersionStatusFilterApplied}
                         projectId={this.props.projectId}
                         projectCampaignId={this.props.campaign.projectCampaignId}
                         campaignId={this.props.campaign.campaignId}
