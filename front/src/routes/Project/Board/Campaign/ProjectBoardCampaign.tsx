@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
 import { observer, inject } from 'mobx-react';
-import { observable, computed } from 'mobx';
+import { observable, computed, reaction } from 'mobx';
 import AnimateHeight from 'react-animate-height';
 import { CampaignDetails } from 'types/projectDetails';
 import { ProjectBoardCampaignHeader } from '.';
@@ -279,6 +279,18 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
     private campaignContainer: HTMLDivElement | null = null;
     private spotsContainer: HTMLDivElement | null = null;
 
+    public constructor(props: ProjectBoardCampaignPropsTypes) {
+        super(props);
+
+        reaction(
+            () => ProjectsVersionsStore.filterVersionStatus.id,
+            clientFilter => {
+                this.campaignIsExpanded = true;
+                this.spotsAreExpanded = true;
+            }
+        );
+    }
+
     public componentWillUpdate(nextProps: ProjectBoardCampaignProps) {
         if (this.props.isHeaderFixed !== nextProps.isHeaderFixed) {
             if (this.campaignContainer) {
@@ -313,14 +325,14 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                     innerRef={this.referenceCampaignHeaderContainer}
                     projectId={this.props.projectId}
                     campaign={this.props.campaign}
-                    isExpanded={this.campaignIsExpanded || this.isVersionStatusFilterApplied}
+                    isExpanded={this.campaignIsExpanded}
                     isFixed={this.props.isHeaderFixed}
                     fixedWidth={this.containerWidth}
                     userCanViewNotes={this.userCanViewCampaignDescription}
                     onExpansionToggle={this.handleCampaignExpansionToggle}
                 />
 
-                <AnimateHeight height={(this.campaignIsExpanded || this.isVersionStatusFilterApplied) ? 'auto' : 0} duration={500}>
+                <AnimateHeight height={(this.campaignIsExpanded) ? 'auto' : 0} duration={500}>
                     {!this.isVersionStatusFilterApplied &&
                         <>
                             <ProjectBoardCampaignDescription
@@ -418,7 +430,7 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                         userCanCreateNewSpot={this.userCanCreateSpots}
                         innerRef={this.referenceSpotsContainer}
                         onExpansionToggle={this.handleSpotsExpansionToggle}
-                        spotsAreExpanded={this.spotsAreExpanded || this.isVersionStatusFilterApplied}
+                        spotsAreExpanded={this.spotsAreExpanded}
                         projectId={this.props.projectId}
                         projectCampaignId={this.props.campaign.projectCampaignId}
                         campaignId={this.props.campaign.campaignId}

@@ -154,6 +154,121 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                         </Col>
                     </Row>
 
+                    <Row className={s.spotDetailsContainer}>
+                        <Col>
+                            {this.isEditFormVisible === false && (
+                                <div className={s.spotDetails}>
+                                    {spot.notes &&
+                                    spot.notes.trim() && (
+                                        <Paragraph className={s.noMargin}>
+                                            <span>Notes: </span>
+                                            {spot.notes}
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewV1InternalDeadline &&
+                                    spot.v1InternalDeadline && (
+                                        <Paragraph>
+                                            <span>V.1 internal deadline: </span>
+                                            <strong>{dateFormat(spot.v1InternalDeadline, 'MM/DD/YYYY')}</strong>
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewV1ClientDeadline &&
+                                    spot.v1ClientDeadline && (
+                                        <Paragraph className={s.noMargin}>
+                                            <span>V.1 studio deadline: </span>
+                                            <strong>{dateFormat(spot.v1ClientDeadline, 'MM/DD/YYYY')}</strong>
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewNumberOfRevisionsAndVersions &&
+                                    spot.numberOfRevisions !== 0 && (
+                                        <Paragraph>
+                                            <span>Number of revisions: </span>
+                                            <strong>
+                                                {(spot.numberOfRevisions === null
+                                                    ? 'Unlimited'
+                                                    : spot.numberOfRevisions) +
+                                                ', ' +
+                                                (this.props.userCanViewGraphicsRevisions === false
+                                                    ? ''
+                                                    : spot.graphicsIncluded
+                                                        ? 'graphics included'
+                                                        : 'graphics not included')}
+                                            </strong>
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewGraphicsRevisions &&
+                                    this.props.userCanViewNumberOfRevisionsAndVersions === false && (
+                                        <Paragraph>
+                                            <strong>
+                                                {spot.graphicsIncluded
+                                                    ? 'Graphics included'
+                                                    : 'Graphics not included'}
+                                            </strong>
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewFirstRevisionRate &&
+                                    spot.billingType && (
+                                        <Paragraph className={s.noMargin}>
+                                            <span>Spot billing: </span>
+                                            <strong>{SpotBillingTypeName[spot.billingType]}</strong>
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewFirstRevisionRate &&
+                                    spot.numberOfRevisions !== 0 && (
+                                        <Paragraph className={s.noMargin}>
+                                            <span>First stage rate: </span>
+                                            <strong>
+                                                {spot.firstRevisionCost === null
+                                                    ? 'not specified'
+                                                    : formatMoney(spot.firstRevisionCost)}
+                                            </strong>
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewFirstRevisionRate &&
+                                    spot.billingNotes && (
+                                        <Paragraph className={s.noMargin}>
+                                            <span>Spot billing notes: </span>
+                                            <strong>{spot.billingNotes}</strong>
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewNumberOfRevisionsAndVersions &&
+                                    (spot.numberOfRevisions === null || spot.numberOfRevisions <= 0) && (
+                                        <Paragraph>
+                                            <span>No revisions included</span>
+                                        </Paragraph>
+                                    )}
+                                </div>
+                            )}
+
+                            {this.isEditFormVisible && (
+                                <ProjectBoardSpotForm
+                                    onFormHide={this.handleEditHide}
+                                    projectId={this.props.projectId}
+                                    projectCampaignId={this.props.projectCampaignId}
+                                    campaignId={this.props.campaignId}
+                                    spotId={this.props.spot.id}
+                                    removeGutter={true}
+                                    userCanEditSpot={this.props.userCanEditSpotCore}
+                                    userCanEditFirstStateCost={this.props.userCanEditFirstRevisionRate}
+                                    userCanEditV1ClientDueDate={this.props.userCanEditV1ClientDeadline}
+                                    userCanEditV1InternalDueDate={this.props.userCanEditV1InternalDeadline}
+                                    userCanEditRevisionsAndVersions={this.props.userCanEditNumberOfRevisionsAndVersions}
+                                    userCanEditGraphicsRevisions={this.props.userCanEditGraphicsRevisions}
+                                />
+                            )}
+
+                            {this.props.showSeparator && <hr className={s.endSeparator} />}
+                        </Col>
+                    </Row>
+
                     <Row className={s.campaignSpotVersions}>
                         {this.props.userCanViewNumberOfRevisionsAndVersions &&
                             spot.versions.length > 0 && (
@@ -257,120 +372,6 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
 
                     </Row>
 
-                    <Row className={s.spotDetailsContainer}>
-                        <Col>
-                            {this.isEditFormVisible === false && (
-                                <div className={s.spotDetails}>
-                                    {spot.notes &&
-                                        spot.notes.trim() && (
-                                            <Paragraph className={s.noMargin}>
-                                                <span>Notes: </span>
-                                                {spot.notes}
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewV1InternalDeadline &&
-                                        spot.v1InternalDeadline && (
-                                            <Paragraph>
-                                                <span>V.1 internal deadline: </span>
-                                                <strong>{dateFormat(spot.v1InternalDeadline, 'MM/DD/YYYY')}</strong>
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewV1ClientDeadline &&
-                                        spot.v1ClientDeadline && (
-                                            <Paragraph className={s.noMargin}>
-                                                <span>V.1 studio deadline: </span>
-                                                <strong>{dateFormat(spot.v1ClientDeadline, 'MM/DD/YYYY')}</strong>
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewNumberOfRevisionsAndVersions &&
-                                        spot.numberOfRevisions !== 0 && (
-                                            <Paragraph>
-                                                <span>Number of revisions: </span>
-                                                <strong>
-                                                    {(spot.numberOfRevisions === null
-                                                        ? 'Unlimited'
-                                                        : spot.numberOfRevisions) +
-                                                        ', ' +
-                                                        (this.props.userCanViewGraphicsRevisions === false
-                                                            ? ''
-                                                            : spot.graphicsIncluded
-                                                                ? 'graphics included'
-                                                                : 'graphics not included')}
-                                                </strong>
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewGraphicsRevisions &&
-                                        this.props.userCanViewNumberOfRevisionsAndVersions === false && (
-                                            <Paragraph>
-                                                <strong>
-                                                    {spot.graphicsIncluded
-                                                        ? 'Graphics included'
-                                                        : 'Graphics not included'}
-                                                </strong>
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewFirstRevisionRate &&
-                                        spot.billingType && (
-                                            <Paragraph className={s.noMargin}>
-                                                <span>Spot billing: </span>
-                                                <strong>{SpotBillingTypeName[spot.billingType]}</strong>
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewFirstRevisionRate &&
-                                        spot.numberOfRevisions !== 0 && (
-                                            <Paragraph className={s.noMargin}>
-                                                <span>First stage rate: </span>
-                                                <strong>
-                                                    {spot.firstRevisionCost === null
-                                                        ? 'not specified'
-                                                        : formatMoney(spot.firstRevisionCost)}
-                                                </strong>
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewFirstRevisionRate &&
-                                        spot.billingNotes && (
-                                            <Paragraph className={s.noMargin}>
-                                                <span>Spot billing notes: </span>
-                                                <strong>{spot.billingNotes}</strong>
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewNumberOfRevisionsAndVersions &&
-                                        (spot.numberOfRevisions === null || spot.numberOfRevisions <= 0) && (
-                                            <Paragraph>
-                                                <span>No revisions included</span>
-                                            </Paragraph>
-                                        )}
-                                </div>
-                            )}
-
-                            {this.isEditFormVisible && (
-                                <ProjectBoardSpotForm
-                                    onFormHide={this.handleEditHide}
-                                    projectId={this.props.projectId}
-                                    projectCampaignId={this.props.projectCampaignId}
-                                    campaignId={this.props.campaignId}
-                                    spotId={this.props.spot.id}
-                                    removeGutter={true}
-                                    userCanEditSpot={this.props.userCanEditSpotCore}
-                                    userCanEditFirstStateCost={this.props.userCanEditFirstRevisionRate}
-                                    userCanEditV1ClientDueDate={this.props.userCanEditV1ClientDeadline}
-                                    userCanEditV1InternalDueDate={this.props.userCanEditV1InternalDeadline}
-                                    userCanEditRevisionsAndVersions={this.props.userCanEditNumberOfRevisionsAndVersions}
-                                    userCanEditGraphicsRevisions={this.props.userCanEditGraphicsRevisions}
-                                />
-                            )}
-
-                            {this.props.showSeparator && <hr className={s.endSeparator} />}
-                        </Col>
-                    </Row>
                 </Col>
             </Row>
         );
