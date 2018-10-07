@@ -17,6 +17,7 @@ export enum APIPath {
     CAMPAIGN                                = '/campaign',
     SPOT                                    = '/spot',
     SPOT_SENT_OPTIONS                       = '/spot-sent-options',
+    FINISHING_HOUSE                         = '/finishing-house',
     VERSION                                 = '/version',
     VERSION_STATUS                          = '/version-status',
     TIME_ENTRY                              = '/time-entry',

@@ -38,7 +38,8 @@ export interface ProducerSpotSentValue {
 export interface SpotSentValueForSubmit {
     full_lock: 0 | 1;
     notes: string;
-    finishing_house: string;
+    finishing_house: string | null;
+    finishing_house_id: number | null;
     deadline: Date;
     gfx_finish: 0 | 1;
     music_cue_sheet: 0 | 1;
@@ -85,7 +86,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     private spotSentValues: SpotSentValueForSubmit = {
         full_lock: 0,
         notes: '',
-        finishing_house: '',
+        finishing_house: null,
+        finishing_house_id: null,
         deadline: new Date(),
         gfx_finish: 0,
         music_cue_sheet: 0,
@@ -170,8 +172,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     public componentDidMount() {
 
-        // Fetch spot options
-        SpotSentActions.fetchSpotSentOptions();
+        // Fetch spot sent options
+        this.fetchSpotSentOptions();
 
         HeaderActions.setMainHeaderTitlesAndElements('Initiate spot sent', null, null, null, [
             <ButtonBack
@@ -344,7 +346,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     label="Deadline"
                                     value={this.spotSentValues.deadline}
                                     align="left"
-                                    maxDate={new Date()}
                                 />
                             </div>
                             {this.finishingOptionId === 1 &&
@@ -352,11 +353,12 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     <h3>Finishing House</h3>
                                     <FinishingHousesPicker
                                         onChange={this.handleExistingFinishingHouseSelected}
+                                        onNewCreating={this.handleExistingFinishingHouseSelected}
                                         value={0}
                                         valueLabel=""
                                         align="left"
-                                        label="Add new campaign"
-                                        projectId={1}
+                                        label={(this.spotSentValues.finishing_house) ? this.spotSentValues.finishing_house : 'Select finishing house'}
+                                        projectId={this.spotSentValues.finishing_house_id}
                                     />
                                 </div>
                             }
@@ -513,13 +515,17 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         );
     }
 
+    private fetchSpotSentOptions = () => {
+        SpotSentActions.fetchSpotSentOptions();
+    };
+
     private handleBackButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         history.push('/portal/studio/producer-spot-sent');
     };
 
     private handleDateChange = (date: Date | null) => {
         if (date !== null) {
-            this.values.date = date;
+            this.spotSentValues.deadline = date;
         }
     };
 
@@ -794,10 +800,10 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
     };
 
-    private handleExistingFinishingHouseSelected = (campaign: { id: number; name: string }) => {
-        if (campaign) {
-
-        }
+    @action
+    private handleExistingFinishingHouseSelected = (finishingHouse: { id: number; name: string }) => {
+        this.spotSentValues.finishing_house_id = (finishingHouse && finishingHouse.id) ? finishingHouse.id : null;
+        this.spotSentValues.finishing_house = (finishingHouse && finishingHouse.name) ? finishingHouse.name : null;
     };
 
 }

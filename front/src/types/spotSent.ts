@@ -57,3 +57,8 @@ export interface SpotSentAudioOptionsFromApi {
     id: number;
     name: string;
 }
+
+export interface FinishingHouseOptionsFromApi {
+    id: number;
+    name: string;
+}

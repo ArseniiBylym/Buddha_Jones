@@ -2,20 +2,21 @@ import * as React from 'react';
 import { observable, computed, action } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { AppOnlyStoreState } from 'store/AllStores';
-import { CampaignsActions, ProjectsDetailsActions } from 'actions';
+import { SpotSentActions } from 'actions';
 import { OptionsListOptionProp, DropdownContainer, OptionsList } from '../Form';
 import { LoadingIndicator } from '../Loaders';
 import { StringHandler } from 'helpers/StringHandler';
 import { Paragraph } from '../Content';
+import { FinishingHouseOptionsFromApi } from '../../types/spotSent';
 
 // Types
 type CampaignPickerAlignProp = 'left' | 'center' | 'right';
 
 // Props
-interface CampaignPickerTypes extends AppOnlyStoreState {
+interface FinishingHousesPickerTypes extends AppOnlyStoreState {
     onChange?: ((campaign: { id: number; name: string }) => void) | null;
     onNewCreated?: ((campaign: { id: number; name: string }, projectAssignedToIds: number[] | null) => void) | null;
-    onNewCreating?: ((campaignName: string) => void) | null;
+    onNewCreating?: ((campaignName: FinishingHouseOptionsFromApi) => void) | null;
     align?: CampaignPickerAlignProp;
     label: string;
     value: number;
@@ -29,10 +30,10 @@ interface CampaignPickerTypes extends AppOnlyStoreState {
 
 @inject('store')
 @observer
-export class FinishingHousesPicker extends React.Component<CampaignPickerTypes, {}> {
-    private campaignPickerDropdown: DropdownContainer | null = null;
+export class FinishingHousesPicker extends React.Component<FinishingHousesPickerTypes, {}> {
+    private finishingHousesPickerDropdown: DropdownContainer | null = null;
 
-    static get defaultProps(): Partial<CampaignPickerTypes> {
+    static get defaultProps(): Partial<FinishingHousesPickerTypes> {
         return {
             onChange: null,
             onNewCreated: null,
@@ -54,40 +55,56 @@ export class FinishingHousesPicker extends React.Component<CampaignPickerTypes, 
 
     @computed
     private get loadingOptions(): boolean {
-        return this.props.store != null ? this.props.store.campaigns.allCampaignsAreBeingFetched : false;
+        return this.props.store != null ? this.props.store.spotSent.spotSentFinishingHouseAreBeingFetched : false;
     }
 
     @computed
-    private get campaignsToOptionsList(): OptionsListOptionProp[] {
-        return this.props.store != null
-            ? this.props.store.campaigns.allCampaigns
-                  .filter(
-                      campaign => this.props.excludeIds == null || this.props.excludeIds.indexOf(campaign.id) === -1
-                  )
-                  .map(campaign => ({
-                      key: 'campaign-' + campaign.id,
-                      value: campaign.id,
-                      label: campaign.name,
-                  }))
-            : [];
+    private get finishingHouseToOptionsList(): OptionsListOptionProp[] {
+        if (
+            this.props.store != null &&
+            this.props.store.spotSent != null &&
+            this.props.store.spotSent.spotSentFinishingHouseOptions != null
+        ) {
+            return this.props.store.spotSent.spotSentFinishingHouseOptions
+                .filter((option: FinishingHouseOptionsFromApi) => {
+                    return this.props.excludeIds == null || this.props.excludeIds.indexOf(option.id) === -1;
+                })
+                .map((option: FinishingHouseOptionsFromApi) => {
+                    return {
+                        key: 'finishing-house-' + option.id,
+                        value: option.id,
+                        label: option.name
+                    };
+                });
+        } else {
+            return [];
+        }
     }
 
     @computed
     private get searchResultsHaveExactQueryMatch(): boolean {
-        const search: string = this.searchQuery.trim().toLowerCase();
-        return search === '' || this.props.store == null
-            ? true
-            : this.props.store.campaigns.allCampaigns.filter(campaign => campaign.name.trim().toLowerCase() === search)
-                  .length > 0;
+        if (
+            this.props.store != null &&
+            this.props.store.spotSent != null &&
+            this.props.store.spotSent.spotSentFinishingHouseOptions != null
+        ) {
+            const search: string = this.searchQuery.trim().toLowerCase();
+            return search === '' || this.props.store == null
+                ? true
+                : this.props.store.spotSent.spotSentFinishingHouseOptions.filter(option => option.name.trim().toLowerCase() === search)
+                      .length > 0;
+        } else {
+            return false;
+        }
     }
 
     public componentDidMount() {
-        this.fetchCampaigns();
+        this.fetchFinishingHouses();
     }
 
     public closeDropdown = () => {
-        if (this.campaignPickerDropdown && typeof this.campaignPickerDropdown.closeDropdown === 'function') {
-            this.campaignPickerDropdown.closeDropdown();
+        if (this.finishingHousesPickerDropdown && typeof this.finishingHousesPickerDropdown.closeDropdown === 'function') {
+            this.finishingHousesPickerDropdown.closeDropdown();
         }
     };
 
@@ -95,27 +112,27 @@ export class FinishingHousesPicker extends React.Component<CampaignPickerTypes, 
         if (this.status === 'saving') {
             return (
                 <div className="campaignPicker">
-                    <LoadingIndicator label="Saving new campaign" />
+                    <LoadingIndicator label="Saving new finishing house" />
                 </div>
             );
         } else if (this.status === 'success') {
             return (
                 <div className="campaignPicker">
-                    <Paragraph type="success">New campaign has been created</Paragraph>
+                    <Paragraph type="success">New finishing house has been created</Paragraph>
                 </div>
             );
         } else {
             return (
                 <div className="campaignPicker">
                     <DropdownContainer
-                        ref={this.referenceCampaignPickerDropdown}
+                        ref={this.referenceFinishingHousePickerDropdown}
                         align={this.props.align}
                         minWidth={210}
                         maxWidth={420}
                         overflowAuto={true}
                         label={this.props.label}
                         value={
-                            this.status === 'error' ? 'Could not create new campaign, try again' : this.props.valueLabel
+                            this.status === 'error' ? 'Could not create new finishing house, try again' : this.props.valueLabel
                         }
                         truncuateValueTo={this.props.truncuateLabelTo}
                     >
@@ -125,18 +142,18 @@ export class FinishingHousesPicker extends React.Component<CampaignPickerTypes, 
                                 onChange: this.handleSearchQuery,
                                 autoFocus: true,
                                 value: this.searchQuery,
-                                label: 'Search or create campaign by name...',
+                                label: 'Search or create finishing house by name...',
                             }}
                             value={this.props.value}
-                            options={this.campaignsToOptionsList}
+                            options={this.finishingHouseToOptionsList}
                             loadingOptions={this.loadingOptions}
                             directHint={
                                 this.searchResultsHaveExactQueryMatch
                                     ? null
                                     : {
-                                          value: 'createCampaign',
+                                          value: 'createFinishingHouse',
                                           label:
-                                              'Create new campaign: ' +
+                                              'Create new finishing house: ' +
                                               StringHandler.capitalizeAllWordsInPhrase(this.searchQuery),
                                       }
                             }
@@ -147,17 +164,15 @@ export class FinishingHousesPicker extends React.Component<CampaignPickerTypes, 
         }
     }
 
-    private referenceCampaignPickerDropdown = (ref: DropdownContainer) => (this.campaignPickerDropdown = ref);
+    private referenceFinishingHousePickerDropdown = (ref: DropdownContainer) => (this.finishingHousesPickerDropdown = ref);
 
     private handleSelectOrCreate = (option: { value: number | string; label: string }) => {
-        // Create new campaign or pass changed value further
-        if (option.value === 'createCampaign') {
-            this.createNewCampaign(this.searchQuery, this.props.projectId);
+        if (option.value === 'createFinishingHouse') {
+            this.createNewFinishingHouse(this.searchQuery);
         } else if (typeof option.value === 'number') {
             if (this.props.onChange) {
                 this.props.onChange({ id: option.value, name: option.label });
             }
-
             if (this.props.closeWhenPicked) {
                 this.closeDropdown();
             }
@@ -169,27 +184,14 @@ export class FinishingHousesPicker extends React.Component<CampaignPickerTypes, 
         this.searchQuery = StringHandler.capitalizeAllWordsInPhrase(query);
     };
 
-    private createNewCampaign = async (campaignName: string, projectId: number | null = null): Promise<boolean> => {
+    private createNewFinishingHouse = async (finishingName: string): Promise<boolean> => {
         try {
             this.status = 'saving';
 
+            const newFinishingHouse: FinishingHouseOptionsFromApi = await SpotSentActions.createNewFinishingHouse(finishingName);
+
             if (this.props.onNewCreating) {
-                this.props.onNewCreating(campaignName);
-            }
-
-            const newCampaign = await CampaignsActions.createNewCampaign(
-                campaignName,
-                projectId !== null ? [projectId] : null
-            );
-
-            if (this.props.onNewCreated) {
-                this.props.onNewCreated(
-                    {
-                        id: newCampaign.campaignId,
-                        name: newCampaign.campaignName,
-                    },
-                    projectId !== null ? [projectId] : null
-                );
+                this.props.onNewCreating(newFinishingHouse);
             }
 
             if (this.props.closeWhenPicked) {
@@ -205,10 +207,7 @@ export class FinishingHousesPicker extends React.Component<CampaignPickerTypes, 
                 }
             }, 2048);
 
-            this.fetchCampaigns(true);
-            if (projectId !== null) {
-                ProjectsDetailsActions.fetchProjectDetails(projectId);
-            }
+            this.fetchFinishingHouses(true);
 
             return true;
         } catch (error) {
@@ -222,7 +221,7 @@ export class FinishingHousesPicker extends React.Component<CampaignPickerTypes, 
         }
     };
 
-    private fetchCampaigns = (forceFetch: boolean = false) => {
-        CampaignsActions.fetchAllCampaigns(forceFetch);
+    private fetchFinishingHouses = (forceFetch: boolean = false) => {
+        SpotSentActions.fetchFinishingHousesOptions(forceFetch);
     };
 }

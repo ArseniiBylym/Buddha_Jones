@@ -1,12 +1,20 @@
 import { observable } from 'mobx';
-import { SpotSentAudioOptionsFromApi, SpotSentOptionsFromApi, SpotSentOptionsStdSectionFromApi } from '../types/spotSent';
+import {
+    FinishingHouseOptionsFromApi,
+    SpotSentAudioOptionsFromApi,
+    SpotSentOptionsFromApi,
+    SpotSentOptionsStdSectionFromApi
+} from '../types/spotSent';
 
 export class SpotSent {
-    @observable spotSentOptions: SpotSentOptionsFromApi | null = null;
-    @observable spotSentFinishingOptions: SpotSentOptionsStdSectionFromApi[] | null = null;
-    @observable spotSentFramerateOptions: string[] | null = null;
-    @observable spotSentRasterSizeOptions: string[] | null = null;
-    @observable spotSentDeliveryToClientOptions: SpotSentOptionsStdSectionFromApi[] | null = null;
-    @observable spotSentAudioOptions: SpotSentAudioOptionsFromApi[] | null = null;
-    @observable loadingCount: number = 0;
+    @observable public spotSentOptions: SpotSentOptionsFromApi | null = null;
+    @observable public spotSentFinishingOptions: SpotSentOptionsStdSectionFromApi[] | null = null;
+    @observable public spotSentFramerateOptions: string[] | null = null;
+    @observable public spotSentRasterSizeOptions: string[] | null = null;
+    @observable public spotSentDeliveryToClientOptions: SpotSentOptionsStdSectionFromApi[] | null = null;
+    @observable public spotSentAudioOptions: SpotSentAudioOptionsFromApi[] | null = null;
+
+    @observable public spotSentFinishingHouseLastFetchTimeStamp: number = 0;
+    @observable public spotSentFinishingHouseOptions: FinishingHouseOptionsFromApi[] | null = null;
+    @observable public spotSentFinishingHouseAreBeingFetched: boolean = false;
 }
