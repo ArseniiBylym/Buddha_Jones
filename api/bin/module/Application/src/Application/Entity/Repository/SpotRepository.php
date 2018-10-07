@@ -373,7 +373,7 @@ class SpotRepository extends EntityRepository
             }
         }
 
-        foreach($result as &$row) {
+        foreach ($result as &$row) {
             $row['editor'] = $this->getSpotVersionEditor($row['spotVersionId']);
         }
 
@@ -601,7 +601,7 @@ class SpotRepository extends EntityRepository
         $query->setParameter('spot_version_id', $spotVersionId);
         $result = $query->getArrayResult();
 
-        foreach($result as &$row) {
+        foreach ($result as &$row) {
             $row['name'] = trim($row['firstName'] . ' ' . $row['lastName']);
 
             $row['id'] = (int)$row['id'];

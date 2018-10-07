@@ -92,7 +92,7 @@ class SpotSentController extends CustomAbstractActionController
         $specSheetFile = (!empty($data['spec_sheet_file'])) ? trim($data['spec_sheet_file']) : null;
         $deliveryNote = (!empty($data['delivery_note'])) ? trim($data['delivery_note']) : null;
         $statusId = (!empty($data['status_id'])) ? trim($data['status_id']) : null;
-        $deliveryToClient = (array)json_decode((!empty($data['delivery_to_client'])) ? trim($data['delivery_to_client']) : null, true);        
+        $deliveryToClient = (array)json_decode((!empty($data['delivery_to_client'])) ? trim($data['delivery_to_client']) : null, true);
         $audio = (array)json_decode((isset($data['audio'])) ? $data['audio'] : null, true);
         $sentViaMethod = (array)json_decode((!empty($data['sent_via_method'])) ? trim($data['sent_via_method']) : null, true);
         $finishOption = (array)json_decode((!empty($data['finish_option'])) ? trim($data['finish_option']) : null, true);
@@ -248,7 +248,7 @@ class SpotSentController extends CustomAbstractActionController
         $specSheetFile = (isset($data['spec_sheet_file'])) ? trim($data['spec_sheet_file']) : null;
         $deliveryNote = (isset($data['delivery_note'])) ? trim($data['delivery_note']) : null;
         $statusId = (isset($data['status_id'])) ? trim($data['status_id']) : null;
-        $deliveryToClient = (array)json_decode((!empty($data['delivery_to_client'])) ? trim($data['delivery_to_client']) : null, true);        
+        $deliveryToClient = (array)json_decode((!empty($data['delivery_to_client'])) ? trim($data['delivery_to_client']) : null, true);
         $audio = (array)json_decode((isset($data['audio'])) ? $data['audio'] : null, true);
         $sentViaMethod = (array)json_decode((!empty($data['sent_via_method'])) ? trim($data['sent_via_method']) : null, true);
         $finishOption = (array)json_decode((!empty($data['finish_option'])) ? trim($data['finish_option']) : null, true);
@@ -393,7 +393,7 @@ class SpotSentController extends CustomAbstractActionController
 
                 $existingSpotVersion = $this->_spotSentToSpotVersionRepository->findBy(array('spotSentId' => $spotSentId));
 
-                foreach($existingSpotVersion as $existingRow) {
+                foreach ($existingSpotVersion as $existingRow) {
                     $this->_em->remove($existingRow);
                 }
 
@@ -405,19 +405,19 @@ class SpotSentController extends CustomAbstractActionController
                         $spotSentToSpotVersion = new RediSpotSentToSpotVersion();
                         $spotSentToSpotVersion->setSpotSentId($spotSentId);
                         $spotSentToSpotVersion->setSpotVersionId($spotVersionId);
-    
+
                         $this->_em->persist($spotSentToSpotVersion);
-    
+
                         if (!empty($row['editors']) && is_array($row['editors'])) {
                             $editors = array_unique($row['editors']);
                             $spotVersionEditors = $this->_spotVersionEditorRepository->findBy(array('spotVersionId' => $spotVersionId));
-    
+
                             foreach ($spotVersionEditors as $spotVersionEditor) {
                                 $this->_em->remove($spotVersionEditor);
                             }
-    
+
                             $this->_em->flush();
-    
+
                             foreach ($editors as $editorId) {
                                 $spotVersionEditor = new RediSpotVersionEditor();
                                 $spotVersionEditor->setSpotVersionId($spotVersionId);
@@ -425,7 +425,7 @@ class SpotSentController extends CustomAbstractActionController
                                 $this->_em->persist($spotVersionEditor);
                             }
                         }
-    
+
                         $this->_em->flush();
                     }
                 }
@@ -510,9 +510,10 @@ class SpotSentController extends CustomAbstractActionController
         return $data;
     }
 
-    private function arrayToCommanSeparated($arr, $isParentChild = false) {
-        if($isParentChild) {
-            if(is_array($arr) && count($arr) === 2 && !empty($arr['parent']) && !empty($arr['child'])) {
+    private function arrayToCommanSeparated($arr, $isParentChild = false)
+    {
+        if ($isParentChild) {
+            if (is_array($arr) && count($arr) === 2 && !empty($arr['parent']) && !empty($arr['child'])) {
                 $arr = array(
                     $arr['parent'],
                     $arr['child'],
@@ -523,17 +524,18 @@ class SpotSentController extends CustomAbstractActionController
         return ((is_array($arr) && count($arr)) ? implode(',', $arr) : null);
     }
 
-    private function commaSeparatedToArray($str, $isParentChild = false) {
+    private function commaSeparatedToArray($str, $isParentChild = false)
+    {
         $result = explode(',', $str);
-    
-        if(!count($result)) {
+
+        if (!count($result)) {
             $result = null;
         } else {
             $result = array_map('intval', $result);
         }
 
-        if($isParentChild) {
-            if(count($result) === 2) {
+        if ($isParentChild) {
+            if (count($result) === 2) {
                 $result = array(
                     'parent' => $result[0],
                     'child' => $result[1],
