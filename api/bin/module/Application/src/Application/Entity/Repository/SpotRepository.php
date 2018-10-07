@@ -580,5 +580,4 @@ class SpotRepository extends EntityRepository
         return $result;
     }
 
-
 }
