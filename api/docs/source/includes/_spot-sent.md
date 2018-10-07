@@ -806,7 +806,7 @@ Required | Parameter | Type | Default | Description
 false | finish_option | string| null | Sent finish option, comman separated ids of parent and client, like "1,2" (parent_id,child_id)
 false | notes | string | null | Notes
 false | status_id | string | null | Status id 
-false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"spot_id":10,"version_id":2},{"spot_id":11}])  
+false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"spot_version_id":40,"editors":[2,4,6,7,9]},{"spot_version_id":99,"editors":[1,3]}])  
 false | full_lock | int | 0 | send 0/1
 false | deadline | string | null | deadline date
 false | finishing_house | string | null | Finishing house
@@ -885,7 +885,7 @@ false | sent_via_method | string| null | Sent via method id. comman separated id
 false | finish_option | string| null | Sent finish option, comman separated ids of parent and client, like "1,2" (parent_id,child_id)
 false | notes | string | null | Notes
 false | status_id | string | null | Status id 
-false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"spot_id":10,"version_id":2},{"spot_id":11}])  
+false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"spot_version_id":40,"editors":[2,4,6,7,9]},{"spot_version_id":99,"editors":[1,3]}])  
 false | full_lock |  | null | send 0/1
 false | deadline | string | null | deadline date
 false | finishing_house | string | null | Finishing house

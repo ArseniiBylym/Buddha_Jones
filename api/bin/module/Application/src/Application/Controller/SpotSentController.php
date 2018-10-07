@@ -14,6 +14,7 @@ use League\Csv\Reader;
 
 use Application\Entity\RediCcStatement;
 use Application\Entity\RediCcStatementLine;
+use Application\Entity\RediSpotVersionEditor;
 
 class SpotSentController extends CustomAbstractActionController
 {
@@ -148,7 +149,7 @@ class SpotSentController extends CustomAbstractActionController
             if (count($files)) {
                 $newDir = $specSheetDir . $spotSentId;
 
-                if(!file_exists($newDir)) {
+                if (!file_exists($newDir)) {
                     mkdir($newDir);
                 }
 
@@ -166,25 +167,33 @@ class SpotSentController extends CustomAbstractActionController
             }
 
             foreach ($spotVersion as $row) {
-                if (!empty($row['spot_id'])) {
-                    $spot = $this->_spotRepository->find($row['spot_id']);
+                if (!empty($row['spot_version_id'])) {
+                    $spotVersionId = (int)$row['spot_version_id'];
+                    $spotSentToSpotVersion = new RediSpotSentToSpotVersion();
+                    $spotSentToSpotVersion->setSpotSentId($spotSentId);
+                    $spotSentToSpotVersion->setSpotVersionId($spotVersionId);
 
-                    if (!empty($row['version_id'])) {
-                        $version = $this->_versionRepository->find($row['version_id']);
-                    }
+                    $this->_em->persist($spotSentToSpotVersion);
 
-                    if ($spot) {
-                        $spotSentToSpotVersion = new RediSpotSentToSpotVersion();
-                        $spotSentToSpotVersion->setSpotSentId($spotSentId);
-                        $spotSentToSpotVersion->setSpotId($row['spot_id']);
+                    if (!empty($row['editors']) && is_array($row['editors'])) {
+                        $editors = array_unique($row['editors']);
+                        $spotVersionEditors = $this->_spotVersionEditorRepository->findBy(array('spotVersionId' => $spotVersionId));
 
-                        if (!empty($row['version_id']) && $version) {
-                            $spotSentToSpotVersion->setVersionId($row['version_id']);
+                        foreach ($spotVersionEditors as $spotVersionEditor) {
+                            $this->_em->remove($spotVersionEditor);
                         }
 
-                        $this->_em->persist($spotSentToSpotVersion);
                         $this->_em->flush();
+
+                        foreach ($editors as $editorId) {
+                            $spotVersionEditor = new RediSpotVersionEditor();
+                            $spotVersionEditor->setSpotVersionId($spotVersionId);
+                            $spotVersionEditor->setUserId($editorId);
+                            $this->_em->persist($spotVersionEditor);
+                        }
                     }
+
+                    $this->_em->flush();
                 }
             }
 
@@ -303,11 +312,11 @@ class SpotSentController extends CustomAbstractActionController
                     $spotSent->setAudio($audio);
                 }
 
-                if($graphicsFinish !== null) {
+                if ($graphicsFinish !== null) {
                     $spotSent->setGraphicsFinish($graphicsFinish);
                 }
 
-                if($gfxFinish !== null) {
+                if ($gfxFinish !== null) {
                     $spotSent->setGfxFinish($gfxFinish);
                 }
 
@@ -352,8 +361,8 @@ class SpotSentController extends CustomAbstractActionController
 
                 if (count($files)) {
                     $newDir = $specSheetDir . $spotSentId;
-                    
-                    if(!file_exists($newDir)) {
+
+                    if (!file_exists($newDir)) {
                         mkdir($newDir);
                     }
 
@@ -370,26 +379,42 @@ class SpotSentController extends CustomAbstractActionController
                     $this->_em->flush();
                 }
 
+                $existingSpotVersion = $this->_spotSentToSpotVersionRepository->findBy(array('spotSentId' => $spotSentId));
+
+                foreach($existingSpotVersion as $existingRow) {
+                    $this->_em->remove($existingRow);
+                }
+
+                $this->_em->flush();
+
                 foreach ($spotVersion as $row) {
-                    if (!empty($row['spot_id'])) {
-                        $spot = $this->_spotRepository->find($row['spot_id']);
-
-                        if (!empty($row['version_id'])) {
-                            $version = $this->_versionRepository->find($row['version_id']);
-                        }
-
-                        if ($spot) {
-                            $spotSentToSpotVersion = new RediSpotSentToSpotVersion();
-                            $spotSentToSpotVersion->setSpotSentId($spotSentId);
-                            $spotSentToSpotVersion->setSpotId($row['spot_id']);
-
-                            if (!empty($row['version_id']) && $version) {
-                                $spotSentToSpotVersion->setVersionId($row['version_id']);
+                    if (!empty($row['spot_version_id'])) {
+                        $spotVersionId = (int)$row['spot_version_id'];
+                        $spotSentToSpotVersion = new RediSpotSentToSpotVersion();
+                        $spotSentToSpotVersion->setSpotSentId($spotSentId);
+                        $spotSentToSpotVersion->setSpotVersionId($spotVersionId);
+    
+                        $this->_em->persist($spotSentToSpotVersion);
+    
+                        if (!empty($row['editors']) && is_array($row['editors'])) {
+                            $editors = array_unique($row['editors']);
+                            $spotVersionEditors = $this->_spotVersionEditorRepository->findBy(array('spotVersionId' => $spotVersionId));
+    
+                            foreach ($spotVersionEditors as $spotVersionEditor) {
+                                $this->_em->remove($spotVersionEditor);
                             }
-
-                            $this->_em->persist($spotSentToSpotVersion);
+    
                             $this->_em->flush();
+    
+                            foreach ($editors as $editorId) {
+                                $spotVersionEditor = new RediSpotVersionEditor();
+                                $spotVersionEditor->setSpotVersionId($spotVersionId);
+                                $spotVersionEditor->setUserId($editorId);
+                                $this->_em->persist($spotVersionEditor);
+                            }
                         }
+    
+                        $this->_em->flush();
                     }
                 }
 
