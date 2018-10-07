@@ -802,14 +802,14 @@ axios.post('/spot-sent', {
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true** | sent_via_method | string| null | Sent via method id. comman separated ids like "1,2,3,4"
-false | finish_option | string| null | Sent finish option, comman separated ids of parent and client, like "1,2" (parent_id,child_id)
+**true** | sent_via_method | string| null | Sent via method id. json encoded array ids like "[1,2,3,4]"
+false | finish_option | string| null | Sent finish option, json encoded ids of parent and client, like "{"parent":1,"child":2}"
 false | notes | string | null | Notes
 false | status_id | string | null | Status id 
-false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"spot_id":10,"version_id":2},{"spot_id":11}])  
+false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"spot_version_id":40,"editors":[2,4,6,7,9]},{"spot_version_id":99,"editors":[1,3]}])  
 false | full_lock | int | 0 | send 0/1
 false | deadline | string | null | deadline date
-false | finishing_house | string | null | Finishing house
+false | finishing_house | string | null | Finishing house id
 false | framerate | string | null | framerate string, like '29.97i'
 false | framerate_note | string | null | Finishing note
 false | raster_size | int | null | raster size ,like '1x1'
@@ -820,9 +820,9 @@ false | video_prep | int | 0 | send 0/1
 false | spec_note | string | null | Finishing house
 false | spec_sheet_file | JSON encoded list base64 of file | null | json encoded array of base64 encoded of file. like ["data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE.......","data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE......."]
 false | tag_chart | string | null | Tag chart
-false | delivery_to_client | string| null | Sent delivery to client option, comman separated ids of parent and client, like "1,2" (parent_id,child_id)
+false | delivery_to_client | string| null | Sent delivery to client option, json encoded ids of parent and client, like "{"parent":1,"child":2}" 
 false | delivery_note | string | null | Delivery note
-false | audio | string | null | Sent audio option, comman separated ids like "1,2,3,4"
+false | audio | string | null | Sent audio option, json encoded  array ids like "[1,2,3,4]"
 false | graphics_finish | int | 0 | send 0/1
 false | gfx_finish | int | 0 | send 0/1
 
@@ -881,11 +881,11 @@ axios.put('/spot-sent/1', {
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-false | sent_via_method | string| null | Sent via method id. comman separated ids like "1,2,3,4"
-false | finish_option | string| null | Sent finish option, comman separated ids of parent and client, like "1,2" (parent_id,child_id)
+false | sent_via_method | string| null | Sent via method id. json encoded array ids like "[1,2,3,4]"
+false | finish_option | string| null | Sent finish option, json encoded ids of parent and client, like "{"parent":1,"child":2}"
 false | notes | string | null | Notes
 false | status_id | string | null | Status id 
-false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"spot_id":10,"version_id":2},{"spot_id":11}])  
+false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"spot_version_id":40,"editors":[2,4,6,7,9]},{"spot_version_id":99,"editors":[1,3]}])  
 false | full_lock |  | null | send 0/1
 false | deadline | string | null | deadline date
 false | finishing_house | string | null | Finishing house
@@ -899,9 +899,9 @@ false | video_prep | int | null | send 0/1
 false | spec_note | string | null | Finishing house
 false | spec_sheet_file | JSON encoded list base64 of file | null | json encoded array of base64 encoded of file. like ["data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE.......","data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE......."]
 false | tag_chart | string | null | Tag chart
-false | delivery_to_client | string| null | Sent delivery to client option, comman separated ids of parent and client, like "2,3" (parent_id,child_id)
+false | delivery_to_client | string| null | Sent delivery to client option, json encoded ids of parent and client, like "{"parent":1,"child":2}" 
 false | delivery_note | string | null | Delivery note
-false | audio | string | null | Sent audio option, comman separated ids like "1,2,3,4"
+false | audio | string | null | Sent audio option, json encoded  array ids like "[1,2,3,4]"
 false | graphics_finish | int | null | send 0/1
 false | gfx_finish | int | null | send 0/1
 

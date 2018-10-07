@@ -10,6 +10,7 @@ use League\Csv\Reader;
 
 use Application\Entity\RediCcStatement;
 use Application\Entity\RediCcStatementLine;
+use Application\Entity\RediSpotVersionEditor;
 
 class AssignVersionToSpotController extends CustomAbstractActionController
 {
@@ -22,6 +23,8 @@ class AssignVersionToSpotController extends CustomAbstractActionController
         $spotId = (int)(isset($data['spot_id']) ? trim($data['spot_id']) : 0);
         $versionStatusId = isset($data['version_status_id']) ? trim($data['version_status_id']) : null;
         $versionNote = isset($data['version_note']) ? trim($data['version_note']) : null;
+        $editors = isset($data['editors']) ? trim($data['editors']) : null;
+        $editors = array_unique((array)json_decode($editors, true));
 
         if ($versionId && $spotId) {
             $version = $this->_versionRepository->find($versionId);
@@ -61,6 +64,27 @@ class AssignVersionToSpotController extends CustomAbstractActionController
 
                     $this->_em->persist($existingSpotVersion);
                     $this->_em->flush();
+
+                    $spotVersionId = $existingSpotVersion->getId();
+
+                    if (count($editors)) {
+                        $spotVersionEditors = $this->_spotVersionEditorRepository->findBy(array('spotVersionId' => $spotVersionId));
+
+                        foreach ($spotVersionEditors as $spotVersionEditor) {
+                            $this->_em->remove($spotVersionEditor);
+                        }
+
+                        $this->_em->flush();
+                        
+                        foreach($editors as $editorId) {
+                            $spotVersionEditor = new RediSpotVersionEditor();
+                            $spotVersionEditor->setSpotVersionId($spotVersionId);
+                            $spotVersionEditor->setUserId($editorId);
+                            $this->_em->persist($spotVersionEditor);
+                        }
+
+                        $this->_em->flush();
+                    }
 
                     $response = array(
                         'status' => 1,
@@ -104,8 +128,9 @@ class AssignVersionToSpotController extends CustomAbstractActionController
 
                 if ($spot) {
                     $existingSpotVersion = $this->_spotVersionRepository->findOneBy(array('spotId' => $spotId, 'versionId' => $versionId));
-
+                    
                     if($existingSpotVersion) {
+                        $spotVersionId = $existingSpotVersion->getId();
                         $this->_em->remove($existingSpotVersion);
 
                         // project history
@@ -118,6 +143,12 @@ class AssignVersionToSpotController extends CustomAbstractActionController
                         $projectHistory->setMessage($historyMessage);
                         $projectHistory->setCreatedAt(new \DateTime('now'));
                         $this->_em->persist($projectHistory);
+
+                        $spotVersionEditors = $this->_spotVersionEditorRepository->findBy(array('spotVersionId' => $spotVersionId));
+
+                        foreach ($spotVersionEditors as $spotVersionEditor) {
+                            $this->_em->remove($spotVersionEditor);
+                        }
 
                         $this->_em->flush();
                     }

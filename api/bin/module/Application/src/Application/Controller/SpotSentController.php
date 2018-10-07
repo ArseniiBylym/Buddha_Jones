@@ -14,6 +14,7 @@ use League\Csv\Reader;
 
 use Application\Entity\RediCcStatement;
 use Application\Entity\RediCcStatementLine;
+use Application\Entity\RediSpotVersionEditor;
 
 class SpotSentController extends CustomAbstractActionController
 {
@@ -75,8 +76,6 @@ class SpotSentController extends CustomAbstractActionController
 
         $projectId = (!empty($data['project_id'])) ? (int)$data['project_id'] : 0;
         $fullLock = (!empty($data['full_lock'])) ? 1 : 0;
-        $sentViaMethod = (!empty($data['sent_via_method'])) ? trim($data['sent_via_method']) : null;
-        $finishOption = (!empty($data['finish_option'])) ? trim($data['finish_option']) : null;
         $notes = (!empty($data['notes'])) ? trim($data['notes']) : null;
         $deadline = (!empty($data['deadline'])) ? trim($data['deadline']) : null;
         $finishingHouse = (!empty($data['finishing_house'])) ? trim($data['finishing_house']) : null;
@@ -88,14 +87,22 @@ class SpotSentController extends CustomAbstractActionController
         $audioPrep = (!empty($data['audio_prep'])) ? 1 : 0;
         $graphicsFinish = (!empty($data['graphics_finish'])) ? 1 : 0;
         $gfxFinish = (!empty($data['gfx_finish'])) ? 1 : 0;
-        $audio = (isset($data['audio'])) ? $data['audio'] : null;
         $videoPrep = (!empty($data['video_prep'])) ? 1 : 0;
         $specNote = (!empty($data['spec_note'])) ? trim($data['spec_note']) : null;
         $specSheetFile = (!empty($data['spec_sheet_file'])) ? trim($data['spec_sheet_file']) : null;
-        $deliveryToClient = (!empty($data['delivery_to_client'])) ? trim($data['delivery_to_client']) : null;
         $deliveryNote = (!empty($data['delivery_note'])) ? trim($data['delivery_note']) : null;
         $statusId = (!empty($data['status_id'])) ? trim($data['status_id']) : null;
+        $deliveryToClient = (array)json_decode((!empty($data['delivery_to_client'])) ? trim($data['delivery_to_client']) : null, true);
+        $audio = (array)json_decode((isset($data['audio'])) ? $data['audio'] : null, true);
+        $sentViaMethod = (array)json_decode((!empty($data['sent_via_method'])) ? trim($data['sent_via_method']) : null, true);
+        $finishOption = (array)json_decode((!empty($data['finish_option'])) ? trim($data['finish_option']) : null, true);
         $spotVersion = (array)json_decode(isset($data['spot_version']) ? trim($data['spot_version']) : null, true);
+
+        // array to commaseparated string
+        $sentViaMethod = $this->arrayToCommanSeparated($sentViaMethod);
+        $finishOption = $this->arrayToCommanSeparated($finishOption, true);
+        $audio = $this->arrayToCommanSeparated($audio);
+        $deliveryToClient = $this->arrayToCommanSeparated($deliveryToClient, true);
 
         $files = array();
 
@@ -148,7 +155,7 @@ class SpotSentController extends CustomAbstractActionController
             if (count($files)) {
                 $newDir = $specSheetDir . $spotSentId;
 
-                if(!file_exists($newDir)) {
+                if (!file_exists($newDir)) {
                     mkdir($newDir);
                 }
 
@@ -166,25 +173,33 @@ class SpotSentController extends CustomAbstractActionController
             }
 
             foreach ($spotVersion as $row) {
-                if (!empty($row['spot_id'])) {
-                    $spot = $this->_spotRepository->find($row['spot_id']);
+                if (!empty($row['spot_version_id'])) {
+                    $spotVersionId = (int)$row['spot_version_id'];
+                    $spotSentToSpotVersion = new RediSpotSentToSpotVersion();
+                    $spotSentToSpotVersion->setSpotSentId($spotSentId);
+                    $spotSentToSpotVersion->setSpotVersionId($spotVersionId);
 
-                    if (!empty($row['version_id'])) {
-                        $version = $this->_versionRepository->find($row['version_id']);
-                    }
+                    $this->_em->persist($spotSentToSpotVersion);
 
-                    if ($spot) {
-                        $spotSentToSpotVersion = new RediSpotSentToSpotVersion();
-                        $spotSentToSpotVersion->setSpotSentId($spotSentId);
-                        $spotSentToSpotVersion->setSpotId($row['spot_id']);
+                    if (!empty($row['editors']) && is_array($row['editors'])) {
+                        $editors = array_unique($row['editors']);
+                        $spotVersionEditors = $this->_spotVersionEditorRepository->findBy(array('spotVersionId' => $spotVersionId));
 
-                        if (!empty($row['version_id']) && $version) {
-                            $spotSentToSpotVersion->setVersionId($row['version_id']);
+                        foreach ($spotVersionEditors as $spotVersionEditor) {
+                            $this->_em->remove($spotVersionEditor);
                         }
 
-                        $this->_em->persist($spotSentToSpotVersion);
                         $this->_em->flush();
+
+                        foreach ($editors as $editorId) {
+                            $spotVersionEditor = new RediSpotVersionEditor();
+                            $spotVersionEditor->setSpotVersionId($spotVersionId);
+                            $spotVersionEditor->setUserId($editorId);
+                            $this->_em->persist($spotVersionEditor);
+                        }
                     }
+
+                    $this->_em->flush();
                 }
             }
 
@@ -217,8 +232,6 @@ class SpotSentController extends CustomAbstractActionController
 
         $projectId = (isset($data['project_id'])) ? (int)$data['project_id'] : null;
         $fullLock = (isset($data['full_lock'])) ? (int)$data['full_lock'] : null;
-        $sentViaMethod = (isset($data['sent_via_method'])) ? trim($data['sent_via_method']) : null;
-        $finishOption = (isset($data['finish_option'])) ? trim($data['finish_option']) : null;
         $notes = (isset($data['notes'])) ? trim($data['notes']) : null;
         $deadline = (isset($data['deadline'])) ? trim($data['deadline']) : null;
         $finishingHouse = (isset($data['finishing_house'])) ? trim($data['finishing_house']) : null;
@@ -230,14 +243,22 @@ class SpotSentController extends CustomAbstractActionController
         $audioPrep = (isset($data['audio_prep'])) ? (int)$data['audio_prep'] : null;
         $graphicsFinish = (isset($data['graphics_finish'])) ? (int)$data['graphics_finish'] : null;
         $gfxFinish = (isset($data['gfx_finish'])) ? (int)$data['gfx_finish'] : null;
-        $audio = (isset($data['audio'])) ? $data['audio'] : null;
         $videoPrep = (isset($data['video_prep'])) ? (int)$data['video_prep'] : null;
         $specNote = (isset($data['spec_note'])) ? trim($data['spec_note']) : null;
         $specSheetFile = (isset($data['spec_sheet_file'])) ? trim($data['spec_sheet_file']) : null;
-        $deliveryToClient = (isset($data['delivery_to_client'])) ? trim($data['delivery_to_client']) : null;
         $deliveryNote = (isset($data['delivery_note'])) ? trim($data['delivery_note']) : null;
         $statusId = (isset($data['status_id'])) ? trim($data['status_id']) : null;
+        $deliveryToClient = (array)json_decode((!empty($data['delivery_to_client'])) ? trim($data['delivery_to_client']) : null, true);
+        $audio = (array)json_decode((isset($data['audio'])) ? $data['audio'] : null, true);
+        $sentViaMethod = (array)json_decode((!empty($data['sent_via_method'])) ? trim($data['sent_via_method']) : null, true);
+        $finishOption = (array)json_decode((!empty($data['finish_option'])) ? trim($data['finish_option']) : null, true);
         $spotVersion = (array)json_decode(isset($data['spot_version']) ? trim($data['spot_version']) : null, true);
+
+        // array to commaseparated string
+        $sentViaMethod = $this->arrayToCommanSeparated($sentViaMethod);
+        $finishOption = $this->arrayToCommanSeparated($finishOption, true);
+        $audio = $this->arrayToCommanSeparated($audio);
+        $deliveryToClient = $this->arrayToCommanSeparated($deliveryToClient, true);
 
         $files = array();
 
@@ -303,11 +324,11 @@ class SpotSentController extends CustomAbstractActionController
                     $spotSent->setAudio($audio);
                 }
 
-                if($graphicsFinish !== null) {
+                if ($graphicsFinish !== null) {
                     $spotSent->setGraphicsFinish($graphicsFinish);
                 }
 
-                if($gfxFinish !== null) {
+                if ($gfxFinish !== null) {
                     $spotSent->setGfxFinish($gfxFinish);
                 }
 
@@ -352,8 +373,8 @@ class SpotSentController extends CustomAbstractActionController
 
                 if (count($files)) {
                     $newDir = $specSheetDir . $spotSentId;
-                    
-                    if(!file_exists($newDir)) {
+
+                    if (!file_exists($newDir)) {
                         mkdir($newDir);
                     }
 
@@ -370,26 +391,42 @@ class SpotSentController extends CustomAbstractActionController
                     $this->_em->flush();
                 }
 
+                $existingSpotVersion = $this->_spotSentToSpotVersionRepository->findBy(array('spotSentId' => $spotSentId));
+
+                foreach ($existingSpotVersion as $existingRow) {
+                    $this->_em->remove($existingRow);
+                }
+
+                $this->_em->flush();
+
                 foreach ($spotVersion as $row) {
-                    if (!empty($row['spot_id'])) {
-                        $spot = $this->_spotRepository->find($row['spot_id']);
+                    if (!empty($row['spot_version_id'])) {
+                        $spotVersionId = (int)$row['spot_version_id'];
+                        $spotSentToSpotVersion = new RediSpotSentToSpotVersion();
+                        $spotSentToSpotVersion->setSpotSentId($spotSentId);
+                        $spotSentToSpotVersion->setSpotVersionId($spotVersionId);
 
-                        if (!empty($row['version_id'])) {
-                            $version = $this->_versionRepository->find($row['version_id']);
-                        }
+                        $this->_em->persist($spotSentToSpotVersion);
 
-                        if ($spot) {
-                            $spotSentToSpotVersion = new RediSpotSentToSpotVersion();
-                            $spotSentToSpotVersion->setSpotSentId($spotSentId);
-                            $spotSentToSpotVersion->setSpotId($row['spot_id']);
+                        if (!empty($row['editors']) && is_array($row['editors'])) {
+                            $editors = array_unique($row['editors']);
+                            $spotVersionEditors = $this->_spotVersionEditorRepository->findBy(array('spotVersionId' => $spotVersionId));
 
-                            if (!empty($row['version_id']) && $version) {
-                                $spotSentToSpotVersion->setVersionId($row['version_id']);
+                            foreach ($spotVersionEditors as $spotVersionEditor) {
+                                $this->_em->remove($spotVersionEditor);
                             }
 
-                            $this->_em->persist($spotSentToSpotVersion);
                             $this->_em->flush();
+
+                            foreach ($editors as $editorId) {
+                                $spotVersionEditor = new RediSpotVersionEditor();
+                                $spotVersionEditor->setSpotVersionId($spotVersionId);
+                                $spotVersionEditor->setUserId($editorId);
+                                $this->_em->persist($spotVersionEditor);
+                            }
                         }
+
+                        $this->_em->flush();
                     }
                 }
 
@@ -465,6 +502,50 @@ class SpotSentController extends CustomAbstractActionController
             }
         }
 
+        $data['deliveryToClient'] = $this->commaSeparatedToArray($data['deliveryToClient'], true);
+        $data['audio'] = $this->commaSeparatedToArray($data['audio']);
+        $data['sentViaMethod'] = $this->commaSeparatedToArray($data['sentViaMethod']);
+        $data['finishOption'] = $this->commaSeparatedToArray($data['finishOption'], true);
+
         return $data;
+    }
+
+    private function arrayToCommanSeparated($arr, $isParentChild = false)
+    {
+        if ($isParentChild) {
+            if (is_array($arr) && count($arr) === 2 && !empty($arr['parent']) && !empty($arr['child'])) {
+                $arr = array(
+                    $arr['parent'],
+                    $arr['child'],
+                );
+            }
+        }
+
+        return ((is_array($arr) && count($arr)) ? implode(',', $arr) : null);
+    }
+
+    private function commaSeparatedToArray($str, $isParentChild = false)
+    {
+        $result = explode(',', $str);
+
+        if (!count($result)) {
+            $result = null;
+        } else {
+            $result = array_map('intval', $result);
+        }
+
+        if ($isParentChild) {
+            if (count($result) === 2) {
+                $result = array(
+                    'parent' => $result[0],
+                    'child' => $result[1],
+                );
+            } else {
+                $result = null;
+            }
+        }
+
+        return $result;
+
     }
 }

@@ -248,7 +248,7 @@ class SpotRepository extends EntityRepository
                             }));
                         }
                     } else {
-                        $row['finishOptionList'] = null;
+                        $row['deliveryToClientList'] = null;
                     }
                 }
             }
@@ -321,6 +321,7 @@ class SpotRepository extends EntityRepository
             $extraSelect = "";
         }
         $dql = "SELECT 
+                  sv.id AS spotVersionId,
                   sv.spotId, s.spotName,
                   sv.versionId, v.versionName,
                   p.id as projectId,
@@ -370,6 +371,10 @@ class SpotRepository extends EntityRepository
 
                 unset($row['id']);
             }
+        }
+
+        foreach ($result as &$row) {
+            $row['editor'] = $this->getSpotVersionEditor($row['spotVersionId']);
         }
 
         return $result;
@@ -580,5 +585,32 @@ class SpotRepository extends EntityRepository
         return $result;
     }
 
+    public function getSpotVersionEditor($spotVersionId)
+    {
+        $dql = "SELECT 
+                  u.id, 
+                  u.firstName, u.lastName,
+                  u.username,
+                  u.initials
+                FROM \Application\Entity\RediSpotVersionEditor sve
+                  INNER JOIN \Application\Entity\RediUser u
+                    WITH u.id = sve.userId
+                  WHERE sve.spotVersionId = :spot_version_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('spot_version_id', $spotVersionId);
+        $result = $query->getArrayResult();
+
+        foreach ($result as &$row) {
+            $row['name'] = trim($row['firstName'] . ' ' . $row['lastName']);
+
+            $row['id'] = (int)$row['id'];
+
+            unset($row['firstName']);
+            unset($row['lastName']);
+        }
+
+        return $result;
+    }
 
 }
