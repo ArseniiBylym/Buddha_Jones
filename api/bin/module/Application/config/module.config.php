@@ -159,6 +159,7 @@ return array(
             'Application\Controller\Estimate'                                       => 'Application\Controller\EstimateController',
             'Application\Controller\EstimateType'                                   => 'Application\Controller\EstimateTypeController',
             'Application\Controller\EstimateTemporaryStaffSearch'                   => 'Application\Controller\EstimateTemporaryStaffSearchController',
+            'Application\Controller\Filter'                                        => 'Application\Controller\FilterController',
             'Application\Controller\FinishingHouse'                                 => 'Application\Controller\FinishingHouseController',
             'Application\Controller\GraphicsRequest'                                => 'Application\Controller\GraphicsRequestController',
             'Application\Controller\GraphicsRequestAccept'                          => 'Application\Controller\GraphicsRequestAcceptController',

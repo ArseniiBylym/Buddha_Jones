@@ -855,4 +855,136 @@ class ProjectRepository extends EntityRepository
 
         return $result;
     }
+
+    public function getFilters($filter = array())
+    {
+        $dql = "SELECT
+                  p.id AS projectId,
+                  ptc.id AS projectCampaignId,
+                  ca.id AS campaignId,
+                  ca.campaignName,
+                  sp.id AS spotId,
+                  sp.spotName,
+                  sv.id AS spotVersionId,
+                  v.id AS versionId,
+                  v.versionName
+                FROM \Application\Entity\RediProject p
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
+                    WITH p.id=ptc.projectId
+                LEFT JOIN \Application\Entity\RediCampaign ca
+                    WITH ca.id=ptc.campaignId
+                LEFT JOIN \Application\Entity\RediSpot sp
+                    WITH sp.projectCampaignId = ptc.id
+                LEFT JOIN \Application\Entity\RediSpotVersion sv
+                    WITH sv.spotId = sp.id
+                LEFT JOIN \Application\Entity\RediVersion v
+                    WITH v.id = sv.versionId
+                 ";
+
+        // If user user does not have access to all time entry
+        // (if user does not belong to those selected user type)
+        // then join tables to get only the projects he is assigned to
+        if (empty($filter['all_project_access']) && !empty($filter['project_to_campaign_user_id'])) {
+            $dql .= " LEFT JOIN \Application\Entity\RediProjectToCampaignBilling ptcb
+                        WITH ptcb.projectCampaignId=ptc.id
+                      LEFT JOIN \Application\Entity\RediProjectToCampaignDesigner ptcd
+                        WITH ptcd.projectCampaignId=ptc.id
+                      LEFT JOIN \Application\Entity\RediProjectToCampaignEditor ptce
+                        WITH ptce.projectCampaignId=ptc.id ";
+        }
+
+        $dqlFilter = [];
+
+        if (empty($filter['all_project_access']) && !empty($filter['project_to_campaign_user_id'])) {
+            $dqlFilter[] = " (ptcu.userId = :project_to_campaign_user_id
+                              OR ptcb.userId = :project_to_campaign_user_id
+                              OR ptcd.userId = :project_to_campaign_user_id
+                              OR ptce.userId = :project_to_campaign_user_id
+                              OR p.createdByUserId = :project_to_campaign_user_id
+                              OR ca.createdByUserId = :project_to_campaign_user_id) ";
+        }
+
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
+        }
+
+        $dql .= ' GROUP BY p.id, ca.id, sp.id, v.id
+                ORDER BY p.projectName ASC, 
+                        p.projectCode ASC,
+                        ca.campaignName ASC,
+                        sp.spotName ASC,
+                        v.versionName ASC';
+
+        $query = $this->getEntityManager()->createQuery($dql);
+
+        if (empty($filter['all_project_access']) && !empty($filter['project_to_campaign_user_id'])) {
+            $query->setParameter('project_to_campaign_user_id', $filter['project_to_campaign_user_id']);
+        }
+
+        $result = $query->getArrayResult();
+
+        $response = array();
+
+        foreach($result as $row) {
+            if(empty($response[$row['projectId']])) {
+                $response[$row['projectId']] = array(
+                    'projectId' => (int)$row['projectId'],
+                    'campaign' => array(),
+                );
+            }
+
+            if(empty($row['campaignId'])) continue;
+
+            if(empty($response[$row['projectId']]['campaign'][$row['campaignId']])) {
+                $response[$row['projectId']]['campaign'][$row['campaignId']] = array(
+                    'campaignId' => (int)$row['campaignId'],
+                    'projectCampaignId' => (int)$row['projectCampaignId'],
+                    'campaignName' => $row['campaignName'],
+                    'spot' => array(),
+                );
+            }
+
+            if(empty($row['spotId'])) continue;
+
+            if(empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']])) {
+                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']] = array(
+                    'spotId' => (int)$row['spotId'],
+                    'spotName' => $row['spotName'],
+                    'version' => array(),
+                );
+            }
+
+            if(empty($row['versionId'])) continue;
+
+            if(empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']]['version'][$row['versionId']])) {
+                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']]['version'][$row['versionId']] = array(
+                    'versionId' => (int)$row['versionId'],
+                    'spotVersionId' => (int)$row['spotVersionId'],
+                    'versionName' => $row['versionName'],
+                );
+            }
+        }
+
+        $response = array_values($response);
+
+        foreach($response as &$project) {
+            if(empty($project['campaign'])) continue;
+
+            $project['campaign'] = array_values($project['campaign']);
+
+            foreach($project['campaign'] as &$campaign) {
+                if(empty($campaign['spot'])) continue;
+
+                $campaign['spot'] = array_values($campaign['spot']);
+
+                foreach($campaign['spot'] as &$spot) {
+                    if(empty($spot['version'])) continue;
+
+                    $spot['version'] = array_values($spot['version']);
+                }
+            }
+        }
+
+        return $response;
+    }
 }
