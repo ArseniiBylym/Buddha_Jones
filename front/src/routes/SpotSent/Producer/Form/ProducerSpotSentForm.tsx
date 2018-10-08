@@ -16,7 +16,7 @@ import { Checkmark, TextArea, Toggle } from 'components/Form';
 import { ClientContact } from 'types/clients';
 import { LoadingIndicator } from 'components/Loaders';
 import { ToggleSideContent } from '../../../../components/Form';
-import { SentViaOption, SpotSentAudioOptionsFromApi, SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
+import { SpotSentAudioOptionsFromApi, SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
 import { ProjectPickerGroupValues } from '../../../../components/Buddha';
 import { SpotSentStore } from '../../../../store/AllStores';
 import { DatePicker } from '../../../../components/Calendar';
@@ -36,26 +36,28 @@ export interface ProducerSpotSentValue {
 }
 
 export interface SpotSentValueForSubmit {
-    full_lock: 0 | 1;
-    notes: string;
-    finishing_house: string | null;
-    finishing_house_id: number | null;
-    deadline: Date;
-    gfx_finish: 0 | 1;
-    music_cue_sheet: 0 | 1;
-    audio_prep: 0 | 1;
-    video_prep: 0 | 1;
-    graphics_finish: 0 | 1;
-    framerate: string | null;
-    framerate_note: string;
-    raster_size: string | null;
-    raster_size_note: string;
-    spec_note: string;
-    tag_chart: string;
-    delivery_to_client_id: number | null;
-    delivery_note: string;
-    audio: number | null;
-    audio_note: string;
+    sent_via_method?: number[] | null;
+    finish_option?: {parent: number, child: number} | null;
+    full_lock?: 0 | 1;
+    notes?: string | null;
+    finishing_house?: number | null;
+    finishing_house_name?: string | null;
+    deadline?: Date | null;
+    gfx_finish?: 0 | 1;
+    music_cue_sheet?: 0 | 1;
+    audio_prep?: 0 | 1;
+    video_prep?: 0 | 1;
+    graphics_finish?: 0 | 1;
+    framerate?: string | null;
+    framerate_note?: string | null;
+    raster_size?: string | null;
+    raster_size_note?: string | null;
+    spec_note?: string | null;
+    tag_chart?: string | null;
+    delivery_to_client?: {parent: number, child: number} | null;
+    delivery_note?: string | null;
+    audio?: number[] | null;
+    audio_note?: string | null;
 }
 
 // Styles
@@ -84,26 +86,28 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     @observable
     private spotSentValues: SpotSentValueForSubmit = {
+        sent_via_method: null,
+        finish_option: null,
         full_lock: 0,
-        notes: '',
+        notes: null,
         finishing_house: null,
-        finishing_house_id: null,
-        deadline: new Date(),
+        finishing_house_name: null,
+        deadline: null,
         gfx_finish: 0,
         music_cue_sheet: 0,
         audio_prep: 0,
         video_prep: 0,
         graphics_finish: 0,
         framerate: null,
-        framerate_note: '',
+        framerate_note: null,
         raster_size: null,
-        raster_size_note: '',
-        spec_note: '',
-        tag_chart: '',
-        delivery_to_client_id: null,
-        delivery_note: '',
+        raster_size_note: null,
+        spec_note: null,
+        tag_chart: null,
+        delivery_to_client: null,
+        delivery_note: null,
         audio: null,
-        audio_note: ''
+        audio_note: null
     };
 
     @observable private finishingOptionId: number | null = 1;
@@ -229,15 +233,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
                     <Section title="Sent via">
                         <div className={s.sentViaMethodsContainer}>
-                            {this.sentViaMethods.map((sentVia: SentViaOption) => (
-                                <Checkmark
-                                    key={sentVia.key}
-                                    onClick={this.handleSentViaMethodToggle(sentVia.key)}
-                                    checked={sentVia.isSelected}
-                                    label={sentVia.name}
-                                    type={'no-icon'}
-                                />
-                            ))}
+                            {this.getSentViaMethods()}
                         </div>
                     </Section>
 
@@ -245,7 +241,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         {this.clientContacts === null && <Paragraph type="dim">Project is not selected.</Paragraph>}
 
                         {this.clientContacts &&
-                            this.clientContacts.isLoading && <LoadingIndicator label="Loading studio contacts" />}
+                            this.clientContacts.isLoading && <LoadingIndicator label="Loading studio contacts" />
+                        }
 
                         {this.clientContacts &&
                             this.clientContacts.isLoading === false &&
@@ -333,7 +330,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                             <div className={s.finishRequestSection}>
                                 <h3>Notes</h3>
                                 <TextArea
-                                    value={this.spotSentValues.notes}
+                                    value={(this.spotSentValues.notes as string)}
                                     label="Notes..."
                                     width={1152}
                                     height={82}
@@ -344,7 +341,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     key="date-picker"
                                     onChange={this.handleDateChange}
                                     label="Deadline"
-                                    value={this.spotSentValues.deadline}
+                                    value={(this.spotSentValues.deadline as Date)}
                                     align="left"
                                 />
                             </div>
@@ -357,8 +354,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                         value={0}
                                         valueLabel=""
                                         align="left"
-                                        label={(this.spotSentValues.finishing_house) ? this.spotSentValues.finishing_house : 'Select finishing house'}
-                                        projectId={this.spotSentValues.finishing_house_id}
+                                        label={(this.spotSentValues.finishing_house_name) ? this.spotSentValues.finishing_house_name : 'Select finishing house'}
+                                        projectId={this.spotSentValues.finishing_house}
                                     />
                                 </div>
                             }
@@ -371,7 +368,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     <div className={s.finishRequestSection}>
                                         <h3>Framerate Notes</h3>
                                         <TextArea
-                                            value={this.spotSentValues.framerate_note}
+                                            value={(this.spotSentValues.framerate_note) as string}
                                             label="Framerate Notes..."
                                             width={1152}
                                             height={82}
@@ -384,7 +381,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     <div className={s.finishRequestSection}>
                                         <h3>Raster Size Notes</h3>
                                         <TextArea
-                                            value={this.spotSentValues.raster_size_note}
+                                            value={(this.spotSentValues.raster_size_note as string)}
                                             label="Raster Size Notes..."
                                             width={1152}
                                             height={82}
@@ -438,7 +435,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                             <div className={s.finishRequestSection}>
                                 <h3>Audio Notes</h3>
                                 <TextArea
-                                    value={this.spotSentValues.audio_note}
+                                    value={(this.spotSentValues.audio_note) as string}
                                     label="Audio Notes..."
                                     width={1152}
                                     height={82}
@@ -448,7 +445,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 <div className={s.finishRequestSection}>
                                     <h3>Tag chart</h3>
                                     <TextArea
-                                        value={this.spotSentValues.tag_chart}
+                                        value={(this.spotSentValues.tag_chart) as string}
                                         label="Tag chart..."
                                         width={1152}
                                         height={82}
@@ -464,7 +461,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     <div className={s.finishRequestSection}>
                                         <h3>Spec Notes</h3>
                                         <TextArea
-                                            value={this.spotSentValues.spec_note}
+                                            value={(this.spotSentValues.spec_note as string)}
                                             label="Spec Notes..."
                                             width={1152}
                                             height={82}
@@ -482,7 +479,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     <div className={s.finishRequestSection}>
                                         <h3>Delivery Notes</h3>
                                         <TextArea
-                                            value={this.spotSentValues.delivery_note}
+                                            value={(this.spotSentValues.delivery_note) as string}
                                             label="Delivery Notes..."
                                             width={1152}
                                             height={82}
@@ -595,20 +592,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
     };
 
-    private handleSentViaMethodToggle = (sentViaKey: SpotSentVia) => (checked: boolean) => {
-        if (checked && this.values.sentVia.indexOf(sentViaKey) === -1) {
-            this.values.sentVia.push(sentViaKey);
-        } else if (checked === false) {
-            const sentViaIndex = this.values.sentVia.findIndex(v => v === sentViaKey);
-            if (sentViaIndex !== -1) {
-                this.values.sentVia = [
-                    ...this.values.sentVia.slice(0, sentViaIndex),
-                    ...this.values.sentVia.slice(sentViaIndex + 1),
-                ];
-            }
-        }
-    };
-
     private handleSentToContactToggle = (contact: ClientContact) => (checked: boolean) => {
         if (checked && this.values.studioContacts.indexOf(contact.id) === -1) {
             this.values.studioContacts.push(contact.id);
@@ -653,34 +636,31 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         };
     }
 
-    private get sentViaMethods(): SentViaOption[] {
-        return [
-            {
-                key: SpotSentVia.FiberFlex,
-                name: 'Fiber/Flex',
-                isSelected: this.values.sentVia.indexOf(SpotSentVia.FiberFlex) !== -1,
-            },
-            {
-                key: SpotSentVia.Post,
-                name: 'Post',
-                isSelected: this.values.sentVia.indexOf(SpotSentVia.Post) !== -1,
-            },
-            {
-                key: SpotSentVia.EmailLink,
-                name: 'Email link',
-                isSelected: this.values.sentVia.indexOf(SpotSentVia.EmailLink) !== -1,
-            },
-            {
-                key: SpotSentVia.InternalLink,
-                name: 'Internal link',
-                isSelected: this.values.sentVia.indexOf(SpotSentVia.InternalLink) !== -1,
-            },
-            {
-                key: SpotSentVia.InHousePresentation,
-                name: 'In house presentation',
-                isSelected: this.values.sentVia.indexOf(SpotSentVia.InHousePresentation) !== -1,
-            },
-        ];
+    private getSentViaMethods(): JSX.Element[] {
+        if (SpotSentStore.spotSentSentViaMethodOptions && SpotSentStore.spotSentSentViaMethodOptions.length > 0) {
+            return SpotSentStore.spotSentSentViaMethodOptions.map((method: SpotSentOptionsChildrenFromApi, index: number) => {
+                return (
+                    <Checkmark
+                        key={'sent-via-method-' + index}
+                        onClick={() => {
+                            if (this.spotSentValues.sent_via_method && this.spotSentValues.sent_via_method.includes(method.id)) {
+                                let i: number = this.spotSentValues.sent_via_method.indexOf(method.id);
+                                if (i !== -1) {
+                                    this.spotSentValues.sent_via_method.splice(i, 1);
+                                }
+                            } else if (this.spotSentValues.sent_via_method && !this.spotSentValues.sent_via_method.includes(method.id)) {
+                                this.spotSentValues.sent_via_method.push(method.id);
+                            }}
+                        }
+                        checked={this.spotSentValues.sent_via_method ? this.spotSentValues.sent_via_method.includes(method.id) : false}
+                        label={method.name}
+                        type={'no-icon'}
+                    />
+                );
+            });
+        } else {
+            return [];
+        }
     }
 
     private getAudioOptions(): JSX.Element[] {
@@ -689,8 +669,17 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                 return (
                     <Checkmark
                         key={'audio-option-' + index}
-                        onClick={() => { this.spotSentValues.audio = audio.id; }}
-                        checked={(audio.id === this.spotSentValues.audio) ? true : false}
+                        onClick={() => {
+                            if (this.spotSentValues.audio && this.spotSentValues.audio.includes(audio.id)) {
+                                let i: number = this.spotSentValues.audio.indexOf(audio.id);
+                                if (i !== -1) {
+                                    this.spotSentValues.audio.splice(i, 1);
+                                }
+                            } else if (this.spotSentValues.audio && !this.spotSentValues.audio.includes(audio.id)) {
+                                this.spotSentValues.audio.push(audio.id);
+                            }}
+                        }
+                        checked={(this.spotSentValues.audio) ? this.spotSentValues.audio.includes(audio.id) : false}
                         label={audio.name}
                         type={'no-icon'}
                     />
@@ -727,8 +716,10 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                 return (
                     <Checkmark
                         key={'delivery-to-client-option-' + index}
-                        onClick={() => { this.spotSentValues.delivery_to_client_id = children.id; }}
-                        checked={(children.id === this.spotSentValues.delivery_to_client_id) ? true : false}
+                        onClick={() => {
+                            if (this.spotSentValues.delivery_to_client) { this.spotSentValues.delivery_to_client.child = children.id; }
+                        }}
+                        checked={(this.spotSentValues.delivery_to_client && children.id === this.spotSentValues.delivery_to_client.child) ? true : false}
                         label={children.name}
                         type={'no-icon'}
                     />
@@ -802,8 +793,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     @action
     private handleExistingFinishingHouseSelected = (finishingHouse: { id: number; name: string }) => {
-        this.spotSentValues.finishing_house_id = (finishingHouse && finishingHouse.id) ? finishingHouse.id : null;
-        this.spotSentValues.finishing_house = (finishingHouse && finishingHouse.name) ? finishingHouse.name : null;
+        this.spotSentValues.finishing_house = finishingHouse.id;
+        this.spotSentValues.finishing_house_name = finishingHouse.name;
     };
 
 }

@@ -15,6 +15,7 @@ export class SpotSentActionsClass {
             SpotSentStore.spotSentRasterSizeOptions = response.raster_size_option;
             SpotSentStore.spotSentDeliveryToClientOptions = response.delivery_to_client_option;
             SpotSentStore.spotSentAudioOptions = response.audio_option;
+            SpotSentStore.spotSentSentViaMethodOptions = response.sent_via_method;
             return true;
         } catch (error) {
             throw error;
