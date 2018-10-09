@@ -612,4 +612,18 @@ class SpotRepository extends EntityRepository
 
         return $result;
     }
+
+    public function getNextSpotSentRequestId()
+    {
+        $dql = "SELECT 
+                  MAX(ss.requestId) AS max_request
+                FROM \Application\Entity\RediSpotSent ss";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getArrayResult();
+
+        $maxRequestId = (!empty($result[0]['max_request'])) ? (int)$result[0]['max_request'] : 0;
+
+        return ($maxRequestId + 1);
+    }
 }
