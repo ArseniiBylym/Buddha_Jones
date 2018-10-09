@@ -17,10 +17,12 @@ class SpotSentOptionsController extends CustomAbstractActionController
         $data = $this->_spotSentOptionRepository->findAll();
 
         $response = array();
-        
-        foreach($data as $row) {
+
+        foreach ($data as $row) {
             $response[$row->getKey()] = json_decode($row->getValue());
         }
+
+        $response['finishing_house_option'] = $this->_spotRepo->getAllFinishingHouse();
 
         $response = array(
             'status' => 1,
@@ -36,8 +38,19 @@ class SpotSentOptionsController extends CustomAbstractActionController
         $data = $this->_spotSentOptionRepository->find($key);
 
         $response = array();
-        
-        if($data) {
+
+        if ($key === 'finishing_house_option') {
+            $response = array(
+                "key" => 'finishing_house_option',
+                "value" => $this->_spotRepo->getAllFinishingHouse()
+            );
+
+            $response = array(
+                'status' => 1,
+                'message' => 'Request successful',
+                'data' => $response
+            );
+        } else if ($data) {
             $response = array(
                 "key" => $data->getKey(),
                 "value" => json_decode($data->getValue())

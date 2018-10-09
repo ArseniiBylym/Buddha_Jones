@@ -43,19 +43,26 @@ class TimeEntryOfUserController extends CustomAbstractActionController
                 $data[$rowDate][] = $row;
             }
 
-            $timeEntryData = array();
+            /**
+             * this code is for format change
+             * 
+             * disabled - as frontend changes for this is not done
+             * 
+             * *************** do not upload/enable this until frontend is ready *************
+             */
+            // $timeEntryData = array();
 
-            foreach($data as $index => $row) {
-                $timeEntryData[] = array(
-                    'date' => $index,
-                    'entries' => $row,
-                );
-            }
+            // foreach($data as $index => $row) {
+            //     $timeEntryData[] = array(
+            //         'date' => $index,
+            //         'entries' => $row,
+            //     );
+            // }
 
             $response = array(
                 'status' => 1,
                 'message' => 'Request successful',
-                'data' => $timeEntryData
+                'data' => $data
             );
         } else {
             $response = array(

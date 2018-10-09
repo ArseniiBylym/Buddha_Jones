@@ -6,21 +6,24 @@ const DataTypes = Sequelize.DataTypes;
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
   const customerPrice = sequelizeClient.define('redi_customer_price', {
-    customer_id: {
+    customerId: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'customer_id'
     },
-    activity_id: {
+    activityId: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      field: 'activity_id'
     },
     price: {
       type: DataTypes.DECIMAL,
       allowNull: true
     }
   }, {
+    timestamps: false,
     hooks: {
       beforeCount(options) {
         options.raw = true;

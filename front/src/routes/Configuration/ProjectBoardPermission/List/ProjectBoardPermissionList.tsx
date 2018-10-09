@@ -136,7 +136,6 @@ class ProjectBoardPermissionList extends React.Component<ProjectBoardPermissionL
                         <TableCell align="right">
                             <ButtonEdit
                                 onClick={this.handlePermissionEdit(userType.id, userType.name)}
-                                iconBackground="yellow"
                                 label="Edit"
                                 labelOnLeft={false}
                                 float="right"

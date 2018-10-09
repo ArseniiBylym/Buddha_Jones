@@ -52,6 +52,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_estimateToWorkerRepository;
     protected $_estimateToStaffRepository;
     protected $_estimateTemporaryStaffRepository;
+    protected $_finishingHouseRepository;
     protected $_graphicsRequestRepository;
     protected $_graphicsRequestAssignRepository;
     protected $_graphicsRequestDesignRepository;
@@ -71,6 +72,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_spotSentRepository;
     protected $_spotSentOptionRepository;
     protected $_spotSentToWorkStage;
+    protected $_spotSentToSpotVersionRepository;
     protected $_spotVersionRepository;
     protected $_spotVersionEditorRepository;
     protected $_staffRepository;
@@ -135,6 +137,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_estimateTypeRepository = $this->_em->getRepository('Application\Entity\RediEstimateType');
         $this->_estimateToWorkerRepository = $this->_em->getRepository('Application\Entity\RediEstimateToWorker');
         $this->_estimateToStaffRepository = $this->_em->getRepository('Application\Entity\RediEstimateToStaff');
+        $this->_finishingHouseRepository = $this->_em->getRepository('Application\Entity\RediFinishingHouse');
         $this->_graphicsRequestRepository = $this->_em->getRepository('Application\Entity\RediGraphicsRequest');
         $this->_graphicsRequestAssignRepository = $this->_em->getRepository('Application\Entity\RediGraphicsRequestAssign');
         $this->_graphicsRequestDesignRepository = $this->_em->getRepository('Application\Entity\RediGraphicsRequestDesign');
@@ -153,6 +156,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_spotRepository = $this->_em->getRepository('Application\Entity\RediSpot');
         $this->_spotVersionRepository = $this->_em->getRepository('Application\Entity\RediSpotVersion');
         $this->_spotVersionEditorRepository = $this->_em->getRepository('Application\Entity\RediSpotVersionEditor');
+        $this->_spotSentToSpotVersionRepository = $this->_em->getRepository('Application\Entity\RediSpotSentToSpotVersion');
         $this->_spotSentOptionRepository = $this->_em->getRepository('Application\Entity\RediSpotSentOption');
         $this->_spotSentRepository = $this->_em->getRepository('Application\Entity\RediSpotSent');
         $this->_spotSentToWorkStage = $this->_em->getRepository('Application\Entity\RediSpotSentToWorkStage');

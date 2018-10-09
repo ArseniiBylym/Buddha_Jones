@@ -19,7 +19,7 @@ class ProjectRepository extends EntityRepository
         $this->_entityManager = $entityManager;
     }
 
-    public function search($filter = array(), $offset = 0, $length = 10, $returnSingleResult=false)
+    public function search($filter = array(), $offset = 0, $length = 10, $returnSingleResult = false)
     {
         $dql = "SELECT
                   p.id, p.customerId, c.customerName, c.cardcode,
@@ -65,15 +65,15 @@ class ProjectRepository extends EntityRepository
              * 4) client(name of creative executive name, or customer contact), (first point of contact for now)
              */
 
-             $projectNameView = array();
+            $projectNameView = array();
 
-             if(!empty($filter['project_name_view_access']) && !empty($filter['project_code_name_view_access'])) {
-                 $projectNameView[] = ' p.projectName LIKE :search ';
-             }
+            if (!empty($filter['project_name_view_access']) && !empty($filter['project_code_name_view_access'])) {
+                $projectNameView[] = ' p.projectName LIKE :search ';
+            }
 
-             if(!empty($filter['project_name_view_access']) || !empty($filter['project_code_name_view_access'])) {
-                 $projectNameView[] = ' p.projectCode LIKE :search ';
-             }
+            if (!empty($filter['project_name_view_access']) || !empty($filter['project_code_name_view_access'])) {
+                $projectNameView[] = ' p.projectCode LIKE :search ';
+            }
 
             $projectNameView[] = ' ca.campaignName LIKE :search ';
             $projectNameView[] = ' ((u.firstName LIKE :search OR u.lastName LIKE :search) AND ptcu.roleId IN (1,2)) ';
@@ -142,11 +142,11 @@ class ProjectRepository extends EntityRepository
             $row['comment'] = $this->getCommentByProjectId($row['id']);
             $row['user'] = $this->getUserByProjectId($row['id'], $filter['image_path']);
 
-            if($row['lastUpdatedAt']) {
+            if ($row['lastUpdatedAt']) {
                 $row['lastUpdatedAt'] = \DateTime::createFromFormat('Y-m-d H:i:s', $row['lastUpdatedAt']);
             }
 
-            if($returnSingleResult) {
+            if ($returnSingleResult) {
                 foreach ($row['campaign'] as &$campaign) {
                     $campaign['spot'] = $this->getSpotByProjectCampaignId($campaign['projectCampaignId']);
                 }
@@ -196,15 +196,15 @@ class ProjectRepository extends EntityRepository
              * 4) client(name of creative executive name, or customer contact), (first point of contact for now)
              */
 
-             $projectNameView = array();
+            $projectNameView = array();
 
-             if(!empty($filter['project_name_view_access']) && !empty($filter['project_code_name_view_access'])) {
-                 $projectNameView[] = ' p.projectName LIKE :search ';
-             }
+            if (!empty($filter['project_name_view_access']) && !empty($filter['project_code_name_view_access'])) {
+                $projectNameView[] = ' p.projectName LIKE :search ';
+            }
 
-             if(!empty($filter['project_name_view_access']) || !empty($filter['project_code_name_view_access'])) {
-                 $projectNameView[] = ' p.projectCode LIKE :search ';
-             }
+            if (!empty($filter['project_name_view_access']) || !empty($filter['project_code_name_view_access'])) {
+                $projectNameView[] = ' p.projectCode LIKE :search ';
+            }
 
             $projectNameView[] = ' ca.campaignName LIKE :search ';
             $projectNameView[] = ' ((u.firstName LIKE :search OR u.lastName LIKE :search) AND ptcu.roleId IN (1,2)) ';
@@ -258,7 +258,7 @@ class ProjectRepository extends EntityRepository
         return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
     }
 
-    public function searchDetailed($filter = array(), $offset = 0, $length = 10, $returnSingleResult=false)
+    public function searchDetailed($filter = array(), $offset = 0, $length = 10, $returnSingleResult = false)
     {
         $dql = "SELECT
                   p.id,
@@ -327,15 +327,15 @@ class ProjectRepository extends EntityRepository
              * 4) client(name of creative executive name, or customer contact), (first point of contact for now)
              */
 
-             $projectNameView = array();
+            $projectNameView = array();
 
-             if(!empty($filter['project_name_view_access']) && !empty($filter['project_code_name_view_access'])) {
-                 $projectNameView[] = ' p.project_name LIKE :search ';
-             }
+            if (!empty($filter['project_name_view_access']) && !empty($filter['project_code_name_view_access'])) {
+                $projectNameView[] = ' p.project_name LIKE :search ';
+            }
 
-             if(!empty($filter['project_name_view_access']) || !empty($filter['project_code_name_view_access'])) {
-                 $projectNameView[] = ' p.project_code LIKE :search ';
-             }
+            if (!empty($filter['project_name_view_access']) || !empty($filter['project_code_name_view_access'])) {
+                $projectNameView[] = ' p.project_code LIKE :search ';
+            }
 
             $projectNameView[] = ' ca.campaign_name LIKE :search ';
             $projectNameView[] = ' ((u.first_name LIKE :search OR u.last_name LIKE :search) AND ptcu.role_id IN (1,2)) ';
@@ -407,11 +407,11 @@ class ProjectRepository extends EntityRepository
             $row['historyCount'] = (int)$row['historyCount'];
             $row['lastUpdateUserName'] = trim($row['lastUpdateUserName']);
 
-            if($row['projectRelease']) {
+            if ($row['projectRelease']) {
                 $row['projectRelease'] = \DateTime::createFromFormat('Y-m-d H:i:s', $row['projectRelease']);
             }
 
-            if($row['lastUpdatedAt']) {
+            if ($row['lastUpdatedAt']) {
                 $row['lastUpdatedAt'] = \DateTime::createFromFormat('Y-m-d H:i:s', $row['lastUpdatedAt']);;
             }
 
@@ -420,7 +420,7 @@ class ProjectRepository extends EntityRepository
             $row['comment'] = $this->getCommentByProjectId($row['id']);
             $row['user'] = $this->getUserByProjectId($row['id'], $filter['image_path']);
 
-            if($returnSingleResult) {
+            if ($returnSingleResult) {
                 foreach ($row['campaign'] as &$campaign) {
 //                    $campaign['spot'] = $this->getSpotByProjectAndCampaign($row['id'], $campaign['campaignId']);
                     $campaign['spot'] = $this->getSpotByProjectCampaignId($campaign['projectCampaignId']);
@@ -453,8 +453,8 @@ class ProjectRepository extends EntityRepository
             $row['projectCampaignId'] = (int)$row['projectCampaignId'];
             $row['campaignId'] = (int)$row['campaignId'];
 
-            if($row['budget']) {
-                $row['budget'] = (float) $row['budget'];
+            if ($row['budget']) {
+                $row['budget'] = (float)$row['budget'];
             }
         }
 
@@ -526,7 +526,7 @@ class ProjectRepository extends EntityRepository
             $response = array(
                 'userId' => (int)$result[0]['user_id'],
                 'name' => trim($result[0]['first_name'] . ' ' . $result[0]['last_name']),
-                'image' => ($result[0]['image'])?$imagePath . $result[0]['image']: null
+                'image' => ($result[0]['image']) ? $imagePath . $result[0]['image'] : null
             );
         }
 
@@ -553,10 +553,10 @@ class ProjectRepository extends EntityRepository
 
         $result = $query->fetchAll();
 
-        foreach($result as &$row) {
+        foreach ($result as &$row) {
             $row['userId'] = (int)$row['userId'];
             $row['fullName'] = trim($row['firstName'] . ' ' . $row['lastName']);
-            $row['image'] = ($row['image'])?$imagePath . $row['image']: null;
+            $row['image'] = ($row['image']) ? $imagePath . $row['image'] : null;
             $row['roleId'] = (int)$row['roleId'];
         }
 
@@ -658,9 +658,9 @@ class ProjectRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('project_id', $projectId);
         $query->setParameter('campaign_id', $campaignId);
-        $data =  $query->getArrayResult();
+        $data = $query->getArrayResult();
 
-        foreach($data as &$row) {
+        foreach ($data as &$row) {
             $row['version'] = $this->getVersionBySpot($row['id']);
         }
 
@@ -678,16 +678,16 @@ class ProjectRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('project_campaign_id', $projectCampaignId);
-        $data =  $query->getArrayResult();
+        $data = $query->getArrayResult();
 
-        foreach($data as &$row) {
+        foreach ($data as &$row) {
             $row['version'] = $this->getVersionBySpot($row['id']);
         }
 
         return $data;
     }
 
-    public function getUserByProjectAndCampaign($projectId, $campaignId, $imagePath='')
+    public function getUserByProjectAndCampaign($projectId, $campaignId, $imagePath = '')
     {
         $dql = "SELECT pcu.userId AS userId, u.username, u.email,
                 u.firstName, u.lastName,
@@ -710,10 +710,10 @@ class ProjectRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('project_id', $projectId);
         $query->setParameter('campaign_id', $campaignId);
-        $data =  $query->getArrayResult();
+        $data = $query->getArrayResult();
 
-        foreach($data as &$row) {
-            $row['image'] = $row['image']?$imagePath . $row['image']:null;
+        foreach ($data as &$row) {
+            $row['image'] = $row['image'] ? $imagePath . $row['image'] : null;
             $row['fullName'] = trim($row['firstName'] . ' ' . $row['lastName']);
         }
 
@@ -722,9 +722,11 @@ class ProjectRepository extends EntityRepository
 
     public function getVersionBySpot($spotId)
     {
-        $dql = "SELECT v.id, v.versionName, v.custom,
+        $dql = "SELECT 
+                sv.id AS spotVersionId,
+                v.id, v.versionName, v.custom,
                 sv.versionStatusId, vs.name AS versionStatusName, 
-                sv.versionNote, sv.id AS spotVersionId
+                sv.versionNote
                 FROM \Application\Entity\RediSpotVersion sv
                 INNER JOIN \Application\Entity\RediVersion v
                   WITH sv.versionId=v.id
@@ -736,26 +738,12 @@ class ProjectRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('spot_id', $spotId);
-        $data =  $query->getArrayResult();
+        $data = $query->getArrayResult();
 
-        foreach($data as &$row) {
-            $row['editors'] = $this->getSpotVersionEditors($row['spotVersionId']);
+        foreach ($data as &$row) {
+            $row['spotVersionId'] = (int)$row['spotVersionId'];
+            $row['editor'] = $this->getSpotVersionEditor($row['spotVersionId']);
         }
-
-        return $data;
-    }
-
-    public function getSpotVersionEditors($spotVersionId) {
-        $dql = "SELECT u.id, u.username, u.email, u.firstName, u.lastName, u.initials, u.typeId
-                FROM \Application\Entity\RediSpotVersionEditor sve
-                INNER JOIN \Application\Entity\RediUser u
-                  WITH sve.userId = u.id
-                WHERE
-                  sve.spotVersionId=:spot_version_id";
-
-        $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('spot_version_id', $spotVersionId);
-        $data =  $query->getArrayResult();
 
         return $data;
     }
@@ -774,12 +762,12 @@ class ProjectRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('project_id', $projectId);
-        $data =  $query->getArrayResult();
+        $data = $query->getArrayResult();
 
-        foreach($data as &$row) {
-            $row['fullName'] = trim($row['firstName']  . ' ' . $row['lastName']);
+        foreach ($data as &$row) {
+            $row['fullName'] = trim($row['firstName'] . ' ' . $row['lastName']);
 
-            if($row['image']) {
+            if ($row['image']) {
                 $row['image'] = $imagePath . $row['image'];
             } else {
                 $row['image'] = null;
@@ -789,7 +777,8 @@ class ProjectRepository extends EntityRepository
         return $data;
     }
 
-    public function getProjectName($projectId, $userTypeId, $projectNameOnly = false) {
+    public function getProjectName($projectId, $userTypeId, $projectNameOnly = false)
+    {
         // Get project data
         $projectDql = "SELECT p
                 FROM \Application\Entity\RediProject p
@@ -799,9 +788,9 @@ class ProjectRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery($projectDql);
         $query->setParameter('project_id', $projectId);
         $query->setMaxResults(1);
-        $projectData =  $query->getArrayResult();
+        $projectData = $query->getArrayResult();
 
-        if(!empty($projectData[0])) {
+        if (!empty($projectData[0])) {
             $project = $projectData[0];
         } else {
             return array();
@@ -817,23 +806,51 @@ class ProjectRepository extends EntityRepository
         $projectCodeName = $project['projectCode'];
         $result = array();
 
-        if($projectNameView && $projectCodeNameView) {
+        if ($projectNameView && $projectCodeNameView) {
             $result['projectName'] = $projectName;
             $result['projectCode'] = $projectCodeName;
-        } else if($projectNameView || $projectCodeNameView) {
-            if($projectCodeName) {
+        } else if ($projectNameView || $projectCodeNameView) {
+            if ($projectCodeName) {
                 $result['projectCode'] = $projectCodeName;
             } else {
                 $result['projectName'] = $projectName;
             }
         }
 
-        if($projectNameOnly) {
-            if(empty($result['projectName']) && !empty($project['projectCode'])) {
+        if ($projectNameOnly) {
+            if (empty($result['projectName']) && !empty($project['projectCode'])) {
                 $result['projectName'] = $result['projectCode'];
             }
 
             unset($result['projectCode']);
+        }
+
+        return $result;
+    }
+
+    public function getSpotVersionEditor($spotVersionId)
+    {
+        $dql = "SELECT 
+                  u.id, 
+                  u.firstName, u.lastName,
+                  u.username,
+                  u.initials
+                FROM \Application\Entity\RediSpotVersionEditor sve
+                  INNER JOIN \Application\Entity\RediUser u
+                    WITH u.id = sve.userId
+                  WHERE sve.spotVersionId = :spot_version_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('spot_version_id', $spotVersionId);
+        $result = $query->getArrayResult();
+
+        foreach ($result as &$row) {
+            $row['name'] = trim($row['firstName'] . ' ' . $row['lastName']);
+
+            $row['id'] = (int)$row['id'];
+
+            unset($row['firstName']);
+            unset($row['lastName']);
         }
 
         return $result;

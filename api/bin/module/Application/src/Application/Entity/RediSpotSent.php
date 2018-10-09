@@ -45,7 +45,7 @@ class RediSpotSent
     /**
      * @var string
      *
-     * @ORM\Column(name="finish_option", type="string", length=100, nullable=true)
+     * @ORM\Column(name="finish_option", type="string", length=10, nullable=true)
      */
     private $finishOption;
 
@@ -64,18 +64,18 @@ class RediSpotSent
     private $deadline;
 
     /**
-     * @var string
+     * @var integer
      *
-     * @ORM\Column(name="finishing_house", type="text", nullable=true)
+     * @ORM\Column(name="finishing_house", type="integer", nullable=true)
      */
     private $finishingHouse;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="framerate_id", type="integer", nullable=true)
+     * @ORM\Column(name="framerate", type="string", length=100, nullable=true)
      */
-    private $framerateId;
+    private $framerate;
 
     /**
      * @var string
@@ -85,11 +85,11 @@ class RediSpotSent
     private $framerateNote;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="raster_size_id", type="integer", nullable=true)
+     * @ORM\Column(name="raster_size", type="string", length=100, nullable=true)
      */
-    private $rasterSizeId;
+    private $rasterSize;
 
     /**
      * @var string
@@ -108,9 +108,23 @@ class RediSpotSent
     /**
      * @var integer
      *
+     * @ORM\Column(name="gfx_finish", type="smallint", nullable=true)
+     */
+    private $gfxFinish;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="audio_prep", type="smallint", nullable=true)
      */
     private $audioPrep;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="audio", type="string", length=45, nullable=true)
+     */
+    private $audio;
 
     /**
      * @var integer
@@ -118,6 +132,13 @@ class RediSpotSent
      * @ORM\Column(name="video_prep", type="smallint", nullable=true)
      */
     private $videoPrep;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="graphics_finish", type="smallint", nullable=true)
+     */
+    private $graphicsFinish;
 
     /**
      * @var string
@@ -141,11 +162,11 @@ class RediSpotSent
     private $tagChart;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="delivery_to_client_id", type="integer", nullable=true)
+     * @ORM\Column(name="delivery_to_client", type="string", length=45, nullable=true)
      */
-    private $deliveryToClientId;
+    private $deliveryToClient;
 
     /**
      * @var string
@@ -342,7 +363,7 @@ class RediSpotSent
     /**
      * Set finishingHouse
      *
-     * @param string $finishingHouse
+     * @param integer $finishingHouse
      * @return RediSpotSent
      */
     public function setFinishingHouse($finishingHouse)
@@ -355,7 +376,7 @@ class RediSpotSent
     /**
      * Get finishingHouse
      *
-     * @return string 
+     * @return integer 
      */
     public function getFinishingHouse()
     {
@@ -363,26 +384,26 @@ class RediSpotSent
     }
 
     /**
-     * Set framerateId
+     * Set framerate
      *
-     * @param integer $framerateId
+     * @param string $framerate
      * @return RediSpotSent
      */
-    public function setFramerateId($framerateId)
+    public function setFramerate($framerate)
     {
-        $this->framerateId = $framerateId;
+        $this->framerate = $framerate;
 
         return $this;
     }
 
     /**
-     * Get framerateId
+     * Get framerate
      *
-     * @return integer 
+     * @return string 
      */
-    public function getFramerateId()
+    public function getFramerate()
     {
-        return $this->framerateId;
+        return $this->framerate;
     }
 
     /**
@@ -409,26 +430,26 @@ class RediSpotSent
     }
 
     /**
-     * Set rasterSizeId
+     * Set rasterSize
      *
-     * @param integer $rasterSizeId
+     * @param string $rasterSize
      * @return RediSpotSent
      */
-    public function setRasterSizeId($rasterSizeId)
+    public function setRasterSize($rasterSize)
     {
-        $this->rasterSizeId = $rasterSizeId;
+        $this->rasterSize = $rasterSize;
 
         return $this;
     }
 
     /**
-     * Get rasterSizeId
+     * Get rasterSize
      *
-     * @return integer 
+     * @return string 
      */
-    public function getRasterSizeId()
+    public function getRasterSize()
     {
-        return $this->rasterSizeId;
+        return $this->rasterSize;
     }
 
     /**
@@ -478,6 +499,29 @@ class RediSpotSent
     }
 
     /**
+     * Set gfxFinish
+     *
+     * @param integer $gfxFinish
+     * @return RediSpotSent
+     */
+    public function setGfxFinish($gfxFinish)
+    {
+        $this->gfxFinish = $gfxFinish;
+
+        return $this;
+    }
+
+    /**
+     * Get gfxFinish
+     *
+     * @return integer 
+     */
+    public function getGfxFinish()
+    {
+        return $this->gfxFinish;
+    }
+
+    /**
      * Set audioPrep
      *
      * @param integer $audioPrep
@@ -501,6 +545,29 @@ class RediSpotSent
     }
 
     /**
+     * Set audio
+     *
+     * @param string $audio
+     * @return RediSpotSent
+     */
+    public function setAudio($audio)
+    {
+        $this->audio = $audio;
+
+        return $this;
+    }
+
+    /**
+     * Get audio
+     *
+     * @return string 
+     */
+    public function getAudio()
+    {
+        return $this->audio;
+    }
+
+    /**
      * Set videoPrep
      *
      * @param integer $videoPrep
@@ -521,6 +588,29 @@ class RediSpotSent
     public function getVideoPrep()
     {
         return $this->videoPrep;
+    }
+
+    /**
+     * Set graphicsFinish
+     *
+     * @param integer $graphicsFinish
+     * @return RediSpotSent
+     */
+    public function setGraphicsFinish($graphicsFinish)
+    {
+        $this->graphicsFinish = $graphicsFinish;
+
+        return $this;
+    }
+
+    /**
+     * Get graphicsFinish
+     *
+     * @return integer 
+     */
+    public function getGraphicsFinish()
+    {
+        return $this->graphicsFinish;
     }
 
     /**
@@ -593,26 +683,26 @@ class RediSpotSent
     }
 
     /**
-     * Set deliveryToClientId
+     * Set deliveryToClient
      *
-     * @param integer $deliveryToClientId
+     * @param string $deliveryToClient
      * @return RediSpotSent
      */
-    public function setDeliveryToClientId($deliveryToClientId)
+    public function setDeliveryToClient($deliveryToClient)
     {
-        $this->deliveryToClientId = $deliveryToClientId;
+        $this->deliveryToClient = $deliveryToClient;
 
         return $this;
     }
 
     /**
-     * Get deliveryToClientId
+     * Get deliveryToClient
      *
-     * @return integer 
+     * @return string 
      */
-    public function getDeliveryToClientId()
+    public function getDeliveryToClient()
     {
-        return $this->deliveryToClientId;
+        return $this->deliveryToClient;
     }
 
     /**

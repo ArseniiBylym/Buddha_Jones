@@ -5,12 +5,12 @@ namespace Application\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * RediUserTypeCopy
+ * RediFinishingHouse
  *
- * @ORM\Table(name="redi_user_type_copy")
+ * @ORM\Table(name="redi_finishing_house")
  * @ORM\Entity
  */
-class RediUserTypeCopy
+class RediFinishingHouse
 {
     /**
      * @var integer
@@ -24,9 +24,9 @@ class RediUserTypeCopy
     /**
      * @var string
      *
-     * @ORM\Column(name="type_name", type="string", length=50, nullable=true)
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
-    private $typeName;
+    private $name;
 
 
 
@@ -41,25 +41,25 @@ class RediUserTypeCopy
     }
 
     /**
-     * Set typeName
+     * Set name
      *
-     * @param string $typeName
-     * @return RediUserTypeCopy
+     * @param string $name
+     * @return RediFinishingHouse
      */
-    public function setTypeName($typeName)
+    public function setName($name)
     {
-        $this->typeName = $typeName;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get typeName
+     * Get name
      *
      * @return string 
      */
-    public function getTypeName()
+    public function getName()
     {
-        return $this->typeName;
+        return $this->name;
     }
 }

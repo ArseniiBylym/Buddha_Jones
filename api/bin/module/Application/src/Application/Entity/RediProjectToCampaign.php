@@ -112,6 +112,13 @@ class RediProjectToCampaign
      */
     private $materialReceiveDate;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="approved_by_billing", type="boolean", nullable=true)
+     */
+    private $approvedByBilling;
+
 
 
     /**
@@ -421,5 +428,28 @@ class RediProjectToCampaign
     public function getMaterialReceiveDate()
     {
         return $this->materialReceiveDate;
+    }
+
+    /**
+     * Set approvedByBilling
+     *
+     * @param boolean $approvedByBilling
+     * @return RediProjectToCampaign
+     */
+    public function setApprovedByBilling($approvedByBilling)
+    {
+        $this->approvedByBilling = $approvedByBilling;
+
+        return $this;
+    }
+
+    /**
+     * Get approvedByBilling
+     *
+     * @return boolean 
+     */
+    public function getApprovedByBilling()
+    {
+        return $this->approvedByBilling;
     }
 }
