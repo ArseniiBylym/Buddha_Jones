@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { observer } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import { HeaderActions } from 'actions';
 import { Paragraph } from 'components/Content';
 import { ButtonAdd } from 'components/Button';
@@ -12,6 +12,7 @@ require('./ProducerSpotSentList.css');
 interface ProducerSpotSentListProps {}
 
 // Component
+@inject('store')
 @observer
 class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}> {
     public componentDidMount() {

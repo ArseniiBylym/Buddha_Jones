@@ -1,10 +1,38 @@
 import { API, APIPath } from '../fetch';
 import { action } from 'mobx';
 import { SpotSentStore } from '../store/AllStores';
-import { FinishingHouseOptionsFromApi, SpotSentOptionsFromApi } from '../types/spotSent';
+import { FinishingHouseOptionsFromApi, SpotSentAllSpotsFromApi, SpotSentOptionsFromApi } from '../types/spotSent';
 import { DateHandler } from '../helpers/DateHandler';
+import { CampaignFromApi } from '../types/campaign';
 
 export class SpotSentActionsClass {
+
+    @action
+    public fetchAllSpots = async (forceFetch: boolean = false): Promise<boolean> => {
+        try {
+            if (forceFetch) {
+
+                const response = (await API.getData(APIPath.SPOT_SENT, {
+                    length: 99999,
+                    offset: 0,
+                })) as SpotSentAllSpotsFromApi[];
+
+                SpotSentStore.spotSentAllSpots = response.map(campaign => ({
+                    id: campaign.id,
+                    name: campaign.campaignName,
+                    assignedToProjects: campaign.project.map(project => ({
+                        id: project.id,
+                        name: project.projectName,
+                    })),
+                }));
+            }
+
+            return true;
+        } catch (error) {
+            CampaignsStore.allCampaignsAreBeingFetched = false;
+            throw error;
+        }
+    };
 
     @action
     public fetchSpotSentOptions = async (): Promise<boolean> => {

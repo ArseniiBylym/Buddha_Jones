@@ -30,6 +30,48 @@ export enum SpotSentForm {
     InHousePresentation = 'IHP',
 }
 
+export interface SpotSentAllSpotsFromApi {
+    id: number;
+    projectId: number;
+    fullLock: 0 | 1;
+    sentViaMethod: string;
+    finishOption: null;
+    notes: string | null;
+    deadline: Date | null;
+    finishingHouse: number | null;
+    framerate: string | null;
+    framerateNote: string | null;
+    rasterSize: string | null;
+    rasterSizeNote: string | null;
+    musicCueSheet: 0 | 1;
+    gfxFinish: 0 | 1;
+    audioPrep: 0 | 1;
+    audio: string | null;
+    videoPrep: 0 | 1;
+    graphicsFinish: 0 | 1;
+    specNote: string | null;
+    specSheetFile: null;
+    tagChart: string | null;
+    deliveryToClient: {
+        parent: number,
+        child: number
+    };
+    deliveryNote: string | null;
+    statusId: number | null;
+    createdBy: number;
+    updatedBy: number;
+    createdAt: SpotSentAllSpotsFromApi;
+    updatedAt: SpotSentAllSpotsFromApi;
+    projectSpotVersion: Array<{spot_version_id: number, editors: number[]}>;
+    sentViaMethodList: SpotSentOptionsChildrenFromApi[];
+}
+
+export interface SpotSentAllSpotsFromApi {
+    date: string;
+    timezone_type: number;
+    timezone: string;
+}
+
 export interface SpotSentOptionsFromApi {
     audio_option: SpotSentAudioOptionsFromApi[];
     delivery_to_client_option: SpotSentOptionsStdSectionFromApi[];

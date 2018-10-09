@@ -39,7 +39,7 @@ export interface SpotSentValueForSubmit {
     sent_via_method?: number[] | null;
     finish_option?: {parent: number, child: number} | null;
     full_lock?: 0 | 1;
-    notes?: string | null;
+    notes?: string;
     finishing_house?: number | null;
     finishing_house_name?: string | null;
     deadline?: Date | null;
@@ -49,15 +49,15 @@ export interface SpotSentValueForSubmit {
     video_prep?: 0 | 1;
     graphics_finish?: 0 | 1;
     framerate?: string | null;
-    framerate_note?: string | null;
+    framerate_note?: string;
     raster_size?: string | null;
-    raster_size_note?: string | null;
-    spec_note?: string | null;
-    tag_chart?: string | null;
+    raster_size_note?: string;
+    spec_note?: string;
+    tag_chart?: string;
     delivery_to_client?: {parent: number, child: number} | null;
-    delivery_note?: string | null;
+    delivery_note?: string;
     audio?: number[] | null;
-    audio_note?: string | null;
+    audio_note?: string;
 }
 
 // Styles
@@ -89,7 +89,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         sent_via_method: null,
         finish_option: null,
         full_lock: 0,
-        notes: null,
+        notes: '',
         finishing_house: null,
         finishing_house_name: null,
         deadline: null,
@@ -99,15 +99,15 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         video_prep: 0,
         graphics_finish: 0,
         framerate: null,
-        framerate_note: null,
+        framerate_note: '',
         raster_size: null,
-        raster_size_note: null,
-        spec_note: null,
-        tag_chart: null,
+        raster_size_note: '',
+        spec_note: '',
+        tag_chart: '',
         delivery_to_client: null,
-        delivery_note: null,
+        delivery_note: '',
         audio: null,
-        audio_note: null
+        audio_note: ''
     };
 
     @observable private finishingOptionId: number | null = 1;

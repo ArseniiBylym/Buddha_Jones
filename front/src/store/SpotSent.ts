@@ -1,13 +1,12 @@
 import { observable } from 'mobx';
 import {
-    FinishingHouseOptionsFromApi,
+    FinishingHouseOptionsFromApi, SpotSentAllSpotsFromApi,
     SpotSentAudioOptionsFromApi, SpotSentOptionsChildrenFromApi,
-    SpotSentOptionsFromApi,
     SpotSentOptionsStdSectionFromApi
 } from '../types/spotSent';
 
 export class SpotSent {
-    @observable public spotSentOptions: SpotSentOptionsFromApi | null = null;
+    @observable public spotSentAllSpots: SpotSentAllSpotsFromApi[] | null = null;
     @observable public spotSentFinishingOptions: SpotSentOptionsStdSectionFromApi[] | null = null;
     @observable public spotSentFramerateOptions: string[] | null = null;
     @observable public spotSentRasterSizeOptions: string[] | null = null;
