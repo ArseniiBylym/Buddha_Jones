@@ -134,14 +134,10 @@ class SpotRepository extends EntityRepository
     {
         if (!empty($filter['details'])) {
             $columns = array(
-                "id",
                 "requestId",
                 "projectId",
-                "campaignId",
-                "projectCampaignId",
                 "fullLock",
                 "sentViaMethod",
-                "finishRequest",
                 "finishOption",
                 "notes",
                 "deadline",
@@ -166,9 +162,6 @@ class SpotRepository extends EntityRepository
                 "statusId",
                 "editor",
                 "customerContact",
-                "spotId",
-                "versionId",
-                "spotVersionId",
                 "createdBy",
                 "updatedBy",
                 "createdAt",
@@ -178,9 +171,6 @@ class SpotRepository extends EntityRepository
             $columns = array(
                 "requestId",
                 "projectId",
-                "campaignId",
-                "projectCampaignId",
-                "deadline",
                 "statusId",
                 "createdBy",
                 "createdAt",
@@ -200,17 +190,18 @@ class SpotRepository extends EntityRepository
 
         $dql = "SELECT 
                 " . $columnString . ",
-                c.campaignName,
                 uc.firstName AS createdByFirstName, uc.lastName AS createdByLastName,
                 uu.firstName AS updatedByFirstName, uu.lastName AS updatedByLastName,
-                sc.spotVersionId
+                st.status AS statusName
                 FROM \Application\Entity\RediSpotSent sc
                 LEFT JOIN \Application\Entity\RediUser uc
                     WITH uc.id = sc.createdBy
                 LEFT JOIN \Application\Entity\RediUser uu
                     WITH uu.id = sc.updatedBy
                 LEFT JOIN \Application\Entity\RediCampaign c
-                    WITH c.id = sc.campaignId ";
+                    WITH c.id = sc.campaignId 
+                LEFT JOIN \Application\Entity\RediStatus st
+                    WITH st.id = sc.statusId";
 
         $dqlFilter = [];
 
@@ -266,8 +257,6 @@ class SpotRepository extends EntityRepository
         foreach ($result as &$row) {
             $row['requestId'] = (int)$row['requestId'];
             $row['projectId'] = (int)$row['projectId'];
-            $row['campaignId'] = (int)$row['campaignId'];
-            $row['projectCampaignId'] = (int)$row['projectCampaignId'];
             $row['statusId'] = (int)$row['statusId'];
             $row['createdByUser'] = trim($row['createdByFirstName'] . ' ' . $row['createdByLastName']);
             $row['updatedByUser'] = trim($row['updatedByFirstName'] . ' ' . $row['updatedByLastName']);
@@ -277,9 +266,9 @@ class SpotRepository extends EntityRepository
             unset($row['updatedByFirstName']);
             unset($row['updatedByLastName']);
 
-            if (!empty($filter['details'])) {
-                $row['spotData'] = $this->getSpotVersionDataByRequestId($row['requestId']);
+            $row['spotData'] = $this->getSpotVersionDataByRequestId($row['requestId']);
 
+            if (!empty($filter['details'])) {
                 if (!empty($row['sentViaMethod'])) {
                     $methodIds = explode(',', $row['sentViaMethod']);
 
@@ -444,6 +433,14 @@ class SpotRepository extends EntityRepository
         $query->setParameter("request_id", $requestId);
 
         $result = $query->getArrayResult();
+
+        foreach($result as &$row) {
+            $row['campaignId'] = (int)$row['campaignId'];
+            $row['projectCampaignId'] = (int)$row['projectCampaignId'];
+            $row['spotId'] = (int)$row['spotId'];
+            $row['versionId'] = (int)$row['versionId'];
+            $row['spotVersionId'] = (int)$row['spotVersionId'];
+        }
 
         return $result;
     }
