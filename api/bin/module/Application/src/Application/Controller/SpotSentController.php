@@ -37,12 +37,9 @@ class SpotSentController extends CustomAbstractActionController
                 }
             }
 
-            if (!empty($dataRow['projectSpotVersion'])) {
-                foreach ($dataRow['projectSpotVersion'] as &$projectSpotVersion) {
-                    // set project name
-                    $projectName = $this->_projectRepo->getProjectName($projectSpotVersion['projectId'], $this->_user_type_id, true);
-                    $projectSpotVersion = array_merge($projectSpotVersion, $projectName);
-                }
+            if (!empty($dataRow['projectId'])) {
+                $projectName = $this->_projectRepo->getProjectName($dataRow['projectId'], $this->_user_type_id, true);
+                $dataRow = array_merge($dataRow, $projectName);
             }
         }
 
@@ -57,9 +54,9 @@ class SpotSentController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    public function get($spotSentId)
+    public function get($requestId)
     {
-        $data = $this->getSingle($spotSentId);
+        $data = $this->getSingle($requestId);
 
         $response = array(
             'status' => 1,
@@ -99,12 +96,14 @@ class SpotSentController extends CustomAbstractActionController
         $sentViaMethod = $this->_commonRepo->filterPostData($data, 'sent_via_method', 'json');
         $finishOption = $this->_commonRepo->filterPostData($data, 'finish_option', 'json');
         $spotVersionData = $this->_commonRepo->filterPostData($data, 'spot_version', 'json');
+        $customerContact = $this->_commonRepo->filterPostData($data, 'customer_contact', 'json');
 
         // array to commaseparated string
         $sentViaMethod = $this->arrayToCommanSeparated($sentViaMethod);
         $finishOption = $this->arrayToCommanSeparated($finishOption, true);
         $audio = $this->arrayToCommanSeparated($audio);
         $deliveryToClient = $this->arrayToCommanSeparated($deliveryToClient, true);
+        $customerContact = $this->arrayToCommanSeparated($customerContact);
 
         $files = array();
 
@@ -130,6 +129,8 @@ class SpotSentController extends CustomAbstractActionController
                     $sv['spot_id'] = $spotVersion->getSpotId();
                     $sv['version_id'] = $spotVersion->getVersionId();
                 }
+            } else {
+                $sv['spot_version_id'] = null;
             }
 
             if (!empty($sv['spot_id']) && !empty($sv['version_id'])) {
@@ -173,17 +174,18 @@ class SpotSentController extends CustomAbstractActionController
             $sv['finish_request'] = (!empty($sv['finish_request'])) ? 1 : 0;
         }
 
+        // var_dump($spotVersionData); exit;
         if ($sentViaMethod || $finishOption) {
             $requestId = $this->_spotRepo->getNextSpotSentRequestId();
             $now = new \DateTime('now');
             $spotSentIds = [];
 
-            foreach ($spotVersionData as $sv) {
+            foreach ($spotVersionData as $svd) {
                 $spotSent = new RediSpotSent();
                 $spotSent->setRequestId($requestId);
-                $spotSent->setProjectId($sv['project_id']);
-                $spotSent->setCampaignId($sv['campaign_id']);
-                $spotSent->setProjectCampaignId($sv['project_campaign_id']);
+                $spotSent->setProjectId($svd['project_id']);
+                $spotSent->setCampaignId($svd['campaign_id']);
+                $spotSent->setProjectCampaignId($svd['project_campaign_id']);
                 $spotSent->setFullLock($fullLock);
                 $spotSent->setSentViaMethod($sentViaMethod);
                 $spotSent->setDeadline($deadline);
@@ -207,20 +209,21 @@ class SpotSentController extends CustomAbstractActionController
                 $spotSent->setFinishOption($finishOption);
                 $spotSent->setCreatedAt($now);
                 $spotSent->setCreatedBy($this->_user_id);
+                $spotSent->setCustomerContact($customerContact);
 
-                $spotSent->setSpotId($sv['spot_id']);
-                $spotSent->setVersionId($sv['version_id']);
-                $spotSent->setSpotVersionId($sv['spot_version_id']);
-                $spotSent->setEditor($sv['editors_string']);
-                $spotSent->setSpotResend($sv['spot_resend']);
-                $spotSent->setFinishRequest($sv['finish_request']);
+                $spotSent->setSpotId($svd['spot_id']);
+                $spotSent->setVersionId($svd['version_id']);
+                $spotSent->setSpotVersionId($svd['spot_version_id']);
+                $spotSent->setEditor($svd['editors_string']);
+                $spotSent->setSpotResend($svd['spot_resend']);
+                $spotSent->setFinishRequest($svd['finish_request']);
 
                 $this->_em->persist($spotSent);
                 $this->_em->flush();
                 $spotSentIds[] = $spotSent->getId();
             }
-            
-            if(count($spotSentIds)) {
+
+            if (count($spotSentIds)) {
                 // save files
                 $fileNames = array();
 
@@ -241,7 +244,7 @@ class SpotSentController extends CustomAbstractActionController
 
                     $spotSents = $this->_spotSentRepository->findBy(array('requestId' => $requestId));
 
-                    foreach($spotSents as $spotSent) {  
+                    foreach ($spotSents as $spotSent) {
                         $spotSent->setSpecSheetFile(json_encode($fileNames));
                         $this->_em->persist($spotSent);
                     }
@@ -249,7 +252,7 @@ class SpotSentController extends CustomAbstractActionController
                     $this->_em->flush();
                 }
 
-                foreach ($spotVersion as $row) {
+                foreach ($spotVersionData as $row) {
                     if (!empty($row['spot_version_id'])) {
                         if (!empty($row['editors']) && is_array($row['editors'])) {
                             $editors = array_unique($row['editors']);
@@ -276,15 +279,10 @@ class SpotSentController extends CustomAbstractActionController
                 }
             }
 
-            $data = $requestId; 
-            // array_merge($this->getSingle($spotSentId), array(
-            //     'spot_sent_id' => $spotSentId
-            // ));
-
             $response = array(
                 'status' => 1,
                 'message' => 'Request successful.',
-                'data' => $data,
+                'data' => $this->getSingle($requestId),
             );
         } else {
             $response = array(
@@ -559,20 +557,20 @@ class SpotSentController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    private function getSingle($spotSentId)
+    private function getSingle($requestId)
     {
-        $searchResult = $this->_spotRepo->searchSpotSent(array("id" => $spotSentId));
+        $searchResult = $this->_spotRepo->searchSpotSent(array(
+            "request_id" => $requestId,
+            "details" => true,
+        ));
         $data = null;
 
         if (count($searchResult)) {
             $data = $searchResult[0];
 
-            foreach ($data['projectSpotVersion'] as &$projectSpotVersion) {
-                // set project name
-                $projectName = $this->_projectRepo->getProjectName($projectSpotVersion['projectId'], $this->_user_type_id, true);
-                $projectSpotVersion = array_merge($projectSpotVersion, $projectName);
-
-                unset($projectSpotVersion['projectCode']);
+            if (!empty($data['projectId'])) {
+                $projectName = $this->_projectRepo->getProjectName($data['projectId'], $this->_user_type_id, true);
+                $data = array_merge($data, $projectName);
             }
         }
 
@@ -580,6 +578,7 @@ class SpotSentController extends CustomAbstractActionController
         $data['audio'] = $this->commaSeparatedToArray($data['audio']);
         $data['sentViaMethod'] = $this->commaSeparatedToArray($data['sentViaMethod']);
         $data['finishOption'] = $this->commaSeparatedToArray($data['finishOption'], true);
+        $data['customerContact'] = $this->commaSeparatedToArray($data['customerContact']);
 
         return $data;
     }

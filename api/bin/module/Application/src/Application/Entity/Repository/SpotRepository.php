@@ -132,17 +132,94 @@ class SpotRepository extends EntityRepository
 
     public function searchSpotSent($filter = array())
     {
+        if (!empty($filter['details'])) {
+            $columns = array(
+                "id",
+                "requestId",
+                "projectId",
+                "campaignId",
+                "projectCampaignId",
+                "fullLock",
+                "sentViaMethod",
+                "finishRequest",
+                "finishOption",
+                "notes",
+                "deadline",
+                "finishingHouse",
+                "framerate",
+                "framerateNote",
+                "rasterSize",
+                "rasterSizeNote",
+                "musicCueSheet",
+                "gfxFinish",
+                "audioPrep",
+                "audio",
+                "audioNote",
+                "videoPrep",
+                "graphicsFinish",
+                "specNote",
+                "specSheetFile",
+                "tagChart",
+                "deliveryToClient",
+                "deliveryNote",
+                "spotResend",
+                "statusId",
+                "editor",
+                "customerContact",
+                "spotId",
+                "versionId",
+                "spotVersionId",
+                "createdBy",
+                "updatedBy",
+                "createdAt",
+                "updatedAt",
+            );
+        } else {
+            $columns = array(
+                "requestId",
+                "projectId",
+                "campaignId",
+                "projectCampaignId",
+                "deadline",
+                "statusId",
+                "createdBy",
+                "createdAt",
+                "updatedBy",
+                "updatedAt",
+            );
+        }
+
+        $columns = array_map(function ($column) {
+            return "sc." . $column;
+        }, $columns);
+
+        $columnString = implode(',', $columns);
+
         $offset = (!empty($filter['offset'])) ? (int)$filter['offset'] : 0;
         $length = (!empty($filter['length'])) ? (int)$filter['length'] : 10;
 
         $dql = "SELECT 
-                  sc
-                FROM \Application\Entity\RediSpotSent sc";
+                " . $columnString . ",
+                c.campaignName,
+                uc.firstName AS createdByFirstName, uc.lastName AS createdByLastName,
+                uu.firstName AS updatedByFirstName, uu.lastName AS updatedByLastName,
+                sc.spotVersionId
+                FROM \Application\Entity\RediSpotSent sc
+                LEFT JOIN \Application\Entity\RediUser uc
+                    WITH uc.id = sc.createdBy
+                LEFT JOIN \Application\Entity\RediUser uu
+                    WITH uu.id = sc.updatedBy
+                LEFT JOIN \Application\Entity\RediCampaign c
+                    WITH c.id = sc.campaignId ";
 
         $dqlFilter = [];
 
         if (!empty($filter['id'])) {
             $dqlFilter[] = "sc.id= :id";
+        }
+
+        if (!empty($filter['request_id'])) {
+            $dqlFilter[] = "sc.requestId= :request_id";
         }
 
         if (!empty($filter['status_id'])) {
@@ -152,6 +229,8 @@ class SpotRepository extends EntityRepository
         if (count($dqlFilter)) {
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
+
+        $dql .= " GROUP BY sc.requestId ";
 
         if (!empty($filter['sort']) && $filter['sort'] === 'priority') {
             $orderBy = " ORDER BY sc.statusId ASC, sc.updatedAt DESC ";
@@ -169,90 +248,109 @@ class SpotRepository extends EntityRepository
             $query->setParameter("id", $filter['id']);
         }
 
+        if (!empty($filter['request_id'])) {
+            $query->setParameter("request_id", $filter['request_id']);
+        }
+
         if (!empty($filter['status_id'])) {
             $query->setParameter("status_id", $filter['status_id']);
         }
 
         $result = $query->getArrayResult();
+
         $methodes = $this->getSpotSentOption('sent_via_method');
         $finishingOptions = $this->getSpotSentOption('finishing_option');
         $audioOptions = $this->getSpotSentOption('audio_option');
         $delToClientOption = $this->getSpotSentOption('delivery_to_client_option');
 
         foreach ($result as &$row) {
-            $row['id'] = (int)$row['id'];
-            $row['projectSpotVersion'] = $this->getSpotVersionBySpotSentId($row['id']);
+            $row['requestId'] = (int)$row['requestId'];
+            $row['projectId'] = (int)$row['projectId'];
+            $row['campaignId'] = (int)$row['campaignId'];
+            $row['projectCampaignId'] = (int)$row['projectCampaignId'];
+            $row['statusId'] = (int)$row['statusId'];
+            $row['createdByUser'] = trim($row['createdByFirstName'] . ' ' . $row['createdByLastName']);
+            $row['updatedByUser'] = trim($row['updatedByFirstName'] . ' ' . $row['updatedByLastName']);
 
-            if (!empty($row['sentViaMethod'])) {
-                $methodIds = explode(',', $row['sentViaMethod']);
+            unset($row['createdByFirstName']);
+            unset($row['createdByLastName']);
+            unset($row['updatedByFirstName']);
+            unset($row['updatedByLastName']);
 
-                if (count($methodIds)) {
-                    $methodIds = array_map('trim', $methodIds);
+            if (!empty($filter['details'])) {
+                $row['spotData'] = $this->getSpotVersionDataByRequestId($row['requestId']);
 
-                    $row['sentViaMethodList'] = array_values(array_filter($methodes, function ($method) use ($methodIds) {
-                        return in_array($method['id'], $methodIds);
-                    }));
-                }
-            }
+                if (!empty($row['sentViaMethod'])) {
+                    $methodIds = explode(',', $row['sentViaMethod']);
 
-            if (!empty($row['finishOption'])) {
-                $finishingOptionIds = explode(',', $row['finishOption']);
+                    if (count($methodIds)) {
+                        $methodIds = array_map('trim', $methodIds);
 
-                if (count($finishingOptionIds)) {
-                    $finishingOptionIds = array_map('trim', $finishingOptionIds);
-
-                    if (count($finishingOptionIds) === 2) {
-                        $row['finishOptionList'] = array_values(array_filter($finishingOptions, function ($option) use ($finishingOptionIds) {
-                            return $option['id'] == $finishingOptionIds[0];
+                        $row['sentViaMethodList'] = array_values(array_filter($methodes, function ($method) use ($methodIds) {
+                            return in_array($method['id'], $methodIds);
                         }));
-
-                        if (count($row['finishOptionList'])) {
-                            $row['finishOptionList'] = $row['finishOptionList'][0];
-                            $row['finishOptionList']['children'] = array_values(array_filter($row['finishOptionList']['children'], function ($option) use ($finishingOptionIds) {
-                                return $option['id'] == $finishingOptionIds[1];
-                            }));
-                        }
-                    } else {
-                        $row['finishOptionList'] = null;
                     }
                 }
-            }
 
-            if (!empty($row['audio'])) {
-                $optionIds = explode(',', $row['audio']);
+                if (!empty($row['finishOption'])) {
+                    $finishingOptionIds = explode(',', $row['finishOption']);
 
-                if (count($optionIds)) {
-                    $optionIds = array_map('trim', $optionIds);
+                    if (count($finishingOptionIds)) {
+                        $finishingOptionIds = array_map('trim', $finishingOptionIds);
 
-                    $row['audioList'] = array_values(array_filter($audioOptions, function ($option) use ($optionIds) {
-                        return in_array($option['id'], $optionIds);
-                    }));
-                }
-            }
-
-            if (!empty($row['deliveryToClient'])) {
-                $deliveryToClientIds = explode(',', $row['deliveryToClient']);
-
-                if (count($deliveryToClientIds)) {
-                    $deliveryToClientIds = array_map('trim', $deliveryToClientIds);
-
-                    if (count($deliveryToClientIds) === 2) {
-                        $row['deliveryToClientList'] = array_values(array_filter($delToClientOption, function ($option) use ($deliveryToClientIds) {
-                            return $option['id'] == $deliveryToClientIds[0];
-                        }));
-
-                        if (count($row['deliveryToClientList'])) {
-                            $row['deliveryToClientList'] = $row['deliveryToClientList'][0];
-                            $row['deliveryToClientList']['children'] = array_values(array_filter($row['deliveryToClientList']['children'], function ($option) use ($deliveryToClientIds) {
-                                return $option['id'] == $deliveryToClientIds[1];
+                        if (count($finishingOptionIds) === 2) {
+                            $row['finishOptionList'] = array_values(array_filter($finishingOptions, function ($option) use ($finishingOptionIds) {
+                                return $option['id'] == $finishingOptionIds[0];
                             }));
+
+                            if (count($row['finishOptionList'])) {
+                                $row['finishOptionList'] = $row['finishOptionList'][0];
+                                $row['finishOptionList']['children'] = array_values(array_filter($row['finishOptionList']['children'], function ($option) use ($finishingOptionIds) {
+                                    return $option['id'] == $finishingOptionIds[1];
+                                }));
+                            }
+                        } else {
+                            $row['finishOptionList'] = null;
                         }
-                    } else {
-                        $row['deliveryToClientList'] = null;
                     }
                 }
-            }
 
+                if (!empty($row['audio'])) {
+                    $optionIds = explode(',', $row['audio']);
+
+                    if (count($optionIds)) {
+                        $optionIds = array_map('trim', $optionIds);
+
+                        $row['audioList'] = array_values(array_filter($audioOptions, function ($option) use ($optionIds) {
+                            return in_array($option['id'], $optionIds);
+                        }));
+                    }
+                }
+
+                if (!empty($row['deliveryToClient'])) {
+                    $deliveryToClientIds = explode(',', $row['deliveryToClient']);
+
+                    if (count($deliveryToClientIds)) {
+                        $deliveryToClientIds = array_map('trim', $deliveryToClientIds);
+
+                        if (count($deliveryToClientIds) === 2) {
+                            $row['deliveryToClientList'] = array_values(array_filter($delToClientOption, function ($option) use ($deliveryToClientIds) {
+                                return $option['id'] == $deliveryToClientIds[0];
+                            }));
+
+                            if (count($row['deliveryToClientList'])) {
+                                $row['deliveryToClientList'] = $row['deliveryToClientList'][0];
+                                $row['deliveryToClientList']['children'] = array_values(array_filter($row['deliveryToClientList']['children'], function ($option) use ($deliveryToClientIds) {
+                                    return $option['id'] == $deliveryToClientIds[1];
+                                }));
+                            }
+                        } else {
+                            $row['deliveryToClientList'] = null;
+                        }
+                    }
+                }
+
+            }
         }
 
         return $result;
@@ -260,14 +358,17 @@ class SpotRepository extends EntityRepository
 
     public function searchSpotSentCount($filter = array())
     {
-        $dql = "SELECT COUNT(sc.id) AS total_count 
+        $dql = "SELECT COUNT(DISTINCT sc.requestId) AS total_count 
                 FROM \Application\Entity\RediSpotSent sc ";
-
 
         $dqlFilter = [];
 
         if (!empty($filter['id'])) {
             $dqlFilter[] = "sc.id= :id";
+        }
+
+        if (!empty($filter['request_id'])) {
+            $dqlFilter[] = "sc.reqeustId= :request_id";
         }
 
         if (!empty($filter['status_id'])) {
@@ -282,6 +383,10 @@ class SpotRepository extends EntityRepository
 
         if (!empty($filter['id'])) {
             $query->setParameter("id", $filter['id']);
+        }
+
+        if (!empty($filter['request_id'])) {
+            $query->setParameter("request_id", $filter['request_id']);
         }
 
         if (!empty($filter['status_id'])) {
@@ -311,6 +416,36 @@ class SpotRepository extends EntityRepository
         }
 
         return $response;
+    }
+
+    public function getSpotVersionDataByRequestId($requestId)
+    {
+        $dql = "SELECT 
+                    sc.campaignId,
+                    ca.campaignName,
+                    sc.projectCampaignId,
+                    sc.spotId,
+                    s.spotName,
+                    sc.versionId,
+                    v.versionName,
+                    sc.spotVersionId,
+                    sc.finishRequest,
+                    sc.spotResend
+                FROM \Application\Entity\RediSpotSent sc
+                LEFT JOIN \Application\Entity\RediCampaign ca
+                    WITH ca.id = sc.campaignId
+                LEFT JOIN \Application\Entity\RediSpot s
+                    WITH s.id = sc.spotId
+                LEFT JOIN \Application\Entity\RediVersion v
+                    WITH v.id = sc.versionId
+                WHERE sc.requestId = :request_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter("request_id", $requestId);
+
+        $result = $query->getArrayResult();
+
+        return $result;
     }
 
     public function getSpotVersionBySpotSentId($spotSentId, $returnWorker = false)
