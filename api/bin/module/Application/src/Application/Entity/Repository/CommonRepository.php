@@ -65,10 +65,11 @@ class CommonRepository extends EntityRepository
 //        curl_close($ch);
 //    }
 
-    public function generateRandomString($minLength=10, $maxLength=100) {
+    public function generateRandomString($minLength = 10, $maxLength = 100)
+    {
         $length = rand($minLength, $maxLength);
         $str = "";
-        $characters = array_merge(range('A','Z'), range('a','z'), range('0','9'));
+        $characters = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));
         $max = count($characters) - 1;
         for ($i = 0; $i < $length; $i++) {
             $rand = mt_rand(0, $max);
@@ -86,32 +87,74 @@ class CommonRepository extends EntityRepository
      * @param $dateString String
      * @return \DateTime
      */
-    public function formatDateForInsert($dateString) {
-        if($dateString) {
+    public function formatDateForInsert($dateString)
+    {
+        if ($dateString) {
             try {
                 $date = new \DateTime($dateString);
-            } catch(\Exception $err) {
+            } catch (\Exception $err) {
                 $date = null;
             }
         } else {
-            $date =  null;
+            $date = null;
         }
 
         return $date;
     }
 
-    public function formatDateForDisplay($dateString) {
+    public function formatDateForDisplay($dateString)
+    {
 
     }
 
-    public function base64DecodeFile($data){
-        if(preg_match('/^data\:([a-zA-Z]+\/[a-zA-Z]+);base64\,([a-zA-Z0-9\+\/]+\=*)$/', $data, $matches)) {
+    public function base64DecodeFile($data)
+    {
+        if (preg_match('/^data\:([a-zA-Z]+\/[a-zA-Z]+);base64\,([a-zA-Z0-9\+\/]+\=*)$/', $data, $matches)) {
             return [
-                    'mime' => $matches[1],
-                    "extension" => (!empty($this->mimeToExtension[$matches[1]]))?$this->mimeToExtension[$matches[1]] : null,
-                    'data' => base64_decode($matches[2]),
+                'mime' => $matches[1],
+                "extension" => (!empty($this->mimeToExtension[$matches[1]])) ? $this->mimeToExtension[$matches[1]] : null,
+                'data' => base64_decode($matches[2]),
             ];
         }
         return false;
+    }
+
+    public function filterPostData($data, $key, $type = 'string', $defaultVal = null)
+    {
+        $type = strtolower($type);
+        $value = $defaultVal;
+
+        if (!empty($data[$key])) {
+            $value = $data[$key];
+        }
+
+        switch ($type) {
+            case 'decimal':
+            case 'float':
+            case 'double':
+                $value = (float)$value;
+                break;
+            case 'int':
+            case 'integer':
+            case 'intval':
+                $value = (int)$value;
+                break;
+            case 'bool':
+            case 'boolean':
+                $value = $value ? 1 : 0;
+                break;
+            case 'date':
+            case 'datetime':
+                $value = $this->formatDateForInsert($value);
+                break;
+            default:
+                $value = trim($value);
+        }
+
+        if($value && $type === 'json') {
+            $value = (array)json_decode($value, true);
+        }
+
+        return $value;
     }
 }

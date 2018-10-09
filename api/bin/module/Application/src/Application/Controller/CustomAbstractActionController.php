@@ -71,8 +71,8 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_spotRepository;
     protected $_spotSentRepository;
     protected $_spotSentOptionRepository;
-    protected $_spotSentToWorkStage;
-    protected $_spotSentToSpotVersionRepository;
+    // protected $_spotSentToWorkStage;
+    // protected $_spotSentToSpotVersionRepository;
     protected $_spotVersionRepository;
     protected $_spotVersionEditorRepository;
     protected $_staffRepository;
@@ -156,10 +156,10 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_spotRepository = $this->_em->getRepository('Application\Entity\RediSpot');
         $this->_spotVersionRepository = $this->_em->getRepository('Application\Entity\RediSpotVersion');
         $this->_spotVersionEditorRepository = $this->_em->getRepository('Application\Entity\RediSpotVersionEditor');
-        $this->_spotSentToSpotVersionRepository = $this->_em->getRepository('Application\Entity\RediSpotSentToSpotVersion');
+        // $this->_spotSentToSpotVersionRepository = $this->_em->getRepository('Application\Entity\RediSpotSentToSpotVersion');
         $this->_spotSentOptionRepository = $this->_em->getRepository('Application\Entity\RediSpotSentOption');
         $this->_spotSentRepository = $this->_em->getRepository('Application\Entity\RediSpotSent');
-        $this->_spotSentToWorkStage = $this->_em->getRepository('Application\Entity\RediSpotSentToWorkStage');
+        // $this->_spotSentToWorkStage = $this->_em->getRepository('Application\Entity\RediSpotSentToWorkStage');
         $this->_staffRepository = $this->_em->getRepository('Application\Entity\RediStaff');
         $this->_statusRepository = $this->_em->getRepository('Application\Entity\RediStatus');
         $this->_timeEntryRepository = $this->_em->getRepository('Application\Entity\RediTimeEntry');
