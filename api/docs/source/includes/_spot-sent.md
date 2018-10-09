@@ -805,10 +805,10 @@ Required | Parameter | Type | Default | Description
 **true** | sent_via_method | string| null | Sent via method id. json encoded array ids like "[1,2,3,4]"
 false | finish_option | string| null | Sent finish option, json encoded ids of parent and client, like "{"parent":1,"child":2}"
 false | notes | string | null | Notes
-false | status_id | string | null | Status id 
-false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"spot_version_id":40,"editors":[2,4,6,7,9]},{"spot_version_id":99,"editors":[1,3]}])  
+false | status | string | null | Status id 
+false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"campaign_id":4,"spot_version_id":40,"editors":[12,4,5,3,4],"spot_resend":0,"finish_request":1},{"spot_version_id":99,"editors":[1,3,2]}]) .  for each element send either (spot_id, version_id) or just send spot_version_id,  also need to send campaign_id (or you can send project_campaign_id). spot_resend, finish_request are boolean - send 0/1
 false | full_lock | int | 0 | send 0/1
-false | deadline | string | null | deadline date
+false | deadline | date | null | deadline date in Y-M-D format (2018-03-09)
 false | finishing_house | string | null | Finishing house id
 false | framerate | string | null | framerate string, like '29.97i'
 false | framerate_note | string | null | Finishing note
@@ -823,8 +823,17 @@ false | tag_chart | string | null | Tag chart
 false | delivery_to_client | string| null | Sent delivery to client option, json encoded ids of parent and client, like "{"parent":1,"child":2}" 
 false | delivery_note | string | null | Delivery note
 false | audio | string | null | Sent audio option, json encoded  array ids like "[1,2,3,4]"
+false | audio_note | string | null | audio note
 false | graphics_finish | int | 0 | send 0/1
 false | gfx_finish | int | 0 | send 0/1
+
+
+
+
+
+
+
+
 
 
 ## Create Spot Sent 
@@ -884,26 +893,27 @@ Required | Parameter | Type | Default | Description
 false | sent_via_method | string| null | Sent via method id. json encoded array ids like "[1,2,3,4]"
 false | finish_option | string| null | Sent finish option, json encoded ids of parent and client, like "{"parent":1,"child":2}"
 false | notes | string | null | Notes
-false | status_id | string | null | Status id 
-false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"spot_version_id":40,"editors":[2,4,6,7,9]},{"spot_version_id":99,"editors":[1,3]}])  
-false | full_lock |  | null | send 0/1
-false | deadline | string | null | deadline date
-false | finishing_house | string | null | Finishing house
+false | status | string | null | Status id 
+false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"campaign_id":4,"spot_version_id":40,"editors":[12,4,5,3,4],"spot_resend":0,"finish_request":1},{"spot_version_id":99,"editors":[1,3,2]}]) .  for each element send either (spot_id, version_id) or just send spot_version_id,  also need to send campaign_id (or you can send project_campaign_id). spot_resend, finish_request are boolean - send 0/1
+false | full_lock | int | 0 | send 0/1
+false | deadline | date | null | deadline date in Y-M-D format (2018-03-09)
+false | finishing_house | string | null | Finishing house id
 false | framerate | string | null | framerate string, like '29.97i'
 false | framerate_note | string | null | Finishing note
 false | raster_size | int | null | raster size ,like '1x1'
 false | raster_size_note | string | null | raster size note
-false | music_cue_sheet | int | null | send 0/1
-false | audio_prep | int | null | send 0/1
-false | video_prep | int | null | send 0/1
+false | music_cue_sheet | int | 0 | send 0/1
+false | audio_prep | int | 0 | send 0/1
+false | video_prep | int | 0 | send 0/1
 false | spec_note | string | null | Finishing house
 false | spec_sheet_file | JSON encoded list base64 of file | null | json encoded array of base64 encoded of file. like ["data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE.......","data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE......."]
 false | tag_chart | string | null | Tag chart
 false | delivery_to_client | string| null | Sent delivery to client option, json encoded ids of parent and client, like "{"parent":1,"child":2}" 
 false | delivery_note | string | null | Delivery note
 false | audio | string | null | Sent audio option, json encoded  array ids like "[1,2,3,4]"
-false | graphics_finish | int | null | send 0/1
-false | gfx_finish | int | null | send 0/1
+false | audio_note | string | null | audio note
+false | graphics_finish | int | 0 | send 0/1
+false | gfx_finish | int | 0 | send 0/1
 
 
 ## Get all finishing house
