@@ -136,8 +136,8 @@ class SpotSentController extends CustomAbstractActionController
 
     private function createRequestEntry($data, $existingSpotSent = null)
     {
-        $requestId = ($existingSpotSent && $existingSpotSent->getRequestId()) 
-                        ?  (int)$existingSpotSent->getRequestId() : null;
+        $requestId = ($existingSpotSent && $existingSpotSent->getRequestId())
+            ? (int)$existingSpotSent->getRequestId() : null;
         $isUpdate = (bool)$requestId;
 
         $specSheetDir = $this->_config['directory_path']['spot_sent_spec_sheet'];
@@ -186,67 +186,70 @@ class SpotSentController extends CustomAbstractActionController
             }
         }
 
+
+        if (is_array($spotVersionData)) {
         // process spot version data
-        foreach ($spotVersionData as &$sv) {
+            foreach ($spotVersionData as &$sv) {
             // check if spot id is present
-            if (empty($sv['spot_version_id']) && (empty($sv['spot_id']) || empty(['verion_id']))) {
-                continue;
-            }
-
-            if (!empty($sv['spot_version_id']) && (int)$sv['spot_version_id']) {
-                $spotVersion = $this->_spotVersionRepository->find((int)$sv['spot_version_id']);
-
-                if ($spotVersion) {
-                    $sv['spot_id'] = $spotVersion->getSpotId();
-                    $sv['version_id'] = $spotVersion->getVersionId();
+                if (empty($sv['spot_version_id']) && (empty($sv['spot_id']) || empty(['verion_id']))) {
+                    continue;
                 }
-            } else {
-                $sv['spot_version_id'] = null;
-            }
 
-            if (!empty($sv['spot_id']) && !empty($sv['version_id'])) {
-                $spotVersion = $this->_spotVersionRepository->findOneBy(array('spotId' => (int)$sv['spot_id'], 'versionId' => (int)$sv['version_id']));
+                if (!empty($sv['spot_version_id']) && (int)$sv['spot_version_id']) {
+                    $spotVersion = $this->_spotVersionRepository->find((int)$sv['spot_version_id']);
 
-                if ($spotVersion) {
-                    $sv['spot_version_id'] = $spotVersion->getId();
+                    if ($spotVersion) {
+                        $sv['spot_id'] = $spotVersion->getSpotId();
+                        $sv['version_id'] = $spotVersion->getVersionId();
+                    }
+                } else {
+                    $sv['spot_version_id'] = null;
                 }
-            }
 
-            if (!empty($sv['campaign_id']) && $projectId) {
-                $projectCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectId, 'campaignId' => $sv['campaign_id']));
+                if (!empty($sv['spot_id']) && !empty($sv['version_id'])) {
+                    $spotVersion = $this->_spotVersionRepository->findOneBy(array('spotId' => (int)$sv['spot_id'], 'versionId' => (int)$sv['version_id']));
 
-                if ($projectCampaign) {
-                    $sv['project_id'] = $projectCampaign->getProjectId();
-                    $sv['project_campaign_id'] = $projectCampaign->getId();
+                    if ($spotVersion) {
+                        $sv['spot_version_id'] = $spotVersion->getId();
+                    }
+                }
+
+                if (!empty($sv['campaign_id']) && $projectId) {
+                    $projectCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectId, 'campaignId' => $sv['campaign_id']));
+
+                    if ($projectCampaign) {
+                        $sv['project_id'] = $projectCampaign->getProjectId();
+                        $sv['project_campaign_id'] = $projectCampaign->getId();
+                    } else {
+                        $sv['project_id'] = $projectId;
+                        $sv['project_campaign_id'] = null;
+                    }
+                } else if (!empty($sv['project_campaign_id'])) {
+                    $projectCampaign = $this->_projectToCamapignReposivoty->findOne($sv['project_campaign_id']);
+
+                    if ($projectCampaign) {
+                        $sv['project_id'] = $projectCampaign->getProjectId();
+                        $sv['campaign_id'] = $projectCampaign->getCampaignId();
+                    }
                 } else {
                     $sv['project_id'] = $projectId;
+                    $sv['campaign_id'] = null;
                     $sv['project_campaign_id'] = null;
                 }
-            } else if (!empty($sv['project_campaign_id'])) {
-                $projectCampaign = $this->_projectToCamapignReposivoty->findOne($sv['project_campaign_id']);
 
-                if ($projectCampaign) {
-                    $sv['project_id'] = $projectCampaign->getProjectId();
-                    $sv['campaign_id'] = $projectCampaign->getCampaignId();
+                if (!empty($sv['editors']) && is_array($sv['editors'])) {
+                    $sv['editors_string'] = $this->arrayToCommanSeparated($sv['editors']);
+                } else {
+                    $sv['editors_string'] = null;
                 }
-            } else {
-                $sv['project_id'] = $projectId;
-                $sv['campaign_id'] = null;
-                $sv['project_campaign_id'] = null;
-            }
 
-            if (!empty($sv['editors']) && is_array($sv['editors'])) {
-                $sv['editors_string'] = $this->arrayToCommanSeparated($sv['editors']);
-            } else {
-                $sv['editors_string'] = null;
+                $sv['spot_resend'] = (!empty($sv['spot_resend'])) ? 1 : 0;
+                $sv['finish_request'] = (!empty($sv['finish_request'])) ? 1 : 0;
             }
-
-            $sv['spot_resend'] = (!empty($sv['spot_resend'])) ? 1 : 0;
-            $sv['finish_request'] = (!empty($sv['finish_request'])) ? 1 : 0;
         }
 
         // var_dump($spotVersionData); exit;
-        if ($sentViaMethod || $finishOption) {
+        if (($sentViaMethod || $finishOption) && is_array($spotVersionData)) {
             $requestId = $requestId ? $requestId : $this->_spotRepo->getNextSpotSentRequestId();
             $now = new \DateTime('now');
             $spotSentIds = [];
@@ -367,7 +370,7 @@ class SpotSentController extends CustomAbstractActionController
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Please provide required data(finsish_option, sent_via_method).'
+                'message' => 'Please provide required data(finish_option, sent_via_method, spot_version).'
             );
         }
 
