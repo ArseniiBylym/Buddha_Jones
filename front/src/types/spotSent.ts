@@ -30,7 +30,46 @@ export enum SpotSentForm {
     InHousePresentation = 'IHP',
 }
 
-export interface SpotSentAllSpotsFromApi {
+export interface SpotSentAllSpotsSentSpotData {
+    project: SpotSentAllSpotsSentSpotDataSingle;
+    campaign: SpotSentAllSpotsSentSpotDataSingle;
+    spot: SpotSentAllSpotsSentSpotDataSingle;
+    version: SpotSentAllSpotsSentSpotDataSingle;
+    finishRequest: {
+        value: 0 | 1 | null;
+        name: string;
+        title: string;
+    };
+    status: SpotSentAllSpotsSentSpotDataSingle;
+    changed: {
+        value: Date;
+        name: Date;
+        title: string;
+    };
+}
+
+export interface SpotSentAllSpotsSentSpotDataSingle {
+    id: number;
+    name: string;
+    title: string;
+}
+
+export interface SpotSentAllSpotsSentFromApi {
+    requestId: number;
+    projectId: number;
+    statusId: number;
+    createdBy: number;
+    createdAt: SpotSentAllSpotsSentTimeFromApi;
+    updatedBy: null;
+    updatedAt: SpotSentAllSpotsSentTimeFromApi | null;
+    statusName: string;
+    createdByUser: string;
+    updatedByUser: string;
+    spotData: SpotSentAllSpotsSentSpotDataFromApi[];
+    projectName: string;
+}
+
+/*export interface SpotSentAllSpotsFromApi {
     id: number;
     projectId: number;
     fullLock: 0 | 1;
@@ -64,6 +103,25 @@ export interface SpotSentAllSpotsFromApi {
     updatedAt: SpotSentAllSpotsFromApi;
     projectSpotVersion: Array<{spot_version_id: number, editors: number[]}>;
     sentViaMethodList: SpotSentOptionsChildrenFromApi[];
+}*/
+
+export interface SpotSentAllSpotsSentSpotDataFromApi {
+    campaignId: number;
+    campaignName: string;
+    projectCampaignId: number;
+    spotId: number;
+    spotName: string;
+    versionId: number;
+    versionName: number;
+    spotVersionId: number;
+    finishRequest: null;
+    spotResend: null;
+}
+
+export interface SpotSentAllSpotsSentTimeFromApi {
+    date: string;
+    timezone_type: number;
+    timezone: string;
 }
 
 export interface SpotSentAllSpotsFromApi {

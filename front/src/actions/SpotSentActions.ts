@@ -1,9 +1,15 @@
 import { API, APIPath } from '../fetch';
 import { action } from 'mobx';
 import { SpotSentStore } from '../store/AllStores';
-import { FinishingHouseOptionsFromApi, SpotSentAllSpotsFromApi, SpotSentOptionsFromApi } from '../types/spotSent';
+import {
+    FinishingHouseOptionsFromApi,
+    SpotSentAllSpotsFromApi,
+    SpotSentAllSpotsSentFromApi,
+    SpotSentAllSpotsSentSpotData,
+    SpotSentAllSpotsSentSpotDataFromApi,
+    SpotSentOptionsFromApi
+} from '../types/spotSent';
 import { DateHandler } from '../helpers/DateHandler';
-import { CampaignFromApi } from '../types/campaign';
 
 export class SpotSentActionsClass {
 
@@ -12,24 +18,56 @@ export class SpotSentActionsClass {
         try {
             if (forceFetch) {
 
+                SpotSentStore.spotSentAllSpotsLoading = true;
                 const response = (await API.getData(APIPath.SPOT_SENT, {
                     length: 99999,
                     offset: 0,
-                })) as SpotSentAllSpotsFromApi[];
+                })) as SpotSentAllSpotsSentFromApi[];
 
-                SpotSentStore.spotSentAllSpots = response.map(campaign => ({
-                    id: campaign.id,
-                    name: campaign.campaignName,
-                    assignedToProjects: campaign.project.map(project => ({
-                        id: project.id,
-                        name: project.projectName,
-                    })),
-                }));
+                let spotSentAllSpots: SpotSentAllSpotsSentSpotData[] = [];
+
+                response.forEach((spot: SpotSentAllSpotsSentFromApi) => {
+                    spot.spotData.forEach((data: SpotSentAllSpotsSentSpotDataFromApi) => {
+                        let spotItem: SpotSentAllSpotsSentSpotData = {
+                            project: {
+                                id: spot.projectId,
+                                name: spot.projectName,
+                                title: 'Project'
+                            },
+                            campaign: {
+                                id: data.campaignId,
+                                name: data.campaignName,
+                                title: 'Campaign'
+                            },
+                            spot: {
+                                id: data.spotId,
+                                name: data.spotName,
+                                title: 'Spot'
+                            },
+                            version: {
+                                id: data.versionId,
+                                name: data.versionName,
+                                title: 'Version'
+                            },
+                            finishRequest: {
+                                value: data.finishRequest,
+                                name: data.finishRequest,
+                                title: 'Finish request'
+                            },
+                            status: {
+                                id: spot.statusId,
+                                name: spot.statusName,
+                                title: 'Status'
+                            },
+                        };
+                    });
+                });
+                /*SpotSentStore.spotSentAllSpots*/
+                SpotSentStore.spotSentAllSpotsLoading = false;
             }
-
             return true;
         } catch (error) {
-            CampaignsStore.allCampaignsAreBeingFetched = false;
+            SpotSentStore.spotSentAllSpotsLoading = false;
             throw error;
         }
     };
