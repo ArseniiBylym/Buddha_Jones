@@ -3,7 +3,6 @@ import { action } from 'mobx';
 import { SpotSentStore } from '../store/AllStores';
 import {
     FinishingHouseOptionsFromApi,
-    SpotSentAllSpotsFromApi,
     SpotSentAllSpotsSentFromApi,
     SpotSentAllSpotsSentSpotData,
     SpotSentAllSpotsSentSpotDataFromApi,
@@ -29,40 +28,46 @@ export class SpotSentActionsClass {
                 response.forEach((spot: SpotSentAllSpotsSentFromApi) => {
                     spot.spotData.forEach((data: SpotSentAllSpotsSentSpotDataFromApi) => {
                         let spotItem: SpotSentAllSpotsSentSpotData = {
-                            project: {
-                                id: spot.projectId,
-                                name: spot.projectName,
-                                title: 'Project'
+                            project : {
+                                id : spot.projectId,
+                                name : spot.projectName,
+                                title : 'Project'
                             },
-                            campaign: {
-                                id: data.campaignId,
-                                name: data.campaignName,
-                                title: 'Campaign'
+                            campaign : {
+                                id : data.campaignId,
+                                name : data.campaignName,
+                                title : 'Campaign'
                             },
-                            spot: {
-                                id: data.spotId,
-                                name: data.spotName,
-                                title: 'Spot'
+                            spot : {
+                                id : data.spotId,
+                                name : data.spotName,
+                                title : 'Spot'
                             },
-                            version: {
-                                id: data.versionId,
-                                name: data.versionName,
-                                title: 'Version'
+                            version : {
+                                id : data.versionId,
+                                name : data.versionName,
+                                title : 'Version'
                             },
-                            finishRequest: {
-                                value: data.finishRequest,
-                                name: data.finishRequest,
-                                title: 'Finish request'
+                            finishRequest : {
+                                id : data.finishRequest,
+                                name : data.finishRequest,
+                                title : 'Finish request'
                             },
-                            status: {
-                                id: spot.statusId,
-                                name: spot.statusName,
-                                title: 'Status'
+                            status : {
+                                id : spot.statusId,
+                                name : spot.statusName,
+                                title : 'Status'
                             },
+                            changed : {
+                                id : (spot.updatedAt && spot.updatedAt.date) ? spot.updatedAt.date : null,
+                                name : (spot.updatedAt && spot.updatedAt.date) ? spot.updatedAt.date : '',
+                                title : 'Changed'
+                            }
                         };
+                        spotSentAllSpots.push(spotItem);
                     });
                 });
-                /*SpotSentStore.spotSentAllSpots*/
+                SpotSentStore.spotSentAllSpots = spotSentAllSpots;
                 SpotSentStore.spotSentAllSpotsLoading = false;
             }
             return true;
@@ -93,13 +98,13 @@ export class SpotSentActionsClass {
         try {
             if (forceFetch ||
                 (SpotSentStore.spotSentFinishingHouseAreBeingFetched === false &&
-                DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, SpotSentStore.spotSentFinishingHouseLastFetchTimeStamp))
+                    DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, SpotSentStore.spotSentFinishingHouseLastFetchTimeStamp))
             ) {
                 SpotSentStore.spotSentFinishingHouseAreBeingFetched = true;
 
                 const response = (await API.getData(APIPath.FINISHING_HOUSE, {
-                    length: 99999,
-                    offset: 0,
+                    length : 99999,
+                    offset : 0,
                 })) as FinishingHouseOptionsFromApi[];
 
                 SpotSentStore.spotSentFinishingHouseAreBeingFetched = false;
@@ -118,14 +123,14 @@ export class SpotSentActionsClass {
     ): Promise<{ id: number; name: string; }> => {
         try {
             const newFinishingHouse = (await API.postData(APIPath.FINISHING_HOUSE, {
-                name: finishingHouseName,
+                name : finishingHouseName,
             })) as FinishingHouseOptionsFromApi[];
 
             return {
-                id: newFinishingHouse.filter((option: FinishingHouseOptionsFromApi) => {
+                id : newFinishingHouse.filter((option: FinishingHouseOptionsFromApi) => {
                     return (option.name === finishingHouseName);
                 })[0].id,
-                name: finishingHouseName
+                name : finishingHouseName
             };
         } catch (error) {
             throw error;

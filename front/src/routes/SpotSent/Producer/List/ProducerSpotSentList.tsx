@@ -7,9 +7,9 @@ import { computed } from 'mobx';
 import { SpotSentStore } from '../../../../store/AllStores';
 import { Col, Row, Section } from '../../../../components/Section';
 import { LoadingSpinner } from '../../../../components/Loaders';
-import { UserType } from '../../../../types/users';
 import { Table, TableCell, TableRow } from '../../../../components/Table';
 import { Paragraph } from '../../../../components/Content';
+import { SpotSentAllSpotsSentSpotData } from '../../../../types/spotSent';
 
 // Styles
 require('./ProducerSpotSentList.css');
@@ -22,8 +22,6 @@ interface ProducerSpotSentListProps {
 @inject('store')
 @observer
 class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}> {
-
-    /*@observable private userTypesArrFiltered: UserType[] | null = null;*/
 
     @computed
     private get essentialDataIsLoading(): boolean {
@@ -61,7 +59,6 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
                 {this.getTableWithLoadingSpinner()}
             </>
         );
-        /*return <Paragraph type="dim">No spots sent exist yet.</Paragraph>;*/
     }
 
     private handleCreateSpotSentReport = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -84,16 +81,30 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
 
     private getTableWithData(): JSX.Element {
         if (SpotSentStore.spotSentAllSpots && SpotSentStore.spotSentAllSpots.length > 0) {
-            /*let userTypesArr = (this.userTypesArrFiltered === null) ? this.props.store.users.types : this.userTypesArrFiltered;*/
-            let tableRowsArr: JSX.Element[] = SpotSentStore.spotSentAllSpots.map((userType: UserType, ind: number) => {
+            let tableRowsArr: JSX.Element[] = SpotSentStore.spotSentAllSpots.map((spot: SpotSentAllSpotsSentSpotData, index: number) => {
                 return (
-                    <TableRow key={`user-type-${ind}`}>
+                    <TableRow key={`spot-${index}`}>
                         <TableCell align="left">
-                            {userType.name}
+                            {spot.project.name}
+                        </TableCell>
+                        <TableCell align="center">
+                            {spot.campaign.name}
+                        </TableCell>
+                        <TableCell align="center">
+                            {spot.spot.name}
+                        </TableCell>
+                        <TableCell align="center">
+                            {spot.version.name}
+                        </TableCell>
+                        <TableCell align="center">
+                            {spot.finishRequest.name}
+                        </TableCell>
+                        <TableCell align="center">
+                            {spot.status.name}
                         </TableCell>
                         <TableCell align="right">
+                            {spot.changed.name}
                             <ButtonEdit
-                                onClick={this.handlePermissionEdit(userType.id, userType.name)}
                                 label="Edit"
                                 labelOnLeft={false}
                                 float="right"
@@ -105,10 +116,15 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
             return (
                 <Table
                     header={[
-                        { title: 'User type', align: 'left' },
-                        { title: 'Set permissions', align: 'right' }
+                        { title: 'Project', align: 'left' },
+                        { title: 'Campaign', align: 'center' },
+                        { title: 'Spot', align: 'center' },
+                        { title: 'Version', align: 'center' },
+                        { title: 'Finish Request', align: 'center' },
+                        { title: 'Status', align: 'center' },
+                        { title: 'Last update', align: 'right' },
                     ]}
-                    columnsWidths={['70%', '30%']}
+                    columnsWidths={['14%', '14%', '14%', '14%', '14%', '14%', '14%']}
                 >
                     {tableRowsArr}
                 </Table>
