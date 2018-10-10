@@ -826,13 +826,7 @@ false | audio | string | null | Sent audio option, json encoded  array ids like 
 false | audio_note | string | null | audio note
 false | graphics_finish | int | 0 | send 0/1
 false | gfx_finish | int | 0 | send 0/1
-
-
-
-
-
-
-
+false | customer_contact | string| null | customer contact ids json encoded array ids like "[1,2,3,4]"
 
 
 
@@ -914,6 +908,7 @@ false | audio | string | null | Sent audio option, json encoded  array ids like 
 false | audio_note | string | null | audio note
 false | graphics_finish | int | 0 | send 0/1
 false | gfx_finish | int | 0 | send 0/1
+false | customer_contact | string| null | customer contact ids json encoded array ids like "[1,2,3,4]"
 
 
 ## Get all finishing house
