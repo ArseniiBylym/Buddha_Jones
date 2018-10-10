@@ -434,7 +434,7 @@ class SpotRepository extends EntityRepository
 
         $result = $query->getArrayResult();
 
-        foreach($result as &$row) {
+        foreach ($result as &$row) {
             $row['campaignId'] = (int)$row['campaignId'];
             $row['projectCampaignId'] = (int)$row['projectCampaignId'];
             $row['spotId'] = (int)$row['spotId'];
@@ -747,15 +747,32 @@ class SpotRepository extends EntityRepository
 
     public function getNextSpotSentRequestId()
     {
+        $key = 'MAX_SPOT_SENT_REQUEST_ID';
+
         $dql = "SELECT 
-                  MAX(ss.requestId) AS max_request
-                FROM \Application\Entity\RediSpotSent ss";
+                  s.settingValue
+                FROM \Application\Entity\RediSetting s
+                WHERE s.settingKey=:key";
 
         $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('key', $key);
+        $query->setMaxResults(1);
         $result = $query->getArrayResult();
 
-        $maxRequestId = (!empty($result[0]['max_request'])) ? (int)$result[0]['max_request'] : 0;
+        $maxRequestId = ((!empty($result[0]['settingValue'])) ? (int)$result[0]['settingValue'] : 0) + 1;
 
-        return ($maxRequestId + 1);
+        // update request_id in setting table
+        $updateQuery = "UPDATE redi_setting 
+                        SET 
+                            setting_value = :max_request_id
+                        WHERE
+                            setting_key = :key";
+
+        $updateSetting = $this->getEntityManager()->getConnection()->prepare($updateQuery);
+        $updateSetting->bindParam('max_request_id', $maxRequestId);
+        $updateSetting->bindParam('key', $key);
+        $updateSetting->execute();
+
+        return $maxRequestId;
     }
 }

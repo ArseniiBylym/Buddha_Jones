@@ -69,6 +69,77 @@ class SpotSentController extends CustomAbstractActionController
 
     public function create($data)
     {
+        $response = $this->createRequestEntry($data);
+
+        if ($response['status'] == 0) {
+            $this->getResponse()->setStatusCode(400);
+        }
+
+        return new JsonModel($response);
+    }
+
+    public function update($requestId, $data)
+    {
+        $existingSpotSents = $this->_spotSentRepository->findOneBy(array('requestId' => $requestId));
+
+        if ($existingSpotSents) {
+            $this->removeByRequestId($requestId);
+            $response = $this->createRequestEntry($data, $existingSpotSents);
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Spot sent not exists'
+            );
+
+        }
+        if ($response['status'] == 0) {
+            $this->getResponse()->setStatusCode(400);
+        }
+
+        return new JsonModel($response);
+    }
+
+    public function delete($requestId)
+    {
+        $response = $this->removeByRequestId($requestId);
+        if ($response['status'] == 0) {
+            $this->getResponse()->setStatusCode(400);
+        }
+
+        return new JsonModel($response);
+    }
+
+    private function removeByRequestId($requestId)
+    {
+        $spotSents = $this->_spotSentRepository->findBy(array('requestId' => $requestId));
+
+        if (count($spotSents)) {
+            foreach ($spotSents as $spotSent) {
+                $this->_em->remove($spotSent);
+            }
+
+            $this->_em->flush();
+
+            $response = array(
+                'status' => 1,
+                'message' => 'Request successful.'
+            );
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Spot not found.'
+            );
+        }
+
+        return $response;
+    }
+
+    private function createRequestEntry($data, $existingSpotSent = null)
+    {
+        $requestId = ($existingSpotSent && $existingSpotSent->getRequestId()) 
+                        ?  (int)$existingSpotSent->getRequestId() : null;
+        $isUpdate = (bool)$requestId;
+
         $specSheetDir = $this->_config['directory_path']['spot_sent_spec_sheet'];
 
         $projectId = $this->_commonRepo->filterPostData($data, 'project_id', 'int');
@@ -176,7 +247,7 @@ class SpotSentController extends CustomAbstractActionController
 
         // var_dump($spotVersionData); exit;
         if ($sentViaMethod || $finishOption) {
-            $requestId = $this->_spotRepo->getNextSpotSentRequestId();
+            $requestId = $requestId ? $requestId : $this->_spotRepo->getNextSpotSentRequestId();
             $now = new \DateTime('now');
             $spotSentIds = [];
 
@@ -207,8 +278,6 @@ class SpotSentController extends CustomAbstractActionController
                 $spotSent->setStatusId($statusId);
                 $spotSent->setNotes($notes);
                 $spotSent->setFinishOption($finishOption);
-                $spotSent->setCreatedAt($now);
-                $spotSent->setCreatedBy($this->_user_id);
                 $spotSent->setCustomerContact($customerContact);
 
                 $spotSent->setSpotId($svd['spot_id']);
@@ -217,6 +286,17 @@ class SpotSentController extends CustomAbstractActionController
                 $spotSent->setEditor($svd['editors_string']);
                 $spotSent->setSpotResend($svd['spot_resend']);
                 $spotSent->setFinishRequest($svd['finish_request']);
+
+                if ($isUpdate) {
+                    $spotSent->setCreatedAt($existingSpotSent->getCreatedAt());
+                    $spotSent->setCreatedBy($existingSpotSent->getCreatedBy());
+
+                    $spotSent->setUpdatedAt($now);
+                    $spotSent->setUpdatedBy($this->_user_id);
+                } else {
+                    $spotSent->setCreatedAt($now);
+                    $spotSent->setCreatedBy($this->_user_id);
+                }
 
                 $this->_em->persist($spotSent);
                 $this->_em->flush();
@@ -291,272 +371,8 @@ class SpotSentController extends CustomAbstractActionController
             );
         }
 
-        if ($response['status'] == 0) {
-            $this->getResponse()->setStatusCode(400);
-        }
-
-        return new JsonModel($response);
+        return $response;
     }
-
-    public function update($id, $data)
-    {
-        $specSheetDir = $this->_config['directory_path']['spot_sent_spec_sheet'];
-
-        $projectId = (isset($data['project_id'])) ? (int)$data['project_id'] : null;
-        $fullLock = (isset($data['full_lock'])) ? (int)$data['full_lock'] : null;
-        $notes = (isset($data['notes'])) ? trim($data['notes']) : null;
-        $deadline = (isset($data['deadline'])) ? trim($data['deadline']) : null;
-        $finishingHouse = (isset($data['finishing_house'])) ? trim($data['finishing_house']) : null;
-        $framerate = (isset($data['framerate'])) ? trim($data['framerate']) : null;
-        $framerateNote = (isset($data['framerate_note'])) ? trim($data['framerate_note']) : null;
-        $rasterSize = (isset($data['raster_size'])) ? trim($data['raster_size']) : null;
-        $rasterSizeNote = (isset($data['raster_size_note'])) ? trim($data['raster_size_note']) : null;
-        $musicCueSheet = (isset($data['music_cue_sheet'])) ? (int)$data['music_cue_sheet'] : null;
-        $audioPrep = (isset($data['audio_prep'])) ? (int)$data['audio_prep'] : null;
-        $graphicsFinish = (isset($data['graphics_finish'])) ? (int)$data['graphics_finish'] : null;
-        $gfxFinish = (isset($data['gfx_finish'])) ? (int)$data['gfx_finish'] : null;
-        $videoPrep = (isset($data['video_prep'])) ? (int)$data['video_prep'] : null;
-        $specNote = (isset($data['spec_note'])) ? trim($data['spec_note']) : null;
-        $specSheetFile = (isset($data['spec_sheet_file'])) ? trim($data['spec_sheet_file']) : null;
-        $deliveryNote = (isset($data['delivery_note'])) ? trim($data['delivery_note']) : null;
-        $statusId = (isset($data['status_id'])) ? trim($data['status_id']) : null;
-        $deliveryToClient = (array)json_decode((!empty($data['delivery_to_client'])) ? trim($data['delivery_to_client']) : null, true);
-        $audio = (array)json_decode((isset($data['audio'])) ? $data['audio'] : null, true);
-        $sentViaMethod = (array)json_decode((!empty($data['sent_via_method'])) ? trim($data['sent_via_method']) : null, true);
-        $finishOption = (array)json_decode((!empty($data['finish_option'])) ? trim($data['finish_option']) : null, true);
-        $spotVersion = (array)json_decode(isset($data['spot_version']) ? trim($data['spot_version']) : null, true);
-
-        // array to commaseparated string
-        $sentViaMethod = $this->arrayToCommanSeparated($sentViaMethod);
-        $finishOption = $this->arrayToCommanSeparated($finishOption, true);
-        $audio = $this->arrayToCommanSeparated($audio);
-        $deliveryToClient = $this->arrayToCommanSeparated($deliveryToClient, true);
-
-        $files = array();
-
-        if ($specSheetFile) {
-            $files = json_decode($specSheetFile, true);
-
-            foreach ($files as $key => $file) {
-                $files[$key] = $this->_commonRepo->base64DecodeFile($file);
-            }
-        }
-
-        if ($id) {
-            $spotSent = $this->_spotSentRepository->find($id);
-
-            if ($spotSent) {
-                $now = new \DateTime('now');
-
-                if ($projectId !== null) {
-                    $spotSent->setProjectId($projectId);
-                }
-
-                if ($fullLock !== null) {
-                    $spotSent->setFullLock($fullLock);
-                }
-
-                if ($sentViaMethod !== null) {
-                    $spotSent->setSentViaMethod($sentViaMethod);
-                }
-
-                if ($deadline !== null) {
-                    $spotSent->setDeadline($deadline);
-                }
-
-                if ($finishingHouse !== null) {
-                    $spotSent->setFinishingHouse($finishingHouse);
-                }
-
-                if ($framerate !== null) {
-                    $spotSent->setFramerate($framerate);
-                }
-
-                if ($framerateNote !== null) {
-                    $spotSent->setFramerateNote($framerateNote);
-                }
-
-                if ($rasterSize !== null) {
-                    $spotSent->setRasterSize($rasterSize);
-                }
-
-                if ($rasterSizeNote !== null) {
-                    $spotSent->setRasterSizeNote($rasterSizeNote);
-                }
-
-                if ($musicCueSheet !== null) {
-                    $spotSent->setMusicCueSheet($musicCueSheet);
-                }
-
-                if ($audioPrep !== null) {
-                    $spotSent->setAudioPrep($audioPrep);
-                }
-
-                if ($audio !== null) {
-                    $spotSent->setAudio($audio);
-                }
-
-                if ($graphicsFinish !== null) {
-                    $spotSent->setGraphicsFinish($graphicsFinish);
-                }
-
-                if ($gfxFinish !== null) {
-                    $spotSent->setGfxFinish($gfxFinish);
-                }
-
-                if ($projectId !== null) {
-                    $spotSent->setVideoPrep($videoPrep);
-                }
-
-                if ($videoPrep !== null) {
-                    $spotSent->setSpecNote($specNote);
-                }
-
-                if ($deliveryToClient !== null) {
-                    $spotSent->setDeliveryToClient($deliveryToClient);
-                }
-
-                if ($deliveryNote !== null) {
-                    $spotSent->setDeliveryNote($deliveryNote);
-                }
-
-                if ($statusId !== null) {
-                    $spotSent->setStatusId($statusId);
-                }
-
-                if ($notes !== null) {
-                    $spotSent->setNotes($notes);
-                }
-
-                if ($finishOption !== null) {
-                    $spotSent->setFinishOption($finishOption);
-                }
-
-                $spotSent->setUpdatedAt($now);
-                $spotSent->setUpdatedBy($this->_user_id);
-
-                $this->_em->persist($spotSent);
-                $this->_em->flush();
-
-                $spotSentId = $spotSent->getId();
-
-                // save files
-                $fileNames = array();
-
-                if (count($files)) {
-                    $newDir = $specSheetDir . $spotSentId;
-
-                    if (!file_exists($newDir)) {
-                        mkdir($newDir);
-                    }
-
-                    foreach ($files as $key => $file) {
-                        $newFileName = md5($key) . $file['extension'];
-                        $fileNames[] = $newFileName;
-                        $newFileName = $newDir . '/' . $newFileName;
-
-                        file_put_contents($newFileName, $file['data']);
-                    }
-
-                    $spotSent->setSpecSheetFile(json_encode($fileNames));
-                    $this->_em->persist($spotSent);
-                    $this->_em->flush();
-                }
-
-                $existingSpotVersion = $this->_spotSentToSpotVersionRepository->findBy(array('spotSentId' => $spotSentId));
-
-                foreach ($existingSpotVersion as $existingRow) {
-                    $this->_em->remove($existingRow);
-                }
-
-                $this->_em->flush();
-
-                foreach ($spotVersion as $row) {
-                    if (!empty($row['spot_version_id'])) {
-                        $spotVersionId = (int)$row['spot_version_id'];
-                        $spotSentToSpotVersion = new RediSpotSentToSpotVersion();
-                        $spotSentToSpotVersion->setSpotSentId($spotSentId);
-                        $spotSentToSpotVersion->setSpotVersionId($spotVersionId);
-
-                        $this->_em->persist($spotSentToSpotVersion);
-
-                        if (!empty($row['editors']) && is_array($row['editors'])) {
-                            $editors = array_unique($row['editors']);
-                            $spotVersionEditors = $this->_spotVersionEditorRepository->findBy(array('spotVersionId' => $spotVersionId));
-
-                            foreach ($spotVersionEditors as $spotVersionEditor) {
-                                $this->_em->remove($spotVersionEditor);
-                            }
-
-                            $this->_em->flush();
-
-                            foreach ($editors as $editorId) {
-                                $spotVersionEditor = new RediSpotVersionEditor();
-                                $spotVersionEditor->setSpotVersionId($spotVersionId);
-                                $spotVersionEditor->setUserId($editorId);
-                                $this->_em->persist($spotVersionEditor);
-                            }
-                        }
-
-                        $this->_em->flush();
-                    }
-                }
-
-                $data = array_merge($this->getSingle($id), array(
-                    'spot_sent_id' => $id
-                ));
-
-                $response = array(
-                    'status' => 1,
-                    'message' => 'Request successful.',
-                    'data' => $data,
-                );
-            } else {
-                $response = array(
-                    'status' => 0,
-                    'message' => 'Spot sent does not exist'
-                );
-            }
-        } else {
-            $response = array(
-                'status' => 0,
-                'message' => 'Please provide required data(finsish_option, sent_via_method).'
-            );
-        }
-
-        if ($response['status'] == 0) {
-            $this->getResponse()->setStatusCode(400);
-        }
-
-        return new JsonModel($response);
-    }
-
-    public function delete($id)
-    {
-        $spotSent = $this->_spotSentRepository->find($id);
-
-        if ($spotSent) {
-            $this->_em->remove($spotSent);
-            $this->_em->flush();
-
-            $response = array(
-                'status' => 1,
-                'message' => 'Request successful.'
-            );
-        } else {
-            $response = array(
-                'status' => 0,
-                'message' => 'Spot not found.'
-            );
-        }
-
-        if ($response['status'] == 0) {
-            $this->getResponse()->setStatusCode(400);
-        }
-
-        return new JsonModel($response);
-    }
-
     private function getSingle($requestId)
     {
         $searchResult = $this->_spotRepo->searchSpotSent(array(
@@ -620,5 +436,69 @@ class SpotSentController extends CustomAbstractActionController
 
         return $result;
 
+    }
+
+    private function filterSpotVersionData($projectId, $spotVersionData)
+    {
+        // process spot version data
+        foreach ($spotVersionData as &$sv) {
+            // check if spot id is present
+            if (empty($sv['spot_version_id']) && (empty($sv['spot_id']) || empty(['verion_id']))) {
+                continue;
+            }
+
+            if (!empty($sv['spot_version_id']) && (int)$sv['spot_version_id']) {
+                $spotVersion = $this->_spotVersionRepository->find((int)$sv['spot_version_id']);
+
+                if ($spotVersion) {
+                    $sv['spot_id'] = $spotVersion->getSpotId();
+                    $sv['version_id'] = $spotVersion->getVersionId();
+                }
+            } else {
+                $sv['spot_version_id'] = null;
+            }
+
+            if (!empty($sv['spot_id']) && !empty($sv['version_id'])) {
+                $spotVersion = $this->_spotVersionRepository->findOneBy(array('spotId' => (int)$sv['spot_id'], 'versionId' => (int)$sv['version_id']));
+
+                if ($spotVersion) {
+                    $sv['spot_version_id'] = $spotVersion->getId();
+                }
+            }
+
+            if (!empty($sv['campaign_id']) && $projectId) {
+                $projectCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectId, 'campaignId' => $sv['campaign_id']));
+
+                if ($projectCampaign) {
+                    $sv['project_id'] = $projectCampaign->getProjectId();
+                    $sv['project_campaign_id'] = $projectCampaign->getId();
+                } else {
+                    $sv['project_id'] = $projectId;
+                    $sv['project_campaign_id'] = null;
+                }
+            } else if (!empty($sv['project_campaign_id'])) {
+                $projectCampaign = $this->_projectToCamapignReposivoty->findOne($sv['project_campaign_id']);
+
+                if ($projectCampaign) {
+                    $sv['project_id'] = $projectCampaign->getProjectId();
+                    $sv['campaign_id'] = $projectCampaign->getCampaignId();
+                }
+            } else {
+                $sv['project_id'] = $projectId;
+                $sv['campaign_id'] = null;
+                $sv['project_campaign_id'] = null;
+            }
+
+            if (!empty($sv['editors']) && is_array($sv['editors'])) {
+                $sv['editors_string'] = $this->arrayToCommanSeparated($sv['editors']);
+            } else {
+                $sv['editors_string'] = null;
+            }
+
+            $sv['spot_resend'] = (!empty($sv['spot_resend'])) ? 1 : 0;
+            $sv['finish_request'] = (!empty($sv['finish_request'])) ? 1 : 0;
+        }
+
+        return $spotVersionData;
     }
 }
