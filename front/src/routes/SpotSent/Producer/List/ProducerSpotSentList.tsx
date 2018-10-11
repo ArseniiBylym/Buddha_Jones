@@ -25,10 +25,7 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
 
     @computed
     private get essentialDataIsLoading(): boolean {
-        if (SpotSentStore && SpotSentStore.spotSentAllSpotsLoading) {
-            return SpotSentStore.spotSentAllSpotsLoading;
-        }
-        return true;
+        return SpotSentStore.spotSentAllSpotsLoading;
     }
 
     public componentDidMount() {
@@ -45,23 +42,23 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
     }
 
     public render() {
-        return this.essentialDataIsLoading === false ? (
+        return this.essentialDataIsLoading === true ? (
+            <>
+                {this.getTableWithLoadingSpinner()}
+            </>
+        ) : (SpotSentStore.spotSentAllSpots && SpotSentStore.spotSentAllSpots.length > 0) ? (
             <Section
                 noSeparator={true}
                 title="Spots sent"
             >
                 {this.getTableWithData()}
             </Section>
-        ) : (SpotSentStore.spotSentAllSpots && SpotSentStore.spotSentAllSpots.length) === 0 ? (
-            <Paragraph type="dim">No spots sent exist yet.</Paragraph>
         ) : (
-            <>
-                {this.getTableWithLoadingSpinner()}
-            </>
+            <Paragraph type="dim">No spots sent exist yet.</Paragraph>
         );
     }
 
-    private handleCreateSpotSentReport = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleCreateSpotSentReport = (e: React.MouseEvent<HTMLButtonElement>): void => {
         history.push('/portal/studio/producer-spot-sent/report');
     };
 

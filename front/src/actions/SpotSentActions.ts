@@ -30,37 +30,37 @@ export class SpotSentActionsClass {
                         let spotItem: SpotSentAllSpotsSentSpotData = {
                             project : {
                                 id : spot.projectId,
-                                name : spot.projectName,
+                                name : (spot.projectName) ? spot.projectName : 'N/A',
                                 title : 'Project'
                             },
                             campaign : {
                                 id : data.campaignId,
-                                name : data.campaignName,
+                                name : (data.campaignName) ? data.campaignName : 'N/A',
                                 title : 'Campaign'
                             },
                             spot : {
                                 id : data.spotId,
-                                name : data.spotName,
+                                name : (data.spotName) ? data.spotName : 'N/A',
                                 title : 'Spot'
                             },
                             version : {
                                 id : data.versionId,
-                                name : data.versionName,
+                                name : (data.versionName) ? data.versionName : 'N/A',
                                 title : 'Version'
                             },
                             finishRequest : {
                                 id : data.finishRequest,
-                                name : data.finishRequest,
+                                name : (data.finishRequest === 1) ? 'YES' : 'NO',
                                 title : 'Finish request'
                             },
                             status : {
                                 id : spot.statusId,
-                                name : spot.statusName,
+                                name : (spot.statusName) ? spot.statusName : 'N/A',
                                 title : 'Status'
                             },
                             changed : {
                                 id : (spot.updatedAt && spot.updatedAt.date) ? spot.updatedAt.date : null,
-                                name : (spot.updatedAt && spot.updatedAt.date) ? spot.updatedAt.date : '',
+                                name : (spot.updatedAt && spot.updatedAt.date) ? spot.updatedAt.date : 'N/A',
                                 title : 'Changed'
                             }
                         };
