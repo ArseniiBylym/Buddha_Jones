@@ -245,6 +245,7 @@ class SpotSentController extends CustomAbstractActionController
 
                 $sv['spot_resend'] = (!empty($sv['spot_resend'])) ? 1 : 0;
                 $sv['finish_request'] = (!empty($sv['finish_request'])) ? 1 : 0;
+                $sv['line_status_id'] = $this->_commonRepo->filterPostData($sv, 'line_status_id', 'int', 1);
             }
         }
 
@@ -289,6 +290,7 @@ class SpotSentController extends CustomAbstractActionController
                 $spotSent->setEditor($svd['editors_string']);
                 $spotSent->setSpotResend($svd['spot_resend']);
                 $spotSent->setFinishRequest($svd['finish_request']);
+                $spotSent->setLineStatusId($svd['line_status_id']);
 
                 if ($isUpdate) {
                     $spotSent->setCreatedAt($existingSpotSent->getCreatedAt());

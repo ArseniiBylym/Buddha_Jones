@@ -419,7 +419,9 @@ class SpotRepository extends EntityRepository
                     v.versionName,
                     sc.spotVersionId,
                     sc.finishRequest,
-                    sc.spotResend
+                    sc.spotResend,
+                    sc.lineStatusId,
+                    st.status AS lineStatus
                 FROM \Application\Entity\RediSpotSent sc
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id = sc.campaignId
@@ -427,6 +429,8 @@ class SpotRepository extends EntityRepository
                     WITH s.id = sc.spotId
                 LEFT JOIN \Application\Entity\RediVersion v
                     WITH v.id = sc.versionId
+                LEFT JOIN \Application\Entity\RediStatus st
+                    WITH st.id = sc.lineStatusId
                 WHERE sc.requestId = :request_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
