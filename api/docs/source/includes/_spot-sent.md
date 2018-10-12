@@ -806,7 +806,7 @@ Required | Parameter | Type | Default | Description
 false | finish_option | string| null | Sent finish option, json encoded ids of parent and client, like "{"parent":1,"child":2}"
 false | notes | string | null | Notes
 false | status | string | null | Status id 
-false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"campaign_id":4,"spot_version_id":40,"editors":[12,4,5,3,4],"spot_resend":0,"finish_request":1},{"spot_version_id":99,"editors":[1,3,2]}]) .  for each element send either (spot_id, version_id) or just send spot_version_id,  also need to send campaign_id (or you can send project_campaign_id). spot_resend, finish_request are boolean - send 0/1
+false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"campaign_id":4,"spot_version_id":40,"editors":[12,4,5,3,4],"spot_resend":1,"finish_request":0,"line_status_id":3},{"campaign_id":2,"spot_id":99,"version_id":2,"editors":[1,3,2],"spot_resend":0,"finish_request":1}]) .  for each element send either (spot_id, version_id) or just send spot_version_id,  also need to send campaign_id (or you can send project_campaign_id). spot_resend, finish_request are boolean - send 0/1
 false | full_lock | int | 0 | send 0/1
 false | deadline | date | null | deadline date in Y-M-D format (2018-03-09)
 false | finishing_house | string | null | Finishing house id
@@ -880,7 +880,7 @@ axios.put('/spot-sent/1', {
 
 `PUT /spot-sent/:spot_sent_id`
 
-### Query Parameters
+### Parameters
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
@@ -888,7 +888,7 @@ false | sent_via_method | string| null | Sent via method id. json encoded array 
 false | finish_option | string| null | Sent finish option, json encoded ids of parent and client, like "{"parent":1,"child":2}"
 false | notes | string | null | Notes
 false | status | string | null | Status id 
-false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"campaign_id":4,"spot_version_id":40,"editors":[12,4,5,3,4],"spot_resend":0,"finish_request":1},{"spot_version_id":99,"editors":[1,3,2]}]) .  for each element send either (spot_id, version_id) or just send spot_version_id,  also need to send campaign_id (or you can send project_campaign_id). spot_resend, finish_request are boolean - send 0/1
+false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"campaign_id":4,"spot_version_id":40,"editors":[12,4,5,3,4],"spot_resend":1,"finish_request":0,"line_status_id":3},{"campaign_id":2,"spot_id":99,"version_id":2,"editors":[1,3,2],"spot_resend":0,"finish_request":1}]) .  for each element send either (spot_id, version_id) or just send spot_version_id,  also need to send campaign_id (or you can send project_campaign_id). spot_resend, finish_request are boolean - send 0/1
 false | full_lock | int | 0 | send 0/1
 false | deadline | date | null | deadline date in Y-M-D format (2018-03-09)
 false | finishing_house | string | null | Finishing house id
@@ -910,6 +910,7 @@ false | graphics_finish | int | 0 | send 0/1
 false | gfx_finish | int | 0 | send 0/1
 false | customer_contact | string| null | customer contact ids json encoded array ids like "[1,2,3,4]"
 
+**In update send all data, full dataset is requred as prevoius entry will be deleted and new entry will be created in db**
 
 ## Get all finishing house
 

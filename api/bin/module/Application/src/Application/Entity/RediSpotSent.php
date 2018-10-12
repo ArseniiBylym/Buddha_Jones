@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * RediSpotSent
  *
- * @ORM\Table(name="redi_spot_sent")
+ * @ORM\Table(name="redi_spot_sent", indexes={@ORM\Index(name="request_id", columns={"request_id"})})
  * @ORM\Entity
  */
 class RediSpotSent
@@ -258,6 +258,13 @@ class RediSpotSent
      * @ORM\Column(name="spot_version_id", type="integer", nullable=true)
      */
     private $spotVersionId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="line_status_id", type="integer", nullable=true)
+     */
+    private $lineStatusId;
 
     /**
      * @var integer
@@ -1079,6 +1086,29 @@ class RediSpotSent
     public function getSpotVersionId()
     {
         return $this->spotVersionId;
+    }
+
+    /**
+     * Set lineStatusId
+     *
+     * @param integer $lineStatusId
+     * @return RediSpotSent
+     */
+    public function setLineStatusId($lineStatusId)
+    {
+        $this->lineStatusId = $lineStatusId;
+
+        return $this;
+    }
+
+    /**
+     * Get lineStatusId
+     *
+     * @return integer 
+     */
+    public function getLineStatusId()
+    {
+        return $this->lineStatusId;
     }
 
     /**
