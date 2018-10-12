@@ -215,6 +215,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 onSpotResendToggle={this.handleSpotResendToggle(spotIndex)}
                                 onSpotRemove={this.handleSpotRemove(spotIndex)}
                                 onSpotChange={this.handleSpotChange(spotIndex)}
+                                onFinishingRequestToggle={this.handleFinishingRequestToggle(spotIndex)}
                                 onEditorAdd={this.handleSpotAddingEditor(spotIndex)}
                                 project={this.values.project ? this.values.project.selectedProject : null}
                                 clientId={this.values.project ? this.values.project.clientId : null}
@@ -286,12 +287,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     </Section>
 
                     <Section title="Finish Request">
-                        <Checkmark
-                            onClick={this.showHideFinishingTypeSection}
-                            checked={this.isFinishingTypeSectionOpen}
-                            label={'Show details'}
-                            type={'no-icon'}
-                        />
                         <AnimateHeight
                             height={(this.isFinishingTypeSectionOpen) ? 'auto' : 0}
                         >
@@ -568,6 +563,11 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         this.values.spots[spotIndex].isResend = checked;
     };
 
+    private handleFinishingRequestToggle = (spotIndex: number) => (checked: boolean) =>  {
+        this.values.spots[spotIndex].isFinishingRequest = checked;
+        this.isFinishingTypeSectionOpen = this.values.spots.some(spot => spot.isFinishingRequest === true);
+    };
+
     private handleSpotRemove = (spotIndex: number) => (e: React.MouseEvent<HTMLButtonElement>) => {
         this.values.spots = [...this.values.spots.slice(0, spotIndex), ...this.values.spots.slice(spotIndex + 1)];
     };
@@ -633,6 +633,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             version: null,
             isResend: false,
             selectedEditorsIds: [],
+            isFinishingRequest: false
         };
     }
 
@@ -772,10 +773,10 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         this.finishingOptionChildId = 1;
     };
 
-    @action
+/*    @action
     private showHideFinishingTypeSection = (): void =>  {
         this.isFinishingTypeSectionOpen = !this.isFinishingTypeSectionOpen;
-    };
+    };*/
 
     @action
     private handleFinishingTypeChildSelect = (finishingOptionChildId: number | null): void => {

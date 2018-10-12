@@ -19,6 +19,7 @@ interface ProducerSpotSentFormSpotCardProps {
     onSpotResendToggle: (checked: boolean) => void;
     onSpotRemove: (e: React.MouseEvent<HTMLButtonElement>) => void;
     onSpotChange: (values: ProjectPickerValues | null) => void;
+    onFinishingRequestToggle: (checked: boolean) => void;
     onEditorAdd: (id: number) => void;
     project: ProjectPickerGroupValues | null;
     clientId: number | null;
@@ -87,6 +88,14 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                 subTitle="Spot sent"
                 isExpandable={false}
                 headerElements={[
+                    <Checkmark
+                        key="finishing-request-checkmark"
+                        onClick={this.props.onFinishingRequestToggle}
+                        checked={this.props.spot.isFinishingRequest}
+                        label="Finishing Request"
+                        labelOnLeft={true}
+                        type={'no-icon'}
+                    />,
                     <Checkmark
                         key="spot-resend-checkmark"
                         onClick={this.props.onSpotResendToggle}

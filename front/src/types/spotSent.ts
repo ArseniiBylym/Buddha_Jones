@@ -6,6 +6,7 @@ export interface SpotSentSpot {
     version: ProjectPickerGroupValues | null;
     isResend: boolean;
     selectedEditorsIds: number[];
+    isFinishingRequest: boolean;
 }
 
 export interface SentViaOption {
