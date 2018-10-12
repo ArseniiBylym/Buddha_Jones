@@ -137,7 +137,7 @@ class SpotRepository extends EntityRepository
                 "requestId",
                 "projectId",
                 "fullLock",
-                "sentViaMethod",
+                // "sentViaMethod",
                 "finishOption",
                 "notes",
                 "deadline",
@@ -191,17 +191,14 @@ class SpotRepository extends EntityRepository
         $dql = "SELECT 
                 " . $columnString . ",
                 uc.firstName AS createdByFirstName, uc.lastName AS createdByLastName,
-                uu.firstName AS updatedByFirstName, uu.lastName AS updatedByLastName,
-                st.status AS statusName
+                uu.firstName AS updatedByFirstName, uu.lastName AS updatedByLastName
                 FROM \Application\Entity\RediSpotSent sc
                 LEFT JOIN \Application\Entity\RediUser uc
                     WITH uc.id = sc.createdBy
                 LEFT JOIN \Application\Entity\RediUser uu
                     WITH uu.id = sc.updatedBy
                 LEFT JOIN \Application\Entity\RediCampaign c
-                    WITH c.id = sc.campaignId 
-                LEFT JOIN \Application\Entity\RediStatus st
-                    WITH st.id = sc.statusId";
+                    WITH c.id = sc.campaignId  ";
 
         $dqlFilter = [];
 
@@ -253,6 +250,12 @@ class SpotRepository extends EntityRepository
         $finishingOptions = $this->getSpotSentOption('finishing_option');
         $audioOptions = $this->getSpotSentOption('audio_option');
         $delToClientOption = $this->getSpotSentOption('delivery_to_client_option');
+        $allStatus = $this->getSpotSentOption('status');
+        $allStatusArray = array();
+
+        foreach ($allStatus as $row) {
+            $allStatusArray[$row['id']] = $row;
+        }
 
         foreach ($result as &$row) {
             $row['requestId'] = (int)$row['requestId'];
@@ -260,6 +263,10 @@ class SpotRepository extends EntityRepository
             $row['statusId'] = (int)$row['statusId'];
             $row['createdByUser'] = trim($row['createdByFirstName'] . ' ' . $row['createdByLastName']);
             $row['updatedByUser'] = trim($row['updatedByFirstName'] . ' ' . $row['updatedByLastName']);
+            $row['statusName'] = (!empty($row['statusId'])
+                && !empty($allStatusArray[$row['statusId']]['name']))
+                ? $allStatusArray[$row['statusId']]['name']
+                : null;
 
             unset($row['createdByFirstName']);
             unset($row['createdByLastName']);
@@ -269,16 +276,23 @@ class SpotRepository extends EntityRepository
             $row['spotData'] = $this->getSpotVersionDataByRequestId($row['requestId']);
 
             if (!empty($filter['details'])) {
-                if (!empty($row['sentViaMethod'])) {
-                    $methodIds = explode(',', $row['sentViaMethod']);
+                foreach ($row['spotData'] as &$spotDataRow) {
+                    if (!empty($spotDataRow['sentViaMethod'])) {
+                        $methodIds = explode(',', $spotDataRow['sentViaMethod']);
 
-                    if (count($methodIds)) {
-                        $methodIds = array_map('trim', $methodIds);
+                        if (count($methodIds)) {
+                            $methodIds = array_map('trim', $methodIds);
 
-                        $row['sentViaMethodList'] = array_values(array_filter($methodes, function ($method) use ($methodIds) {
-                            return in_array($method['id'], $methodIds);
-                        }));
+                            $spotDataRow['sentViaMethodList'] = array_values(array_filter($methodes, function ($method) use ($methodIds) {
+                                return in_array($method['id'], $methodIds);
+                            }));
+                        }
                     }
+
+                    $spotDataRow['lineStatusName'] = (!empty($spotDataRow['lineStatusId'])
+                        && !empty($allStatusArray[$spotDataRow['lineStatusId']]['name']))
+                        ? $allStatusArray[$spotDataRow['lineStatusId']]['name']
+                        : null;
                 }
 
                 if (!empty($row['finishOption'])) {
@@ -418,10 +432,10 @@ class SpotRepository extends EntityRepository
                     sc.versionId,
                     v.versionName,
                     sc.spotVersionId,
+                    sc.sentViaMethod,
                     sc.finishRequest,
                     sc.spotResend,
-                    sc.lineStatusId,
-                    st.status AS lineStatus
+                    sc.lineStatusId
                 FROM \Application\Entity\RediSpotSent sc
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id = sc.campaignId
@@ -429,8 +443,6 @@ class SpotRepository extends EntityRepository
                     WITH s.id = sc.spotId
                 LEFT JOIN \Application\Entity\RediVersion v
                     WITH v.id = sc.versionId
-                LEFT JOIN \Application\Entity\RediStatus st
-                    WITH st.id = sc.lineStatusId
                 WHERE sc.requestId = :request_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -444,6 +456,7 @@ class SpotRepository extends EntityRepository
             $row['spotId'] = (int)$row['spotId'];
             $row['versionId'] = (int)$row['versionId'];
             $row['spotVersionId'] = (int)$row['spotVersionId'];
+            $row['lineStatusId'] = (int)$row['lineStatusId'];
         }
 
         return $result;

@@ -147,11 +147,14 @@ class CommonRepository extends EntityRepository
             case 'datetime':
                 $value = $this->formatDateForInsert($value);
                 break;
+            case 'array':
+                $value = is_array($value) ? $value : array();
+                break;
             default:
                 $value = trim($value);
         }
 
-        if($value && $type === 'json') {
+        if ($value && $type === 'json') {
             $value = (array)json_decode($value, true);
         }
 
