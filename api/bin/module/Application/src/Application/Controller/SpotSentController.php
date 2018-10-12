@@ -164,13 +164,13 @@ class SpotSentController extends CustomAbstractActionController
 
         $deliveryToClient = $this->_commonRepo->filterPostData($data, 'delivery_to_client', 'json');
         $audio = $this->_commonRepo->filterPostData($data, 'audio', 'json');
-        $sentViaMethod = $this->_commonRepo->filterPostData($data, 'sent_via_method', 'json');
+        // $sentViaMethod = $this->_commonRepo->filterPostData($data, 'sent_via_method', 'json');
         $finishOption = $this->_commonRepo->filterPostData($data, 'finish_option', 'json');
         $spotVersionData = $this->_commonRepo->filterPostData($data, 'spot_version', 'json');
         $customerContact = $this->_commonRepo->filterPostData($data, 'customer_contact', 'json');
 
         // array to commaseparated string
-        $sentViaMethod = $this->arrayToCommanSeparated($sentViaMethod);
+        // $sentViaMethod = $this->arrayToCommanSeparated($sentViaMethod);
         $finishOption = $this->arrayToCommanSeparated($finishOption, true);
         $audio = $this->arrayToCommanSeparated($audio);
         $deliveryToClient = $this->arrayToCommanSeparated($deliveryToClient, true);
@@ -246,10 +246,11 @@ class SpotSentController extends CustomAbstractActionController
                 $sv['spot_resend'] = (!empty($sv['spot_resend'])) ? 1 : 0;
                 $sv['finish_request'] = (!empty($sv['finish_request'])) ? 1 : 0;
                 $sv['line_status_id'] = $this->_commonRepo->filterPostData($sv, 'line_status_id', 'int', 1);
+                $sentViaMethod = $this->_commonRepo->filterPostData($sv, 'sent_via_method', 'array', array());
+                $sv['sent_via_method'] = $this->arrayToCommanSeparated($sentViaMethod);
             }
         }
 
-        // var_dump($spotVersionData); exit;
         if (($sentViaMethod || $finishOption) && is_array($spotVersionData)) {
             $requestId = $requestId ? $requestId : $this->_spotRepo->getNextSpotSentRequestId();
             $now = new \DateTime('now');
@@ -262,7 +263,6 @@ class SpotSentController extends CustomAbstractActionController
                 $spotSent->setCampaignId($svd['campaign_id']);
                 $spotSent->setProjectCampaignId($svd['project_campaign_id']);
                 $spotSent->setFullLock($fullLock);
-                $spotSent->setSentViaMethod($sentViaMethod);
                 $spotSent->setDeadline($deadline);
                 $spotSent->setFinishingHouse($finishingHouse);
                 $spotSent->setFramerate($framerate);
@@ -291,6 +291,7 @@ class SpotSentController extends CustomAbstractActionController
                 $spotSent->setSpotResend($svd['spot_resend']);
                 $spotSent->setFinishRequest($svd['finish_request']);
                 $spotSent->setLineStatusId($svd['line_status_id']);
+                $spotSent->setSentViaMethod($svd['sent_via_method']);
 
                 if ($isUpdate) {
                     $spotSent->setCreatedAt($existingSpotSent->getCreatedAt());
@@ -397,7 +398,7 @@ class SpotSentController extends CustomAbstractActionController
 
         $data['deliveryToClient'] = $this->commaSeparatedToArray($data['deliveryToClient'], true);
         $data['audio'] = $this->commaSeparatedToArray($data['audio']);
-        $data['sentViaMethod'] = $this->commaSeparatedToArray($data['sentViaMethod']);
+        // $data['sentViaMethod'] = $this->commaSeparatedToArray($data['sentViaMethod']);
         $data['finishOption'] = $this->commaSeparatedToArray($data['finishOption'], true);
         $data['customerContact'] = $this->commaSeparatedToArray($data['customerContact']);
 

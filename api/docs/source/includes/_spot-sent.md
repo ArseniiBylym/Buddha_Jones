@@ -633,105 +633,157 @@ Get single spot sent entry.
 ```json
 {
     "status": 1,
-    "message": "Request successful",
+    "message": "Request successful.",
     "data": {
-        "id": 4,
-        "projectId": 1,
+        "requestId": 35,
+        "projectId": 47,
         "fullLock": 1,
-        "sentViaMethod": "3,4,5",
-        "finishOption": "1,2,3",
+        "finishOption": {
+            "parent": 2,
+            "child": 3
+        },
         "notes": "some note",
-        "deadline": "9/3/2018",
-        "finishingHouse": "test finishing house",
-        "framerateId": 11,
-        "framerateNote": "test note 1",
-        "rasterSizeId": 22,
-        "rasterSizeNote": "some noe 222",
-        "musicCueSheet": 1,
-        "audioPrep": 1,
-        "videoPrep": 1,
-        "specNote": "some note",
-        "specSheetFile": "[\"file 1.jpg\",\"file2.jpg\"]",
-        "tagChart": null,
-        "deliveryToClientId": 8,
-        "deliveryNote": "some note",
-        "statusId": 2,
-        "createdBy": 1,
-        "updatedBy": null,
-        "createdAt": {
-            "date": "2018-08-05 18:30:21.000000",
+        "deadline": {
+            "date": "2018-03-09 00:00:00.000000",
             "timezone_type": 3,
             "timezone": "US/Eastern"
         },
-        "projectSpotVersion": [],
-        "sentViaMethodList": [
-            {
-                "id": 3,
-                "name": "Wiredrive",
-                "sort": 3
-            },
-            {
-                "id": 4,
-                "name": "Hard Drive / Physical",
-                "sort": 4
-            },
-            {
-                "id": 5,
-                "name": "Post",
-                "sort": 5
-            }
+        "finishingHouse": 2,
+        "framerate": "29.97i",
+        "framerateNote": "test note 1",
+        "rasterSize": "1x1",
+        "rasterSizeNote": "some noe 222",
+        "musicCueSheet": 1,
+        "gfxFinish": 1,
+        "audioPrep": 1,
+        "audio": [
+            1,
+            2,
+            5,
+            4
         ],
-        "finishOptionList": [
+        "audioNote": "",
+        "videoPrep": 1,
+        "graphicsFinish": 1,
+        "specNote": "some note",
+        "specSheetFile": null,
+        "tagChart": null,
+        "deliveryToClient": {
+            "parent": 2,
+            "child": 1
+        },
+        "deliveryNote": "some note",
+        "spotResend": 1,
+        "statusId": 2,
+        "editor": "12,4,5,3,4",
+        "customerContact": [
+            2,
+            4,
+            6
+        ],
+        "createdBy": 1,
+        "updatedBy": null,
+        "createdAt": {
+            "date": "2018-10-12 17:30:57.000000",
+            "timezone_type": 3,
+            "timezone": "US/Eastern"
+        },
+        "updatedAt": null,
+        "createdByUser": "Demo User",
+        "updatedByUser": "",
+        "statusName": "Producer final",
+        "spotData": [
             {
-                "id": 1,
-                "name": "OOH Finish Prep",
-                "sort": 1,
-                "children": [
+                "campaignId": 4,
+                "campaignName": "(:30) TV",
+                "projectCampaignId": 156,
+                "spotId": 97,
+                "spotName": "Water",
+                "versionId": 6,
+                "versionName": "2",
+                "spotVersionId": 40,
+                "sentViaMethod": null,
+                "finishRequest": 0,
+                "spotResend": 1,
+                "lineStatusId": 2,
+                "lineStatusName": "Producer final"
+            },
+            {
+                "campaignId": 2,
+                "campaignName": "Trailer",
+                "projectCampaignId": 157,
+                "spotId": 99,
+                "spotName": "eau",
+                "versionId": 2,
+                "versionName": "1A",
+                "spotVersionId": 0,
+                "sentViaMethod": "1,2,4",
+                "finishRequest": 1,
+                "spotResend": 0,
+                "lineStatusId": 1,
+                "sentViaMethodList": [
                     {
-                        "id": 3,
-                        "name": "Theatrical",
+                        "id": 1,
+                        "name": "Fiber/Flex",
                         "sort": 1
                     },
                     {
-                        "id": 4,
-                        "name": "TV Streaming",
+                        "id": 2,
+                        "name": "Post",
                         "sort": 2
+                    },
+                    {
+                        "id": 4,
+                        "name": "Internal Link",
+                        "sort": 4
                     }
-                ]
-            },
+                ],
+                "lineStatusName": "Producer draft"
+            }
+        ],
+        "finishOptionList": {
+            "id": 2,
+            "name": "In-House Finish",
+            "sort": 2,
+            "children": [
+                {
+                    "id": 3,
+                    "name": "Games",
+                    "sort": 3
+                }
+            ]
+        },
+        "audioList": [
             {
-                "id": 3,
-                "name": "Theatrical",
-                "sort": 1
+                "id": 1,
+                "name": "Broadcast Stereo"
             },
             {
                 "id": 2,
-                "name": "In-House Finish",
-                "sort": 2,
-                "children": [
-                    {
-                        "id": 3,
-                        "name": "Theatrical",
-                        "sort": 1
-                    },
-                    {
-                        "id": 4,
-                        "name": "TV Streaming",
-                        "sort": 2
-                    },
-                    {
-                        "id": 5,
-                        "name": "Games",
-                        "sort": 3
-                    }
-                ]
+                "name": "Broadcast 5.1"
             },
             {
-                "id": 3,
-                "name": "Theatrical",
-                "sort": 1
+                "id": 4,
+                "name": "Event Stereo"
+            },
+            {
+                "id": 5,
+                "name": "Event 5.1"
             }
-        ]
+        ],
+        "deliveryToClientList": {
+            "id": 2,
+            "name": "TV/Streaming",
+            "sort": 1,
+            "children": [
+                {
+                    "id": 1,
+                    "name": "Wiredrive",
+                    "sort": 1
+                }
+            ]
+        },
+        "projectName": "Annihilation"
     }
 }
 ```
@@ -802,11 +854,10 @@ axios.post('/spot-sent', {
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true** | sent_via_method | string| null | Sent via method id. json encoded array ids like "[1,2,3,4]"
+**true** | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [[{"campaign_id":4,"spot_version_id":40,"editors":[12,4,5,3,4],"spot_resend":1,"finish_request":0,"line_status_id":2},{"campaign_id":2,"spot_id":99,"version_id":2,"editors":[1,3,2],"spot_resend":0,"finish_request":1,"sent_via_method":[1,2,4]}]) .  for each element send either (spot_id, version_id) or just send spot_version_id,  also need to send campaign_id (or you can send project_campaign_id). spot_resend, finish_request are boolean - send 0/1
 false | finish_option | string| null | Sent finish option, json encoded ids of parent and client, like "{"parent":1,"child":2}"
 false | notes | string | null | Notes
 false | status | string | null | Status id 
-false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"campaign_id":4,"spot_version_id":40,"editors":[12,4,5,3,4],"spot_resend":1,"finish_request":0,"line_status_id":3},{"campaign_id":2,"spot_id":99,"version_id":2,"editors":[1,3,2],"spot_resend":0,"finish_request":1}]) .  for each element send either (spot_id, version_id) or just send spot_version_id,  also need to send campaign_id (or you can send project_campaign_id). spot_resend, finish_request are boolean - send 0/1
 false | full_lock | int | 0 | send 0/1
 false | deadline | date | null | deadline date in Y-M-D format (2018-03-09)
 false | finishing_house | string | null | Finishing house id
@@ -829,8 +880,11 @@ false | gfx_finish | int | 0 | send 0/1
 false | customer_contact | string| null | customer contact ids json encoded array ids like "[1,2,3,4]"
 
 
+## spot_sent array form above has follwoing params
 
-## Create Spot Sent 
+campaign_id, spot_version_id, editors, spot_resend, finish_request, line_status_id, sent_via_method
+
+## Update Spot Sent 
 
 Create a new spot sent entry.
 
@@ -884,11 +938,10 @@ axios.put('/spot-sent/1', {
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-false | sent_via_method | string| null | Sent via method id. json encoded array ids like "[1,2,3,4]"
+**true** | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [[{"campaign_id":4,"spot_version_id":40,"editors":[12,4,5,3,4],"spot_resend":1,"finish_request":0,"line_status_id":2},{"campaign_id":2,"spot_id":99,"version_id":2,"editors":[1,3,2],"spot_resend":0,"finish_request":1,"sent_via_method":[1,2,4]}]) .  for each element send either (spot_id, version_id) or just send spot_version_id,  also need to send campaign_id (or you can send project_campaign_id). spot_resend, finish_request are boolean - send 0/1
 false | finish_option | string| null | Sent finish option, json encoded ids of parent and client, like "{"parent":1,"child":2}"
 false | notes | string | null | Notes
 false | status | string | null | Status id 
-false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id,  like: [{"campaign_id":4,"spot_version_id":40,"editors":[12,4,5,3,4],"spot_resend":1,"finish_request":0,"line_status_id":3},{"campaign_id":2,"spot_id":99,"version_id":2,"editors":[1,3,2],"spot_resend":0,"finish_request":1}]) .  for each element send either (spot_id, version_id) or just send spot_version_id,  also need to send campaign_id (or you can send project_campaign_id). spot_resend, finish_request are boolean - send 0/1
 false | full_lock | int | 0 | send 0/1
 false | deadline | date | null | deadline date in Y-M-D format (2018-03-09)
 false | finishing_house | string | null | Finishing house id
