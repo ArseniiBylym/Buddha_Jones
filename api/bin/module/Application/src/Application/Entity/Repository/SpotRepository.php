@@ -275,6 +275,13 @@ class SpotRepository extends EntityRepository
 
             $row['spotData'] = $this->getSpotVersionDataByRequestId($row['requestId']);
 
+            foreach ($row['spotData'] as &$spotDataRow) {
+                $spotDataRow['lineStatusName'] = (!empty($spotDataRow['lineStatusId'])
+                    && !empty($allStatusArray[$spotDataRow['lineStatusId']]['name']))
+                    ? $allStatusArray[$spotDataRow['lineStatusId']]['name']
+                    : null;
+            }
+
             if (!empty($filter['details'])) {
                 foreach ($row['spotData'] as &$spotDataRow) {
                     if (!empty($spotDataRow['sentViaMethod'])) {
@@ -288,11 +295,6 @@ class SpotRepository extends EntityRepository
                             }));
                         }
                     }
-
-                    $spotDataRow['lineStatusName'] = (!empty($spotDataRow['lineStatusId'])
-                        && !empty($allStatusArray[$spotDataRow['lineStatusId']]['name']))
-                        ? $allStatusArray[$spotDataRow['lineStatusId']]['name']
-                        : null;
                 }
 
                 if (!empty($row['finishOption'])) {

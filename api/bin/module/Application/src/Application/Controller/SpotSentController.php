@@ -251,7 +251,6 @@ class SpotSentController extends CustomAbstractActionController
             }
         }
 
-        // var_dump($spotVersionData); exit;
         if (($sentViaMethod || $finishOption) && is_array($spotVersionData)) {
             $requestId = $requestId ? $requestId : $this->_spotRepo->getNextSpotSentRequestId();
             $now = new \DateTime('now');
