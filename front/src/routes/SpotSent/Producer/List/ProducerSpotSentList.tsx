@@ -10,6 +10,7 @@ import { LoadingSpinner } from '../../../../components/Loaders';
 import { Table, TableCell, TableRow } from '../../../../components/Table';
 import { Paragraph } from '../../../../components/Content';
 import { SpotSentAllSpotsSentSpotData } from '../../../../types/spotSent';
+import { Checkmark } from '../../../../components/Form';
 
 // Styles
 require('./ProducerSpotSentList.css');
@@ -78,50 +79,63 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
 
     private getTableWithData(): JSX.Element {
         if (SpotSentStore.spotSentAllSpots && SpotSentStore.spotSentAllSpots.length > 0) {
+            let tableHeaders: Array<{
+                title: string;
+                align?: 'left' | 'center' | 'right';
+            }> = [];
+            let tableColumnsWidths: string[] = [];
+            let spotTitles: string[] = Object.keys(SpotSentStore.spotSentAllSpots[0]);
+            spotTitles.map((objectKey: string, ind: number) => {
+                let columnsWidth: number = 100 / spotTitles.length;
+                tableHeaders.push({
+                    title: (SpotSentStore.spotSentAllSpots) ? SpotSentStore.spotSentAllSpots[0][objectKey].title : 'N/A',
+                    align: (ind === 0) ? 'left' : (ind === (spotTitles.length - 1)) ? 'right' : 'center'
+                });
+                tableColumnsWidths.push(Math.round(columnsWidth) + '%');
+            });
             let tableRowsArr: JSX.Element[] = SpotSentStore.spotSentAllSpots.map((spot: SpotSentAllSpotsSentSpotData, index: number) => {
-                return (
-                    <TableRow key={`spot-${index}`}>
-                        <TableCell align="left">
-                            {spot.project.name}
-                        </TableCell>
-                        <TableCell align="center">
-                            {spot.campaign.name}
-                        </TableCell>
-                        <TableCell align="center">
-                            {spot.spot.name}
-                        </TableCell>
-                        <TableCell align="center">
-                            {spot.version.name}
-                        </TableCell>
-                        <TableCell align="center">
-                            {spot.finishRequest.name}
-                        </TableCell>
-                        <TableCell align="center">
-                            {spot.status.name}
-                        </TableCell>
-                        <TableCell align="right">
-                            {spot.changed.name}
+                let tableCellsArr: JSX.Element[] = Object.keys(spot).map((objectKey: string, ind: number) => {
+                    let checkMark: JSX.Element = (
+                        <Checkmark
+                            checked={(spot[objectKey].name === 1) ? true : false}
+                            type={'no-icon'}
+                        />
+                    );
+                    let editButton: JSX.Element = (
+                        <>
+                            {spot[objectKey].name}
                             <ButtonEdit
                                 label="Edit"
                                 labelOnLeft={false}
                                 float="right"
                             />
+                        </>
+                    );
+                    return (
+                        <TableCell
+                            key={`${objectKey}-${ind}`}
+                            align={(ind === 0) ? 'left' : (ind === (Object.keys(spot).length - 1)) ? 'right' : 'center'}
+                        >
+                            {objectKey === 'finishRequest' ? (
+                                checkMark
+                            ) : objectKey === 'changed' ? (
+                                editButton
+                            ) : (
+                                spot[objectKey].name
+                            )}
                         </TableCell>
+                    );
+                });
+                return (
+                    <TableRow key={`spot-${index}`}>
+                        {tableCellsArr}
                     </TableRow>
                 );
             });
             return (
                 <Table
-                    header={[
-                        { title: 'Project', align: 'left' },
-                        { title: 'Campaign', align: 'center' },
-                        { title: 'Spot', align: 'center' },
-                        { title: 'Version', align: 'center' },
-                        { title: 'Finish Request', align: 'center' },
-                        { title: 'Status', align: 'center' },
-                        { title: 'Last update', align: 'right' },
-                    ]}
-                    columnsWidths={['14%', '14%', '14%', '14%', '14%', '14%', '14%']}
+                    header={tableHeaders}
+                    columnsWidths={tableColumnsWidths}
                 >
                     {tableRowsArr}
                 </Table>

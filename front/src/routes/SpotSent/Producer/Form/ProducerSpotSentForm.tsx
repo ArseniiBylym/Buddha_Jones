@@ -12,7 +12,7 @@ import { Section } from 'components/Section';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { Paragraph } from 'components/Content';
 import { ProducerSpotSentFormSpotCard } from '.';
-import { Checkmark, TextArea, Toggle } from 'components/Form';
+import { Checkmark, Input, TextArea, Toggle } from 'components/Form';
 import { ClientContact } from 'types/clients';
 import { LoadingIndicator } from 'components/Loaders';
 import { ToggleSideContent } from '../../../../components/Form';
@@ -286,10 +286,10 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         />
                     </Section>
 
-                    <Section title="Finish Request">
-                        <AnimateHeight
-                            height={(this.isFinishingTypeSectionOpen) ? 'auto' : 0}
-                        >
+                    <AnimateHeight
+                        height={(this.isFinishingTypeSectionOpen) ? 'auto' : 0}
+                    ><Section title="Finish Request">
+
                             <div style={{marginTop: '30px'}}>
                                 <div className={s.typeFinishingOptions}>
                                     {this.getTypeFinishingChildren()}
@@ -318,7 +318,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 <Checkmark
                                     onClick={() => { this.spotSentValues.full_lock = 1; }}
                                     checked={(this.spotSentValues.full_lock === 1) ? true : false}
-                                    label={'Hard Lock'}
+                                    label={'Full Lock'}
                                     type={'no-icon'}
                                 />
                             </div>
@@ -362,11 +362,9 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     </div>
                                     <div className={s.finishRequestSection}>
                                         <h3>Framerate Notes</h3>
-                                        <TextArea
+                                        <Input
                                             value={(this.spotSentValues.framerate_note) as string}
                                             label="Framerate Notes..."
-                                            width={1152}
-                                            height={82}
                                         />
                                     </div>
                                     <div className={s.finishRequestSection}>
@@ -375,17 +373,15 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     </div>
                                     <div className={s.finishRequestSection}>
                                         <h3>Raster Size Notes</h3>
-                                        <TextArea
+                                        <Input
                                             value={(this.spotSentValues.raster_size_note as string)}
                                             label="Raster Size Notes..."
-                                            width={1152}
-                                            height={82}
                                         />
                                     </div>
                                 </>
                             }
                             <div className={s.finishRequestSection}>
-                                <h3>Some title</h3>
+                                <h3>Additional Finishing needs</h3>
                                 {this.finishingOptionId === 2 &&
                                     <Checkmark
                                         onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'gfx_finish')}
@@ -423,19 +419,21 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     </>
                                 }
                             </div>
-                            <div className={s.finishRequestSection}>
-                                <h3>Audio</h3>
-                                {this.getAudioOptions()}
-                            </div>
-                            <div className={s.finishRequestSection}>
-                                <h3>Audio Notes</h3>
-                                <TextArea
-                                    value={(this.spotSentValues.audio_note) as string}
-                                    label="Audio Notes..."
-                                    width={1152}
-                                    height={82}
-                                />
-                            </div>
+                            {this.finishingOptionId === 2 &&
+                                <>
+                                    <div className={s.finishRequestSection}>
+                                        <h3>Audio</h3>
+                                        {this.getAudioOptions()}
+                                    </div>
+                                    <div className={s.finishRequestSection}>
+                                        <h3>Audio Notes</h3>
+                                        <Input
+                                            value={(this.spotSentValues.audio_note) as string}
+                                            label="Audio Notes..."
+                                        />
+                                    </div>
+                                </>
+                            }
                             {this.finishingOptionId === 2 && this.finishingOptionChildId === 2 &&
                                 <div className={s.finishRequestSection}>
                                     <h3>Tag chart</h3>
@@ -473,17 +471,15 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     </div>
                                     <div className={s.finishRequestSection}>
                                         <h3>Delivery Notes</h3>
-                                        <TextArea
+                                        <Input
                                             value={(this.spotSentValues.delivery_note) as string}
                                             label="Delivery Notes..."
-                                            width={1152}
-                                            height={82}
                                         />
                                     </div>
                                 </>
                             }
-                        </AnimateHeight>
                     </Section>
+                    </AnimateHeight>
 
                     <Section>
                         <div className={s.summary}>
