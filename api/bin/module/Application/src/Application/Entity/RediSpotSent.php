@@ -85,6 +85,20 @@ class RediSpotSent
     private $notes;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="internal_note", type="text", nullable=true)
+     */
+    private $internalNote;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="studio_note", type="text", nullable=true)
+     */
+    private $studioNote;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="deadline", type="datetime", nullable=true)
@@ -265,6 +279,13 @@ class RediSpotSent
      * @ORM\Column(name="line_status_id", type="integer", nullable=true)
      */
     private $lineStatusId;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="spot_sent_date", type="datetime", nullable=true)
+     */
+    private $spotSentDate;
 
     /**
      * @var integer
@@ -511,6 +532,52 @@ class RediSpotSent
     public function getNotes()
     {
         return $this->notes;
+    }
+
+    /**
+     * Set internalNote
+     *
+     * @param string $internalNote
+     * @return RediSpotSent
+     */
+    public function setInternalNote($internalNote)
+    {
+        $this->internalNote = $internalNote;
+
+        return $this;
+    }
+
+    /**
+     * Get internalNote
+     *
+     * @return string 
+     */
+    public function getInternalNote()
+    {
+        return $this->internalNote;
+    }
+
+    /**
+     * Set studioNote
+     *
+     * @param string $studioNote
+     * @return RediSpotSent
+     */
+    public function setStudioNote($studioNote)
+    {
+        $this->studioNote = $studioNote;
+
+        return $this;
+    }
+
+    /**
+     * Get studioNote
+     *
+     * @return string 
+     */
+    public function getStudioNote()
+    {
+        return $this->studioNote;
     }
 
     /**
@@ -1109,6 +1176,29 @@ class RediSpotSent
     public function getLineStatusId()
     {
         return $this->lineStatusId;
+    }
+
+    /**
+     * Set spotSentDate
+     *
+     * @param \DateTime $spotSentDate
+     * @return RediSpotSent
+     */
+    public function setSpotSentDate($spotSentDate)
+    {
+        $this->spotSentDate = $spotSentDate;
+
+        return $this;
+    }
+
+    /**
+     * Get spotSentDate
+     *
+     * @return \DateTime 
+     */
+    public function getSpotSentDate()
+    {
+        return $this->spotSentDate;
     }
 
     /**
