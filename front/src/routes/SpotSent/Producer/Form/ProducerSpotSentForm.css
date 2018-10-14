@@ -47,4 +47,7 @@
     &>label {
          margin: 6px 24px 6px 0;
      }
+    &>.sentViaMethodsContainer {
+        margin-top: 5px;
+     }
 }

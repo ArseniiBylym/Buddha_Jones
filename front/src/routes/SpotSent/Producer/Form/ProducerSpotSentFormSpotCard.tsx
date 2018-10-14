@@ -8,8 +8,10 @@ import { ProjectPicker, ProjectPickerGroupValues, ProjectPickerValues, PersonWit
 import { Paragraph } from 'components/Content';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { ProjectCampaignUserFromApi } from 'types/projectDetails';
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import { LoadingIndicator } from 'components/Loaders';
+import { SpotSentStore } from '../../../../store/AllStores';
+import { SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
 
 // Styles
 const s = require('./ProducerSpotSentForm.css');
@@ -20,6 +22,7 @@ interface ProducerSpotSentFormSpotCardProps {
     onSpotRemove: (e: React.MouseEvent<HTMLButtonElement>) => void;
     onSpotChange: (values: ProjectPickerValues | null) => void;
     onFinishingRequestToggle: (checked: boolean) => void;
+    onSentViaMethodChange: (methods: number[]) => void;
     onEditorAdd: (id: number) => void;
     project: ProjectPickerGroupValues | null;
     clientId: number | null;
@@ -35,6 +38,9 @@ type ProducerSpotSentFormSpotCardPropsTypes = ProducerSpotSentFormSpotCardProps 
 @inject('store')
 @observer
 export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSentFormSpotCardPropsTypes, {}> {
+
+    @observable private sentViaMethod: number[] = [];
+
     @computed
     private get campaignEditorialUsers(): { isLoading: boolean; users: ProjectCampaignUserFromApi[] } {
         if (!this.props.store) {
@@ -92,7 +98,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                         key="finishing-request-checkmark"
                         onClick={this.props.onFinishingRequestToggle}
                         checked={this.props.spot.isFinishingRequest}
-                        label="Finishing Request"
+                        label="Finish Request"
                         labelOnLeft={true}
                         type={'no-icon'}
                     />,
@@ -121,6 +127,12 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                         customerId: this.props.clientId,
                     }}
                 />
+
+                <Section title={'Sent via'}>
+                    <div className={s.sentViaMethodsContainer}>
+                        {this.getSentViaMethods()}
+                    </div>
+                </Section>
 
                 <Section
                     title={`Spot #${this.props.spotIndex + 1} editors`}
@@ -210,4 +222,32 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
             this.editorDropdown.closeDropdown();
         }
     };
+
+    private getSentViaMethods(): JSX.Element[] {
+        if (SpotSentStore.spotSentSentViaMethodOptions && SpotSentStore.spotSentSentViaMethodOptions.length > 0) {
+            return SpotSentStore.spotSentSentViaMethodOptions.map((method: SpotSentOptionsChildrenFromApi, index: number) => {
+                return (
+                    <Checkmark
+                        key={'sent-via-method-' + index}
+                        onClick={() => {
+                            if (this.sentViaMethod.includes(method.id)) {
+                                let i: number = this.sentViaMethod.indexOf(method.id);
+                                if (i !== -1) {
+                                    this.sentViaMethod.splice(i, 1);
+                                }
+                            } else if (!this.sentViaMethod.includes(method.id)) {
+                                this.sentViaMethod.push(method.id);
+                            }
+                            this.props.onSentViaMethodChange(this.sentViaMethod);
+                        }}
+                        checked={this.sentViaMethod.includes(method.id)}
+                        label={method.name}
+                        type={'no-icon'}
+                    />
+                );
+            });
+        } else {
+            return [];
+        }
+    }
 }

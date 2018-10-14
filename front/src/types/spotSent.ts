@@ -7,6 +7,7 @@ export interface SpotSentSpot {
     isResend: boolean;
     selectedEditorsIds: number[];
     isFinishingRequest: boolean;
+    sentViaMethod: number[];
 }
 
 export interface SentViaOption {
@@ -161,4 +162,8 @@ export interface SpotSentAudioOptionsFromApi {
 export interface FinishingHouseOptionsFromApi {
     id: number;
     name: string;
+}
+
+export interface SpotSentFromApi {
+    spot_sent_id: number;
 }

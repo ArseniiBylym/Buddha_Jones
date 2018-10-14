@@ -5,10 +5,11 @@ import {
     FinishingHouseOptionsFromApi,
     SpotSentAllSpotsSentFromApi,
     SpotSentAllSpotsSentSpotData,
-    SpotSentAllSpotsSentSpotDataFromApi,
+    SpotSentAllSpotsSentSpotDataFromApi, SpotSentFromApi,
     SpotSentOptionsFromApi
 } from '../types/spotSent';
 import { DateHandler } from '../helpers/DateHandler';
+import { SpotSentValueForSubmit } from '../routes/SpotSent/Producer/Form/ProducerSpotSentForm';
 
 export class SpotSentActionsClass {
 
@@ -125,6 +126,18 @@ export class SpotSentActionsClass {
                 })[0].id,
                 name : finishingHouseName
             };
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    @action
+    public createNewSpotSent = async (
+        spotSentValue: SpotSentValueForSubmit
+    ): Promise<{ spot_sent_id: number }> => {
+        try {
+            const newSpotSent = (await API.postData(APIPath.SPOT_SENT, spotSentValue)) as SpotSentFromApi;
+            return newSpotSent;
         } catch (error) {
             throw error;
         }

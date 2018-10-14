@@ -36,28 +36,42 @@ export interface ProducerSpotSentValue {
 }
 
 export interface SpotSentValueForSubmit {
-    sent_via_method?: number[] | null;
-    finish_option?: {parent: number, child: number} | null;
-    full_lock?: 0 | 1;
+    spot_version: SpotSentVersionForSubmit[];
+    sent_via_method: string | null;
+    finish_option?: {parent: number, child: number};
     notes?: string;
-    finishing_house?: number | null;
-    finishing_house_name?: string | null;
+    status?: 1 | 2;
+    full_lock?: 0 | 1;
     deadline?: Date | null;
-    gfx_finish?: 0 | 1;
-    music_cue_sheet?: 0 | 1;
-    audio_prep?: 0 | 1;
-    video_prep?: 0 | 1;
-    graphics_finish?: 0 | 1;
+    finishing_house?: number | null;
     framerate?: string | null;
     framerate_note?: string;
     raster_size?: string | null;
     raster_size_note?: string;
+    music_cue_sheet?: 0 | 1;
+    audio_prep?: 0 | 1;
+    video_prep?: 0 | 1;
     spec_note?: string;
+    spec_sheet_file?: JSON | null;
     tag_chart?: string;
     delivery_to_client?: {parent: number, child: number} | null;
     delivery_note?: string;
-    audio?: number[] | null;
+    audio?: number[];
     audio_note?: string;
+    graphics_finish?: 0 | 1;
+    gfx_finish?: 0 | 1;
+    customer_contact?: number[];
+}
+
+export interface SpotSentVersionForSubmit {
+    campaign_id: number | null;
+    spot_id: number | null;
+    spot_version_id: number | null;
+    editors: number[];
+    spot_resend: 0 | 1;
+    finish_request: 0 | 1;
+    line_status_id: number | null;
+    sent_via_method: number[];
 }
 
 // Styles
@@ -73,6 +87,7 @@ type ProducerSpotSentFormPropsTypes = ProducerSpotSentFormProps & AppOnlyStoreSt
 @inject('store')
 @observer
 class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsTypes, {}> {
+
     @observable
     private values: ProducerSpotSentValue = {
         date: new Date(),
@@ -86,34 +101,38 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     @observable
     private spotSentValues: SpotSentValueForSubmit = {
+        spot_version: [],
         sent_via_method: null,
-        finish_option: null,
-        full_lock: 0,
+        finish_option: {
+            parent: 1,
+            child: 1
+        },
         notes: '',
-        finishing_house: null,
-        finishing_house_name: null,
+        status: 1,
+        full_lock: 0,
         deadline: null,
-        gfx_finish: 0,
-        music_cue_sheet: 0,
-        audio_prep: 0,
-        video_prep: 0,
-        graphics_finish: 0,
+        finishing_house: null,
         framerate: null,
         framerate_note: '',
         raster_size: null,
         raster_size_note: '',
+        music_cue_sheet: 0,
+        audio_prep: 0,
+        video_prep: 0,
         spec_note: '',
+        spec_sheet_file: null,
         tag_chart: '',
         delivery_to_client: null,
         delivery_note: '',
-        audio: null,
-        audio_note: ''
+        audio: [],
+        audio_note: '',
+        graphics_finish: 0,
+        gfx_finish: 0,
+        customer_contact: []
     };
 
-    @observable private finishingOptionId: number | null = 1;
-    @observable private finishingOptionChildId: number | null = 1;
     @observable private isFinishingTypeSectionOpen: boolean = false;
-    @observable private isFinal: boolean = false;
+    @observable private finishingHouseName: string | null = null;
 
     @computed
     private get clientContacts(): { isLoading: boolean; contacts: ClientContact[] } | null {
@@ -144,10 +163,10 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     @computed
     private get fetchedFinishingOptionsChildren(): SpotSentOptionsChildrenFromApi[] | null {
-        if (SpotSentStore.spotSentFinishingOptions && SpotSentStore.spotSentFinishingOptions.length > 0) {
+        if (SpotSentStore.spotSentFinishingOptions && SpotSentStore.spotSentFinishingOptions.length > 0 && this.spotSentValues.finish_option) {
             let children: SpotSentOptionsChildrenFromApi[] | null = null;
             for (let i = 0; i < SpotSentStore.spotSentFinishingOptions.length; i++) {
-                if (SpotSentStore.spotSentFinishingOptions[i].id === this.finishingOptionId) {
+                if (SpotSentStore.spotSentFinishingOptions[i].id === this.spotSentValues.finish_option.parent) {
                     children = SpotSentStore.spotSentFinishingOptions[i].children;
                     break;
                 }
@@ -160,10 +179,10 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     @computed
     private get fetchedDeliverToClientOptionsChildren(): SpotSentOptionsChildrenFromApi[] | null {
-        if (SpotSentStore.spotSentDeliveryToClientOptions && SpotSentStore.spotSentDeliveryToClientOptions.length > 0) {
+        if (this.spotSentValues.finish_option && SpotSentStore.spotSentDeliveryToClientOptions && SpotSentStore.spotSentDeliveryToClientOptions.length > 0) {
             let children: SpotSentOptionsChildrenFromApi[] | null = null;
             for (let i = 0; i < SpotSentStore.spotSentDeliveryToClientOptions.length; i++) {
-                if (SpotSentStore.spotSentDeliveryToClientOptions[i].id === this.finishingOptionChildId) {
+                if (SpotSentStore.spotSentDeliveryToClientOptions[i].id === this.spotSentValues.finish_option.child) {
                     children = SpotSentStore.spotSentDeliveryToClientOptions[i].children;
                     break;
                 }
@@ -216,6 +235,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 onSpotRemove={this.handleSpotRemove(spotIndex)}
                                 onSpotChange={this.handleSpotChange(spotIndex)}
                                 onFinishingRequestToggle={this.handleFinishingRequestToggle(spotIndex)}
+                                onSentViaMethodChange={this.handleSentViaMethodsChange(spotIndex)}
                                 onEditorAdd={this.handleSpotAddingEditor(spotIndex)}
                                 project={this.values.project ? this.values.project.selectedProject : null}
                                 clientId={this.values.project ? this.values.project.clientId : null}
@@ -228,13 +248,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         {this.values.spots.length <= 0 && <Paragraph type="dim">No spots have been added.</Paragraph>}
 
                         <div className={s.spotsSummary}>
-                            <ButtonAdd onClick={this.handleCreateSpot} label="Add spot" labelOnLeft={true} />
-                        </div>
-                    </Section>
-
-                    <Section title="Sent via">
-                        <div className={s.sentViaMethodsContainer}>
-                            {this.getSentViaMethods()}
+                            <ButtonAdd onClick={this.handleCreateSpot} label="Add spot" labelOnLeft={true}/>
                         </div>
                     </Section>
 
@@ -242,28 +256,28 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         {this.clientContacts === null && <Paragraph type="dim">Project is not selected.</Paragraph>}
 
                         {this.clientContacts &&
-                            this.clientContacts.isLoading && <LoadingIndicator label="Loading studio contacts" />
+                        this.clientContacts.isLoading && <LoadingIndicator label="Loading studio contacts"/>
                         }
 
                         {this.clientContacts &&
-                            this.clientContacts.isLoading === false &&
-                            this.clientContacts.contacts.length <= 0 && (
-                                <Paragraph type="dim">Studio has no contacts.</Paragraph>
-                            )}
+                        this.clientContacts.isLoading === false &&
+                        this.clientContacts.contacts.length <= 0 && (
+                            <Paragraph type="dim">Studio has no contacts.</Paragraph>
+                        )}
 
                         {this.clientContacts &&
-                            this.clientContacts.isLoading === false && (
-                                <div className={s.studioContactsContainer}>
-                                    {this.clientContacts.contacts.map(contact => (
-                                        <Checkmark
-                                            key={contact.id}
-                                            onClick={this.handleSentToContactToggle(contact)}
-                                            label={contact.name || contact.email || contact.id.toString()}
-                                            checked={this.values.studioContacts.indexOf(contact.id) !== -1}
-                                        />
-                                    ))}
-                                </div>
-                            )}
+                        this.clientContacts.isLoading === false && (
+                            <div className={s.studioContactsContainer}>
+                                {this.clientContacts.contacts.map(contact => (
+                                    <Checkmark
+                                        key={contact.id}
+                                        onClick={this.handleSentToContactToggle(contact)}
+                                        label={contact.name || contact.email || contact.id.toString()}
+                                        checked={this.values.studioContacts.indexOf(contact.id) !== -1}
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </Section>
 
                     <Section title="Internal notes">
@@ -288,35 +302,40 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
                     <AnimateHeight
                         height={(this.isFinishingTypeSectionOpen) ? 'auto' : 0}
-                    ><Section title="Finish Request">
+                    >
+                        <Section title="Finish Request">
 
-                            <div style={{marginTop: '30px'}}>
+                            <div style={{marginTop : '30px'}}>
                                 <div className={s.typeFinishingOptions}>
                                     {this.getTypeFinishingChildren()}
                                 </div>
                                 <Toggle
                                     onChange={this.handleTogglingRequest}
-                                    toggleIsSetToRight={(this.finishingOptionId === 1) ? false : true}
+                                    toggleIsSetToRight={(this.spotSentValues.finish_option && this.spotSentValues.finish_option.parent === 1) ? false : true}
                                     toggleOnLeft={{
-                                        label: (SpotSentStore.spotSentFinishingOptions) ? SpotSentStore.spotSentFinishingOptions[0].name : '',
-                                        value: (SpotSentStore.spotSentFinishingOptions) ? SpotSentStore.spotSentFinishingOptions[0].id : null
+                                        label : (SpotSentStore.spotSentFinishingOptions) ? SpotSentStore.spotSentFinishingOptions[0].name : '',
+                                        value : (SpotSentStore.spotSentFinishingOptions) ? SpotSentStore.spotSentFinishingOptions[0].id : null
                                     }}
                                     toggleOnRight={{
-                                        label: (SpotSentStore.spotSentFinishingOptions) ? SpotSentStore.spotSentFinishingOptions[1].name : '',
-                                        value: (SpotSentStore.spotSentFinishingOptions) ? SpotSentStore.spotSentFinishingOptions[1].id : null
+                                        label : (SpotSentStore.spotSentFinishingOptions) ? SpotSentStore.spotSentFinishingOptions[1].name : '',
+                                        value : (SpotSentStore.spotSentFinishingOptions) ? SpotSentStore.spotSentFinishingOptions[1].id : null
                                     }}
                                     align="left"
                                 />
                             </div>
-                            <div className={s.sentViaMethodsContainer} style={{marginTop: '30px', marginBottom: '15px'}}>
+                            <div className={s.sentViaMethodsContainer} style={{marginTop : '30px', marginBottom : '15px'}}>
                                 <Checkmark
-                                    onClick={() => { this.spotSentValues.full_lock = 0; }}
+                                    onClick={() => {
+                                        this.spotSentValues.full_lock = 0;
+                                    }}
                                     checked={(this.spotSentValues.full_lock === 0) ? true : false}
                                     label={'Soft Lock'}
                                     type={'no-icon'}
                                 />
                                 <Checkmark
-                                    onClick={() => { this.spotSentValues.full_lock = 1; }}
+                                    onClick={() => {
+                                        this.spotSentValues.full_lock = 1;
+                                    }}
                                     checked={(this.spotSentValues.full_lock === 1) ? true : false}
                                     label={'Full Lock'}
                                     type={'no-icon'}
@@ -325,6 +344,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                             <div className={s.finishRequestSection}>
                                 <h3>Notes</h3>
                                 <TextArea
+                                    onChange={this.handleTextChange.bind(this, 'notes')}
                                     value={(this.spotSentValues.notes as string)}
                                     label="Notes..."
                                     width={1152}
@@ -340,152 +360,168 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     align="left"
                                 />
                             </div>
-                            {this.finishingOptionId === 1 &&
-                                <div className={s.finishRequestSection}>
-                                    <h3>Finishing House</h3>
-                                    <FinishingHousesPicker
-                                        onChange={this.handleExistingFinishingHouseSelected}
-                                        onNewCreating={this.handleExistingFinishingHouseSelected}
-                                        value={0}
-                                        valueLabel=""
-                                        align="left"
-                                        label={(this.spotSentValues.finishing_house_name) ? this.spotSentValues.finishing_house_name : 'Select finishing house'}
-                                        projectId={this.spotSentValues.finishing_house}
-                                    />
-                                </div>
+                            {this.spotSentValues.finish_option && this.spotSentValues.finish_option.parent === 1 &&
+                            <div className={s.finishRequestSection}>
+                                <h3>Finishing House</h3>
+                                <FinishingHousesPicker
+                                    onChange={this.handleExistingFinishingHouseSelected}
+                                    onNewCreating={this.handleExistingFinishingHouseSelected}
+                                    value={0}
+                                    valueLabel=""
+                                    align="left"
+                                    label={(this.finishingHouseName) ? this.finishingHouseName : 'Select finishing house'}
+                                    projectId={this.spotSentValues.finishing_house}
+                                />
+                            </div>
                             }
-                            {this.finishingOptionId === 2 &&
-                                <>
-                                    <div className={s.finishRequestSection}>
-                                        <h3>Framerate</h3>
+                            {this.spotSentValues.finish_option && this.spotSentValues.finish_option.parent === 2 &&
+                            <>
+                                <div className={s.finishRequestSection}>
+                                    <h3>Framerate</h3>
+                                    <div className={s.sentViaMethodsContainer}>
                                         {this.getFrameRate()}
                                     </div>
-                                    <div className={s.finishRequestSection}>
-                                        <h3>Framerate Notes</h3>
-                                        <Input
-                                            value={(this.spotSentValues.framerate_note) as string}
-                                            label="Framerate Notes..."
-                                        />
-                                    </div>
-                                    <div className={s.finishRequestSection}>
-                                        <h3>Raster Size</h3>
+                                </div>
+                                <div className={s.finishRequestSection}>
+                                    <h3>Framerate Notes</h3>
+                                    <Input
+                                        onChange={this.handleTextChange.bind(this, 'framerate_note')}
+                                        value={(this.spotSentValues.framerate_note) as string}
+                                        label="Framerate Notes..."
+                                    />
+                                </div>
+                                <div className={s.finishRequestSection}>
+                                    <h3>Raster Size</h3>
+                                    <div className={s.sentViaMethodsContainer}>
                                         {this.getRasterSize()}
                                     </div>
-                                    <div className={s.finishRequestSection}>
-                                        <h3>Raster Size Notes</h3>
-                                        <Input
-                                            value={(this.spotSentValues.raster_size_note as string)}
-                                            label="Raster Size Notes..."
-                                        />
-                                    </div>
-                                </>
+                                </div>
+                                <div className={s.finishRequestSection}>
+                                    <h3>Raster Size Notes</h3>
+                                    <Input
+                                        onChange={this.handleTextChange.bind(this, 'raster_size_note')}
+                                        value={(this.spotSentValues.raster_size_note as string)}
+                                        label="Raster Size Notes..."
+                                    />
+                                </div>
+                            </>
                             }
                             <div className={s.finishRequestSection}>
                                 <h3>Additional Finishing needs</h3>
-                                {this.finishingOptionId === 2 &&
+                                <div className={s.sentViaMethodsContainer}>
+                                    {this.spotSentValues.finish_option && this.spotSentValues.finish_option.parent === 2 &&
                                     <Checkmark
                                         onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'gfx_finish')}
-                                        checked={(this.spotSentValues.gfx_finish === 0) ? true : false}
+                                        checked={(this.spotSentValues.gfx_finish === 1) ? true : false}
                                         label={'GFX finishing request'}
                                         type={'no-icon'}
                                     />
-                                }
-                                <Checkmark
-                                    onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'music_cue_sheet')}
-                                    checked={(this.spotSentValues.music_cue_sheet === 0) ? true : false}
-                                    label={'Music Cue Sheet'}
-                                    type={'no-icon'}
-                                />
-                                {this.finishingOptionId === 1 &&
+                                    }
+                                    <Checkmark
+                                        onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'music_cue_sheet')}
+                                        checked={(this.spotSentValues.music_cue_sheet === 1) ? true : false}
+                                        label={'Music Cue Sheet'}
+                                        type={'no-icon'}
+                                    />
+                                    {this.spotSentValues.finish_option && this.spotSentValues.finish_option.parent === 1 &&
                                     <>
                                         <Checkmark
                                             onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'audio_prep')}
-                                            checked={(this.spotSentValues.audio_prep === 0) ? true : false}
+                                            checked={(this.spotSentValues.audio_prep === 1) ? true : false}
                                             label={'Audio prep'}
                                             type={'no-icon'}
                                         />
                                         <Checkmark
                                             onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'video_prep')}
-                                            checked={(this.spotSentValues.video_prep === 0) ? true : false}
+                                            checked={(this.spotSentValues.video_prep === 1) ? true : false}
                                             label={'Video prep'}
                                             type={'no-icon'}
                                         />
                                         <Checkmark
                                             onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'graphics_finish')}
-                                            checked={(this.spotSentValues.graphics_finish === 0) ? true : false}
+                                            checked={(this.spotSentValues.graphics_finish === 1) ? true : false}
                                             label={'Graphics Finish'}
                                             type={'no-icon'}
                                         />
                                     </>
-                                }
+                                    }
+                                </div>
                             </div>
-                            {this.finishingOptionId === 2 &&
-                                <>
-                                    <div className={s.finishRequestSection}>
-                                        <h3>Audio</h3>
+                            {this.spotSentValues.finish_option && this.spotSentValues.finish_option.parent === 2 &&
+                            <>
+                                <div className={s.finishRequestSection}>
+                                    <h3>Audio</h3>
+                                    <div className={s.sentViaMethodsContainer}>
                                         {this.getAudioOptions()}
                                     </div>
-                                    <div className={s.finishRequestSection}>
-                                        <h3>Audio Notes</h3>
-                                        <Input
-                                            value={(this.spotSentValues.audio_note) as string}
-                                            label="Audio Notes..."
-                                        />
-                                    </div>
-                                </>
-                            }
-                            {this.finishingOptionId === 2 && this.finishingOptionChildId === 2 &&
+                                </div>
                                 <div className={s.finishRequestSection}>
-                                    <h3>Tag chart</h3>
+                                    <h3>Audio Notes</h3>
+                                    <Input
+                                        onChange={this.handleTextChange.bind(this, 'audio_note')}
+                                        value={(this.spotSentValues.audio_note) as string}
+                                        label="Audio Notes..."
+                                    />
+                                </div>
+                            </>
+                            }
+                            {this.spotSentValues.finish_option && this.spotSentValues.finish_option.parent === 2 && this.spotSentValues.finish_option.child === 2 &&
+                            <div className={s.finishRequestSection}>
+                                <h3>Tag chart</h3>
+                                <TextArea
+                                    onChange={this.handleTextChange.bind(this, 'tag_chart')}
+                                    value={(this.spotSentValues.tag_chart) as string}
+                                    label="Tag chart..."
+                                    width={1152}
+                                    height={82}
+                                />
+                            </div>
+                            }
+                            {this.spotSentValues.finish_option && this.spotSentValues.finish_option.parent === 2 &&
+                            <>
+                                <div className={s.finishRequestSection}>
+                                    <h3>Spec sheet</h3>
+                                    <input type="file" id="file" name="file" multiple={true}/>
+                                </div>
+                                <div className={s.finishRequestSection}>
+                                    <h3>Spec Notes</h3>
                                     <TextArea
-                                        value={(this.spotSentValues.tag_chart) as string}
-                                        label="Tag chart..."
+                                        onChange={this.handleTextChange.bind(this, 'spec_note')}
+                                        value={(this.spotSentValues.spec_note as string)}
+                                        label="Spec Notes..."
                                         width={1152}
                                         height={82}
                                     />
                                 </div>
+                            </>
                             }
-                            {this.finishingOptionId === 2 &&
-                                <>
-                                    <div className={s.finishRequestSection}>
-                                        <h3>Spec sheet</h3>
-                                        <input type="file" id="file" name="file" multiple={true} />
-                                    </div>
-                                    <div className={s.finishRequestSection}>
-                                        <h3>Spec Notes</h3>
-                                        <TextArea
-                                            value={(this.spotSentValues.spec_note as string)}
-                                            label="Spec Notes..."
-                                            width={1152}
-                                            height={82}
-                                        />
-                                    </div>
-                                </>
-                            }
-                            {this.finishingOptionId === 2 &&
-                            (this.finishingOptionChildId === 2 || this.finishingOptionChildId === 3) &&
-                                <>
-                                    <div className={s.finishRequestSection}>
-                                        <h3>Delivery to client</h3>
+                            {this.spotSentValues.finish_option && this.spotSentValues.finish_option.parent === 2 &&
+                            (this.spotSentValues.finish_option.child === 2 || this.spotSentValues.finish_option.child === 3) &&
+                            <>
+                                <div className={s.finishRequestSection}>
+                                    <h3>Delivery to client</h3>
+                                    <div className={s.sentViaMethodsContainer}>
                                         {this.getDeliveryToClientChildren()}
                                     </div>
-                                    <div className={s.finishRequestSection}>
-                                        <h3>Delivery Notes</h3>
-                                        <Input
-                                            value={(this.spotSentValues.delivery_note) as string}
-                                            label="Delivery Notes..."
-                                        />
-                                    </div>
-                                </>
+                                </div>
+                                <div className={s.finishRequestSection}>
+                                    <h3>Delivery Notes</h3>
+                                    <Input
+                                        onChange={this.handleTextChange.bind(this, 'delivery_note')}
+                                        value={(this.spotSentValues.delivery_note) as string}
+                                        label="Delivery Notes..."
+                                    />
+                                </div>
+                            </>
                             }
-                    </Section>
+                        </Section>
                     </AnimateHeight>
 
                     <Section>
                         <div className={s.summary}>
                             <Checkmark
                                 onClick={this.handleFinalToggle}
-                                checked={this.isFinal}
+                                checked={this.spotSentValues.status === 2}
                                 label="Ready to be sent"
                                 labelOnLeft={true}
                                 type={'no-icon'}
@@ -493,12 +529,18 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
                             <ButtonSend
                                 onClick={this.handleSubmit}
-                                label={this.isFinal ? 'Upload and send' : 'Save draft'}
+                                label={(this.spotSentValues.status === 2) ? 'Upload and send' : 'Save draft'}
                                 iconColor="orange"
                             />
                         </div>
                     </Section>
                 </AnimateHeight>
+                <Section>
+                    <pre>
+                        {JSON.stringify(this.spotSentValues, null, 2)}
+                        {/*{JSON.stringify(this.values.spots, null, 2)}*/}
+                    </pre>
+                </Section>
             </>
         );
     }
@@ -513,6 +555,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     private handleDateChange = (date: Date | null) => {
         if (date !== null) {
+            /*this.spotSentValues.deadline = dateFormat(date, 'MM/DD/YYYY');*/
             this.spotSentValues.deadline = date;
         }
     };
@@ -528,6 +571,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             this.createFirstSpot();
         } else if (values === null || values.project === null) {
             this.values.spots = [];
+            this.spotSentValues.spot_version = [];
             this.values.sentVia = [];
             this.values.studioContacts = [];
             this.values.studioNotes = '';
@@ -557,19 +601,27 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     private handleSpotResendToggle = (spotIndex: number) => (checked: boolean) => {
         this.values.spots[spotIndex].isResend = checked;
+
+        this.spotSentValues.spot_version[spotIndex].spot_resend = checked ? 1 : 0;
     };
 
     private handleFinishingRequestToggle = (spotIndex: number) => (checked: boolean) =>  {
         this.values.spots[spotIndex].isFinishingRequest = checked;
         this.isFinishingTypeSectionOpen = this.values.spots.some(spot => spot.isFinishingRequest === true);
+
+        this.spotSentValues.spot_version[spotIndex].finish_request = checked ? 1 : 0;
     };
 
     private handleSpotRemove = (spotIndex: number) => (e: React.MouseEvent<HTMLButtonElement>) => {
         this.values.spots = [...this.values.spots.slice(0, spotIndex), ...this.values.spots.slice(spotIndex + 1)];
+
+        this.spotSentValues.spot_version = [...this.spotSentValues.spot_version.slice(0, spotIndex), ...this.spotSentValues.spot_version.slice(spotIndex + 1)];
     };
 
     private handleCreateSpot = (e: React.MouseEvent<HTMLButtonElement>) => {
         this.values.spots.push(this.defaultSpot);
+
+        this.spotSentValues.spot_version.push(this.defaultSpotElement);
     };
 
     private handleSpotChange = (spotIndex: number) => (values: ProjectPickerValues | null) => {
@@ -580,11 +632,27 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         this.values.spots[spotIndex].projectCampaign = values && values.projectCampaign ? values.projectCampaign : null;
         this.values.spots[spotIndex].spot = values && values.spot ? values.spot : null;
         this.values.spots[spotIndex].version = values && values.version ? values.version : null;
+
+        this.spotSentValues.spot_version[spotIndex].campaign_id = (values && values.projectCampaign && values.projectCampaign.id) ? values.projectCampaign.id : null;
+        this.spotSentValues.spot_version[spotIndex].spot_id = (values && values.spot && values.spot.id) ? values.spot.id : null;
+        this.spotSentValues.spot_version[spotIndex].spot_version_id = (values && values.version && values.version.id) ? values.version.id : null;
+
+    };
+
+    @action
+    private handleSentViaMethodsChange = (spotIndex: number) => (methods: number[]) => {
+        this.values.spots[spotIndex].sentViaMethod = methods;
+
+        this.spotSentValues.spot_version[spotIndex].sent_via_method = methods;
     };
 
     private handleSpotAddingEditor = (spotIndex: number) => (userId: number) => {
         if (this.values.spots[spotIndex].selectedEditorsIds.indexOf(userId) === -1) {
             this.values.spots[spotIndex].selectedEditorsIds.push(userId);
+        }
+
+        if (this.spotSentValues.spot_version[spotIndex].editors.indexOf(userId) === -1) {
+            this.spotSentValues.spot_version[spotIndex].editors.push(userId);
         }
     };
 
@@ -611,15 +679,21 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     private handleFinalToggle = (checked: boolean) => {
-        this.isFinal = checked;
+        this.spotSentValues.status = (checked) ? 2 : 1;
     };
 
-    private handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-        // TODO
+    private handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        try {
+            await SpotSentActions.createNewSpotSent(this.spotSentValues);
+        } catch (error) {
+            throw error;
+        }
     };
 
     private createFirstSpot = () => {
         this.values.spots = [this.defaultSpot];
+
+        this.spotSentValues.spot_version = [this.defaultSpotElement];
     };
 
     private get defaultSpot(): SpotSentSpot {
@@ -629,35 +703,22 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             version: null,
             isResend: false,
             selectedEditorsIds: [],
-            isFinishingRequest: false
+            isFinishingRequest: false,
+            sentViaMethod: []
         };
     }
 
-    private getSentViaMethods(): JSX.Element[] {
-        if (SpotSentStore.spotSentSentViaMethodOptions && SpotSentStore.spotSentSentViaMethodOptions.length > 0) {
-            return SpotSentStore.spotSentSentViaMethodOptions.map((method: SpotSentOptionsChildrenFromApi, index: number) => {
-                return (
-                    <Checkmark
-                        key={'sent-via-method-' + index}
-                        onClick={() => {
-                            if (this.spotSentValues.sent_via_method && this.spotSentValues.sent_via_method.includes(method.id)) {
-                                let i: number = this.spotSentValues.sent_via_method.indexOf(method.id);
-                                if (i !== -1) {
-                                    this.spotSentValues.sent_via_method.splice(i, 1);
-                                }
-                            } else if (this.spotSentValues.sent_via_method && !this.spotSentValues.sent_via_method.includes(method.id)) {
-                                this.spotSentValues.sent_via_method.push(method.id);
-                            }}
-                        }
-                        checked={this.spotSentValues.sent_via_method ? this.spotSentValues.sent_via_method.includes(method.id) : false}
-                        label={method.name}
-                        type={'no-icon'}
-                    />
-                );
-            });
-        } else {
-            return [];
-        }
+    private get defaultSpotElement(): SpotSentVersionForSubmit {
+        return {
+            campaign_id: null,
+            spot_id: null,
+            spot_version_id: null,
+            editors: [],
+            spot_resend: 0,
+            finish_request: 0,
+            line_status_id: null,
+            sent_via_method: []
+        };
     }
 
     private getAudioOptions(): JSX.Element[] {
@@ -695,7 +756,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     <Checkmark
                         key={'type-finishing-children-' + index}
                         onClick={this.handleFinishingTypeChildSelect.bind(this, children.id)}
-                        checked={(children.id === this.finishingOptionChildId) ? true : false}
+                        checked={(this.spotSentValues.finish_option && children.id === this.spotSentValues.finish_option.child) ? true : false}
                         label={children.name}
                         type={'no-icon'}
                     />
@@ -764,19 +825,46 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     }
 
     @action
-    private handleTogglingRequest = (isSetToRight: boolean, selectedSideContent: ToggleSideContent) => {
-        this.finishingOptionId = (selectedSideContent.value as number);
-        this.finishingOptionChildId = 1;
+    private resetFinishRequestForm = (): void => {
+        this.spotSentValues.spot_version = [];
+        this.spotSentValues.full_lock = 0;
+        this.spotSentValues.notes = '';
+        this.spotSentValues.finishing_house = null;
+        this.finishingHouseName = null;
+        this.spotSentValues.deadline = null;
+        this.spotSentValues.gfx_finish = 0;
+        this.spotSentValues.music_cue_sheet = 0;
+        this.spotSentValues.audio_prep = 0;
+        this.spotSentValues.video_prep = 0;
+        this.spotSentValues.graphics_finish = 0;
+        this.spotSentValues.framerate = null;
+        this.spotSentValues.framerate_note = '';
+        this.spotSentValues.raster_size = null;
+        this.spotSentValues.raster_size_note = '';
+        this.spotSentValues.spec_note = '';
+        this.spotSentValues.spec_sheet_file = null;
+        this.spotSentValues.tag_chart = '';
+        this.spotSentValues.delivery_to_client = null;
+        this.spotSentValues.delivery_note = '';
+        this.spotSentValues.audio = [];
+        this.spotSentValues.audio_note = '';
+        this.spotSentValues.customer_contact = [];
     };
 
-/*    @action
-    private showHideFinishingTypeSection = (): void =>  {
-        this.isFinishingTypeSectionOpen = !this.isFinishingTypeSectionOpen;
-    };*/
+    @action
+    private handleTogglingRequest = (isSetToRight: boolean, selectedSideContent: ToggleSideContent) => {
+        this.spotSentValues.finish_option = {
+            parent: (selectedSideContent.value as number),
+            child: 1
+        };
+        this.resetFinishRequestForm();
+    };
 
     @action
     private handleFinishingTypeChildSelect = (finishingOptionChildId: number | null): void => {
-        this.finishingOptionChildId = finishingOptionChildId;
+        if (this.spotSentValues.finish_option) {
+            this.spotSentValues.finish_option.child = finishingOptionChildId as number;
+        }
     };
 
     @action
@@ -791,7 +879,12 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     @action
     private handleExistingFinishingHouseSelected = (finishingHouse: { id: number; name: string }) => {
         this.spotSentValues.finishing_house = finishingHouse.id;
-        this.spotSentValues.finishing_house_name = finishingHouse.name;
+        this.finishingHouseName = finishingHouse.name;
+    };
+
+    @action
+    private handleTextChange = (param: string, e: React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLInputElement>) => {
+        this.spotSentValues[param] = e.target.value;
     };
 
 }
