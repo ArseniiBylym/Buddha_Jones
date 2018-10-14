@@ -37,7 +37,6 @@ export interface ProducerSpotSentValue {
 
 export interface SpotSentValueForSubmit {
     spot_version: SpotSentVersionForSubmit[];
-    sent_via_method: string | null;
     finish_option?: {parent: number, child: number};
     notes?: string;
     status?: 1 | 2;
@@ -102,7 +101,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     @observable
     private spotSentValues: SpotSentValueForSubmit = {
         spot_version: [],
-        sent_via_method: null,
         finish_option: {
             parent: 1,
             child: 1
