@@ -145,7 +145,10 @@ class SpotSentController extends CustomAbstractActionController
         $projectId = $this->_commonRepo->filterPostData($data, 'project_id', 'int');
         $fullLock = $this->_commonRepo->filterPostData($data, 'full_lock', 'boolean', 0);
         $notes = $this->_commonRepo->filterPostData($data, 'notes');
+        $internalNote = $this->_commonRepo->filterPostData($data, 'internal_note');
+        $studioNote = $this->_commonRepo->filterPostData($data, 'studio_note');
         $deadline = $this->_commonRepo->filterPostData($data, 'deadline', 'datetime');
+        $spotSentDate = $this->_commonRepo->filterPostData($data, 'spot_sent_date', 'datetime');
         $finishingHouse = $this->_commonRepo->filterPostData($data, 'finishing_house', 'int');
         $framerate = $this->_commonRepo->filterPostData($data, 'framerate');
         $framerateNote = $this->_commonRepo->filterPostData($data, 'framerate_note');
@@ -251,7 +254,7 @@ class SpotSentController extends CustomAbstractActionController
             }
         }
 
-        if (($sentViaMethod || $finishOption) && is_array($spotVersionData)) {
+        if ($projectId && is_array($spotVersionData) && count($spotVersionData)) {
             $requestId = $requestId ? $requestId : $this->_spotRepo->getNextSpotSentRequestId();
             $now = new \DateTime('now');
             $spotSentIds = [];
@@ -264,6 +267,7 @@ class SpotSentController extends CustomAbstractActionController
                 $spotSent->setProjectCampaignId($svd['project_campaign_id']);
                 $spotSent->setFullLock($fullLock);
                 $spotSent->setDeadline($deadline);
+                $spotSent->setSpotSentDate($spotSentDate);
                 $spotSent->setFinishingHouse($finishingHouse);
                 $spotSent->setFramerate($framerate);
                 $spotSent->setFramerateNote($framerateNote);
@@ -281,6 +285,8 @@ class SpotSentController extends CustomAbstractActionController
                 $spotSent->setDeliveryNote($deliveryNote);
                 $spotSent->setStatusId($statusId);
                 $spotSent->setNotes($notes);
+                $spotSent->setInternalNote($internalNote);
+                $spotSent->setStudioNote($studioNote);
                 $spotSent->setFinishOption($finishOption);
                 $spotSent->setCustomerContact($customerContact);
 
@@ -373,7 +379,7 @@ class SpotSentController extends CustomAbstractActionController
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Please provide required data(finish_option, sent_via_method, spot_version).'
+                'message' => 'Please provide required data(project_id, spot_version).'
             );
         }
 
