@@ -136,7 +136,15 @@ export class SpotSentActionsClass {
         spotSentValue: SpotSentValueForSubmit
     ): Promise<{ spot_sent_id: number }> => {
         try {
-            const newSpotSent = (await API.postData(APIPath.SPOT_SENT, spotSentValue)) as SpotSentFromApi;
+            const newSpotSent = (await API.postData(
+                APIPath.SPOT_SENT,
+                spotSentValue,
+                {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }
+            )) as SpotSentFromApi;
             return newSpotSent;
         } catch (error) {
             throw error;
