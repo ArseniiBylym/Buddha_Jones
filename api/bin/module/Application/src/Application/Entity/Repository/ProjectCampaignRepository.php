@@ -26,7 +26,8 @@ class ProjectCampaignRepository extends EntityRepository
                   MAX(ph.createdAt) AS maxHistoryCreatedAt,
                   ptc.note, ptc.budget, ptc.budgetNote,
                   ptc.por, ptc.invoiceContact,
-                  ptc.materialReceiveDate
+                  ptc.materialReceiveDate,
+                  ptc.approvedByBilling
                 FROM \Application\Entity\RediProjectToCampaign ptc
                 INNER JOIN \Application\Entity\RediProject p
                     WITH p.id=ptc.projectId
@@ -73,6 +74,10 @@ class ProjectCampaignRepository extends EntityRepository
             $dqlFilter[] = " ptc.requestMusicTeam=:request_music_team ";
         }
 
+        if (isset($filter['approved_by_billing']) && $filter['approved_by_billing'] !== null) {
+            $dqlFilter[] = " ptc.approvedByBilling=:approved_by_billing ";
+        }
+
         if(!empty($filter['user_id'])){
             $dqlFilter[] = " (ptcu.userId IS NOT NULL OR ptcbu.userId IS NOT NULL OR ptcd.userId IS NOT NULL OR ptce.userId  IS NOT NULL) ";
         }
@@ -107,6 +112,10 @@ class ProjectCampaignRepository extends EntityRepository
 
         if (isset($filter['request_music_team']) && $filter['request_music_team'] !== null) {
             $query->setParameter('request_music_team', $filter['request_music_team']);
+        }
+
+        if (isset($filter['approved_by_billing']) && $filter['approved_by_billing'] !== null) {
+            $query->setParameter('approved_by_billing', $filter['approved_by_billing']);
         }
 
         if(!empty($filter['user_id'])){
@@ -176,6 +185,10 @@ class ProjectCampaignRepository extends EntityRepository
             $dqlFilter[] = " ptc.requestMusicTeam=:request_music_team ";
         }
 
+        if (isset($filter['approved_by_billing']) && $filter['approved_by_billing'] !== null) {
+            $dqlFilter[] = " ptc.approvedByBilling=:approved_by_billing ";
+        }
+
         if(!empty($filter['user_id'])){
             $dqlFilter[] = " (ptcu.userId IS NOT NULL OR ptcbu.userId IS NOT NULL OR ptcd.userId IS NOT NULL OR ptce.userId  IS NOT NULL) ";
         }
@@ -207,6 +220,10 @@ class ProjectCampaignRepository extends EntityRepository
 
         if(!empty($filter['user_id'])){
             $query->setParameter('user_id', $filter['user_id']);
+        }
+
+        if (isset($filter['approved_by_billing']) && $filter['approved_by_billing'] !== null) {
+            $query->setParameter('approved_by_billing', $filter['approved_by_billing']);
         }
 
         $result = $query->getArrayResult();

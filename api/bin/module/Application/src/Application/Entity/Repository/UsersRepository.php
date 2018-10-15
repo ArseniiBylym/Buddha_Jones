@@ -15,6 +15,7 @@ use Zend\Form\Annotation\Type;
 class UsersRepository extends EntityRepository
 {
     private $_className = "\Application\Entity\RediUser";
+    private $_billingUserIds = array(5, 24, 100);
 
     public function __construct(EntityManager $entityManager) {
         $classMetaData = $entityManager->getClassMetadata($this->_className);
@@ -493,6 +494,25 @@ class UsersRepository extends EntityRepository
         }
 
         return $result;
+    }
+
+    public function isBillingUser($userId) {
+        $dql = "SELECT 
+                u.typeId
+                FROM \Application\Entity\RediUser u
+                WHERE u.id = :user_id";
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_id', $userId);
+        $query->setMaxResults(1);
+        $result = $query->getArrayResult();
+
+        if(empty($result[0]['typeId'])) {
+            return false;
+        }
+
+        $userTypeId = (int)$result[0]['typeId'];
+
+        return in_array($userTypeId, $this->_billingUserIds);
     }
 
 }
