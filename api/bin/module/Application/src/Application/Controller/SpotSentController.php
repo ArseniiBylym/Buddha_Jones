@@ -160,7 +160,7 @@ class SpotSentController extends CustomAbstractActionController
         $gfxFinish = $this->_commonRepo->filterPostData($data, 'gfx_finish', 'boolean', 0);
         $videoPrep = $this->_commonRepo->filterPostData($data, 'video_prep', 'boolean', 0);
         $specNote = $this->_commonRepo->filterPostData($data, 'spec_note');
-        $specSheetFile = $this->_commonRepo->filterPostData($data, 'spec_sheet_file');
+        // $specSheetFile = $this->_commonRepo->filterPostData($data, 'spec_sheet_file');
         $deliveryNote = $this->_commonRepo->filterPostData($data, 'delivery_note');
         $statusId = $this->_commonRepo->filterPostData($data, 'status_id', 'int');
         $audioNote = $this->_commonRepo->filterPostData($data, 'audio_note');
@@ -171,6 +171,7 @@ class SpotSentController extends CustomAbstractActionController
         $finishOption = $this->_commonRepo->filterPostData($data, 'finish_option', 'json');
         $spotVersionData = $this->_commonRepo->filterPostData($data, 'spot_version', 'json');
         $customerContact = $this->_commonRepo->filterPostData($data, 'customer_contact', 'json');
+        $specSheetFile = $this->_commonRepo->filterPostData($data, 'spec_sheet_file', 'json');
 
         // array to commaseparated string
         // $sentViaMethod = $this->arrayToCommanSeparated($sentViaMethod);
@@ -181,12 +182,16 @@ class SpotSentController extends CustomAbstractActionController
 
         $files = array();
 
-        if ($specSheetFile) {
-            $files = json_decode($specSheetFile, true);
+        try {
+            if (is_array($specSheetFile)) {
+                $files = $specSheetFile;
 
-            foreach ($files as $key => $file) {
-                $files[$key] = $this->_commonRepo->base64DecodeFile($file);
+                foreach ($files as $key => $file) {
+                    $files[$key] = $this->_commonRepo->base64DecodeFile($file);
+                }
             }
+        } catch (\Exception $e) {
+            // throw some exception
         }
 
 

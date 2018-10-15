@@ -271,6 +271,12 @@ class SpotRepository extends EntityRepository
                 ? $allStatusArray[$row['statusId']]['name']
                 : null;
 
+            if(empty($row['updatedAt'])) {
+                $row['updatedAt'] = $row['createdAt'];
+                $row['updatedBy'] = $row['createdBy'];
+                $row['updatedByUser'] = $row['createdByUser'];
+            }
+
             unset($row['createdByFirstName']);
             unset($row['createdByLastName']);
             unset($row['updatedByFirstName']);
