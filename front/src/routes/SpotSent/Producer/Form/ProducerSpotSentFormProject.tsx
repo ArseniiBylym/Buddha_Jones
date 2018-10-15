@@ -2,7 +2,6 @@ import * as React from 'react';
 import { observer, inject } from 'mobx-react';
 import { ProjectPicker, ProjectPickerValues, ProjectPickerGroupValues } from 'components/Buddha';
 import { AppOnlyStoreState } from 'store/AllStores';
-import { DatePicker } from 'components/Calendar';
 
 // Props
 interface ProducerSpotSentFormProjectProps {
@@ -25,18 +24,16 @@ export class ProducerSpotSentFormProject extends React.Component<ProducerSpotSen
             <>
                 <ProjectPicker
                     headerElements={[
-                        {
+                        /*{
                             element: (
                                 <DatePicker
                                     key="date-picker"
-                                    onChange={this.handleDateChange}
                                     label="Spot sent date"
                                     value={this.props.date}
                                     align="right"
-                                    maxDate={new Date()}
                                 />
                             ),
-                        },
+                        },*/
                     ]}
                     onChange={this.handleProjectChange}
                     forUserId={this.props.store!.user.data!.id}
@@ -56,10 +53,6 @@ export class ProducerSpotSentFormProject extends React.Component<ProducerSpotSen
             </>
         );
     }
-
-    private handleDateChange = (date: Date | null) => {
-        this.props.onDateChange(date);
-    };
 
     private handleProjectChange = (values: ProjectPickerValues | null) => {
         this.props.onProjectChange(values);

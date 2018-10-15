@@ -11,6 +11,7 @@ import { Table, TableCell, TableRow } from '../../../../components/Table';
 import { Paragraph } from '../../../../components/Content';
 import { SpotSentAllSpotsSentSpotData } from '../../../../types/spotSent';
 import { Checkmark } from '../../../../components/Form';
+import * as dateFormat from 'date-fns/format';
 
 // Styles
 require('./ProducerSpotSentList.css');
@@ -83,15 +84,16 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
                 title: string;
                 align?: 'left' | 'center' | 'right';
             }> = [];
-            let tableColumnsWidths: string[] = [];
             let spotTitles: string[] = Object.keys(SpotSentStore.spotSentAllSpots[0]);
             spotTitles.map((objectKey: string, ind: number) => {
-                let columnsWidth: number = 100 / spotTitles.length;
                 tableHeaders.push({
                     title: (SpotSentStore.spotSentAllSpots) ? SpotSentStore.spotSentAllSpots[0][objectKey].title : 'N/A',
-                    align: (ind === 0) ? 'left' : (ind === (spotTitles.length - 1)) ? 'right' : 'center'
+                    align: (ind === 0) ? 'left' : 'center'
                 });
-                tableColumnsWidths.push(Math.round(columnsWidth) + '%');
+            });
+            tableHeaders.push({
+                title: '',
+                align: 'right'
             });
             let tableRowsArr: JSX.Element[] = SpotSentStore.spotSentAllSpots.map((spot: SpotSentAllSpotsSentSpotData, index: number) => {
                 let tableCellsArr: JSX.Element[] = Object.keys(spot).map((objectKey: string, ind: number) => {
@@ -101,25 +103,15 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
                             type={'no-icon'}
                         />
                     );
-                    let editButton: JSX.Element = (
-                        <>
-                            {spot[objectKey].name}
-                            <ButtonEdit
-                                label="Edit"
-                                labelOnLeft={false}
-                                float="right"
-                            />
-                        </>
-                    );
                     return (
                         <TableCell
                             key={`${objectKey}-${ind}`}
-                            align={(ind === 0) ? 'left' : (ind === (Object.keys(spot).length - 1)) ? 'right' : 'center'}
+                            align={(ind === 0) ? 'left' : 'center'}
                         >
                             {objectKey === 'finishRequest' ? (
                                 checkMark
                             ) : objectKey === 'changed' ? (
-                                editButton
+                                dateFormat(spot[objectKey].name, 'MM/DD/YY hh:ss')
                             ) : (
                                 spot[objectKey].name
                             )}
@@ -129,13 +121,19 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
                 return (
                     <TableRow key={`spot-${index}`}>
                         {tableCellsArr}
+                        <TableCell align={'center'}>
+                            <ButtonEdit
+                                label="Edit"
+                                labelOnLeft={false}
+                            />
+                        </TableCell>
                     </TableRow>
                 );
             });
             return (
                 <Table
                     header={tableHeaders}
-                    columnsWidths={tableColumnsWidths}
+                    columnsWidths={['15%', '15%', '15%', '10%', '10%', '15%', '15%', '5%']}
                 >
                     {tableRowsArr}
                 </Table>

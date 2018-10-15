@@ -144,6 +144,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     @observable private isFinishingTypeSectionOpen: boolean = false;
     @observable private finishingHouseName: string | null = null;
+    @observable private showJson: boolean = false;
 
     @computed
     private get clientContacts(): { isLoading: boolean; contacts: ClientContact[] } | null {
@@ -551,11 +552,16 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     </Section>
                 </AnimateHeight>
                 <Section>
-                    <pre>
-                        {JSON.stringify(this.spotSentValues, null, 2)}
-                        {/*{JSON.stringify(this.values, null, 2)}*/}
-                    </pre>
+                    <button onClick={() => { this.showJson = !this.showJson; }}>Show/Hide JSON</button>
                 </Section>
+                {this.showJson &&
+                    <Section>
+                        <pre>
+                            {JSON.stringify(this.spotSentValues, null, 2)}
+                            {/*{JSON.stringify(this.values, null, 2)}*/}
+                        </pre>
+                    </Section>
+                }
             </>
         );
     }
