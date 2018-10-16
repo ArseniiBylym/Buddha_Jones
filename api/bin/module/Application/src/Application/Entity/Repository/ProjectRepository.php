@@ -433,20 +433,17 @@ class ProjectRepository extends EntityRepository
         return $data;
     }
 
-    public function getCampaignByProjectId($projectId, $approvedOnly = true)
+    public function getCampaignByProjectId($projectId)
     {
         $dql = "SELECT ptc.id AS id, ptc.id AS projectCampaignId, c.id AS campaignId, c.campaignName, ptc.firstPointOfContactId,
                 ptc.requestWritingTeam, ptc.writingTeamNotes,
                 ptc.requestMusicTeam, ptc.musicTeamNotes, ptc.note,
-                ptc.budget, ptc.budgetNote, ptc.por, ptc.invoiceContact, ptc.materialReceiveDate
+                ptc.budget, ptc.budgetNote, ptc.por, ptc.invoiceContact, ptc.materialReceiveDate,
+                ptc.approvedByBilling
                 FROM \Application\Entity\RediProjectToCampaign ptc
                 INNER JOIN \Application\Entity\RediCampaign c
                   WITH ptc.campaignId=c.id
                 WHERE ptc.projectId=:project_id";
-
-        if($approvedOnly) {
-            $dql .= ' AND ptc.approvedByBilling = 1';
-        }
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('project_id', $projectId);

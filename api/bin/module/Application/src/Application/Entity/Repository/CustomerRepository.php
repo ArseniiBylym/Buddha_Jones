@@ -323,4 +323,21 @@ class CustomerRepository extends EntityRepository
 
         return (!empty($data[0]) ? $data[0] : null);
     }
+
+    public function getCustomerNewById($id)
+    {
+        $dql = "SELECT  
+                  cn
+                FROM \Application\Entity\RediCustomerNew cn
+                WHERE 
+                    cn.id=:id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('id', $id);
+        $query->setMaxResults(1);
+
+        $data = $query->getArrayResult();
+
+        return (!empty($data[0]) ? $data[0] : null);
+    }
 }

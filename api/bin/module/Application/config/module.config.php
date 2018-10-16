@@ -151,6 +151,7 @@ return array(
             'Application\Controller\Comment'                                        => 'Application\Controller\CommentController',
             'Application\Controller\CommentType'                                    => 'Application\Controller\CommentTypeController',
             'Application\Controller\Customer'                                       => 'Application\Controller\CustomerController',
+            'Application\Controller\CustomerNew'                                    => 'Application\Controller\CustomerNewController',
             'Application\Controller\CustomerContact'                                => 'Application\Controller\CustomerContactController',
             'Application\Controller\CustomerPrice'                                  => 'Application\Controller\CustomerPriceController',
             'Application\Controller\EditorProject'                                  => 'Application\Controller\EditorProjectController',
