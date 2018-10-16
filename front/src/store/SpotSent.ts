@@ -6,6 +6,7 @@ import {
     SpotSentOptionsChildrenFromApi,
     SpotSentOptionsStdSectionFromApi
 } from '../types/spotSent';
+import { SpotSentValueForSubmit } from '../routes/SpotSent/Producer/Form/ProducerSpotSentForm';
 
 export class SpotSent {
     @observable public spotSentAllSpots: SpotSentAllSpotsSentSpotData[] | null = null;
@@ -21,4 +22,8 @@ export class SpotSent {
     @observable public spotSentFinishingHouseLastFetchTimeStamp: number = 0;
     @observable public spotSentFinishingHouseOptions: FinishingHouseOptionsFromApi[] | null = null;
     @observable public spotSentFinishingHouseAreBeingFetched: boolean = false;
+
+    @observable public spotSentDetails: SpotSentValueForSubmit | null = null;
+    @observable public spotSentDetailsLastFetchTimestamp: number = 0;
+    @observable public spotSentDetailsLoading: boolean = false;
 }

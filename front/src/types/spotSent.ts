@@ -68,14 +68,20 @@ export interface SpotSentAllSpotsSentFromApi {
     projectName: string;
 }
 
-/*export interface SpotSentAllSpotsFromApi {
-    id: number;
+export interface SpotSentDetailsFromApi {
+    requestId: number;
     projectId: number;
     fullLock: 0 | 1;
     sentViaMethod: string;
-    finishOption: null;
+    finishOption: {
+        parent: number,
+        child: number
+    };
     notes: string | null;
-    deadline: Date | null;
+    internalNote: string | null;
+    studioNote: string | null;
+    deadline: SpotSentAllSpotsSentTimeFromApi | null;
+    spotSentDate: SpotSentAllSpotsSentTimeFromApi | null;
     finishingHouse: number | null;
     framerate: string | null;
     framerateNote: string | null;
@@ -84,7 +90,8 @@ export interface SpotSentAllSpotsSentFromApi {
     musicCueSheet: 0 | 1;
     gfxFinish: 0 | 1;
     audioPrep: 0 | 1;
-    audio: string | null;
+    audio: number[];
+    audioNote: string | null;
     videoPrep: 0 | 1;
     graphicsFinish: 0 | 1;
     specNote: string | null;
@@ -95,14 +102,39 @@ export interface SpotSentAllSpotsSentFromApi {
         child: number
     };
     deliveryNote: string | null;
-    statusId: number | null;
+    spotResend: 0 | 1;
+    statusId: 1 | 2;
+    editor: string | null;
+    customerContact: number[];
     createdBy: number;
     updatedBy: number;
     createdAt: SpotSentAllSpotsFromApi;
     updatedAt: SpotSentAllSpotsFromApi;
-    projectSpotVersion: Array<{spot_version_id: number, editors: number[]}>;
-    sentViaMethodList: SpotSentOptionsChildrenFromApi[];
-}*/
+    createdByUser: string;
+    updatedByUser: string;
+    statusName: string;
+    spotData: SpotSentDetailsSpotDataFromApi[];
+    finishOptionList: SpotSentOptionsStdSectionFromApi;
+    audioList: SpotSentAudioOptionsFromApi[];
+    deliveryToClientList: SpotSentOptionsStdSectionFromApi;
+    projectName: string;
+}
+
+export interface SpotSentDetailsSpotDataFromApi {
+    campaignId: number;
+    campaignName: string;
+    projectCampaignId: number;
+    spotId: number;
+    spotName: string;
+    versionId: number;
+    versionName: string;
+    spotVersionId: number;
+    sentViaMethod: number[] | null;
+    finishRequest: 0 | 1;
+    spotResend: 0 | 1;
+    lineStatusId: number;
+    lineStatusName: string;
+}
 
 export interface SpotSentAllSpotsSentSpotDataFromApi {
     campaignId: number;

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observer, inject } from 'mobx-react';
 import { observable, computed, action } from 'mobx';
-import { HeaderActions, CampaignPeopleActions, ClientsActions, SpotSentActions } from 'actions';
+import { HeaderActions, CampaignPeopleActions, SpotSentActions } from 'actions';
 import { ProducerSpotSentFormProject } from './ProducerSpotSentFormProject';
 import { ProjectPickerValues } from 'components/Buddha';
 import { ButtonBack, ButtonAdd, ButtonSend } from 'components/Button';
@@ -9,7 +9,6 @@ import { history } from 'App';
 import AnimateHeight from 'react-animate-height';
 import { SpotSentVia, SpotSentSpot } from 'types/spotSent';
 import { Section } from 'components/Section';
-import { AppOnlyStoreState } from 'store/AllStores';
 import { Paragraph } from 'components/Content';
 import { ProducerSpotSentFormSpotCard } from '.';
 import { Checkmark, Input, TextArea, Toggle } from 'components/Form';
@@ -18,7 +17,7 @@ import { LoadingIndicator } from 'components/Loaders';
 import { ToggleSideContent } from '../../../../components/Form';
 import { SpotSentAudioOptionsFromApi, SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
 import { ProjectPickerGroupValues } from '../../../../components/Buddha';
-import { SpotSentStore } from '../../../../store/AllStores';
+import { AppState, SpotSentStore } from '../../../../store/AllStores';
 import { DatePicker } from '../../../../components/Calendar';
 import { FinishingHousesPicker } from '../../../../components/Buddha/FinishingHousesPicker';
 
@@ -37,6 +36,7 @@ export interface ProducerSpotSentValue {
 
 export interface SpotSentValueForSubmit {
     project_id: number | null;
+    project_name?: string | null;
     spot_version: SpotSentVersionForSubmit[] | string;
     finish_option?: SpotSentValueParentChildForSubmit | string;
     notes?: string;
@@ -44,8 +44,8 @@ export interface SpotSentValueForSubmit {
     studio_note?: string;
     status?: 1 | 2;
     full_lock?: 0 | 1;
-    spot_sent_date?: Date | null;
-    deadline?: Date | null;
+    spot_sent_date?: Date | string | null;
+    deadline?: Date | string | null;
     finishing_house?: number | null;
     framerate?: string | null;
     framerate_note?: string;
@@ -79,7 +79,7 @@ export interface SpotSentVersionForSubmit {
     spot_resend: 0 | 1;
     finish_request: 0 | 1;
     line_status_id: number | null;
-    sent_via_method: number[];
+    sent_via_method: number[] | null;
 }
 
 // Styles
@@ -89,7 +89,7 @@ const s = require('./ProducerSpotSentForm.css');
 interface ProducerSpotSentFormProps {}
 
 // Types
-type ProducerSpotSentFormPropsTypes = ProducerSpotSentFormProps & AppOnlyStoreState;
+type ProducerSpotSentFormPropsTypes = ProducerSpotSentFormProps & AppState;
 
 // Component
 @inject('store')
@@ -110,6 +110,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     @observable
     private spotSentValues: SpotSentValueForSubmit = {
         project_id: null,
+        project_name: null,
         spot_version: [],
         finish_option: {
             parent: 1,
@@ -210,13 +211,19 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         // Fetch spot sent options
         this.fetchSpotSentOptions();
 
-        HeaderActions.setMainHeaderTitlesAndElements('Initiate spot sent', null, null, null, [
-            <ButtonBack
-                key="button-back-to-list"
-                onClick={this.handleBackButtonClick}
-                label="Back to spots sent list"
-            />,
-        ]);
+        // Load Spot Sent details if router has ID
+        if (this.isEditMode) {
+            this.setHeaderAndInitialData();
+        } else {
+            HeaderActions.setMainHeaderTitlesAndElements('Initiate spot sent', null, null, null, [
+                <ButtonBack
+                    key="button-back-to-list"
+                    onClick={this.handleBackButtonClick}
+                    label="Back to spots sent list"
+                />,
+            ]);
+        }
+
     }
 
     public render() {
@@ -225,19 +232,14 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                 <ProducerSpotSentFormProject
                     onProjectChange={this.handleProjectChange}
                     onDateChange={this.handleDateChange}
-                    project={this.values.project ? this.values.project.selectedProject : null}
+                    project={{id: this.spotSentValues.project_id as number, name: this.spotSentValues.project_name as string}}
                     clientId={this.values.project ? this.values.project.clientId : null}
-                    date={this.values.date}
+                    date={this.spotSentValues.spot_sent_date as Date}
+                    isClosedWhenInit={this.isEditMode}
                 />
 
                 <AnimateHeight
-                    height={
-                        this.values.project !== null &&
-                        this.values.project.selectedProject !== null &&
-                        this.values.project.selectedProject.id
-                            ? 'auto'
-                            : 0
-                    }
+                    height={this.spotSentValues.project_id ? 'auto' : 0}
                 >
                     <Section title="Spots">
                         {this.values.spots.map((spot, spotIndex) => (
@@ -581,8 +583,16 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
     };
 
+    @action
     private handleProjectChange = (values: ProjectPickerValues | null) => {
-        if (
+        if (values && values.project && values.project.id && values.project.name) {
+            this.spotSentValues.project_id = values.project.id;
+            this.spotSentValues.project_name = values.project.name;
+        } else {
+            this.spotSentValues.project_id = null;
+            this.spotSentValues.project_name = null;
+        }
+        /*if (
             values &&
             values.project &&
             (this.values.project === null ||
@@ -620,7 +630,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         } else {
             this.values.project = null;
             this.spotSentValues.project_id = null;
-        }
+        }*/
     };
 
     private handleSpotResendToggle = (spotIndex: number) => (checked: boolean) => {
@@ -715,11 +725,11 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
     };
 
-    private createFirstSpot = () => {
+/*    private createFirstSpot = () => {
         this.values.spots = [this.defaultSpot];
 
         this.spotSentValues.spot_version = [this.defaultSpotElement];
-    };
+    };*/
 
     private get defaultSpot(): SpotSentSpot {
         return {
@@ -848,6 +858,37 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             return [];
         }
     }
+
+    private setHeaderAndInitialData = (): void => {
+        if (!this.props.match) {
+            return;
+        }
+
+        this.fetchSpotSentDetails(this.props.match.params['id']);
+
+        HeaderActions.setMainHeaderTitlesAndElements(`Spot Sent #${this.props.match.params['id']}`, null, null, null, [
+            <ButtonBack
+                key="button-back-to-list"
+                onClick={this.handleBackButtonClick}
+                label="Back to spots sent list"
+            />,
+        ]);
+    };
+
+    private get isEditMode(): boolean {
+        return (this.props.match && this.props.match.params['id']);
+    }
+
+    @action
+    private fetchSpotSentDetails = async (id: number): Promise<boolean> => {
+        try {
+            await SpotSentActions.fetchSpotSentDetails(id, true);
+            this.spotSentValues = SpotSentStore.spotSentDetails as SpotSentValueForSubmit;
+            return true;
+        } catch (error) {
+            throw error;
+        }
+    };
 
     @action
     private resetFinishRequestForm = (): void => {

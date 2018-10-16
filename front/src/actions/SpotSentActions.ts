@@ -5,7 +5,7 @@ import {
     FinishingHouseOptionsFromApi,
     SpotSentAllSpotsSentFromApi,
     SpotSentAllSpotsSentSpotData,
-    SpotSentAllSpotsSentSpotDataFromApi, SpotSentFromApi,
+    SpotSentAllSpotsSentSpotDataFromApi, SpotSentDetailsFromApi, SpotSentDetailsSpotDataFromApi, SpotSentFromApi,
     SpotSentOptionsFromApi
 } from '../types/spotSent';
 import { DateHandler } from '../helpers/DateHandler';
@@ -83,6 +83,73 @@ export class SpotSentActionsClass {
             SpotSentStore.spotSentSentViaMethodOptions = response.sent_via_method;
             return true;
         } catch (error) {
+            throw error;
+        }
+    };
+    @action
+    public fetchSpotSentDetails = async (id: number, forceFetch: boolean = false): Promise<boolean> => {
+        try {
+            if (
+                forceFetch ||
+                (SpotSentStore.spotSentDetailsLoading === false &&
+                    DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, SpotSentStore.spotSentDetailsLastFetchTimestamp))
+            ) {
+                SpotSentStore.spotSentDetailsLoading = true;
+
+                const response = (await API.getData(APIPath.SPOT_SENT + '/' + id)) as SpotSentDetailsFromApi;
+
+                SpotSentStore.spotSentDetails = {
+                    project_id: response.projectId,
+                    project_name: response.projectName,
+                    spot_version: response.spotData.map((spot: SpotSentDetailsSpotDataFromApi) => {
+                        return {
+                            campaign_id: spot.campaignId,
+                            spot_id: spot.spotId,
+                            spot_version_id: spot.spotVersionId,
+                            editors: [],
+                            spot_resend: spot.spotResend,
+                            finish_request: spot.finishRequest,
+                            line_status_id: spot.lineStatusId,
+                            sent_via_method: spot.sentViaMethod
+                        };
+                    }),
+                    finish_option: response.finishOption,
+                    notes: (response.notes) ? response.notes : '',
+                    internal_note: (response.internalNote) ? response.internalNote : '',
+                    studio_note: (response.studioNote) ? response.studioNote : '',
+                    status: response.statusId,
+                    full_lock: response.fullLock,
+                    deadline: (response.deadline && response.deadline) ? new Date(response.deadline.date) : null,
+                    spot_sent_date: (response.spotSentDate && response.spotSentDate.date) ? new Date(response.spotSentDate.date) : null,
+                    finishing_house: response.finishingHouse,
+                    framerate: response.framerate,
+                    framerate_note: (response.framerateNote) ? response.framerateNote : '',
+                    raster_size: response.rasterSize,
+                    raster_size_note: (response.rasterSizeNote) ? response.rasterSizeNote : '',
+                    music_cue_sheet: response.musicCueSheet,
+                    audio_prep: response.audioPrep,
+                    video_prep: response.videoPrep,
+                    spec_note: (response.specNote) ? response.specNote : '',
+                    spec_sheet_file: response.specSheetFile,
+                    tag_chart: (response.tagChart) ? response.tagChart : '',
+                    delivery_to_client: response.deliveryToClient,
+                    delivery_note: (response.deliveryNote) ? response.deliveryNote : '',
+                    audio: response.audio,
+                    audio_note: (response.audioNote) ? response.audioNote : '',
+                    graphics_finish: response.graphicsFinish,
+                    gfx_finish: response.gfxFinish,
+                    customer_contact: response.customerContact
+                };
+
+                SpotSentStore.spotSentDetailsLastFetchTimestamp = Date.now();
+                SpotSentStore.spotSentDetailsLoading = false;
+            }
+
+            return true;
+        } catch (error) {
+            setTimeout(() => {
+                this.fetchSpotSentDetails(id, true);
+            }, 512);
             throw error;
         }
     };

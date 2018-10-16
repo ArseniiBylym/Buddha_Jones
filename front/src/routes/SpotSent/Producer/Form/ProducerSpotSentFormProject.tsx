@@ -2,6 +2,7 @@ import * as React from 'react';
 import { observer, inject } from 'mobx-react';
 import { ProjectPicker, ProjectPickerValues, ProjectPickerGroupValues } from 'components/Buddha';
 import { AppOnlyStoreState } from 'store/AllStores';
+import { DatePicker } from '../../../../components/Calendar';
 
 // Props
 interface ProducerSpotSentFormProjectProps {
@@ -10,6 +11,7 @@ interface ProducerSpotSentFormProjectProps {
     project: ProjectPickerGroupValues | null;
     clientId: number | null;
     date: Date;
+    isClosedWhenInit?: boolean;
 }
 
 // Types
@@ -24,7 +26,7 @@ export class ProducerSpotSentFormProject extends React.Component<ProducerSpotSen
             <>
                 <ProjectPicker
                     headerElements={[
-                        /*{
+                        {
                             element: (
                                 <DatePicker
                                     key="date-picker"
@@ -33,7 +35,7 @@ export class ProducerSpotSentFormProject extends React.Component<ProducerSpotSen
                                     align="right"
                                 />
                             ),
-                        },*/
+                        },
                     ]}
                     onChange={this.handleProjectChange}
                     forUserId={this.props.store!.user.data!.id}
@@ -46,7 +48,7 @@ export class ProducerSpotSentFormProject extends React.Component<ProducerSpotSen
                     }}
                     title="Pick project"
                     show="project"
-                    openOn="project"
+                    openOn={(this.props.isClosedWhenInit) ? null : 'project'}
                     requiredSelection="project"
                     noSeparator={true}
                 />
