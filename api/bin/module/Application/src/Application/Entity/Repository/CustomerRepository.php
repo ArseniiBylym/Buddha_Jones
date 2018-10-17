@@ -30,9 +30,12 @@ class CustomerRepository extends EntityRepository
 
         $dqlFilter = [];
 
-
         if (isset($filter['search']) && $filter['search']) {
-            $dqlFilter[] = " (cu.customerName LIKE :search) ";
+            $dqlFilter[] = " (cu.cardcode LIKE :search OR cu.cardname LIKE :search ) ";
+        }
+
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $dqlFilter[] = " cu.studioId = :studio_id ";
         }
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
@@ -49,7 +52,7 @@ class CustomerRepository extends EntityRepository
             $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " ORDER BY cu.customerName ASC";
+        $dql .= " ORDER BY cu.cardname ASC";
 
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -58,6 +61,10 @@ class CustomerRepository extends EntityRepository
 
         if (isset($filter['search']) && $filter['search']) {
             $query->setParameter('search', '%' . $filter['search'] . '%');
+        }
+
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $query->setParameter('studio_id', $filter['studio_id']);
         }
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
@@ -80,7 +87,11 @@ class CustomerRepository extends EntityRepository
         $dqlFilter = [];
 
         if (isset($filter['search']) && $filter['search']) {
-            $dqlFilter[] = " (cu.customerName LIKE :search ) ";
+            $dqlFilter[] = " (cu.cardcode LIKE :search OR cu.cardname LIKE :search ) ";
+        }
+
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $dqlFilter[] = " cu.studioId = :studio_id ";
         }
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
@@ -103,6 +114,10 @@ class CustomerRepository extends EntityRepository
             $query->setParameter('search', '%' . $filter['search'] . '%');
         }
 
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $query->setParameter('studio_id', $filter['studio_id']);
+        }
+        
         if (isset($filter['first_letter']) && $filter['first_letter']) {
             if($filter['first_letter']!='0-9' && strtolower($filter['first_letter']!='other')) {
                 $query->setParameter('first_letter', $filter['first_letter']);
@@ -186,7 +201,7 @@ class CustomerRepository extends EntityRepository
         $dqlFilter = [];
 
         if (isset($filter['search']) && $filter['search']) {
-            $dqlFilter[] = " (cc.name LIKE :search OR cc.email LIKE :search OR cc.cardcode LIKE :search) ";
+            $dqlFilter[] = " (cc.name LIKE :search OR cc.email LIKE :search) ";
         }
 
         if (isset($filter['customer_id']) && $filter['customer_id']) {
@@ -221,6 +236,7 @@ class CustomerRepository extends EntityRepository
     public function getProjectCampaignOfCustomerContact($customerContactId)
     {
         $dql = "SELECT  
+                  ptc.id AS projectCampaignId, 
                   ptc.projectId, p.projectName, ptc.campaignId, c.campaignName, ptc.firstPointOfContactId,
                   ptc.requestWritingTeam, ptc.writingTeamNotes,
                 ptc.requestMusicTeam, ptc.musicTeamNotes
