@@ -45,6 +45,13 @@ class RediProject
     /**
      * @var integer
      *
+     * @ORM\Column(name="studio_id", type="integer", nullable=true)
+     */
+    private $studioId;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="customer_id", type="integer", nullable=true)
      */
     private $customerId;
@@ -142,6 +149,29 @@ class RediProject
     public function getProjectRelease()
     {
         return $this->projectRelease;
+    }
+
+    /**
+     * Set studioId
+     *
+     * @param integer $studioId
+     * @return RediProject
+     */
+    public function setStudioId($studioId)
+    {
+        $this->studioId = $studioId;
+
+        return $this;
+    }
+
+    /**
+     * Get studioId
+     *
+     * @return integer 
+     */
+    public function getStudioId()
+    {
+        return $this->studioId;
     }
 
     /**

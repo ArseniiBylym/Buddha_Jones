@@ -36,6 +36,7 @@ class ProjectController extends CustomAbstractActionController
         $projectCodeNameViewAccess = $this->_usersRepo->extractPermission($this->_user_permission, 31, 'view_or_edit');
 
         $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
+        $filter['studio_id'] = (int)$this->getRequest()->getQuery('studio_id', 0);
         $filter['customer_id'] = (int)$this->getRequest()->getQuery('customer_id', 0);
         $filter['detailed'] = (int)$this->getRequest()->getQuery('detailed', 0);
         $filter['project_code'] = $this->getRequest()->getQuery('project_code', null);
@@ -170,6 +171,7 @@ class ProjectController extends CustomAbstractActionController
 
         if($canCreateProject) {
             $customerId = (int)(isset($data['customer_id']) ? trim($data['customer_id']) : 0);
+            $studioId = (int)(isset($data['studio_id']) ? trim($data['studio_id']) : 0);
             $projectName = trim(($canEditProjectName && !empty($data['name'])) ? $data['name'] : '');
             $notes = trim(isset($data['notes']) ? $data['notes'] : '');
             $projectCode = ($canEditProjectCodeName && !empty($data['project_code'])) ? $data['project_code'] : null;
@@ -182,6 +184,7 @@ class ProjectController extends CustomAbstractActionController
                 if ($customer) {
                     $project = new RediProject();
                     $project->setCustomerId($customerId);
+                    $project->setStudioId($studioId);
 
                     if ($projectName) {
                         $project->setProjectName($projectName);
@@ -283,6 +286,7 @@ class ProjectController extends CustomAbstractActionController
 
         if($canCreateProject) {
             $customerId = isset($data['customer_id']) ? (int)trim($data['customer_id']) : null;
+            $studioId = isset($data['studio_id']) ? (int)trim($data['studio_id']) : null;
             $projectName = ($canEditProjectName && isset($data['name'])) ? trim($data['name']) : null;
             $notes = isset($data['notes']) ? trim($data['notes']) : null;
             $projectCode = ($canEditProjectCodeName && !empty($data['project_code'])) ? $data['project_code'] : null;
@@ -357,6 +361,10 @@ class ProjectController extends CustomAbstractActionController
 
                             $project->setCustomerId($customerId);
                         }
+                    }
+
+                    if($studioId) {
+                        $project->setStudioId($studioId);
                     }
 
                     if ($notes) {

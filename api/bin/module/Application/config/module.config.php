@@ -187,6 +187,7 @@ return array(
             'Application\Controller\SpotSentOptions'                                => 'Application\Controller\SpotSentOptionsController',
             'Application\Controller\Staff'                                          => 'Application\Controller\StaffController',
             'Application\Controller\Status'                                         => 'Application\Controller\StatusController',
+            'Application\Controller\Studio'                                         => 'Application\Controller\StudioController',
             'Application\Controller\TimeEntry'                                      => 'Application\Controller\TimeEntryController',
             'Application\Controller\TimeEntryOfUser'                                => 'Application\Controller\TimeEntryOfUserController',
             'Application\Controller\TimeEntrySubmitForReview'                       => 'Application\Controller\TimeEntrySubmitForReviewController',
