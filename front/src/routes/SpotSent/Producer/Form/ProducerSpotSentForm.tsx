@@ -73,8 +73,11 @@ export interface SpotSentValueParentChildForSubmit {
 
 export interface SpotSentVersionForSubmit {
     campaign_id: number | null;
+    campaign_name?: string;
     spot_id: number | null;
+    spot_name?: string;
     spot_version_id: number | null;
+    spot_version_name?: string;
     editors: number[];
     spot_resend: 0 | 1;
     finish_request: 0 | 1;
@@ -242,7 +245,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     height={this.spotSentValues.project_id ? 'auto' : 0}
                 >
                     <Section title="Spots">
-                        {this.values.spots.map((spot, spotIndex) => (
+                        {(this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).map((spot: SpotSentVersionForSubmit, spotIndex: number) => (
                             <ProducerSpotSentFormSpotCard
                                 key={spotIndex}
                                 onSpotResendToggle={this.handleSpotResendToggle(spotIndex)}
@@ -251,9 +254,29 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 onFinishingRequestToggle={this.handleFinishingRequestToggle(spotIndex)}
                                 onSentViaMethodChange={this.handleSentViaMethodsChange(spotIndex)}
                                 onEditorAdd={this.handleSpotAddingEditor(spotIndex)}
-                                project={this.values.project ? this.values.project.selectedProject : null}
+                                project={{
+                                    id: this.spotSentValues.project_id as number,
+                                    name: this.spotSentValues.project_name as string
+                                }}
                                 clientId={this.values.project ? this.values.project.clientId : null}
-                                spot={spot}
+                                spot={{
+                                    projectCampaign: {
+                                        id: spot.campaign_id as number,
+                                        name: spot.campaign_name as string
+                                    },
+                                    spot: {
+                                        id: spot.spot_id as number,
+                                        name: spot.spot_name as string
+                                    },
+                                    version: {
+                                        id: spot.spot_version_id as number,
+                                        name: spot.spot_version_name as string
+                                    },
+                                    isResend: (spot.spot_resend === 1) ? true : false,
+                                    isFinishingRequest: (spot.finish_request === 1) ? true : false,
+                                    selectedEditorsIds: spot.editors as number[],
+                                    sentViaMethod: spot.sent_via_method as number[]
+                                }}
                                 spotIndex={spotIndex}
                                 forUserId={this.props.store!.user.data!.id}
                             />
@@ -559,6 +582,9 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                 {this.showJson &&
                     <Section>
                         <pre>
+                            {JSON.stringify(this.isFinishingTypeSectionOpen, null, 2)}
+                        </pre>
+                        <pre>
                             {JSON.stringify(this.spotSentValues, null, 2)}
                             {/*{JSON.stringify(this.values, null, 2)}*/}
                         </pre>
@@ -573,7 +599,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     private handleBackButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        history.push('/portal/studio/producer-spot-sent');
+        history.push('/portal/studio/producer-spot-sent-list');
     };
 
     private handleDateChange = (date: Date | null) => {
@@ -639,6 +665,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_resend = checked ? 1 : 0;
     };
 
+    @action
     private handleFinishingRequestToggle = (spotIndex: number) => (checked: boolean) =>  {
         this.values.spots[spotIndex].isFinishingRequest = checked;
         this.isFinishingTypeSectionOpen = this.values.spots.some(spot => spot.isFinishingRequest === true);
@@ -646,6 +673,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).finish_request = checked ? 1 : 0;
     };
 
+    @action
     private handleSpotRemove = (spotIndex: number) => (e: React.MouseEvent<HTMLButtonElement>) => {
         this.values.spots = [...this.values.spots.slice(0, spotIndex), ...this.values.spots.slice(spotIndex + 1)];
 
@@ -656,12 +684,14 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     };
 
+    @action
     private handleCreateSpot = (e: React.MouseEvent<HTMLButtonElement>) => {
         this.values.spots.push(this.defaultSpot);
 
         (this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).push(this.defaultSpotElement);
     };
 
+    @action
     private handleSpotChange = (spotIndex: number) => (values: ProjectPickerValues | null) => {
         if (values && values.projectCampaign) {
             CampaignPeopleActions.fetchEditorsFromProjectCampaign(values.projectCampaign.id);
@@ -684,6 +714,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).sent_via_method = methods;
     };
 
+    @action
     private handleSpotAddingEditor = (spotIndex: number) => (userId: number) => {
         if (this.values.spots[spotIndex].selectedEditorsIds.indexOf(userId) === -1) {
             this.values.spots[spotIndex].selectedEditorsIds.push(userId);
@@ -694,6 +725,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
     };
 
+    @action
     private handleSentToContactToggle = (contact: ClientContact) => (checked: boolean) => {
         if (checked && this.values.studioContacts.indexOf(contact.id) === -1) {
             this.values.studioContacts.push(contact.id);
@@ -708,6 +740,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
     };
 
+    @action
     private handleFinalToggle = (checked: boolean) => {
         this.spotSentValues.status = (checked) ? 2 : 1;
     };
@@ -719,7 +752,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             (data.finish_option as string) = JSON.stringify(data.finish_option);
             (data.delivery_to_client as string) = JSON.stringify(data.delivery_to_client);
             await SpotSentActions.createNewSpotSent(data);
-            history.push('/portal/studio/producer-spot-sent');
+            history.push('/portal/studio/producer-spot-sent-list');
         } catch (error) {
             throw error;
         }
@@ -859,20 +892,32 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
     }
 
-    private setHeaderAndInitialData = (): void => {
-        if (!this.props.match) {
-            return;
+    @action
+    private setHeaderAndInitialData = async (): Promise<boolean> => {
+        try {
+            if (!this.props.match) {
+                return false;
+            }
+
+            HeaderActions.setMainHeaderTitlesAndElements(`Spot Sent #${this.props.match.params['id']}`, null, null, null, [
+                <ButtonBack
+                    key="button-back-to-list"
+                    onClick={this.handleBackButtonClick}
+                    label="Back to spots sent list"
+                />,
+            ]);
+
+            await this.fetchSpotSentDetails(this.props.match.params['id']);
+
+            if ((this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).some((spot: SpotSentVersionForSubmit) => spot.finish_request === 1)) {
+                this.isFinishingTypeSectionOpen = true;
+            }
+
+            return true;
+        } catch (error) {
+            throw error;
         }
 
-        this.fetchSpotSentDetails(this.props.match.params['id']);
-
-        HeaderActions.setMainHeaderTitlesAndElements(`Spot Sent #${this.props.match.params['id']}`, null, null, null, [
-            <ButtonBack
-                key="button-back-to-list"
-                onClick={this.handleBackButtonClick}
-                label="Back to spots sent list"
-            />,
-        ]);
     };
 
     private get isEditMode(): boolean {

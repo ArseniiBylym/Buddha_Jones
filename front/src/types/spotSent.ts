@@ -42,10 +42,8 @@ export interface SpotSentAllSpotsSentSpotData {
         title: string;
     };
     status: SpotSentAllSpotsSentSpotDataSingle;
-    changed: {
-        name: string;
-        title: string;
-    };
+    changed: SpotSentAllSpotsSentSpotDataSingle;
+    edit: SpotSentAllSpotsSentSpotDataSingle;
 }
 
 export interface SpotSentAllSpotsSentSpotDataSingle {
@@ -129,7 +127,7 @@ export interface SpotSentDetailsSpotDataFromApi {
     versionId: number;
     versionName: string;
     spotVersionId: number;
-    sentViaMethod: number[] | null;
+    sentViaMethod: string | null;
     finishRequest: 0 | 1;
     spotResend: 0 | 1;
     lineStatusId: number;

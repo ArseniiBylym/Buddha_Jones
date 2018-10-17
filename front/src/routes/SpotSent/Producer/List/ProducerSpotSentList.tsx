@@ -35,7 +35,7 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
         HeaderActions.setMainHeaderTitlesAndElements('Spots sent', null, null, null, [
             <ButtonAdd
                 key="create-spot-sent"
-                onClick={this.handleCreateSpotSentReport}
+                onClick={this.handleCreateSpotSentCreate}
                 label="Create new spot sent report"
                 labelOnLeft={true}
                 isWhite={true}
@@ -59,10 +59,6 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
             <Paragraph type="dim">No spots sent exist yet.</Paragraph>
         );
     }
-
-    private handleCreateSpotSentReport = (e: React.MouseEvent<HTMLButtonElement>): void => {
-        history.push('/portal/studio/producer-spot-sent/report');
-    };
 
     private fetchAllSpotSent(): void {
         SpotSentActions.fetchAllSpots(true);
@@ -88,12 +84,8 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
             spotTitles.map((objectKey: string, ind: number) => {
                 tableHeaders.push({
                     title: (SpotSentStore.spotSentAllSpots) ? SpotSentStore.spotSentAllSpots[0][objectKey].title : 'N/A',
-                    align: (ind === 0) ? 'left' : 'center'
+                    align: (ind === 0) ? 'left' : (ind === (spotTitles.length - 1)) ? 'right' : 'center'
                 });
-            });
-            tableHeaders.push({
-                title: '',
-                align: 'right'
             });
             let tableRowsArr: JSX.Element[] = SpotSentStore.spotSentAllSpots.map((spot: SpotSentAllSpotsSentSpotData, index: number) => {
                 let tableCellsArr: JSX.Element[] = Object.keys(spot).map((objectKey: string, ind: number) => {
@@ -101,6 +93,13 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
                         <Checkmark
                             checked={(spot[objectKey].name === 1) ? true : false}
                             type={'no-icon'}
+                        />
+                    );
+                    let editBlock: JSX.Element = (
+                        <ButtonEdit
+                            onClick={this.handleSpotSentDetails.bind(this, parseInt(spot[objectKey].name, 0))}
+                            label="Edit"
+                            labelOnLeft={false}
                         />
                     );
                     return (
@@ -112,6 +111,8 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
                                 checkMark
                             ) : objectKey === 'changed' ? (
                                 dateFormat(spot[objectKey].name, 'MM/DD/YY hh:ss')
+                            ) : objectKey === 'edit' ? (
+                                editBlock
                             ) : (
                                 spot[objectKey].name
                             )}
@@ -121,12 +122,6 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
                 return (
                     <TableRow key={`spot-${index}`}>
                         {tableCellsArr}
-                        <TableCell align={'center'}>
-                            <ButtonEdit
-                                label="Edit"
-                                labelOnLeft={false}
-                            />
-                        </TableCell>
                     </TableRow>
                 );
             });
@@ -144,6 +139,15 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
             );
         }
     }
+
+    private handleCreateSpotSentCreate = (e: React.MouseEvent<HTMLButtonElement>): void => {
+        history.push('/portal/studio/producer-spot-sent-details/');
+    };
+
+    private handleSpotSentDetails = (id: number, e: React.MouseEvent<HTMLButtonElement>): void => {
+        history.push('/portal/studio/producer-spot-sent-details/' + id);
+    };
+
 }
 
 export default ProducerSpotSentList;

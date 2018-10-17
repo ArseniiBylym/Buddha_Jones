@@ -8,7 +8,7 @@ import { ProjectPicker, ProjectPickerGroupValues, ProjectPickerValues, PersonWit
 import { Paragraph } from 'components/Content';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { ProjectCampaignUserFromApi } from 'types/projectDetails';
-import { computed, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import { LoadingIndicator } from 'components/Loaders';
 import { SpotSentStore } from '../../../../store/AllStores';
 import { SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
@@ -39,7 +39,7 @@ type ProducerSpotSentFormSpotCardPropsTypes = ProducerSpotSentFormSpotCardProps 
 @observer
 export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSentFormSpotCardPropsTypes, {}> {
 
-    @observable private sentViaMethod: number[] = [];
+    @observable private sentViaMethod: number[] = (this.props.spot.sentViaMethod && this.props.spot.sentViaMethod.length > 0) ? this.props.spot.sentViaMethod : [];
 
     @computed
     private get campaignEditorialUsers(): { isLoading: boolean; users: ProjectCampaignUserFromApi[] } {
@@ -136,6 +136,12 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                     </div>
                 </Section>
 
+                <section>
+                    <pre>
+                        {(this.props.store) ? JSON.stringify(this.props.store.campaignPeople.projectCampaignPeople, null, 2) : ''}
+                    </pre>
+                </section>
+
                 <Section
                     title={`Spot #${this.props.spotIndex + 1} editors`}
                     headerElements={
@@ -225,6 +231,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
         }
     };
 
+    @action
     private getSentViaMethods(): JSX.Element[] {
         if (SpotSentStore.spotSentSentViaMethodOptions && SpotSentStore.spotSentSentViaMethodOptions.length > 0) {
             return SpotSentStore.spotSentSentViaMethodOptions.map((method: SpotSentOptionsChildrenFromApi, index: number) => {

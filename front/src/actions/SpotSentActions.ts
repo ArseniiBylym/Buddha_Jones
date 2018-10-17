@@ -56,6 +56,10 @@ export class SpotSentActionsClass {
                             changed : {
                                 name : (spot.updatedAt && spot.updatedAt.date) ? spot.updatedAt.date : '',
                                 title : 'Changed'
+                            },
+                            edit : {
+                                name : spot.requestId.toString(),
+                                title : ''
                             }
                         };
                         spotSentAllSpots.push(spotItem);
@@ -86,6 +90,7 @@ export class SpotSentActionsClass {
             throw error;
         }
     };
+
     @action
     public fetchSpotSentDetails = async (id: number, forceFetch: boolean = false): Promise<boolean> => {
         try {
@@ -104,13 +109,16 @@ export class SpotSentActionsClass {
                     spot_version: response.spotData.map((spot: SpotSentDetailsSpotDataFromApi) => {
                         return {
                             campaign_id: spot.campaignId,
+                            campaign_name: spot.campaignName,
                             spot_id: spot.spotId,
-                            spot_version_id: spot.spotVersionId,
+                            spot_name: spot.spotName,
+                            spot_version_id: spot.versionId,
+                            spot_version_name: spot.versionName,
                             editors: [],
                             spot_resend: spot.spotResend,
                             finish_request: spot.finishRequest,
                             line_status_id: spot.lineStatusId,
-                            sent_via_method: spot.sentViaMethod
+                            sent_via_method: (spot.sentViaMethod) ? spot.sentViaMethod.split(',').map((method: string) => { return parseInt(method, 0); }) : null
                         };
                     }),
                     finish_option: response.finishOption,
