@@ -152,6 +152,27 @@ class UsersRepository extends EntityRepository
         return $response;
     }
 
+    public function getUserssById($ids)
+    {
+        $dql = "SELECT 
+                  u.id, u.firstName, u.lastName, u.initials
+                FROM \Application\Entity\RediUser u
+                WHERE u.id IN (:id)";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('id', $ids, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+        $result = $query->getArrayResult();
+
+        foreach($result as &$row) {
+            $row['name'] = trim($row['firstName'] . " " . $row['lastName']);
+
+            unset($row['firstName']);
+            unset($row['lastName']);
+        }
+
+        return $result;
+    }
+
     public function searchCount($search='', $ids=[], $class=[], $type=[])
     {
         $dql = "SELECT COUNT(a.id) AS total_count

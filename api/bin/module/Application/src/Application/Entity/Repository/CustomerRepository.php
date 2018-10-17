@@ -25,7 +25,10 @@ class CustomerRepository extends EntityRepository
     public function search($offset = 0, $length = 10, $filter=array())
     {
         $dql = "SELECT  
-                  cu
+                  cu.id,
+                  cu.cardcode,
+                  cu.cardname,
+                  cu.cardname AS customerName
                 FROM \Application\Entity\RediCustomer cu ";
 
         $dqlFilter = [];
@@ -40,11 +43,11 @@ class CustomerRepository extends EntityRepository
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
             if(strtolower($filter['first_letter']=='other')) {
-                $dqlFilter[] = " (SUBSTRING(cu.customerName, 1,1)<'A' AND SUBSTRING(cu.customerName, 1,1)<'0') ";
+                $dqlFilter[] = " (SUBSTRING(cu.cardname, 1,1)<'A' AND SUBSTRING(cu.cardname, 1,1)<'0') ";
             } elseif($filter['first_letter']=='0-9') {
-                $dqlFilter[] = " (SUBSTRING(cu.customerName, 1,1)>0 OR SUBSTRING(cu.customerName, 1,1)='0') ";
+                $dqlFilter[] = " (SUBSTRING(cu.cardname, 1,1)>0 OR SUBSTRING(cu.cardname, 1,1)='0') ";
             } else {
-                $dqlFilter[] = " (UPPER(SUBSTRING(cu.customerName, 1, 1))=:first_letter) ";
+                $dqlFilter[] = " (UPPER(SUBSTRING(cu.cardname, 1, 1))=:first_letter) ";
             }
         }
 
@@ -96,11 +99,11 @@ class CustomerRepository extends EntityRepository
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
             if(strtolower($filter['first_letter']=='other')) {
-                $dqlFilter[] = " (SUBSTRING(cu.customerName, 1,1)<'A' AND SUBSTRING(cu.customerName, 1,1)<'0') ";
+                $dqlFilter[] = " (SUBSTRING(cu.cardname, 1,1)<'A' AND SUBSTRING(cu.cardname, 1,1)<'0') ";
             } elseif($filter['first_letter']=='0-9') {
-                $dqlFilter[] = " (SUBSTRING(cu.customerName, 1,1)>0 OR SUBSTRING(cu.customerName, 1,1)='0') ";
+                $dqlFilter[] = " (SUBSTRING(cu.cardname, 1,1)>0 OR SUBSTRING(cu.cardname, 1,1)='0') ";
             } else {
-                $dqlFilter[] = " (UPPER(SUBSTRING(cu.customerName, 1, 1))=:first_letter) ";
+                $dqlFilter[] = " (UPPER(SUBSTRING(cu.cardname, 1, 1))=:first_letter) ";
             }
         }
 
@@ -324,6 +327,7 @@ class CustomerRepository extends EntityRepository
 
         return $result;
     }
+    
     public function getCampaignProjectCustomerContact($projectCampaignId)
     {
         $dql = "SELECT 

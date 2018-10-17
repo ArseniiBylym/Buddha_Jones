@@ -165,7 +165,7 @@ class SpotRepository extends EntityRepository
                 "deliveryNote",
                 "spotResend",
                 "statusId",
-                "editor",
+                // "editor",
                 "customerContact",
                 "createdBy",
                 "updatedBy",
@@ -305,6 +305,16 @@ class SpotRepository extends EntityRepository
                             $spotDataRow['sentViaMethodList'] = array_values(array_filter($methodes, function ($method) use ($methodIds) {
                                 return in_array($method['id'], $methodIds);
                             }));
+                        }
+                    }
+
+                    if (!empty($spotDataRow['editor'])) {
+                        $editorIds = explode(',', $spotDataRow['editor']);
+
+                        if (count($editorIds)) {
+                            $editorIds = array_map('trim', $editorIds);
+                            $userRepo = new UsersRepository($this->_entityManager);
+                            $spotDataRow['editorList'] = $userRepo->getUserssById($editorIds);
                         }
                     }
                 }
@@ -460,7 +470,8 @@ class SpotRepository extends EntityRepository
                     sc.sentViaMethod,
                     sc.finishRequest,
                     sc.spotResend,
-                    sc.lineStatusId
+                    sc.lineStatusId,
+                    sc.editor
                 FROM \Application\Entity\RediSpotSent sc
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id = sc.campaignId
