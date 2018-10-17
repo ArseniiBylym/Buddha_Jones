@@ -276,9 +276,9 @@ class CustomerRepository extends EntityRepository
                   ptc.projectId, p.projectName, ptc.campaignId, c.campaignName, ptc.firstPointOfContactId,
                   ptc.requestWritingTeam, ptc.writingTeamNotes,
                 ptc.requestMusicTeam, ptc.musicTeamNotes
-                FROM \Application\Entity\RediCustomerContactToProjectCampaign cctpc 
+                FROM \Application\Entity\RediProjectToCampaignCc cctpc 
                 INNER JOIN \Application\Entity\RediProjectToCampaign ptc 
-                  WITH cctpc.projectToCampaignId=ptc.id 
+                  WITH cctpc.projectCampaignId=ptc.id 
                 INNER JOIN \Application\Entity\RediProject p 
                   WITH p.id=ptc.projectId 
                 INNER JOIN \Application\Entity\RediCampaign c 
@@ -309,6 +309,35 @@ class CustomerRepository extends EntityRepository
         $response = (isset($result[0]) ? $result[0] : null);
 
         return $response;
+    }
+
+    public function getCustomerContactsById($ids)
+    {
+        $dql = "SELECT 
+                  cu
+                FROM \Application\Entity\RediCustomerContact cu
+                WHERE cu.id IN (:id)";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('id', $ids, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+        $result = $query->getArrayResult();
+
+        return $result;
+    }
+    public function getCampaignProjectCustomerContact($projectCampaignId)
+    {
+        $dql = "SELECT 
+                  cu
+                FROM \Application\Entity\RediProjectToCampaignCC ptccc
+                INNER JOIN \Application\Entity\RediCustomerContact cu
+                    WITH cu.id = ptccc.customerContactId
+                WHERE ptccc.projectCampaignId=:project_campaign_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('project_campaign_id', $projectCampaignId);
+        $result = $query->getArrayResult();
+
+        return $result;
     }
 
     /**

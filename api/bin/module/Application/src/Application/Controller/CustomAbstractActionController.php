@@ -44,7 +44,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_customerRepository;
     protected $_customerPriceRepository;
     protected $_customerContactRepository;
-    protected $_customerContactToProjectCampaignRepository;
+    protected $_projectToCamapignCC;
     protected $_editorToSpotRepository;
     protected $_estimateRepository;
     protected $_estimateToOutsideCostRepository;
@@ -129,7 +129,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_commentTypeRepository = $this->_em->getRepository('Application\Entity\RediCommentType');
         $this->_customerRepository = $this->_em->getRepository('Application\Entity\RediCustomer');
         $this->_customerContactRepository = $this->_em->getRepository('Application\Entity\RediCustomerContact');
-        $this->_customerContactToProjectCampaignRepository = $this->_em->getRepository('Application\Entity\RediCustomerContactToProjectCampaign');
+        $this->_projectToCamapignCC = $this->_em->getRepository('Application\Entity\RediProjectToCampaignCc');
         $this->_customerPriceRepository = $this->_em->getRepository('Application\Entity\RediCustomerPrice');
         $this->_editorToSpotRepository = $this->_em->getRepository('Application\Entity\RediEditorToSpot');
         $this->_estimateToOutsideCostRepository = $this->_em->getRepository('Application\Entity\RediEstimateToOutsideCost');

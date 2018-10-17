@@ -15,11 +15,14 @@ use Zend\Config\Config;
 class SpotRepository extends EntityRepository
 {
     private $_className = "\Application\Entity\RediSpot";
+    private $_entityManager;
 
     public function __construct(EntityManager $entityManager)
     {
         $classMetaData = $entityManager->getClassMetadata($this->_className);
         parent::__construct($entityManager, $classMetaData);
+
+        $this->_entityManager = $entityManager;
     }
 
     public function search($filter, $offset = 0, $length = 10)
@@ -361,6 +364,17 @@ class SpotRepository extends EntityRepository
                         } else {
                             $row['deliveryToClientList'] = null;
                         }
+                    }
+                }
+
+                if (!empty($row['customerContact'])) {
+                    $customerContactIds = explode(',', $row['customerContact']);
+
+                    if (count($customerContactIds)) {
+                        $customerContactIds = array_map('trim', $customerContactIds);
+                        $customerRepo = new CustomerRepository($this->_entityManager);
+
+                        $row['customerContactList'] = $customerRepo->getCustomerContactsById($customerContactIds);
                     }
                 }
 

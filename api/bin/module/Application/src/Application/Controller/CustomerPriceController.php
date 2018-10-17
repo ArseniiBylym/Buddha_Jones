@@ -3,7 +3,6 @@
 namespace Application\Controller;
 
 use Application\Entity\RediCustomerContact;
-use Application\Entity\RediCustomerContactToProjectCampaign;
 use Application\Entity\RediCustomerPrice;
 use Application\Entity\RediProject;
 use Application\Entity\RediProjectHistory;
