@@ -955,3 +955,33 @@ Get list of all studio
 ### HTTP Request
 
 `GET /studio`
+
+
+## Get distinct first letter of studio name
+
+Retrieve only distinct first letter of customer name.
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request successful",
+    "data": [
+        "0-9",
+        "A",
+        "B",
+        "D",
+        "G",
+        "L",
+        "M",
+        "T",
+        "Z",
+        "Other"
+    ]
+}
+```
+
+### HTTP Request
+
+`GET /studio/first-letters`

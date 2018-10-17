@@ -23,7 +23,7 @@ class ProjectRepository extends EntityRepository
     {
         $dql = "SELECT
                   p.id, 
-                  p.customerId, c.customerName, 
+                  p.customerId, c.cardname AS customerName, 
                   p.studioId, st.studioName,
                   c.cardcode,
                   p.notes,  p.projectRelease, MAX(ph.createdAt) as lastUpdatedAt
@@ -213,7 +213,7 @@ class ProjectRepository extends EntityRepository
 
             $projectNameView[] = ' ca.campaignName LIKE :search ';
             $projectNameView[] = ' ((u.firstName LIKE :search OR u.lastName LIKE :search) AND ptcu.roleId IN (1,2)) ';
-            $projectNameView[] = ' c.customerName LIKE :search ';
+            $projectNameView[] = ' c.cardname LIKE :search ';
             $projectNameView[] = ' cc.name LIKE :search ';
 
             $dqlFilter[] = " (" . implode(' OR ', $projectNameView) . ") ";
@@ -268,7 +268,7 @@ class ProjectRepository extends EntityRepository
         $dql = "SELECT
                   p.id,
                   p.customer_id AS customerId,
-                  c.customer_name AS customerName,
+                  c.cardname AS customerName,
                   p.studio_id AS studioId,
                   st.studio_name AS studioName,
                   p.project_release AS projectRelease,

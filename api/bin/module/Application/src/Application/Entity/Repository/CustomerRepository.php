@@ -163,14 +163,50 @@ class CustomerRepository extends EntityRepository
                 FROM
                   (SELECT 
                     CASE
-                      WHEN UPPER(SUBSTRING(customer_name, 1, 1)) REGEXP '[0-9]' 
+                      WHEN UPPER(SUBSTRING(cardname, 1, 1)) REGEXP '[0-9]' 
                       THEN '0-9' 
-                      WHEN UPPER(SUBSTRING(customer_name, 1, 1)) NOT REGEXP '[0-9A-Za-z]' 
+                      WHEN UPPER(SUBSTRING(cardname, 1, 1)) NOT REGEXP '[0-9A-Za-z]' 
                       THEN 'Other' 
-                      ELSE UPPER(SUBSTRING(customer_name, 1, 1)) 
+                      ELSE UPPER(SUBSTRING(cardname, 1, 1)) 
                     END AS cfl 
                   FROM
                     redi_customer) AS a 
+                ORDER BY 
+                  CASE
+                      WHEN cfl='Other' 
+                      THEN 'zzz' 
+                      ELSE cfl 
+                    END";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->execute();
+
+        $data = $query->fetchAll();
+
+        $response = array();
+
+        foreach($data as $row) {
+            $response[] = $row['cfl'];
+        }
+
+        return $response;
+    }
+
+    public function getDistinctStudioFirstLetter()
+    {
+        $dql = "SELECT DISTINCT 
+                  cfl 
+                FROM
+                  (SELECT 
+                    CASE
+                      WHEN UPPER(SUBSTRING(studio_name, 1, 1)) REGEXP '[0-9]' 
+                      THEN '0-9' 
+                      WHEN UPPER(SUBSTRING(studio_name, 1, 1)) NOT REGEXP '[0-9A-Za-z]' 
+                      THEN 'Other' 
+                      ELSE UPPER(SUBSTRING(studio_name, 1, 1)) 
+                    END AS cfl 
+                  FROM
+                    redi_studio) AS a 
                 ORDER BY 
                   CASE
                       WHEN cfl='Other' 
@@ -270,9 +306,7 @@ class CustomerRepository extends EntityRepository
         $query->setMaxResults(1);
         $result = $query->getArrayResult();
 
-
         $response = (isset($result[0]) ? $result[0] : null);
-
 
         return $response;
     }

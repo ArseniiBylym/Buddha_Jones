@@ -109,10 +109,6 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | customer_id | int | null | Narrow response to single customer with specific ID
 
-
-
-
-
 ## Get distinct first letter of customer name
 
 Retrieve only distinct first letter of customer name.

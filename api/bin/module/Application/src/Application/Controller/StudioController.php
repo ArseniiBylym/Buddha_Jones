@@ -34,7 +34,29 @@ class StudioController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
+    public function get($id) {
+        $response = array();
 
+        if($id=='first-letters') {
+            $response = $this->_customerRepo->getDistinctStudioFirstLetter();
+        } else if($id) {
+            $data = $this->_studioRepository->find($id);
 
+            if($data) {
+                $response = array(
+                    'id' => $data->getId(),
+                    'cardcode' => $data->getCardcode(),
+                    'studioName' => trim($data->getStudioName()),
+                );
+            }
+        } 
 
+        $response = array(
+            'status' => 1,
+            'message' => 'Request successful',
+            'data' => $response
+        );
+
+        return new JsonModel($response);
+    }
 }
