@@ -18,6 +18,7 @@ class CustomerController extends CustomAbstractActionController
         $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
         $length = (int)trim($this->getRequest()->getQuery('length', 10));
         $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
+        $filter['studio_id'] = trim($this->getRequest()->getQuery('studio_id', ''));
         $filter['first_letter'] = trim($this->getRequest()->getQuery('first_letter', ''));
 
         $data = $this->_customerRepo->search($offset, $length, $filter);

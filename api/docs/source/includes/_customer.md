@@ -1,9 +1,5 @@
 # Customer (client)
 
-
-
-
-
 ## Get customer list
 
 Retrieve list of customer.
@@ -14,20 +10,32 @@ Retrieve list of customer.
 {
     "status": 1,
     "message": "Request successful",
-    "total_count": 3,
-    "object_count": 3,
+    "total_count": 24,
+    "object_count": 10,
     "data": [
         {
-            "id": 3,
-            "customerName": "antoher customer 3"
+            "id": 15,
+            "studioId": 2,
+            "cardcode": "C00496",
+            "cardname": " Mitchell Davis"
         },
         {
-            "id": 1,
-            "customerName": "Test Customer 1"
+            "id": 16,
+            "studioId": 2,
+            "cardcode": "C00748\r\n",
+            "cardname": "Amanda Miller\r\n"
         },
         {
-            "id": 2,
-            "customerName": "Test Customer 2"
+            "id": 11,
+            "studioId": 2,
+            "cardcode": "C00702\r\n",
+            "cardname": "Ariadne Chucholowski\r\n"
+        },
+        {
+            "id": 9,
+            "studioId": 2,
+            "cardcode": "C00722",
+            "cardname": "Bianka Cisneros"
         }
     ]
 }
@@ -44,6 +52,7 @@ Required | Parameter | Type | Default | Description
 false | length | int | 10 | Limit number of returned results
 false | offset | int | 0 | Offset returned results
 false | search | string | null | search string which will match with: customer name
+false | studio_id | int | null | studio id
 false | first_letter | string | null | send this param for filter with first letter of customer name (send '0-9' or any letter from 'A' to 'Z' or for others send 'other')
 
 
@@ -99,10 +108,6 @@ Retrieve single customer based on its ID.
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | customer_id | int | null | Narrow response to single customer with specific ID
-
-
-
-
 
 ## Get distinct first letter of customer name
 

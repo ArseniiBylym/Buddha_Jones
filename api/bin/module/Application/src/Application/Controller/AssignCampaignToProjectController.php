@@ -27,19 +27,19 @@ class AssignCampaignToProjectController extends CustomAbstractActionController
                 $campaign = $this->_campaignRepository->find($campaignId);
 
                 if ($campaign) {
-                    $existingProjectToCampaign = new RediProjectToCampaign();
-                    $existingProjectToCampaign->setProjectId($projectId);
-                    $existingProjectToCampaign->setCampaignId($campaignId);
-
+                    $projectToCampaign = new RediProjectToCampaign();
+                    $projectToCampaign->setProjectId($projectId);
+                    $projectToCampaign->setCampaignId($campaignId);
+                    $projectToCampaign->setApprovedByBilling(0);
                     if($por) {
-                        $existingProjectToCampaign->setPor($por);
+                        $projectToCampaign->setPor($por);
                     }
 
                     if($invoiceContact) {
-                        $existingProjectToCampaign->setInvoiceContact($invoiceContact);
+                        $projectToCampaign->setInvoiceContact($invoiceContact);
                     }
 
-                    $this->_em->persist($existingProjectToCampaign);
+                    $this->_em->persist($projectToCampaign);
                     $this->_em->flush();
 
                     // project history

@@ -413,6 +413,10 @@ class SpotSentController extends CustomAbstractActionController
         $data['finishOption'] = $this->commaSeparatedToArray($data['finishOption'], true);
         $data['customerContact'] = $this->commaSeparatedToArray($data['customerContact']);
 
+        foreach($data['spotData'] as &$row) {
+            $row['editor'] = $this->commaSeparatedToArray($row['editor']);
+        }
+
         return $data;
     }
 

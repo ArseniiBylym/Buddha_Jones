@@ -25,23 +25,29 @@ class CustomerRepository extends EntityRepository
     public function search($offset = 0, $length = 10, $filter=array())
     {
         $dql = "SELECT  
-                  cu
+                  cu.id,
+                  cu.cardcode,
+                  cu.cardname,
+                  cu.cardname AS customerName
                 FROM \Application\Entity\RediCustomer cu ";
 
         $dqlFilter = [];
 
-
         if (isset($filter['search']) && $filter['search']) {
-            $dqlFilter[] = " (cu.customerName LIKE :search) ";
+            $dqlFilter[] = " (cu.cardcode LIKE :search OR cu.cardname LIKE :search ) ";
+        }
+
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $dqlFilter[] = " cu.studioId = :studio_id ";
         }
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
             if(strtolower($filter['first_letter']=='other')) {
-                $dqlFilter[] = " (SUBSTRING(cu.customerName, 1,1)<'A' AND SUBSTRING(cu.customerName, 1,1)<'0') ";
+                $dqlFilter[] = " (SUBSTRING(cu.cardname, 1,1)<'A' AND SUBSTRING(cu.cardname, 1,1)<'0') ";
             } elseif($filter['first_letter']=='0-9') {
-                $dqlFilter[] = " (SUBSTRING(cu.customerName, 1,1)>0 OR SUBSTRING(cu.customerName, 1,1)='0') ";
+                $dqlFilter[] = " (SUBSTRING(cu.cardname, 1,1)>0 OR SUBSTRING(cu.cardname, 1,1)='0') ";
             } else {
-                $dqlFilter[] = " (UPPER(SUBSTRING(cu.customerName, 1, 1))=:first_letter) ";
+                $dqlFilter[] = " (UPPER(SUBSTRING(cu.cardname, 1, 1))=:first_letter) ";
             }
         }
 
@@ -49,7 +55,7 @@ class CustomerRepository extends EntityRepository
             $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " ORDER BY cu.customerName ASC";
+        $dql .= " ORDER BY cu.cardname ASC";
 
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -58,6 +64,10 @@ class CustomerRepository extends EntityRepository
 
         if (isset($filter['search']) && $filter['search']) {
             $query->setParameter('search', '%' . $filter['search'] . '%');
+        }
+
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $query->setParameter('studio_id', $filter['studio_id']);
         }
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
@@ -80,16 +90,20 @@ class CustomerRepository extends EntityRepository
         $dqlFilter = [];
 
         if (isset($filter['search']) && $filter['search']) {
-            $dqlFilter[] = " (cu.customerName LIKE :search ) ";
+            $dqlFilter[] = " (cu.cardcode LIKE :search OR cu.cardname LIKE :search ) ";
+        }
+
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $dqlFilter[] = " cu.studioId = :studio_id ";
         }
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
             if(strtolower($filter['first_letter']=='other')) {
-                $dqlFilter[] = " (SUBSTRING(cu.customerName, 1,1)<'A' AND SUBSTRING(cu.customerName, 1,1)<'0') ";
+                $dqlFilter[] = " (SUBSTRING(cu.cardname, 1,1)<'A' AND SUBSTRING(cu.cardname, 1,1)<'0') ";
             } elseif($filter['first_letter']=='0-9') {
-                $dqlFilter[] = " (SUBSTRING(cu.customerName, 1,1)>0 OR SUBSTRING(cu.customerName, 1,1)='0') ";
+                $dqlFilter[] = " (SUBSTRING(cu.cardname, 1,1)>0 OR SUBSTRING(cu.cardname, 1,1)='0') ";
             } else {
-                $dqlFilter[] = " (UPPER(SUBSTRING(cu.customerName, 1, 1))=:first_letter) ";
+                $dqlFilter[] = " (UPPER(SUBSTRING(cu.cardname, 1, 1))=:first_letter) ";
             }
         }
 
@@ -103,6 +117,10 @@ class CustomerRepository extends EntityRepository
             $query->setParameter('search', '%' . $filter['search'] . '%');
         }
 
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $query->setParameter('studio_id', $filter['studio_id']);
+        }
+        
         if (isset($filter['first_letter']) && $filter['first_letter']) {
             if($filter['first_letter']!='0-9' && strtolower($filter['first_letter']!='other')) {
                 $query->setParameter('first_letter', $filter['first_letter']);
@@ -148,14 +166,50 @@ class CustomerRepository extends EntityRepository
                 FROM
                   (SELECT 
                     CASE
-                      WHEN UPPER(SUBSTRING(customer_name, 1, 1)) REGEXP '[0-9]' 
+                      WHEN UPPER(SUBSTRING(cardname, 1, 1)) REGEXP '[0-9]' 
                       THEN '0-9' 
-                      WHEN UPPER(SUBSTRING(customer_name, 1, 1)) NOT REGEXP '[0-9A-Za-z]' 
+                      WHEN UPPER(SUBSTRING(cardname, 1, 1)) NOT REGEXP '[0-9A-Za-z]' 
                       THEN 'Other' 
-                      ELSE UPPER(SUBSTRING(customer_name, 1, 1)) 
+                      ELSE UPPER(SUBSTRING(cardname, 1, 1)) 
                     END AS cfl 
                   FROM
                     redi_customer) AS a 
+                ORDER BY 
+                  CASE
+                      WHEN cfl='Other' 
+                      THEN 'zzz' 
+                      ELSE cfl 
+                    END";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->execute();
+
+        $data = $query->fetchAll();
+
+        $response = array();
+
+        foreach($data as $row) {
+            $response[] = $row['cfl'];
+        }
+
+        return $response;
+    }
+
+    public function getDistinctStudioFirstLetter()
+    {
+        $dql = "SELECT DISTINCT 
+                  cfl 
+                FROM
+                  (SELECT 
+                    CASE
+                      WHEN UPPER(SUBSTRING(studio_name, 1, 1)) REGEXP '[0-9]' 
+                      THEN '0-9' 
+                      WHEN UPPER(SUBSTRING(studio_name, 1, 1)) NOT REGEXP '[0-9A-Za-z]' 
+                      THEN 'Other' 
+                      ELSE UPPER(SUBSTRING(studio_name, 1, 1)) 
+                    END AS cfl 
+                  FROM
+                    redi_studio) AS a 
                 ORDER BY 
                   CASE
                       WHEN cfl='Other' 
@@ -186,7 +240,7 @@ class CustomerRepository extends EntityRepository
         $dqlFilter = [];
 
         if (isset($filter['search']) && $filter['search']) {
-            $dqlFilter[] = " (cc.name LIKE :search OR cc.email LIKE :search OR cc.cardcode LIKE :search) ";
+            $dqlFilter[] = " (cc.name LIKE :search OR cc.email LIKE :search) ";
         }
 
         if (isset($filter['customer_id']) && $filter['customer_id']) {
@@ -221,12 +275,13 @@ class CustomerRepository extends EntityRepository
     public function getProjectCampaignOfCustomerContact($customerContactId)
     {
         $dql = "SELECT  
+                  ptc.id AS projectCampaignId, 
                   ptc.projectId, p.projectName, ptc.campaignId, c.campaignName, ptc.firstPointOfContactId,
                   ptc.requestWritingTeam, ptc.writingTeamNotes,
                 ptc.requestMusicTeam, ptc.musicTeamNotes
-                FROM \Application\Entity\RediCustomerContactToProjectCampaign cctpc 
+                FROM \Application\Entity\RediProjectToCampaignCc cctpc 
                 INNER JOIN \Application\Entity\RediProjectToCampaign ptc 
-                  WITH cctpc.projectToCampaignId=ptc.id 
+                  WITH cctpc.projectCampaignId=ptc.id 
                 INNER JOIN \Application\Entity\RediProject p 
                   WITH p.id=ptc.projectId 
                 INNER JOIN \Application\Entity\RediCampaign c 
@@ -254,11 +309,39 @@ class CustomerRepository extends EntityRepository
         $query->setMaxResults(1);
         $result = $query->getArrayResult();
 
-
         $response = (isset($result[0]) ? $result[0] : null);
 
-
         return $response;
+    }
+
+    public function getCustomerContactsById($ids)
+    {
+        $dql = "SELECT 
+                  cu
+                FROM \Application\Entity\RediCustomerContact cu
+                WHERE cu.id IN (:id)";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('id', $ids, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+        $result = $query->getArrayResult();
+
+        return $result;
+    }
+    
+    public function getCampaignProjectCustomerContact($projectCampaignId)
+    {
+        $dql = "SELECT 
+                  cu
+                FROM \Application\Entity\RediProjectToCampaignCC ptccc
+                INNER JOIN \Application\Entity\RediCustomerContact cu
+                    WITH cu.id = ptccc.customerContactId
+                WHERE ptccc.projectCampaignId=:project_campaign_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('project_campaign_id', $projectCampaignId);
+        $result = $query->getArrayResult();
+
+        return $result;
     }
 
     /**
@@ -317,6 +400,23 @@ class CustomerRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('customer_id', $customerId);
         $query->setParameter('activity_id', $activityId);
+        $query->setMaxResults(1);
+
+        $data = $query->getArrayResult();
+
+        return (!empty($data[0]) ? $data[0] : null);
+    }
+
+    public function getCustomerNewById($id)
+    {
+        $dql = "SELECT  
+                  cn
+                FROM \Application\Entity\RediCustomerNew cn
+                WHERE 
+                    cn.id=:id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('id', $id);
         $query->setMaxResults(1);
 
         $data = $query->getArrayResult();

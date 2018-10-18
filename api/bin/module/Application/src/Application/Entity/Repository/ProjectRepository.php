@@ -22,7 +22,10 @@ class ProjectRepository extends EntityRepository
     public function search($filter = array(), $offset = 0, $length = 10, $returnSingleResult = false)
     {
         $dql = "SELECT
-                  p.id, p.customerId, c.customerName, c.cardcode,
+                  p.id, 
+                  p.customerId, c.cardname AS customerName, 
+                  p.studioId, st.studioName,
+                  c.cardcode,
                   p.notes,  p.projectRelease, MAX(ph.createdAt) as lastUpdatedAt
                 FROM \Application\Entity\RediProject p
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
@@ -33,6 +36,8 @@ class ProjectRepository extends EntityRepository
                   WITH p.id=ph.projectId
                 LEFT JOIN \Application\Entity\RediCustomer c
                   WITH c.id=p.customerId
+                LEFT JOIN \Application\Entity\RediStudio st
+                  WITH st.id = p.studioId
                 LEFT JOIN \Application\Entity\RediProjectToCampaignUser ptcu
                     WITH ptcu.projectCampaignId = ptc.id
                 LEFT JOIN \Application\Entity\RediUser u
@@ -208,7 +213,7 @@ class ProjectRepository extends EntityRepository
 
             $projectNameView[] = ' ca.campaignName LIKE :search ';
             $projectNameView[] = ' ((u.firstName LIKE :search OR u.lastName LIKE :search) AND ptcu.roleId IN (1,2)) ';
-            $projectNameView[] = ' c.customerName LIKE :search ';
+            $projectNameView[] = ' c.cardname LIKE :search ';
             $projectNameView[] = ' cc.name LIKE :search ';
 
             $dqlFilter[] = " (" . implode(' OR ', $projectNameView) . ") ";
@@ -263,8 +268,10 @@ class ProjectRepository extends EntityRepository
         $dql = "SELECT
                   p.id,
                   p.customer_id AS customerId,
+                  c.cardname AS customerName,
+                  p.studio_id AS studioId,
+                  st.studio_name AS studioName,
                   p.project_release AS projectRelease,
-                  c.customer_name AS customerName,
                   c.cardcode,
                   p.notes,
                   MAX(ph.created_at) AS lastUpdatedAt,
@@ -297,6 +304,8 @@ class ProjectRepository extends EntityRepository
                     ON ca.id=ptc.campaign_id
                   LEFT JOIN redi_customer c
                     ON p.customer_id = c.id
+                  LEFT JOIN redi_studio st
+                    ON st.id = p.studio_id
                   LEFT JOIN redi_project_history ph
                     ON p.id = ph.project_id
                   LEFT JOIN redi_project_to_campaign_user ptcu
@@ -438,7 +447,8 @@ class ProjectRepository extends EntityRepository
         $dql = "SELECT ptc.id AS id, ptc.id AS projectCampaignId, c.id AS campaignId, c.campaignName, ptc.firstPointOfContactId,
                 ptc.requestWritingTeam, ptc.writingTeamNotes,
                 ptc.requestMusicTeam, ptc.musicTeamNotes, ptc.note,
-                ptc.budget, ptc.budgetNote, ptc.por, ptc.invoiceContact, ptc.materialReceiveDate
+                ptc.budget, ptc.budgetNote, ptc.por, ptc.invoiceContact, ptc.materialReceiveDate,
+                ptc.approvedByBilling
                 FROM \Application\Entity\RediProjectToCampaign ptc
                 INNER JOIN \Application\Entity\RediCampaign c
                   WITH ptc.campaignId=c.id

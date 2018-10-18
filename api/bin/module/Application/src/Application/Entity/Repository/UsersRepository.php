@@ -15,6 +15,7 @@ use Zend\Form\Annotation\Type;
 class UsersRepository extends EntityRepository
 {
     private $_className = "\Application\Entity\RediUser";
+    private $_billingUserIds = array(5, 24, 100);
 
     public function __construct(EntityManager $entityManager) {
         $classMetaData = $entityManager->getClassMetadata($this->_className);
@@ -149,6 +150,27 @@ class UsersRepository extends EntityRepository
         }
 
         return $response;
+    }
+
+    public function getUserssById($ids)
+    {
+        $dql = "SELECT 
+                  u.id, u.firstName, u.lastName, u.initials
+                FROM \Application\Entity\RediUser u
+                WHERE u.id IN (:id)";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('id', $ids, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+        $result = $query->getArrayResult();
+
+        foreach($result as &$row) {
+            $row['name'] = trim($row['firstName'] . " " . $row['lastName']);
+
+            unset($row['firstName']);
+            unset($row['lastName']);
+        }
+
+        return $result;
     }
 
     public function searchCount($search='', $ids=[], $class=[], $type=[])
@@ -493,6 +515,25 @@ class UsersRepository extends EntityRepository
         }
 
         return $result;
+    }
+
+    public function isBillingUser($userId) {
+        $dql = "SELECT 
+                u.typeId
+                FROM \Application\Entity\RediUser u
+                WHERE u.id = :user_id";
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_id', $userId);
+        $query->setMaxResults(1);
+        $result = $query->getArrayResult();
+
+        if(empty($result[0]['typeId'])) {
+            return false;
+        }
+
+        $userTypeId = (int)$result[0]['typeId'];
+
+        return in_array($userTypeId, $this->_billingUserIds);
     }
 
 }

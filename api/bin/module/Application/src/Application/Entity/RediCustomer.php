@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * RediCustomer
  *
- * @ORM\Table(name="redi_customer", indexes={@ORM\Index(name="cardcode", columns={"cardcode"})})
+ * @ORM\Table(name="redi_customer", indexes={@ORM\Index(name="customer_id", columns={"studio_id"}), @ORM\Index(name="cardcode", columns={"cardcode"})})
  * @ORM\Entity
  */
 class RediCustomer
@@ -22,18 +22,25 @@ class RediCustomer
     private $id;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="studio_id", type="integer", nullable=true)
+     */
+    private $studioId;
+
+    /**
      * @var string
      *
-     * @ORM\Column(name="cardcode", type="string", length=255, nullable=true)
+     * @ORM\Column(name="cardcode", type="string", length=15, nullable=true)
      */
     private $cardcode;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="customer_name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="cardname", type="string", length=100, nullable=true)
      */
-    private $customerName;
+    private $cardname;
 
 
 
@@ -45,6 +52,29 @@ class RediCustomer
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set studioId
+     *
+     * @param integer $studioId
+     * @return RediCustomer
+     */
+    public function setStudioId($studioId)
+    {
+        $this->studioId = $studioId;
+
+        return $this;
+    }
+
+    /**
+     * Get studioId
+     *
+     * @return integer 
+     */
+    public function getStudioId()
+    {
+        return $this->studioId;
     }
 
     /**
@@ -71,25 +101,25 @@ class RediCustomer
     }
 
     /**
-     * Set customerName
+     * Set cardname
      *
-     * @param string $customerName
+     * @param string $cardname
      * @return RediCustomer
      */
-    public function setCustomerName($customerName)
+    public function setCardname($cardname)
     {
-        $this->customerName = $customerName;
+        $this->cardname = $cardname;
 
         return $this;
     }
 
     /**
-     * Get customerName
+     * Get cardname
      *
      * @return string 
      */
-    public function getCustomerName()
+    public function getCardname()
     {
-        return $this->customerName;
+        return $this->cardname;
     }
 }

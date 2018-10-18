@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * RediCustomerContact
  *
- * @ORM\Table(name="redi_customer_contact", indexes={@ORM\Index(name="customer_id", columns={"customer_id"}), @ORM\Index(name="cardcode", columns={"cardcode"})})
+ * @ORM\Table(name="redi_customer_contact", indexes={@ORM\Index(name="customer_id", columns={"customer_id"})})
  * @ORM\Entity
  */
 class RediCustomerContact
@@ -31,13 +31,6 @@ class RediCustomerContact
     /**
      * @var string
      *
-     * @ORM\Column(name="cardcode", type="string", length=255, nullable=true)
-     */
-    private $cardcode;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     private $name;
@@ -55,20 +48,6 @@ class RediCustomerContact
      * @ORM\Column(name="mobile_phone", type="string", length=255, nullable=true)
      */
     private $mobilePhone;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="office_phone", type="string", length=255, nullable=true)
-     */
-    private $officePhone;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="postal_address", type="text", nullable=true)
-     */
-    private $postalAddress;
 
 
 
@@ -103,29 +82,6 @@ class RediCustomerContact
     public function getCustomerId()
     {
         return $this->customerId;
-    }
-
-    /**
-     * Set cardcode
-     *
-     * @param string $cardcode
-     * @return RediCustomerContact
-     */
-    public function setCardcode($cardcode)
-    {
-        $this->cardcode = $cardcode;
-
-        return $this;
-    }
-
-    /**
-     * Get cardcode
-     *
-     * @return string 
-     */
-    public function getCardcode()
-    {
-        return $this->cardcode;
     }
 
     /**
@@ -195,51 +151,5 @@ class RediCustomerContact
     public function getMobilePhone()
     {
         return $this->mobilePhone;
-    }
-
-    /**
-     * Set officePhone
-     *
-     * @param string $officePhone
-     * @return RediCustomerContact
-     */
-    public function setOfficePhone($officePhone)
-    {
-        $this->officePhone = $officePhone;
-
-        return $this;
-    }
-
-    /**
-     * Get officePhone
-     *
-     * @return string 
-     */
-    public function getOfficePhone()
-    {
-        return $this->officePhone;
-    }
-
-    /**
-     * Set postalAddress
-     *
-     * @param string $postalAddress
-     * @return RediCustomerContact
-     */
-    public function setPostalAddress($postalAddress)
-    {
-        $this->postalAddress = $postalAddress;
-
-        return $this;
-    }
-
-    /**
-     * Get postalAddress
-     *
-     * @return string 
-     */
-    public function getPostalAddress()
-    {
-        return $this->postalAddress;
     }
 }

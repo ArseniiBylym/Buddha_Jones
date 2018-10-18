@@ -3,7 +3,7 @@
 namespace Application\Controller;
 
 use Application\Entity\RediCustomerContact;
-use Application\Entity\RediCustomerContactToProjectCampaign;
+use Application\Entity\RediProjectToCampaignCc;
 use Application\Entity\RediProject;
 use Application\Entity\RediProjectHistory;
 use Application\Entity\RediProjectManager;
@@ -112,7 +112,7 @@ class CustomerContactController extends CustomAbstractActionController
                                 $this->_em->flush();
                             }
 
-                            $customerContactToProjectCampaign = new RediCustomerContactToProjectCampaign();
+                            $customerContactToProjectCampaign = new RediProjectToCampaignCc();
                             $customerContactToProjectCampaign->setCustomerContactId($customerContactId);
                             $customerContactToProjectCampaign->setProjectToCampaignId($existingProjectCampaign->getId());
                             $this->_em->persist($customerContactToProjectCampaign);
@@ -198,7 +198,7 @@ class CustomerContactController extends CustomAbstractActionController
 
                 if ($projectCampaign) {
                     // Remove existing project campaign form customer contact
-                    $projectCampaignCustomerContact = $this->_customerContactToProjectCampaignRepository->findBy(array('customerContactId' => $id));
+                    $projectCampaignCustomerContact = $this->_projectToCamapignCC->findBy(array('customerContactId' => $id));
 
                     if($projectCampaignCustomerContact) {
                         foreach($projectCampaignCustomerContact as $pccc) {
@@ -222,12 +222,12 @@ class CustomerContactController extends CustomAbstractActionController
                                 $this->_em->flush();
                             }
 
-                            $existingProjectCampaignCustomerContact = $this->_customerContactToProjectCampaignRepository->findOneBy(array('customerContactId' => $id, 'projectToCampaignId' => $existingProjectCampaign->getId()));
+                            $existingProjectCampaignCustomerContact = $this->_projectToCamapignCC->findOneBy(array('customerContactId' => $id, 'projectToCampaignId' => $existingProjectCampaign->getId()));
 
                             if(!$existingProjectCampaignCustomerContact) {
-                                $customerContactToProjectCampaign = new RediCustomerContactToProjectCampaign();
+                                $customerContactToProjectCampaign = new RediProjectToCampaignCc();
                                 $customerContactToProjectCampaign->setCustomerContactId($id);
-                                $customerContactToProjectCampaign->setProjectToCampaignId($existingProjectCampaign->getId());
+                                $customerContactToProjectCampaign->setProjectCampaignId($existingProjectCampaign->getId());
                                 $this->_em->persist($customerContactToProjectCampaign);
                             }
                         }
@@ -325,12 +325,12 @@ class CustomerContactController extends CustomAbstractActionController
                                 $this->_em->flush();
                             }
 
-                            $existingProjectCampaignCustomerContact = $this->_customerContactToProjectCampaignRepository->findOneBy(array('customerContactId' => $id, 'projectToCampaignId' => $existingProjectCampaign->getId()));
+                            $existingProjectCampaignCustomerContact = $this->_projectToCamapignCC->findOneBy(array('customerContactId' => $id, 'projectCampaignId' => $existingProjectCampaign->getId()));
 
                             if(!$existingProjectCampaignCustomerContact) {
-                                $customerContactToProjectCampaign = new RediCustomerContactToProjectCampaign();
+                                $customerContactToProjectCampaign = new RediProjectToCampaignCc();
                                 $customerContactToProjectCampaign->setCustomerContactId($id);
-                                $customerContactToProjectCampaign->setProjectToCampaignId($existingProjectCampaign->getId());
+                                $customerContactToProjectCampaign->setProjectCampaignId($existingProjectCampaign->getId());
                                 $this->_em->persist($customerContactToProjectCampaign);
                             }
                         }

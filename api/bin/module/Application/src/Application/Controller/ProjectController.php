@@ -36,6 +36,7 @@ class ProjectController extends CustomAbstractActionController
         $projectCodeNameViewAccess = $this->_usersRepo->extractPermission($this->_user_permission, 31, 'view_or_edit');
 
         $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
+        $filter['studio_id'] = (int)$this->getRequest()->getQuery('studio_id', 0);
         $filter['customer_id'] = (int)$this->getRequest()->getQuery('customer_id', 0);
         $filter['detailed'] = (int)$this->getRequest()->getQuery('detailed', 0);
         $filter['project_code'] = $this->getRequest()->getQuery('project_code', null);
@@ -77,6 +78,8 @@ class ProjectController extends CustomAbstractActionController
                     if($canViewBilling) {
                         $row['billingUser'] = $this->_campaignRepo->getCampaignProjectPeople('billing', $row['projectCampaignId'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
                     }
+
+                    $row['customerContact'] = $this->_customerRepo->getCampaignProjectCustomerContact($row['projectCampaignId']);
                 }
             }
         }
@@ -170,18 +173,20 @@ class ProjectController extends CustomAbstractActionController
 
         if($canCreateProject) {
             $customerId = (int)(isset($data['customer_id']) ? trim($data['customer_id']) : 0);
+            $studioId = (int)(isset($data['studio_id']) ? trim($data['studio_id']) : 0);
             $projectName = trim(($canEditProjectName && !empty($data['name'])) ? $data['name'] : '');
             $notes = trim(isset($data['notes']) ? $data['notes'] : '');
             $projectCode = ($canEditProjectCodeName && !empty($data['project_code'])) ? $data['project_code'] : null;
             $projectRelease = ($canEditReleaseDate && !empty($data['project_release'])) ? $data['project_release'] : null;
             $users = json_decode(isset($data['user']) ? $data['user'] : null, true);
 
-            if ($customerId && ($projectName || $projectCode)) {
-                $customer = $this->_customerRepository->find($customerId);
+            if ($studioId && ($projectName || $projectCode)) {
+                $studio = $this->_studioRepository->find($studioId);
 
-                if ($customer) {
+                if ($studio) {
                     $project = new RediProject();
                     $project->setCustomerId($customerId);
+                    $project->setStudioId($studioId);
 
                     if ($projectName) {
                         $project->setProjectName($projectName);
@@ -251,7 +256,7 @@ class ProjectController extends CustomAbstractActionController
                 } else {
                     $response = array(
                         'status' => 0,
-                        'message' => 'Customer not found.'
+                        'message' => 'Studio not found.'
                     );
                 }
             } else {
@@ -283,6 +288,7 @@ class ProjectController extends CustomAbstractActionController
 
         if($canCreateProject) {
             $customerId = isset($data['customer_id']) ? (int)trim($data['customer_id']) : null;
+            $studioId = isset($data['studio_id']) ? (int)trim($data['studio_id']) : null;
             $projectName = ($canEditProjectName && isset($data['name'])) ? trim($data['name']) : null;
             $notes = isset($data['notes']) ? trim($data['notes']) : null;
             $projectCode = ($canEditProjectCodeName && !empty($data['project_code'])) ? $data['project_code'] : null;
@@ -292,7 +298,7 @@ class ProjectController extends CustomAbstractActionController
             $project = $this->_projectRepository->find($id);
 
             if ($project) {
-                if ($customerId || $projectName || $projectCode || $notes) {
+                if ($customerId || $projectName || $projectCode || $notes || $studioId) {
                     if ($projectName || $projectCode) {
                         if ($project->getProjectName() != $projectName || $project->getProjectCode() != $projectCode) {
                             // project history
@@ -346,7 +352,7 @@ class ProjectController extends CustomAbstractActionController
                                 $previousCustomer = $this->_customerRepository->find($project->getCustomerId());
 
                                 // project history
-                                $historyMessage = 'Project customer changed to "' . $customer->getCustomerName() . '" from "' . $previousCustomer->getCustomerName() . '"';
+                                $historyMessage = 'Project customer changed to "' . $customer->getCardname() . '" from "' . $previousCustomer->getCardname() . '"';
                                 $projectHistory = new RediProjectHistory();
                                 $projectHistory->setProjectId($id);
                                 $projectHistory->setUserId($this->_user_id);
@@ -357,6 +363,10 @@ class ProjectController extends CustomAbstractActionController
 
                             $project->setCustomerId($customerId);
                         }
+                    }
+
+                    if($studioId) {
+                        $project->setStudioId($studioId);
                     }
 
                     if ($notes) {
@@ -474,6 +484,8 @@ class ProjectController extends CustomAbstractActionController
                     if($canViewBilling) {
                         $row['billingUser'] = $this->_campaignRepo->getCampaignProjectPeople('billing',  $row['projectCampaignId'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
                     }
+
+                    $row['customerContact'] = $this->_customerRepo->getCampaignProjectCustomerContact($row['projectCampaignId']);
 
                     if(!$canViewMaterialReceived) {
                         unset($row['materialReceiveDate']);
