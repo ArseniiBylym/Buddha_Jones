@@ -245,7 +245,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                 <AnimateHeight
                     height={this.spotSentValues.project_id ? 'auto' : 0}
                 >
-                    {Array.isArray(this.spotSentValues.spot_version) &&
+                    {this.spotSentValues.spot_version instanceof Array &&
                         <Section title="Spots">
                             {(this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).map((spot: SpotSentVersionForSubmit, spotIndex: number) => (
                                 <ProducerSpotSentFormSpotCard
@@ -585,7 +585,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                 {this.showJson &&
                     <Section>
                         <pre>
-                            {JSON.stringify(this.isFinishingTypeSectionOpen, null, 2)}
+                            {JSON.stringify(this.spotSentValues.spot_version instanceof Array, null, 2)}
                         </pre>
                         <pre>
                             {JSON.stringify(this.spotSentValues, null, 2)}
