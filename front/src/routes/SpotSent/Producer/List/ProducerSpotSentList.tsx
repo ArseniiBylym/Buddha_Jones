@@ -141,7 +141,7 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
     }
 
     private handleCreateSpotSentCreate = (e: React.MouseEvent<HTMLButtonElement>): void => {
-        history.push('/portal/studio/producer-spot-sent-details/');
+        history.push('/portal/studio/producer-spot-sent-details/create');
     };
 
     private handleSpotSentDetails = (id: number, e: React.MouseEvent<HTMLButtonElement>): void => {

@@ -132,6 +132,7 @@ export interface SpotSentDetailsSpotDataFromApi {
     spotResend: 0 | 1;
     lineStatusId: number;
     lineStatusName: string;
+    editor: number[];
 }
 
 export interface SpotSentAllSpotsSentSpotDataFromApi {

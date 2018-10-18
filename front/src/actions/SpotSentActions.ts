@@ -114,7 +114,7 @@ export class SpotSentActionsClass {
                             spot_name: spot.spotName,
                             spot_version_id: spot.versionId,
                             spot_version_name: spot.versionName,
-                            editors: [],
+                            editors: spot.editor,
                             spot_resend: spot.spotResend,
                             finish_request: spot.finishRequest,
                             line_status_id: spot.lineStatusId,
@@ -213,6 +213,27 @@ export class SpotSentActionsClass {
         try {
             const newSpotSent = (await API.postData(
                 APIPath.SPOT_SENT,
+                spotSentValue,
+                {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                }
+            )) as SpotSentFromApi;
+            return newSpotSent;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    @action
+    public updateSpotSent = async (
+        id: number,
+        spotSentValue: SpotSentValueForSubmit
+    ): Promise<{ spot_sent_id: number }> => {
+        try {
+            const newSpotSent = (await API.putData(
+                APIPath.SPOT_SENT + '/' + id,
                 spotSentValue,
                 {
                     headers: {

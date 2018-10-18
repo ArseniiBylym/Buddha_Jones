@@ -20,6 +20,7 @@ import { ProjectPickerGroupValues } from '../../../../components/Buddha';
 import { AppState, SpotSentStore } from '../../../../store/AllStores';
 import { DatePicker } from '../../../../components/Calendar';
 import { FinishingHousesPicker } from '../../../../components/Buddha/FinishingHousesPicker';
+import { match } from 'react-router';
 
 export interface ProducerSpotSentValue {
     date: Date;
@@ -244,51 +245,53 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                 <AnimateHeight
                     height={this.spotSentValues.project_id ? 'auto' : 0}
                 >
-                    <Section title="Spots">
-                        {(this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).map((spot: SpotSentVersionForSubmit, spotIndex: number) => (
-                            <ProducerSpotSentFormSpotCard
-                                key={spotIndex}
-                                onSpotResendToggle={this.handleSpotResendToggle(spotIndex)}
-                                onSpotRemove={this.handleSpotRemove(spotIndex)}
-                                onSpotChange={this.handleSpotChange(spotIndex)}
-                                onFinishingRequestToggle={this.handleFinishingRequestToggle(spotIndex)}
-                                onSentViaMethodChange={this.handleSentViaMethodsChange(spotIndex)}
-                                onEditorAdd={this.handleSpotAddingEditor(spotIndex)}
-                                project={{
-                                    id: this.spotSentValues.project_id as number,
-                                    name: this.spotSentValues.project_name as string
-                                }}
-                                clientId={this.values.project ? this.values.project.clientId : null}
-                                spot={{
-                                    projectCampaign: {
-                                        id: spot.campaign_id as number,
-                                        name: spot.campaign_name as string
-                                    },
-                                    spot: {
-                                        id: spot.spot_id as number,
-                                        name: spot.spot_name as string
-                                    },
-                                    version: {
-                                        id: spot.spot_version_id as number,
-                                        name: spot.spot_version_name as string
-                                    },
-                                    isResend: (spot.spot_resend === 1) ? true : false,
-                                    isFinishingRequest: (spot.finish_request === 1) ? true : false,
-                                    selectedEditorsIds: spot.editors as number[],
-                                    sentViaMethod: spot.sent_via_method as number[]
-                                }}
-                                spotIndex={spotIndex}
-                                forUserId={this.props.store!.user.data!.id}
-                            />
-                        ))}
+                    {Array.isArray(this.spotSentValues.spot_version) &&
+                        <Section title="Spots">
+                            {(this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).map((spot: SpotSentVersionForSubmit, spotIndex: number) => (
+                                <ProducerSpotSentFormSpotCard
+                                    key={spotIndex}
+                                    onSpotResendToggle={this.handleSpotResendToggle(spotIndex)}
+                                    onSpotRemove={this.handleSpotRemove(spotIndex)}
+                                    onSpotChange={this.handleSpotChange(spotIndex)}
+                                    onFinishingRequestToggle={this.handleFinishingRequestToggle(spotIndex)}
+                                    onSentViaMethodChange={this.handleSentViaMethodsChange(spotIndex)}
+                                    onEditorAdd={this.handleSpotAddingEditor(spotIndex)}
+                                    project={{
+                                        id: this.spotSentValues.project_id as number,
+                                        name: this.spotSentValues.project_name as string
+                                    }}
+                                    clientId={this.values.project ? this.values.project.clientId : null}
+                                    spot={{
+                                        projectCampaign: {
+                                            id: spot.campaign_id as number,
+                                            name: spot.campaign_name as string
+                                        },
+                                        spot: {
+                                            id: spot.spot_id as number,
+                                            name: spot.spot_name as string
+                                        },
+                                        version: {
+                                            id: spot.spot_version_id as number,
+                                            name: spot.spot_version_name as string
+                                        },
+                                        isResend: (spot.spot_resend === 1) ? true : false,
+                                        isFinishingRequest: (spot.finish_request === 1) ? true : false,
+                                        selectedEditorsIds: spot.editors as number[],
+                                        sentViaMethod: (spot.sent_via_method) ? spot.sent_via_method as number[] : []
+                                    }}
+                                    spotIndex={spotIndex}
+                                    forUserId={this.props.store!.user.data!.id}
+                                />
+                            ))}
 
-                        {/*{this.values.spots.length <= 0 && <Paragraph type="dim">No spots have been added.</Paragraph>}*/}
-                        {this.spotSentValues.spot_version.length <= 0 && <Paragraph type="dim">No spots have been added.</Paragraph>}
+                            {/*{this.values.spots.length <= 0 && <Paragraph type="dim">No spots have been added.</Paragraph>}*/}
+                            {this.spotSentValues.spot_version.length <= 0 && <Paragraph type="dim">No spots have been added.</Paragraph>}
 
-                        <div className={s.spotsSummary}>
-                            <ButtonAdd onClick={this.handleCreateSpot} label="Add spot" labelOnLeft={true}/>
-                        </div>
-                    </Section>
+                            <div className={s.spotsSummary}>
+                                <ButtonAdd onClick={this.handleCreateSpot} label="Add spot" labelOnLeft={true}/>
+                            </div>
+                        </Section>
+                    }
 
                     <Section title="Sent to">
                         {this.clientContacts === null && <Paragraph type="dim">Project is not selected.</Paragraph>}
@@ -570,7 +573,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
                             <ButtonSend
                                 onClick={this.handleSubmit}
-                                label={(this.spotSentValues.status === 2) ? 'Upload and send' : 'Save draft'}
+                                label={this.saveButtonText}
                                 iconColor="orange"
                             />
                         </div>
@@ -614,6 +617,9 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         if (values && values.project && values.project.id && values.project.name) {
             this.spotSentValues.project_id = values.project.id;
             this.spotSentValues.project_name = values.project.name;
+            if (!this.isEditMode) {
+                this.createFirstSpot();
+            }
         } else {
             this.spotSentValues.project_id = null;
             this.spotSentValues.project_name = null;
@@ -660,17 +666,17 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     private handleSpotResendToggle = (spotIndex: number) => (checked: boolean) => {
-        this.values.spots[spotIndex].isResend = checked;
+        /*this.values.spots[spotIndex].isResend = checked;*/
 
         (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_resend = checked ? 1 : 0;
     };
 
     @action
     private handleFinishingRequestToggle = (spotIndex: number) => (checked: boolean) =>  {
-        this.values.spots[spotIndex].isFinishingRequest = checked;
-        this.isFinishingTypeSectionOpen = this.values.spots.some(spot => spot.isFinishingRequest === true);
+        /*this.values.spots[spotIndex].isFinishingRequest = checked;*/
 
         (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).finish_request = checked ? 1 : 0;
+        this.isFinishingTypeSectionOpen = (this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).some(spot => spot.finish_request === 1);
     };
 
     @action
@@ -697,28 +703,39 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             CampaignPeopleActions.fetchEditorsFromProjectCampaign(values.projectCampaign.id);
         }
 
-        this.values.spots[spotIndex].projectCampaign = values && values.projectCampaign ? values.projectCampaign : null;
+        /*this.values.spots[spotIndex].projectCampaign = values && values.projectCampaign ? values.projectCampaign : null;
         this.values.spots[spotIndex].spot = values && values.spot ? values.spot : null;
-        this.values.spots[spotIndex].version = values && values.version ? values.version : null;
+        this.values.spots[spotIndex].version = values && values.version ? values.version : null;*/
 
         (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).campaign_id = (values && values.projectCampaign && values.projectCampaign.id) ? values.projectCampaign.id : null;
+        (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).campaign_name = (values && values.projectCampaign && values.projectCampaign.name) ? values.projectCampaign.name : '';
         (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_id = (values && values.spot && values.spot.id) ? values.spot.id : null;
+        (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_name = (values && values.spot && values.spot.name) ? values.spot.name : '';
         (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_version_id = (values && values.version && values.version.id) ? values.version.id : null;
+        (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_version_name = (values && values.version && values.version.name) ? values.version.name : '';
 
     };
 
     @action
-    private handleSentViaMethodsChange = (spotIndex: number) => (methods: number[]) => {
-        this.values.spots[spotIndex].sentViaMethod = methods;
-
-        (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).sent_via_method = methods;
+    private handleSentViaMethodsChange = (spotIndex: number) => (method: number) => {
+        /*this.values.spots[spotIndex].sentViaMethod = methods;*/
+        const sentViaMethod: number[] = ((this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).sent_via_method as number[]);
+        if (sentViaMethod.includes(method)) {
+            const i: number = sentViaMethod.indexOf(method);
+            if (i !== -1) {
+                ((this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).sent_via_method as number[]).splice(i, 1);
+            }
+        } else if (!sentViaMethod.includes(method)) {
+            ((this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).sent_via_method as number[]).push(method);
+        }
+        /*(this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).sent_via_method = methods;*/
     };
 
     @action
     private handleSpotAddingEditor = (spotIndex: number) => (userId: number) => {
-        if (this.values.spots[spotIndex].selectedEditorsIds.indexOf(userId) === -1) {
+/*        if (this.values.spots[spotIndex].selectedEditorsIds.indexOf(userId) === -1) {
             this.values.spots[spotIndex].selectedEditorsIds.push(userId);
-        }
+        }*/
 
         if ((this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).editors.indexOf(userId) === -1) {
             (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).editors.push(userId);
@@ -748,21 +765,29 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     private handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
         try {
             let data: SpotSentValueForSubmit = this.spotSentValues;
-            (data.spot_version as string) = JSON.stringify(data.spot_version);
+            (data.spot_version as string) = JSON.stringify((data.spot_version as SpotSentVersionForSubmit[]).map((spot: SpotSentVersionForSubmit) => {
+                delete spot.campaign_name;
+                delete spot.spot_name;
+                delete spot.spot_version_name;
+                return spot;
+            }));
             (data.finish_option as string) = JSON.stringify(data.finish_option);
             (data.delivery_to_client as string) = JSON.stringify(data.delivery_to_client);
-            await SpotSentActions.createNewSpotSent(data);
+            if (this.isEditMode) {
+                await SpotSentActions.updateSpotSent((this.props.match as match<string>).params['id'], data);
+            } else {
+                await SpotSentActions.createNewSpotSent(data);
+            }
             history.push('/portal/studio/producer-spot-sent-list');
         } catch (error) {
             throw error;
         }
     };
 
-/*    private createFirstSpot = () => {
-        this.values.spots = [this.defaultSpot];
-
+    private createFirstSpot = () => {
+        /*this.values.spots = [this.defaultSpot];*/
         this.spotSentValues.spot_version = [this.defaultSpotElement];
-    };*/
+    };
 
     private get defaultSpot(): SpotSentSpot {
         return {
@@ -913,6 +938,12 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                 this.isFinishingTypeSectionOpen = true;
             }
 
+            if (this.spotSentValues.spot_version && this.spotSentValues.spot_version.length > 0) {
+                (this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).forEach((spot: SpotSentVersionForSubmit) => {
+                    CampaignPeopleActions.fetchEditorsFromProjectCampaign(spot.campaign_id as number);
+                });
+            }
+
             return true;
         } catch (error) {
             throw error;
@@ -921,7 +952,11 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     private get isEditMode(): boolean {
-        return (this.props.match && this.props.match.params['id']);
+        return (this.props.match && this.props.match.params['id'] && this.props.match.params['id'] !== 'create');
+    }
+
+    private get saveButtonText(): string {
+        return (this.spotSentValues.status === 2) ? 'Upload and send' : 'Save draft';
     }
 
     @action

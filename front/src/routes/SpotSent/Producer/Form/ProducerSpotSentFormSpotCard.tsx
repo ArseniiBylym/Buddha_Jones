@@ -8,7 +8,7 @@ import { ProjectPicker, ProjectPickerGroupValues, ProjectPickerValues, PersonWit
 import { Paragraph } from 'components/Content';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { ProjectCampaignUserFromApi } from 'types/projectDetails';
-import { action, computed, observable } from 'mobx';
+import { computed } from 'mobx';
 import { LoadingIndicator } from 'components/Loaders';
 import { SpotSentStore } from '../../../../store/AllStores';
 import { SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
@@ -22,7 +22,7 @@ interface ProducerSpotSentFormSpotCardProps {
     onSpotRemove: (e: React.MouseEvent<HTMLButtonElement>) => void;
     onSpotChange: (values: ProjectPickerValues | null) => void;
     onFinishingRequestToggle: (checked: boolean) => void;
-    onSentViaMethodChange: (methods: number[]) => void;
+    onSentViaMethodChange: (method: number) => void;
     onEditorAdd: (id: number) => void;
     project: ProjectPickerGroupValues | null;
     clientId: number | null;
@@ -38,8 +38,6 @@ type ProducerSpotSentFormSpotCardPropsTypes = ProducerSpotSentFormSpotCardProps 
 @inject('store')
 @observer
 export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSentFormSpotCardPropsTypes, {}> {
-
-    @observable private sentViaMethod: number[] = (this.props.spot.sentViaMethod && this.props.spot.sentViaMethod.length > 0) ? this.props.spot.sentViaMethod : [];
 
     @computed
     private get campaignEditorialUsers(): { isLoading: boolean; users: ProjectCampaignUserFromApi[] } {
@@ -136,11 +134,14 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                     </div>
                 </Section>
 
-                <section>
+{/*                <section>
                     <pre>
-                        {(this.props.store) ? JSON.stringify(this.props.store.campaignPeople.projectCampaignPeople, null, 2) : ''}
+                        {JSON.stringify(this.campaignEditorialUsers, null, 2)}
                     </pre>
-                </section>
+                    <pre>
+                        {JSON.stringify(this.selectedEditors, null, 2)}
+                    </pre>
+                </section>*/}
 
                 <Section
                     title={`Spot #${this.props.spotIndex + 1} editors`}
@@ -231,7 +232,6 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
         }
     };
 
-    @action
     private getSentViaMethods(): JSX.Element[] {
         if (SpotSentStore.spotSentSentViaMethodOptions && SpotSentStore.spotSentSentViaMethodOptions.length > 0) {
             return SpotSentStore.spotSentSentViaMethodOptions.map((method: SpotSentOptionsChildrenFromApi, index: number) => {
@@ -239,17 +239,9 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                     <Checkmark
                         key={'sent-via-method-' + index}
                         onClick={() => {
-                            if (this.sentViaMethod.includes(method.id)) {
-                                let i: number = this.sentViaMethod.indexOf(method.id);
-                                if (i !== -1) {
-                                    this.sentViaMethod.splice(i, 1);
-                                }
-                            } else if (!this.sentViaMethod.includes(method.id)) {
-                                this.sentViaMethod.push(method.id);
-                            }
-                            this.props.onSentViaMethodChange(this.sentViaMethod);
+                            this.props.onSentViaMethodChange(method.id);
                         }}
-                        checked={this.sentViaMethod.includes(method.id)}
+                        checked={this.props.spot.sentViaMethod.includes(method.id)}
                         label={method.name}
                         type={'no-icon'}
                     />
