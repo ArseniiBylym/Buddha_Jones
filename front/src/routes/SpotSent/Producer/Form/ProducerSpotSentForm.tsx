@@ -21,6 +21,7 @@ import { AppState, SpotSentStore } from '../../../../store/AllStores';
 import { DatePicker } from '../../../../components/Calendar';
 import { FinishingHousesPicker } from '../../../../components/Buddha/FinishingHousesPicker';
 import { match } from 'react-router';
+import * as dateFormat from 'date-fns/format';
 
 export interface ProducerSpotSentValue {
     date: Date;
@@ -236,7 +237,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                 <ProducerSpotSentFormProject
                     onProjectChange={this.handleProjectChange}
                     onDateChange={this.handleDateChange}
-                    project={{id: this.spotSentValues.project_id as number, name: this.spotSentValues.project_name as string}}
+                    project={(this.spotSentValues.project_id) ? {id: this.spotSentValues.project_id as number, name: this.spotSentValues.project_name as string} : null}
                     clientId={this.values.project ? this.values.project.clientId : null}
                     date={this.spotSentValues.spot_sent_date as Date}
                     isClosedWhenInit={this.isEditMode}
@@ -262,18 +263,18 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     }}
                                     clientId={this.values.project ? this.values.project.clientId : null}
                                     spot={{
-                                        projectCampaign: {
+                                        projectCampaign: (spot.campaign_id) ? {
                                             id: spot.campaign_id as number,
                                             name: spot.campaign_name as string
-                                        },
-                                        spot: {
+                                        } : null,
+                                        spot: (spot.spot_id) ? {
                                             id: spot.spot_id as number,
                                             name: spot.spot_name as string
-                                        },
-                                        version: {
+                                        } : null,
+                                        version: (spot.spot_version_id) ? {
                                             id: spot.spot_version_id as number,
                                             name: spot.spot_version_name as string
-                                        },
+                                        } : null,
                                         isResend: (spot.spot_resend === 1) ? true : false,
                                         isFinishingRequest: (spot.finish_request === 1) ? true : false,
                                         selectedEditorsIds: spot.editors as number[],
@@ -397,7 +398,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     key="date-picker"
                                     onChange={this.handleDateChange}
                                     label="Deadline"
-                                    value={(this.spotSentValues.deadline as Date)}
+                                    value={(this.spotSentValues.deadline instanceof Date) ? (this.spotSentValues.deadline as Date) : null}
                                     align="left"
                                 />
                             </div>
@@ -773,6 +774,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             }));
             (data.finish_option as string) = JSON.stringify(data.finish_option);
             (data.delivery_to_client as string) = JSON.stringify(data.delivery_to_client);
+            data.deadline = (data.deadline) ? dateFormat(data.deadline, 'YYYY-MM-DD') : null;
             if (this.isEditMode) {
                 await SpotSentActions.updateSpotSent((this.props.match as match<string>).params['id'], data);
             } else {
@@ -972,7 +974,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     @action
     private resetFinishRequestForm = (): void => {
-        this.spotSentValues.spot_version = [];
+        /*this.spotSentValues.spot_version = [];*/
         this.spotSentValues.full_lock = 0;
         this.spotSentValues.notes = '';
         this.spotSentValues.finishing_house = null;

@@ -403,6 +403,7 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         let entries: Array<{
             section: ProjectPickerSections;
             id: number;
+            campaignId?: number;
             name: string;
             clientId: number | null;
             clientName: string | null;
@@ -436,7 +437,7 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
                 entries = results.map(result => {
                     return {
                         section: 'projectCampaign' as ProjectPickerSections,
-                        id: result.id,
+                        id: result.campaignId,
                         name:
                             (result.campaignName || '') +
                             (result.note && result.note !== result.campaignName

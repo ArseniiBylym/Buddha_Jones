@@ -227,7 +227,7 @@ export class ProjectsCampaignsSpotsActionsClass {
                     APIPath.SPOT,
                     {
                         project_id: ids ? ids.projectId : null,
-                        project_campaign_id: ids ? ids.projectCampaignId : null,
+                        campaign_id: ids ? ids.projectCampaignId : null,
                         search,
                         offset: this.prepareOffset(page, resultsPerPage),
                         length: resultsPerPage,
