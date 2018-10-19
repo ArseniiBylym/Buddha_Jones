@@ -13,7 +13,7 @@ import { Paragraph } from 'components/Content';
 import { ProducerSpotSentFormSpotCard } from '.';
 import { Checkmark, Input, TextArea, Toggle } from 'components/Form';
 import { ClientContact } from 'types/clients';
-import { LoadingIndicator } from 'components/Loaders';
+import { LoadingIndicator, LoadingSpinner } from 'components/Loaders';
 import { ToggleSideContent } from '../../../../components/Form';
 import { SpotSentAudioOptionsFromApi, SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
 import { ProjectPickerGroupValues } from '../../../../components/Buddha';
@@ -211,6 +211,15 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
     }
 
+    @computed
+    private get essentialDataIsLoading(): boolean {
+        if (this.isEditMode) {
+            return SpotSentStore.spotSentDetailsLoading;
+        } else {
+            return false;
+        }
+    }
+
     public componentDidMount() {
 
         // Fetch spot sent options
@@ -234,14 +243,21 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     public render() {
         return (
             <>
-                <ProducerSpotSentFormProject
-                    onProjectChange={this.handleProjectChange}
-                    onDateChange={this.handleDateChange}
-                    project={(this.spotSentValues.project_id) ? {id: this.spotSentValues.project_id as number, name: this.spotSentValues.project_name as string} : null}
-                    clientId={this.values.project ? this.values.project.clientId : null}
-                    date={this.spotSentValues.spot_sent_date as Date}
-                    isClosedWhenInit={this.isEditMode}
-                />
+                {this.essentialDataIsLoading &&
+                    <>
+                        {this.getLoadingSpinner()}
+                    </>
+                }
+                {!this.essentialDataIsLoading &&
+                    <ProducerSpotSentFormProject
+                        onProjectChange={this.handleProjectChange}
+                        onDateChange={this.handleDateChange}
+                        project={(this.spotSentValues.project_id) ? {id: this.spotSentValues.project_id as number, name: this.spotSentValues.project_name as string} : null}
+                        clientId={this.values.project ? this.values.project.clientId : null}
+                        date={this.spotSentValues.spot_sent_date as Date}
+                        isClosedWhenInit={this.isEditMode}
+                    />
+                }
 
                 <AnimateHeight
                     height={this.spotSentValues.project_id ? 'auto' : 0}
@@ -595,6 +611,12 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     </Section>
                 }
             </>
+        );
+    }
+
+    private getLoadingSpinner(): JSX.Element {
+        return (
+            <LoadingSpinner className={s.loadingSpinner} size={64} />
         );
     }
 
