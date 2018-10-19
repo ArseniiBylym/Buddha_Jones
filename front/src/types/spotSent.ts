@@ -81,6 +81,7 @@ export interface SpotSentDetailsFromApi {
     deadline: SpotSentAllSpotsSentTimeFromApi | null;
     spotSentDate: SpotSentAllSpotsSentTimeFromApi | null;
     finishingHouse: number | null;
+    finishingHouseName: string | null;
     framerate: string | null;
     framerateNote: string | null;
     rasterSize: string | null;

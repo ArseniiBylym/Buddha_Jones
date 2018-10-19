@@ -49,6 +49,7 @@ export interface SpotSentValueForSubmit {
     spot_sent_date?: Date | string | null;
     deadline?: Date | string | null;
     finishing_house?: number | null;
+    finishing_house_name?: string | null;
     framerate?: string | null;
     framerate_note?: string;
     raster_size?: string | null;
@@ -78,8 +79,8 @@ export interface SpotSentVersionForSubmit {
     campaign_name?: string;
     spot_id: number | null;
     spot_name?: string;
-    spot_version_id: number | null;
-    spot_version_name?: string;
+    version_id: number | null;
+    version_name?: string;
     editors: number[];
     spot_resend: 0 | 1;
     finish_request: 0 | 1;
@@ -129,6 +130,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         deadline: null,
         spot_sent_date: null,
         finishing_house: null,
+        finishing_house_name: null,
         framerate: null,
         framerate_note: '',
         raster_size: null,
@@ -149,7 +151,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     @observable private isFinishingTypeSectionOpen: boolean = false;
-    @observable private finishingHouseName: string | null = null;
+   /* @observable private finishingHouseName: string | null = null;*/
     @observable private showJson: boolean = false;
 
     @computed
@@ -287,9 +289,9 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                             id: spot.spot_id as number,
                                             name: spot.spot_name as string
                                         } : null,
-                                        version: (spot.spot_version_id) ? {
-                                            id: spot.spot_version_id as number,
-                                            name: spot.spot_version_name as string
+                                        version: (spot.version_id) ? {
+                                            id: spot.version_id as number,
+                                            name: spot.version_name as string
                                         } : null,
                                         isResend: (spot.spot_resend === 1) ? true : false,
                                         isFinishingRequest: (spot.finish_request === 1) ? true : false,
@@ -427,7 +429,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                         value={0}
                                         valueLabel=""
                                         align="left"
-                                        label={(this.finishingHouseName) ? this.finishingHouseName : 'Select finishing house'}
+                                        label={(this.spotSentValues.finishing_house_name) ? this.spotSentValues.finishing_house_name : 'Select finishing house'}
                                         projectId={this.spotSentValues.finishing_house}
                                     />
                                 </div>
@@ -734,8 +736,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).campaign_name = (values && values.projectCampaign && values.projectCampaign.name) ? values.projectCampaign.name : '';
         (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_id = (values && values.spot && values.spot.id) ? values.spot.id : null;
         (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_name = (values && values.spot && values.spot.name) ? values.spot.name : '';
-        (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_version_id = (values && values.version && values.version.id) ? values.version.id : null;
-        (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_version_name = (values && values.version && values.version.name) ? values.version.name : '';
+        (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = (values && values.version && values.version.id) ? values.version.id : null;
+        (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = (values && values.version && values.version.name) ? values.version.name : '';
 
     };
 
@@ -791,11 +793,12 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             (data.spot_version as string) = JSON.stringify((data.spot_version as SpotSentVersionForSubmit[]).map((spot: SpotSentVersionForSubmit) => {
                 delete spot.campaign_name;
                 delete spot.spot_name;
-                delete spot.spot_version_name;
+                delete spot.version_name;
                 return spot;
             }));
             (data.finish_option as string) = JSON.stringify(data.finish_option);
             (data.delivery_to_client as string) = JSON.stringify(data.delivery_to_client);
+            delete data.finishing_house_name;
             data.deadline = (data.deadline) ? dateFormat(data.deadline, 'YYYY-MM-DD') : null;
             if (this.isEditMode) {
                 await SpotSentActions.updateSpotSent((this.props.match as match<string>).params['id'], data);
@@ -829,7 +832,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         return {
             campaign_id: null,
             spot_id: null,
-            spot_version_id: null,
+            version_id: null,
             editors: [],
             spot_resend: 0,
             finish_request: 0,
@@ -1000,7 +1003,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         this.spotSentValues.full_lock = 0;
         this.spotSentValues.notes = '';
         this.spotSentValues.finishing_house = null;
-        this.finishingHouseName = null;
+        this.spotSentValues.finishing_house_name = null;
+        /*this.finishingHouseName = null;*/
         this.spotSentValues.deadline = null;
         this.spotSentValues.gfx_finish = 0;
         this.spotSentValues.music_cue_sheet = 0;
@@ -1049,7 +1053,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     @action
     private handleExistingFinishingHouseSelected = (finishingHouse: { id: number; name: string }) => {
         this.spotSentValues.finishing_house = finishingHouse.id;
-        this.finishingHouseName = finishingHouse.name;
+        this.spotSentValues.finishing_house_name = finishingHouse.name;
+        /*this.finishingHouseName = finishingHouse.name;*/
     };
 
     @action
