@@ -59,7 +59,7 @@ export const routes: Route[] = [
         key: 'project-board',
         accessKey: RouteAccessKey.ProjectBoard,
         name: 'Project board',
-        path: '/portal/project/:clientId/:clientName/:projectId/:projectName/:fromPage?',
+        path: '/portal/project/:clientId/:studioName/:projectId/:projectName/:fromPage?',
         exact: false,
         allowAllUsers: false,
     },

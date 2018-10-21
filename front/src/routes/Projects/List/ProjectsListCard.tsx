@@ -37,7 +37,7 @@ export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}>
                             {this.props.project.name}
                             <IconArrowRight width={15} height={11} marginTop={-5} marginLeft={-7} />
                         </h3>
-                        <h4 className={s.client}>{this.props.project.clientName}</h4>
+                        <h4 className={s.client}>{this.props.project.studioName}</h4>
                     </Col>
                 </Row>
 
@@ -86,7 +86,7 @@ export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}>
         if (this.props.onProjectClick) {
             this.props.onProjectClick(
                 this.props.project.clientId,
-                this.props.project.clientName,
+                this.props.project.studioName,
                 this.props.project.id,
                 this.props.project.name
             );
@@ -100,7 +100,7 @@ export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}>
         if (this.props.onProjectClick) {
             this.props.onProjectClick(
                 this.props.project.clientId,
-                this.props.project.clientName,
+                this.props.project.studioName,
                 this.props.project.id,
                 this.props.project.name,
                 projectCampaignId

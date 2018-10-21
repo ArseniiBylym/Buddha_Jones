@@ -18,6 +18,8 @@ export interface ProjectDetails {
     projectCodeName: string | null;
     clientId: number;
     clientName: string;
+    studioId: number;
+    studioName: string;
     projectReleaseDate: Date | null;
     projectDoesNotExist: boolean;
     projectCouldNotBeFetched: boolean;
@@ -136,24 +138,27 @@ export interface ProjectHistory {
 
 export interface ProjectDetailsFromApi {
     id: number;
-    projectName: string | null;
-    projectCode: string | null;
     customerId: number;
     customerName: string;
-    projectRelease: DateObjectFromApi | null;
+    studioId: number;
+    studioName: string;
+    cardcode: string;
     notes: string | null;
+    projectRelease: DateObjectFromApi | null;
     lastUpdatedAt: DateObjectFromApi;
     lastUpdateUser: {
         userId: number;
         name: string;
         image: string | null;
     };
+    campaign: ProjectDetailsCampaignFromApi[];
     comment: {
         count: number;
         unread: number;
     };
-    campaign: ProjectDetailsCampaignFromApi[];
     history: ProjectDetailsHistoryFromApi[];
+    projectName: string | null;
+    projectCode: string | null;
 }
 
 interface ProjectDetailsCampaignFromApi {

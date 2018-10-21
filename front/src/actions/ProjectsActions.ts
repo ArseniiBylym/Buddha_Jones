@@ -104,6 +104,8 @@ export class ProjectsActionsClass {
                                 : '',
                 clientId: project.customerId,
                 clientName: project.customerName,
+                studioId: project.studioId,
+                studioName: project.studioName,
                 notes: project.notes,
                 commentsCount: project.comment.count,
                 commentsUnread: project.comment.unread,

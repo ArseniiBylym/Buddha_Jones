@@ -229,14 +229,14 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
             typeof props.match !== 'undefined' &&
             typeof props.match.params !== 'undefined' &&
             typeof props.match.params['clientId'] !== 'undefined' &&
-            typeof props.match.params['clientName'] !== 'undefined' &&
+            typeof props.match.params['studioName'] !== 'undefined' &&
             typeof props.match.params['projectId'] !== 'undefined' &&
             typeof props.match.params['projectName'] !== 'undefined'
         ) {
             const projectId: number = unformat(props.match.params['projectId']);
             const clientId: number = unformat(props.match.params['clientId']);
             const projectName: string = props.match.params['projectName'];
-            const clientName: string = props.match.params['clientName'];
+            const studioName: string = (props.match.params['studioName'] === 'null') ? null : props.match.params['studioName'];
 
             this.projectId = projectId;
 
@@ -246,7 +246,7 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
                     projectName !== null && projectName.trim() !== ''
                         ? projectName.trim()
                         : 'Project #' + this.projectId,
-                    clientName !== null && clientName ? clientName : clientId !== null ? 'Client #' + clientId : ''
+                    studioName !== null && studioName ? studioName : clientId !== null ? 'Client #' + clientId : ''
                 );
             }
 
@@ -287,7 +287,7 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
                     : project.projectId
                         ? 'Project #' + project.projectId
                         : '',
-            project.clientName ? project.clientName : 'Studio #' + project.clientId,
+            project.studioName ? project.studioName : 'Studio #' + project.clientId,
             project.projectName && project.projectCodeName ? '(' + project.projectCodeName + ') ' : null,
             null
         );

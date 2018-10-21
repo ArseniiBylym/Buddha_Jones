@@ -26,7 +26,9 @@ export class ProjectDetailsActionsClass {
     @action
     fetchProjectDetails = async (
         projectId: number,
-        projectData: { projectName?: string; projectCodeName?: string; clientId?: number; clientName?: string } = {}
+        projectData: {
+            projectName?: string; projectCodeName?: string; clientId?: number; clientName?: string; studioId?: number; studioName?: string
+        } = {}
     ): Promise<boolean> => {
         try {
             // Indicate project is being loaded, initialize project object if it doesn't exist yet
@@ -52,6 +54,12 @@ export class ProjectDetailsActionsClass {
                     clientName:
                         typeof projectData.clientName !== 'undefined' && projectData.clientName
                             ? projectData.clientName
+                            : '',
+                    studioId:
+                        typeof projectData.studioId !== 'undefined' && projectData.studioId ? projectData.studioId : 0,
+                    studioName:
+                        typeof projectData.studioName !== 'undefined' && projectData.studioName
+                            ? projectData.studioName
                             : '',
                     projectReleaseDate: null,
                     notes: null,
@@ -79,6 +87,8 @@ export class ProjectDetailsActionsClass {
                     typeof project.projectCode !== 'undefined' && project.projectCode ? project.projectCode : null;
                 ProjectsDetailsStore.fetchedProjects[projectIdMatch].clientId = project.customerId;
                 ProjectsDetailsStore.fetchedProjects[projectIdMatch].clientName = project.customerName;
+                ProjectsDetailsStore.fetchedProjects[projectIdMatch].studioId = project.studioId;
+                ProjectsDetailsStore.fetchedProjects[projectIdMatch].studioName = project.studioName;
                 ProjectsDetailsStore.fetchedProjects[projectIdMatch].projectReleaseDate =
                     project.projectRelease !== null && project.projectRelease.date
                         ? dateParse(project.projectRelease.date)

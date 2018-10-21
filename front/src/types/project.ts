@@ -4,20 +4,24 @@ export interface ProjectDataApiResponse {
     id: number;
     customerId: number;
     customerName: string;
-    projectName?: string;
-    projectCode?: string;
+    studioId: number;
+    studioName: string;
+    cardcode: string;
     notes: string | null;
-    comment: {
-        count: 0;
-        unread: 0;
-    };
-    campaign: ProjectCampaignDataApiResponse[];
+    projectRelease: DateObjectFromApi;
     lastUpdatedAt: DateObjectFromApi;
     lastUpdateUser: {
         userId: number;
         name: string;
         image: string | null;
     };
+    campaign: ProjectCampaignDataApiResponse[];
+    comment: {
+        count: 0;
+        unread: 0;
+    };
+    projectName?: string;
+    projectCode?: string;
 }
 
 export interface RawProjectApiResponse extends RawApiResponse {
@@ -55,4 +59,6 @@ export interface Project {
     lastUpdatedByUserId: number;
     lastUpdatedByUserName: string;
     lastUpdatedByUserImage: string | null;
+    studioId: number;
+    studioName: string;
 }
