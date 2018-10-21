@@ -29,7 +29,6 @@ class EstimateRepository extends EntityRepository
                   a.id, 
                   a.spotId, s.spotName, 
                   s.projectId, p.projectName,
-                  p.customerId, cu.customerName, cu.cardcode,
                   s.campaignId, c.campaignName,
                   a.versionId, v.versionName, 
                   a.statusId, st.status,

@@ -172,7 +172,6 @@ class ProjectController extends CustomAbstractActionController
         $canEditProjectCodeName = $this->_usersRepo->extractPermission($this->_user_permission, 31, 'edit');
 
         if($canCreateProject) {
-            $customerId = (int)(isset($data['customer_id']) ? trim($data['customer_id']) : 0);
             $studioId = (int)(isset($data['studio_id']) ? trim($data['studio_id']) : 0);
             $projectName = trim(($canEditProjectName && !empty($data['name'])) ? $data['name'] : '');
             $notes = trim(isset($data['notes']) ? $data['notes'] : '');
@@ -185,7 +184,6 @@ class ProjectController extends CustomAbstractActionController
 
                 if ($studio) {
                     $project = new RediProject();
-                    $project->setCustomerId($customerId);
                     $project->setStudioId($studioId);
 
                     if ($projectName) {
@@ -287,7 +285,6 @@ class ProjectController extends CustomAbstractActionController
         $canEditProjectCodeName = $this->_usersRepo->extractPermission($this->_user_permission, 31, 'edit');
 
         if($canCreateProject) {
-            $customerId = isset($data['customer_id']) ? (int)trim($data['customer_id']) : null;
             $studioId = isset($data['studio_id']) ? (int)trim($data['studio_id']) : null;
             $projectName = ($canEditProjectName && isset($data['name'])) ? trim($data['name']) : null;
             $notes = isset($data['notes']) ? trim($data['notes']) : null;
@@ -298,7 +295,7 @@ class ProjectController extends CustomAbstractActionController
             $project = $this->_projectRepository->find($id);
 
             if ($project) {
-                if ($customerId || $projectName || $projectCode || $notes || $studioId) {
+                if ($projectName || $projectCode || $notes || $studioId) {
                     if ($projectName || $projectCode) {
                         if ($project->getProjectName() != $projectName || $project->getProjectCode() != $projectCode) {
                             // project history
@@ -341,27 +338,6 @@ class ProjectController extends CustomAbstractActionController
 
                         if ($projectCode) {
                             $project->setProjectCode($projectCode);
-                        }
-                    }
-
-                    if ($customerId) {
-                        $customer = $this->_customerRepository->find($customerId);
-
-                        if ($customer) {
-                            if ($project->getCustomerId() != $customerId) {
-                                $previousCustomer = $this->_customerRepository->find($project->getCustomerId());
-
-                                // project history
-                                $historyMessage = 'Project customer changed to "' . $customer->getCardname() . '" from "' . $previousCustomer->getCardname() . '"';
-                                $projectHistory = new RediProjectHistory();
-                                $projectHistory->setProjectId($id);
-                                $projectHistory->setUserId($this->_user_id);
-                                $projectHistory->setMessage($historyMessage);
-                                $projectHistory->setCreatedAt(new \DateTime('now'));
-                                $this->_em->persist($projectHistory);
-                            }
-
-                            $project->setCustomerId($customerId);
                         }
                     }
 
