@@ -38,6 +38,13 @@ class RediProjectToCampaign
     /**
      * @var integer
      *
+     * @ORM\Column(name="customer_id", type="integer", nullable=true)
+     */
+    private $customerId;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="first_point_of_contact_id", type="integer", nullable=true)
      */
     private $firstPointOfContactId;
@@ -175,6 +182,29 @@ class RediProjectToCampaign
     public function getCampaignId()
     {
         return $this->campaignId;
+    }
+
+    /**
+     * Set customerId
+     *
+     * @param integer $customerId
+     * @return RediProjectToCampaign
+     */
+    public function setCustomerId($customerId)
+    {
+        $this->customerId = $customerId;
+
+        return $this;
+    }
+
+    /**
+     * Get customerId
+     *
+     * @return integer 
+     */
+    public function getCustomerId()
+    {
+        return $this->customerId;
     }
 
     /**

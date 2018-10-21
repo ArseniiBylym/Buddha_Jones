@@ -356,6 +356,8 @@ class UsersRepository extends EntityRepository
             'time-card' => $this->getUserTimeCardAccess($userTypeId),
             'activities-definition' => true,
             'project-board-permission' => $this->getProjectBoardPermissionAccess($userTypeId),
+            'producer-spot-sent-list' => true,
+            'producer-spot-sent-form' => true,
         );
     }
 

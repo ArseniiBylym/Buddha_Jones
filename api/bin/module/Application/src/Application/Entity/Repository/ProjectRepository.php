@@ -23,9 +23,7 @@ class ProjectRepository extends EntityRepository
     {
         $dql = "SELECT
                   p.id, 
-                  p.customerId, c.cardname AS customerName, 
                   p.studioId, st.studioName,
-                  c.cardcode,
                   p.notes,  p.projectRelease, MAX(ph.createdAt) as lastUpdatedAt
                 FROM \Application\Entity\RediProject p
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
@@ -35,7 +33,7 @@ class ProjectRepository extends EntityRepository
                 LEFT JOIN \Application\Entity\RediProjectHistory ph
                   WITH p.id=ph.projectId
                 LEFT JOIN \Application\Entity\RediCustomer c
-                  WITH c.id=p.customerId
+                  WITH c.id=ptc.customerId
                 LEFT JOIN \Application\Entity\RediStudio st
                   WITH st.id = p.studioId
                 LEFT JOIN \Application\Entity\RediProjectToCampaignUser ptcu
@@ -82,14 +80,14 @@ class ProjectRepository extends EntityRepository
 
             $projectNameView[] = ' ca.campaignName LIKE :search ';
             $projectNameView[] = ' ((u.firstName LIKE :search OR u.lastName LIKE :search) AND ptcu.roleId IN (1,2)) ';
-            $projectNameView[] = ' c.customerName LIKE :search ';
+            $projectNameView[] = ' c.cardname LIKE :search ';
             $projectNameView[] = ' cc.name LIKE :search ';
 
             $dqlFilter[] = " (" . implode(' OR ', $projectNameView) . ") ";
         }
 
         if (isset($filter['customer_id']) && $filter['customer_id']) {
-            $dqlFilter[] = " p.customerId=:customer_id ";
+            $dqlFilter[] = " ptc.customerId=:customer_id ";
         }
 
         if (isset($filter['project_id']) && $filter['project_id']) {
@@ -172,7 +170,7 @@ class ProjectRepository extends EntityRepository
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id=ptc.campaignId
                 LEFT JOIN \Application\Entity\RediCustomer c
-                  WITH c.id=p.customerId
+                  WITH c.id=ptc.customerId
                 LEFT JOIN \Application\Entity\RediProjectToCampaignUser ptcu
                     WITH ptcu.projectCampaignId = ptc.id
                 LEFT JOIN \Application\Entity\RediUser u
@@ -221,7 +219,7 @@ class ProjectRepository extends EntityRepository
 
 
         if (isset($filter['customer_id']) && $filter['customer_id']) {
-            $dqlFilter[] = " p.customerId=:customer_id ";
+            $dqlFilter[] = " ptc.customerId=:customer_id ";
         }
 
         if (isset($filter['project_id']) && $filter['project_id']) {
@@ -267,12 +265,9 @@ class ProjectRepository extends EntityRepository
     {
         $dql = "SELECT
                   p.id,
-                  p.customer_id AS customerId,
-                  c.cardname AS customerName,
                   p.studio_id AS studioId,
                   st.studio_name AS studioName,
                   p.project_release AS projectRelease,
-                  c.cardcode,
                   p.notes,
                   MAX(ph.created_at) AS lastUpdatedAt,
                   (SELECT
@@ -303,7 +298,7 @@ class ProjectRepository extends EntityRepository
                   LEFT JOIN redi_campaign ca
                     ON ca.id=ptc.campaign_id
                   LEFT JOIN redi_customer c
-                    ON p.customer_id = c.id
+                    ON ptc.customer_id = c.id
                   LEFT JOIN redi_studio st
                     ON st.id = p.studio_id
                   LEFT JOIN redi_project_history ph
@@ -348,7 +343,7 @@ class ProjectRepository extends EntityRepository
 
             $projectNameView[] = ' ca.campaign_name LIKE :search ';
             $projectNameView[] = ' ((u.first_name LIKE :search OR u.last_name LIKE :search) AND ptcu.role_id IN (1,2)) ';
-            $projectNameView[] = ' c.customer_name LIKE :search ';
+            $projectNameView[] = ' c.cardname LIKE :search ';
             $projectNameView[] = ' cc.name LIKE :search ';
 
             $dqlFilter[] = " (" . implode(' OR ', $projectNameView) . ") ";
@@ -356,7 +351,7 @@ class ProjectRepository extends EntityRepository
 
 
         if (isset($filter['customer_id']) && $filter['customer_id']) {
-            $dqlFilter[] = " p.customer_id=:customer_id ";
+            $dqlFilter[] = " ptc.customer_id=:customer_id ";
         }
 
         if (isset($filter['project_id']) && $filter['project_id']) {
@@ -411,7 +406,6 @@ class ProjectRepository extends EntityRepository
 
         foreach ($data as &$row) {
             $row['id'] = (int)$row['id'];
-            $row['customerId'] = (int)$row['customerId'];
             $row['lastUpdateUserId'] = ($row['lastUpdateUserId']) ? (int)$row['lastUpdateUserId'] : null;
             $row['historyCount'] = (int)$row['historyCount'];
             $row['lastUpdateUserName'] = trim($row['lastUpdateUserName']);
@@ -444,14 +438,21 @@ class ProjectRepository extends EntityRepository
 
     public function getCampaignByProjectId($projectId)
     {
-        $dql = "SELECT ptc.id AS id, ptc.id AS projectCampaignId, c.id AS campaignId, c.campaignName, ptc.firstPointOfContactId,
+        $dql = "SELECT 
+                ptc.id AS id, 
+                ptc.id AS projectCampaignId, 
+                c.id AS campaignId, c.campaignName, 
+                ptc.firstPointOfContactId,
                 ptc.requestWritingTeam, ptc.writingTeamNotes,
                 ptc.requestMusicTeam, ptc.musicTeamNotes, ptc.note,
                 ptc.budget, ptc.budgetNote, ptc.por, ptc.invoiceContact, ptc.materialReceiveDate,
-                ptc.approvedByBilling
+                ptc.approvedByBilling,
+                ptc.customerId, cu.cardname AS customerName
                 FROM \Application\Entity\RediProjectToCampaign ptc
                 INNER JOIN \Application\Entity\RediCampaign c
                   WITH ptc.campaignId=c.id
+                LEFT JOIN \Application\Entity\RediCustomer cu
+                  WITH cu.id = ptc.customerId
                 WHERE ptc.projectId=:project_id";
 
         $query = $this->getEntityManager()->createQuery($dql);

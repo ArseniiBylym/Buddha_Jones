@@ -19,6 +19,7 @@ class AssignCampaignToProjectController extends CustomAbstractActionController
         $campaignId = (int)(isset($data['campaign_id']) ? trim($data['campaign_id']) : 0);
         $por = isset($data['por']) ? $data['por'] : null;
         $invoiceContact = isset($data['invoice_contact']) ? $data['invoice_contact'] : null;
+        $customerId = isset($data['customer_id']) ? $data['customer_id'] : null;
 
         if ($projectId && $campaignId) {
             $project = $this->_projectRepository->find($projectId);
@@ -31,6 +32,11 @@ class AssignCampaignToProjectController extends CustomAbstractActionController
                     $projectToCampaign->setProjectId($projectId);
                     $projectToCampaign->setCampaignId($campaignId);
                     $projectToCampaign->setApprovedByBilling(0);
+
+                    if($customerId) {
+                        $projectToCampaign->setCustomerId($customerId);
+                    }
+
                     if($por) {
                         $projectToCampaign->setPor($por);
                     }
@@ -57,7 +63,7 @@ class AssignCampaignToProjectController extends CustomAbstractActionController
                         'status' => 1,
                         'message' => 'Request successful.',
                         'data' => array(
-                            'id' => (int)$existingProjectToCampaign->getId()
+                            'id' => (int)$projectToCampaign->getId()
                         )
                     );
                 } else {
