@@ -472,8 +472,8 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
             }
         }
 
-        return entries.map(result => (
-            <li key={result.id}>
+        return entries.map((result, ind: number) => (
+            <li key={`li-${result.id}-${ind}`}>
                 <Button
                     onClick={this.handleResultPick(
                         result.section,

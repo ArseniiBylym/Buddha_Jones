@@ -151,7 +151,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     @observable private isFinishingTypeSectionOpen: boolean = false;
-   /* @observable private finishingHouseName: string | null = null;*/
     @observable private showJson: boolean = false;
 
     @computed
@@ -999,12 +998,10 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     @action
     private resetFinishRequestForm = (): void => {
-        /*this.spotSentValues.spot_version = [];*/
         this.spotSentValues.full_lock = 0;
         this.spotSentValues.notes = '';
         this.spotSentValues.finishing_house = null;
         this.spotSentValues.finishing_house_name = null;
-        /*this.finishingHouseName = null;*/
         this.spotSentValues.deadline = null;
         this.spotSentValues.gfx_finish = 0;
         this.spotSentValues.music_cue_sheet = 0;
@@ -1054,7 +1051,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     private handleExistingFinishingHouseSelected = (finishingHouse: { id: number; name: string }) => {
         this.spotSentValues.finishing_house = finishingHouse.id;
         this.spotSentValues.finishing_house_name = finishingHouse.name;
-        /*this.finishingHouseName = finishingHouse.name;*/
     };
 
     @action
