@@ -58,6 +58,7 @@ class TimeEntryApproveController extends CustomAbstractActionController
                     'userId' => $row['userId'],
                     'userName' => $row['username'],
                     'userInitials' => $row['initials'],
+                    'nickName' => $row['nickName'],
                     'userFullName' => trim($row['firstName']  . ' ' . $row['lastName']),
                     'userMinHours' => $row['minHour'],
                     'entries' => array(),

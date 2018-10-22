@@ -25,7 +25,7 @@ class BillingRepository extends EntityRepository
         $selectColumns = "b.id, 
                       b.spotId, s.spotName, 
                       b.projectId, p.projectName,
-                      b.customerId, cu.customerName,
+                      b.customerId, cu.cardname AS customerName,
                       b.campaignId, c.campaignName,
                       b.statusId, bis.billStatus,
                       b.createdAt";
@@ -63,7 +63,7 @@ class BillingRepository extends EntityRepository
         $selectColumns = "b.id, 
                       b.spotId, s.spotName, 
                       b.projectId, p.projectName,
-                      b.customerId, cu.customerName,
+                      b.customerId, cu.cardname AS customerName,
                       b.campaignId, c.campaignName,
                       b.statusId, bis.billStatus,
                       b.createdAt";

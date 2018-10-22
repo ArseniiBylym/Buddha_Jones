@@ -15,41 +15,56 @@ Get list of all user
 {
     "status": 1,
     "message": "Request successful",
-    "data": {
-        "total_count": 2,
-        "users": [
-            {
-                "id": 4,
-                "username": "AndyAustin",
-                "first_name": "Andy",
-                "last_name": "Austin",
-                "full_name": "Andy Austin",
-                "initials": "AA",
-                "type_id": 1,
-                "type_name": "Editor",
-                "hourly_rate": "9.47",
-                "salary_type": null,
-                "salary_amount": null,
-                "min_hour": null,
-                "status": 1
+    "total_count": 2,
+    "object_count": 2,
+    "data": [
+        {
+            "id": 16,
+            "username": "TJENG",
+            "firstName": "TRACY",
+            "lastName": "JENG",
+            "nickName": "TRACY",
+            "image": null,
+            "email": "TRACYJ@BUDDHA-JONES.COM",
+            "initials": "TJ",
+            "typeId": 5,
+            "typeName": "Billing Coordinator",
+            "class": null,
+            "hourlyRate": "10.00",
+            "salaryType": null,
+            "salaryAmount": null,
+            "minHour": null,
+            "lastLoginDate": {
+                "date": "2018-10-21 19:40:41.000000",
+                "timezone_type": 3,
+                "timezone": "US/Eastern"
             },
-            {
-                "id": 42,
-                "username": "PiaAlvendia",
-                "first_name": "Pia",
-                "last_name": "Alvendia",
-                "full_name": "Pia Alvendia",
-                "initials": "PA",
-                "type_id": 1,
-                "type_name": "Editor",
-                "hourly_rate": "16.00",
-                "salary_type": null,
-                "salary_amount": null,
-                "min_hour": null,
-                "status": 1
-            }
-        ]
-    }
+            "createdDate": null,
+            "status": 1,
+            "fullName": "TRACY JENG"
+        },
+        {
+            "id": 17,
+            "username": "GKUSUMA",
+            "firstName": "GREGORIUS KENETH",
+            "lastName": "KUSUMA",
+            "nickName": "GREGORIUS KENETH",
+            "image": null,
+            "email": "gregk@buddha-jones.com",
+            "initials": "GK",
+            "typeId": 5,
+            "typeName": "Billing Coordinator",
+            "class": null,
+            "hourlyRate": "10.00",
+            "salaryType": null,
+            "salaryAmount": null,
+            "minHour": null,
+            "lastLoginDate": null,
+            "createdDate": null,
+            "status": 1,
+            "fullName": "GREGORIUS KENETH KUSUMA"
+        }
+    ]
 }
 ```
 
@@ -72,7 +87,7 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **false** | search   | string | null | search string (this will search in first_name, last_name, initials)
 **false** | class    | char or JSON Array   | null | E - Editor section, G - Graphics section, C - Creative section, B- Billing contact selection
-**false** | type     | int or JSON Array   | null | Type id
+**false** | type_id  | int or JSON Array   | null | Type id
 **false** | ids      | int or JSON Array   | null | User id
 **false** | offset   | int    | 0    | offset to start
 **false** | length   | int    | 10   | length/count of data that will be returned
@@ -167,7 +182,7 @@ axios.post('/users', {
 
 ### HTTP Request
 
-`POST /estimate`
+`POST /users`
 
 ### Query Parameters
 
@@ -185,6 +200,8 @@ false | salary_type | char | null | salary type. send 'h' (hourly) or 's' salary
 false | salary_amount | float | null | salary amount
 false | min_hour | int | null | min hour
 false | image | string | null | base64 encode string of the image
+false | nick_name | string | null | nick name
+false | initials | string | null | initials
 
 ## Update User
 
@@ -251,3 +268,5 @@ false | salary_type | char | null | salary type. send 'h' (hourly) or 's' salary
 false | salary_amount | float | null | salary amount
 false | min_hour | int | null | min hour
 false | image | string | null | base64 encode string of the image
+false | nick_name | string | null | nick name
+false | initials | string | null | initials

@@ -27,7 +27,10 @@ class ProjectCampaignRepository extends EntityRepository
                   ptc.note, ptc.budget, ptc.budgetNote,
                   ptc.por, ptc.invoiceContact,
                   ptc.materialReceiveDate,
-                  ptc.approvedByBilling
+                  ptc.approvedByBilling,
+                  ptc.customerId,
+                  cu.cardname AS customerName,
+                  ptc.channelId, ch.channelName
                 FROM \Application\Entity\RediProjectToCampaign ptc
                 INNER JOIN \Application\Entity\RediProject p
                     WITH p.id=ptc.projectId
@@ -35,7 +38,11 @@ class ProjectCampaignRepository extends EntityRepository
                     WITH c.id=ptc.campaignId 
                 LEFT JOIN \Application\Entity\RediProjectHistory ph
                     WITH ph.projectId=ptc.projectId
-                    AND ph.campaignId=ptc.campaignId";
+                    AND ph.campaignId=ptc.campaignId
+                LEFT JOIN \Application\Entity\RediCustomer cu
+                    WITH cu.id = ptc.customerId
+                LEFT JOIN \Application\Entity\RediChannel ch
+                    WITH ch.channelId = ptc.channelId";
 
         if(!empty($filter['user_id'])){
             $dql .= " LEFT JOIN \Application\Entity\RediProjectToCampaignUser ptcu

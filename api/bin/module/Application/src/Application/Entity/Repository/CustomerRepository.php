@@ -423,4 +423,95 @@ class CustomerRepository extends EntityRepository
 
         return (!empty($data[0]) ? $data[0] : null);
     }
+
+    public function searchStudio($filter=array(), $offset = 0, $length = 10)
+    {
+        $dql = "SELECT  
+                  st
+                FROM \Application\Entity\RediStudio st ";
+
+        $dqlFilter = [];
+
+        if (isset($filter['search']) && $filter['search']) {
+            $dqlFilter[] = " (st.cardcode LIKE :search OR st.studioName LIKE :search ) ";
+        }
+
+        if (isset($filter['first_letter']) && $filter['first_letter']) {
+            if(strtolower($filter['first_letter']=='other')) {
+                $dqlFilter[] = " (SUBSTRING(st.studioName, 1,1)<'A' AND SUBSTRING(st.studioName, 1,1)<'0') ";
+            } elseif($filter['first_letter']=='0-9') {
+                $dqlFilter[] = " (SUBSTRING(st.studioName, 1,1)>0 OR SUBSTRING(st.studioName, 1,1)='0') ";
+            } else {
+                $dqlFilter[] = " (UPPER(SUBSTRING(st.studioName, 1, 1))=:first_letter) ";
+            }
+        }
+
+        if(count($dqlFilter)) {
+            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        }
+
+        $dql .= " ORDER BY st.studioName ASC";
+
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setFirstResult($offset);
+        $query->setMaxResults($length);
+
+        if (isset($filter['search']) && $filter['search']) {
+            $query->setParameter('search', '%' . $filter['search'] . '%');
+        }
+
+        if (isset($filter['first_letter']) && $filter['first_letter']) {
+            if($filter['first_letter']!='0-9' && strtolower($filter['first_letter']!='other')) {
+                $query->setParameter('first_letter', $filter['first_letter']);
+            }
+        }
+
+        $data = $query->getArrayResult();
+
+        return $data;
+    }
+
+    public function searchStudioCount($filter=array())
+    {
+        $dql = "SELECT  
+                  COUNT(st.id) AS total_count 
+                FROM \Application\Entity\RediStudio st ";
+
+        $dqlFilter = [];
+
+        if (isset($filter['search']) && $filter['search']) {
+            $dqlFilter[] = " (st.cardcode LIKE :search OR st.studioName LIKE :search ) ";
+        }
+
+        if (isset($filter['first_letter']) && $filter['first_letter']) {
+            if(strtolower($filter['first_letter']=='other')) {
+                $dqlFilter[] = " (SUBSTRING(st.studioName, 1,1)<'A' AND SUBSTRING(st.studioName, 1,1)<'0') ";
+            } elseif($filter['first_letter']=='0-9') {
+                $dqlFilter[] = " (SUBSTRING(st.studioName, 1,1)>0 OR SUBSTRING(st.studioName, 1,1)='0') ";
+            } else {
+                $dqlFilter[] = " (UPPER(SUBSTRING(st.studioName, 1, 1))=:first_letter) ";
+            }
+        }
+
+        if(count($dqlFilter)) {
+            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        }
+
+        $query = $this->getEntityManager()->createQuery($dql);
+
+        if (isset($filter['search']) && $filter['search']) {
+            $query->setParameter('search', '%' . $filter['search'] . '%');
+        }
+
+        if (isset($filter['first_letter']) && $filter['first_letter']) {
+            if($filter['first_letter']!='0-9' && strtolower($filter['first_letter']!='other')) {
+                $query->setParameter('first_letter', $filter['first_letter']);
+            }
+        }
+
+        $result = $query->getArrayResult();
+
+        return (isset($result[0]['total_count'])?(int)$result[0]['total_count']:0);
+    }
 }

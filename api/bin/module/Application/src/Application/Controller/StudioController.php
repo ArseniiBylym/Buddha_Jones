@@ -12,22 +12,20 @@ class StudioController extends CustomAbstractActionController
 {
     public function getList()
     {
-        $data = $this->_studioRepository->findAll();
+        $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
+        $length = (int)trim($this->getRequest()->getQuery('length', 10));
+        $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
+        $filter['first_letter'] = trim($this->getRequest()->getQuery('first_letter', ''));
 
-        $response = array();
-
-        foreach($data as $row) {
-            $response[] = array(
-                'id' => $row->getId(),
-                'cardcode' => $row->getCardcode(),
-                'studioName' => trim($row->getStudioName()),
-            );
-        }
+        $data = $this->_customerRepo->searchStudio($filter, $offset, $length);
+        $totalCount = $this->_customerRepo->searchStudioCount($filter);
 
         $response = array(
             'status' => 1,
             'message' => 'Request successful',
-            'data' => $response
+            'total_count' => $totalCount,
+            'object_count' => count($data),
+            'data' => $data
         );
 
 

@@ -282,4 +282,35 @@ class CampaignRepository extends EntityRepository
 
         return $response;
     }
+
+    public function searchChannel($filter = array())
+    {
+        $dql = "SELECT  
+                    ch.channelId,
+                    ch.channelName
+                FROM \Application\Entity\RediChannel ch
+                LEFT JOIN \Application\Entity\RediCampaignChannel cach
+                  WITH ch.channelId=cach.channelId";
+
+        $dqlFilter = [];
+
+        if (!empty($filter['campaign_id'])) {
+            $dqlFilter[] = "cach.campaignId= :campaign_id";
+        }
+
+        if(count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
+        }
+
+        $dql .= " GROUP BY ch.channelId ";
+        $query = $this->getEntityManager()->createQuery($dql);
+
+        if (!empty($filter['campaign_id'])) {
+            $query->setParameter('campaign_id', $filter['campaign_id']);
+        }
+
+        $result =  $query->getArrayResult();
+
+        return $result;
+    }
 }

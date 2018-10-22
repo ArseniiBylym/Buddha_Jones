@@ -50,13 +50,6 @@ class RediProject
     private $studioId;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="customer_id", type="integer", nullable=true)
-     */
-    private $customerId;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="notes", type="text", nullable=true)
@@ -172,29 +165,6 @@ class RediProject
     public function getStudioId()
     {
         return $this->studioId;
-    }
-
-    /**
-     * Set customerId
-     *
-     * @param integer $customerId
-     * @return RediProject
-     */
-    public function setCustomerId($customerId)
-    {
-        $this->customerId = $customerId;
-
-        return $this;
-    }
-
-    /**
-     * Get customerId
-     *
-     * @return integer 
-     */
-    public function getCustomerId()
-    {
-        return $this->customerId;
     }
 
     /**

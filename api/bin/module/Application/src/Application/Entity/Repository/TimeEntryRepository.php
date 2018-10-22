@@ -35,6 +35,7 @@ class TimeEntryRepository extends EntityRepository
                   u.initials,
                   u.firstName,
                   u.lastName,
+                  u.nickName,
                   u.minHour,
                   a.projectCampaignId,
                   ptc.projectId,
@@ -46,7 +47,7 @@ class TimeEntryRepository extends EntityRepository
                   a.activityDescription,
                   atp.id AS activityTypeId,
                   atp.activityType,
-                  cu.id AS customerId, cu.customerName,
+                  cu.id AS customerId, cu.cardname AS customerName,
                   a.startDate, a.duration,
                   a.approvedBy, a.approvedAt,
                   a.notes, a.status, st.status as statusName
@@ -76,7 +77,7 @@ class TimeEntryRepository extends EntityRepository
                 LEFT JOIN \Application\Entity\RediActivityType  atp
                     WITH att.typeId=atp.id
                 LEFT JOIN \Application\Entity\RediCustomer cu
-                    WITH cu.id=p.customerId ";
+                    WITH cu.id=ptc.customerId ";
 
         $dqlFilter = [];
 
@@ -345,7 +346,7 @@ class TimeEntryRepository extends EntityRepository
                     ptc.campaignId,
                     c.campaignName,
                     cu.id AS customerId,
-                    cu.customerName,
+                    cu.cardname AS customerName,
                     a.spotId,
                     s.spotName,
                     a.versionId,
@@ -378,7 +379,7 @@ class TimeEntryRepository extends EntityRepository
                 LEFT JOIN \Application\Entity\RediActivityType  atp
                     WITH att.typeId=atp.id
                 LEFT JOIN \Application\Entity\RediCustomer cu
-                    WITH cu.id=p.customerId
+                    WITH cu.id=ptc.customerId
                 LEFT JOIN \Application\Entity\RediUser u
                     WITH u.id=a.userId
                 LEFT JOIN \Application\Entity\RediUserType ut

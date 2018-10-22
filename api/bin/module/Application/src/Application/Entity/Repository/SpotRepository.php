@@ -197,7 +197,11 @@ class SpotRepository extends EntityRepository
         $dql = "SELECT 
                 " . $columnString . ",
                 uc.firstName AS createdByFirstName, uc.lastName AS createdByLastName,
-                uu.firstName AS updatedByFirstName, uu.lastName AS updatedByLastName
+                uu.firstName AS updatedByFirstName, uu.lastName AS updatedByLastName,
+                CASE 
+                    WHEN sc.updatedAt IS NOT NULL THEN sc.updatedAt
+                    ELSE sc.createdAt
+                END  AS sortBy
                 FROM \Application\Entity\RediSpotSent sc
                 LEFT JOIN \Application\Entity\RediUser uc
                     WITH uc.id = sc.createdBy
@@ -229,7 +233,7 @@ class SpotRepository extends EntityRepository
         if (!empty($filter['sort']) && $filter['sort'] === 'priority') {
             $orderBy = " ORDER BY sc.statusId ASC, sc.updatedAt DESC ";
         } else {
-            $orderBy = " ORDER BY sc.updatedAt DESC ";
+            $orderBy = " ORDER BY sortBy DESC, sc.statusId ASC, sc.requestId DESC ";
         }
 
         $dql .= $orderBy;
@@ -264,6 +268,8 @@ class SpotRepository extends EntityRepository
         }
 
         foreach ($result as &$row) {
+            unset($row['sortBy']);
+
             $row['requestId'] = (int)$row['requestId'];
             $row['projectId'] = (int)$row['projectId'];
             $row['statusId'] = (int)$row['statusId'];
@@ -498,6 +504,31 @@ class SpotRepository extends EntityRepository
         return $result;
     }
 
+    public function getRawSpotVersionDataByRequestId($requestId)
+    {
+        $dql = "SELECT
+                    sc.campaign_id,
+                    sc.project_campaign_id,
+                    sc.spot_id,
+                    sc.version_id,
+                    sc.spot_version_id,
+                    sc.sent_via_method,
+                    sc.finish_request,
+                    sc.spot_resend,
+                    sc.line_status_id,
+                    sc.editor,
+                    sc.editor AS editors_string
+                FROM redi_spot_sent sc
+                  WHERE sc.request_id = :request_id ";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('request_id', $requestId);
+        $query->execute();
+        $result = $query->fetchAll();
+
+        return $result;
+    }
+
     public function getSpotVersionBySpotSentId($spotSentId, $returnWorker = false)
     {
         if ($returnWorker) {
@@ -634,9 +665,9 @@ class SpotRepository extends EntityRepository
     public function fullSearch($filter = [], $offset = 0, $length = 10)
     {
         $dql = "SELECT 
-                    cu.customerName,
+                    cu.cardname AS customerName,
                     cu.cardcode,
-                    p.customerId,
+                    ptc.customerId,
                     p.id AS projectId,
                     ca.campaignName,
                     ca.id AS campaignId,
@@ -651,7 +682,7 @@ class SpotRepository extends EntityRepository
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id=ptc.campaignId
                 LEFT JOIN \Application\Entity\RediCustomer cu
-                    WITH cu.id=p.customerId ";
+                    WITH cu.id=ptc.customerId ";
 
         $dqlFilter = [];
 
@@ -707,7 +738,7 @@ class SpotRepository extends EntityRepository
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id=ptc.campaignId
                 LEFT JOIN \Application\Entity\RediCustomer cu
-                    WITH cu.id=p.customerId ";
+                    WITH cu.id=ptc.customerId ";
 
         $dqlFilter = [];
 

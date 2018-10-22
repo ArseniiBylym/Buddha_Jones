@@ -102,9 +102,19 @@ class CommonRepository extends EntityRepository
         return $date;
     }
 
-    public function formatDateForDisplay($dateString)
+    public function formatDateForDisplay($dateObject, $format = 'Y-m-d')
     {
+        if ($dateObject instanceof DateTime) {
+            try {
+                $dateString = $dateObject->format('Y-m-d');
 
+                return $dateString;
+            } catch (\Exception $e) {
+            // some message if requried
+            }
+        }
+
+        return null;
     }
 
     public function base64DecodeFile($data)
@@ -122,42 +132,60 @@ class CommonRepository extends EntityRepository
     public function filterPostData($data, $key, $type = 'string', $defaultVal = null)
     {
         $type = strtolower($type);
-        $value = $defaultVal;
+        // $value = $defaultVal;
 
         if (!empty($data[$key])) {
             $value = $data[$key];
+
+            switch ($type) {
+                case 'decimal':
+                case 'float':
+                case 'double':
+                    $value = (float)$value;
+                    break;
+                case 'int':
+                case 'integer':
+                case 'intval':
+                    $value = (int)$value;
+                    break;
+                case 'bool':
+                case 'boolean':
+                    $value = $value ? 1 : 0;
+                    break;
+                case 'date':
+                case 'datetime': // for converting datetime string to object
+                    $value = $this->formatDateForInsert($value);
+                    break;
+                case 'datetimeObj': // for converting datetime Object to datetime string
+                    $value = $this->formatDateForDisplay($value, 'Y-m-d H:i:s');
+                    break;
+                case 'array':
+                    $value = is_array($value) ? $value : array();
+                    break;
+                case 'string':
+                    $value = trim($value);
+                    break;
+                default:
+                    $value = $value;
+            }
+
+            if ($value && $type === 'json') {
+                $value = (array)json_decode($value, true);
+            }
         }
 
-        switch ($type) {
-            case 'decimal':
-            case 'float':
-            case 'double':
-                $value = (float)$value;
-                break;
-            case 'int':
-            case 'integer':
-            case 'intval':
-                $value = (int)$value;
-                break;
-            case 'bool':
-            case 'boolean':
-                $value = $value ? 1 : 0;
-                break;
-            case 'date':
-            case 'datetime':
-                $value = $this->formatDateForInsert($value);
-                break;
-            case 'array':
-                $value = is_array($value) ? $value : array();
-                break;
-            default:
-                $value = trim($value);
-        }
-
-        if ($value && $type === 'json') {
-            $value = (array)json_decode($value, true);
+        if (empty($value)) {
+            $value = $defaultVal;
         }
 
         return $value;
+    }
+
+    public function convertArrayKey($data, $convertTo) {
+        $result = array();
+
+        foreach($data as $key => $row) {
+
+        }
     }
 }

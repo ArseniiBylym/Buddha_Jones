@@ -33,7 +33,7 @@ class AssignCustomerContactToProjectCampaignController extends CustomAbstractAct
                     $customerContact = $this->_customerContactRepository->find((int)$firstPointOfContact);
                     $project = $this->_projectRepository->find($existingProjectCampaign->getProjectId());
 
-                    if ($firstPointOfContact && (!$customerContact || ($customerContact && $customerContact->getCustomerId() != $project->getCustomerId()))) {
+                    if ($firstPointOfContact && (!$customerContact || ($customerContact && $customerContact->getCustomerId() != $existingProjectCampaign->getCustomerId()))) {
                         $response = array(
                             'status' => 0,
                             'message' => 'Contact does not belong to customer the project is assigned to.'
