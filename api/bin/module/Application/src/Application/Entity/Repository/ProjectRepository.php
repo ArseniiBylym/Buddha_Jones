@@ -90,6 +90,10 @@ class ProjectRepository extends EntityRepository
             $dqlFilter[] = " ptc.customerId=:customer_id ";
         }
 
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $dqlFilter[] = " p.studioId=:studio_id ";
+        }
+
         if (isset($filter['project_id']) && $filter['project_id']) {
             $dqlFilter[] = " p.id=:project_id ";
         }
@@ -123,6 +127,10 @@ class ProjectRepository extends EntityRepository
 
         if (isset($filter['customer_id']) && $filter['customer_id']) {
             $query->setParameter('customer_id', $filter['customer_id']);
+        }
+
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $query->setParameter('studio_id', $filter['studio_id']);
         }
 
         if (isset($filter['project_id']) && $filter['project_id']) {
@@ -222,6 +230,10 @@ class ProjectRepository extends EntityRepository
             $dqlFilter[] = " ptc.customerId=:customer_id ";
         }
 
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $dqlFilter[] = " p.studioId=:studio_id ";
+        }
+
         if (isset($filter['project_id']) && $filter['project_id']) {
             $dqlFilter[] = " p.id=:project_id ";
         }
@@ -246,6 +258,10 @@ class ProjectRepository extends EntityRepository
 
         if (isset($filter['customer_id']) && $filter['customer_id']) {
             $query->setParameter('customer_id', $filter['customer_id']);
+        }
+
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $query->setParameter('studio_id', $filter['studio_id']);
         }
 
         if (isset($filter['project_id']) && $filter['project_id']) {
@@ -354,6 +370,10 @@ class ProjectRepository extends EntityRepository
             $dqlFilter[] = " ptc.customer_id=:customer_id ";
         }
 
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $dqlFilter[] = " p.studio_id=:studio_id ";
+        }
+
         if (isset($filter['project_id']) && $filter['project_id']) {
             $dqlFilter[] = " p.id=:project_id ";
         }
@@ -390,6 +410,10 @@ class ProjectRepository extends EntityRepository
 
         if (isset($filter['customer_id']) && $filter['customer_id']) {
             $query->bindParam('customer_id', $filter['customer_id']);
+        }
+
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $query->bindParam('studio_id', $filter['studio_id']);
         }
 
         if (isset($filter['project_id']) && $filter['project_id']) {
