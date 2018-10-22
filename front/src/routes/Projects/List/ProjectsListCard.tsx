@@ -64,7 +64,7 @@ export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}>
                     <Col className={s.dateCol}>
                         <Paragraph>
                             <span>Last update</span>
-                            {dateFormat(this.props.project.lastUpdatedAt, 'MM/DD/YYYY hh:mm A')}
+                            {this.props.project.lastUpdatedAt && dateFormat(this.props.project.lastUpdatedAt, 'MM/DD/YYYY hh:mm A')}
                         </Paragraph>
                     </Col>
                     <Col className={s.nameCol}>

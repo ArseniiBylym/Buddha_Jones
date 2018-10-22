@@ -55,7 +55,7 @@ export interface Project {
     commentsCount: number;
     commentsUnread: number;
     campaigns: ProjectCampaignDataApiResponse[];
-    lastUpdatedAt: Date;
+    lastUpdatedAt: Date | null;
     lastUpdatedByUserId: number;
     lastUpdatedByUserName: string;
     lastUpdatedByUserImage: string | null;
