@@ -110,7 +110,7 @@ export class ProjectsActionsClass {
                 commentsCount: project.comment.count,
                 commentsUnread: project.comment.unread,
                 campaigns: project.campaign,
-                lastUpdatedAt: dateParse(project.lastUpdatedAt.date),
+                lastUpdatedAt: (project.lastUpdatedAt && project.lastUpdatedAt.date) ? dateParse(project.lastUpdatedAt.date) : null,
                 lastUpdatedByUserId: project.lastUpdateUser.userId,
                 lastUpdatedByUserName: project.lastUpdateUser.name,
                 lastUpdatedByUserImage: project.lastUpdateUser.image,
