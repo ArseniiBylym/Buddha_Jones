@@ -34,6 +34,7 @@ class UsersRepository extends EntityRepository
 
         if($userAccess['can_access_basic_data']) {
             $selectColumn = " a.id, a.username, a.firstName as first_name, a.lastName as last_name,
+                            a.nickName as nick_name,
                             a.image, a.email,
                             a.initials, a.typeId as type_id, ut.typeName as type_name, utc.class,
                             a.lastLoginDate AS last_login_date, a.createdDate AS created_date,
@@ -42,6 +43,7 @@ class UsersRepository extends EntityRepository
 
         if($userAccess['can_access_extra_data']) {
             $selectColumn = " a.id, a.username, a.firstName as first_name, a.lastName as last_name,
+                            a.nickName as nick_name,
                             a.image, a.email,
                             a.initials, a.typeId as type_id, ut.typeName as type_name, utc.class,
                             a.hourlyRate as hourly_rate, a.salaryType as salary_type,
@@ -106,6 +108,87 @@ class UsersRepository extends EntityRepository
         return $data;
     }
 
+    // new search function. remove previous one if not required
+    public function searchUser($search='', $ids=[], $class=[], $type=[], $offset = 0, $length = 10, $userAccess = array())
+    {
+        $selectColumn = ' a.id ';
+
+        if($userAccess['can_access_basic_data']) {
+            $selectColumn = " a.id, a.username, a.firstName, a.lastName,
+                            a.nickName,
+                            a.image, a.email,
+                            a.initials, a.typeId, ut.typeName, utc.class,
+                            a.lastLoginDate, a.createdDate,
+                            a.status ";
+        }
+
+        if($userAccess['can_access_extra_data']) {
+            $selectColumn = " a.id, a.username, 
+                            a.firstName, a.lastName, a.nickName,
+                            a.image, a.email,
+                            a.initials, a.typeId, ut.typeName, utc.class,
+                            a.hourlyRate, a.salaryType,
+                            a.salaryAmount, a.minHour,
+                            a.lastLoginDate, a.createdDate,
+                            a.status ";
+        }
+
+        $dql = "SELECT " . $selectColumn . "
+                FROM \Application\Entity\RediUser a
+                LEFT JOIN \Application\Entity\RediUserType ut
+                    WITH a.typeId=ut.id
+                LEFT JOIN \Application\Entity\RediUserTypeClass utc
+                    WITH a.typeId=utc.typeId ";
+
+        $dqlFilter = [];
+
+        if ($search) {
+            $dqlFilter[] = " (a.firstName LIKE '%" . $search . "%' OR a.lastName LIKE '%" . $search . "%' OR a.username LIKE '%" . $search . "%' OR a.initials ='" . $search . "' OR a.email LIKE '%" . $search . "%') ";
+        }
+
+        if (count($class)) {
+            $dqlFilter[] = " utc.class IN (:class) ";
+        }
+
+        if (count($ids)) {
+            $dqlFilter[] = " a.id IN (:ids) ";
+        }
+
+        if (count($type)) {
+            $dqlFilter[] = " a.typeId IN (:type) ";
+        }
+
+        if(count($dqlFilter)) {
+            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        }
+
+        $dql .= " ORDER BY a.id ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setFirstResult($offset);
+        $query->setMaxResults($length);
+
+        if(count($class)) {
+            $query->setParameter('class', $class, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
+        }
+
+        if(count($type)) {
+            $query->setParameter('type', $type, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
+        }
+
+        if(count($ids)) {
+            $query->setParameter('ids', $ids, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
+        }
+
+        $data = $query->getArrayResult();
+
+        foreach($data as &$row) {
+            $row['fullName'] = trim(implode(' ', array($row['firstName'], $row['lastName'])));
+        }
+
+        return $data;
+    }
+
     public function getUser($userId, $userAccess = array())
     {
 
@@ -145,6 +228,55 @@ class UsersRepository extends EntityRepository
             $response = $user[0];
 
             $response['full_name'] = trim(implode(' ', array($response['first_name'], $response['last_name'])));
+        } else {
+            $response = null;
+        }
+
+        return $response;
+    }
+
+    // duplicate function. remove previous one when sure about the usage
+    public function getSingleUser($userId, $userAccess = array())
+    {
+
+        $selectColumn = ' a.id ';
+
+        if($userAccess['can_access_basic_data']) {
+            $selectColumn = " a.id, a.username, 
+                            a.firstName, a.lastName, a.nickName,
+                            a.image, a.email,
+                            a.initials, a.typeId, ut.typeName,
+                            a.lastLoginDate, a.createdDate,
+                            a.status ";
+        }
+
+        if($userAccess['can_access_extra_data']) {
+            $selectColumn = " a.id, a.username, 
+                            a.firstName, a.lastName, a.nickName,
+                            a.image, a.email,
+                            a.initials, a.typeId, ut.typeName,
+                            a.hourlyRate, a.salaryType,
+                            a.salaryAmount, a.minHour,
+                            a.lastLoginDate, a.createdDate,
+                            a.status ";
+        }
+
+
+        $dql = "SELECT " . $selectColumn . "
+                FROM \Application\Entity\RediUser a
+                JOIN \Application\Entity\RediUserType ut
+                    WITH a.typeId=ut.id
+                WHERE a.id=:user_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_id', $userId);
+        $query->setMaxResults(1);
+        $user =  $query->getArrayResult();
+
+        if(isset($user[0])) {
+            $response = $user[0];
+
+            $response['fullName'] = trim(implode(' ', array($response['firstName'], $response['lastName'])));
         } else {
             $response = null;
         }

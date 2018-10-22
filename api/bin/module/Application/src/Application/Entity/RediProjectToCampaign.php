@@ -126,6 +126,13 @@ class RediProjectToCampaign
      */
     private $approvedByBilling;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="channel_id", type="integer", nullable=true)
+     */
+    private $channelId;
+
 
 
     /**
@@ -481,5 +488,28 @@ class RediProjectToCampaign
     public function getApprovedByBilling()
     {
         return $this->approvedByBilling;
+    }
+
+    /**
+     * Set channelId
+     *
+     * @param integer $channelId
+     * @return RediProjectToCampaign
+     */
+    public function setChannelId($channelId)
+    {
+        $this->channelId = $channelId;
+
+        return $this;
+    }
+
+    /**
+     * Get channelId
+     *
+     * @return integer 
+     */
+    public function getChannelId()
+    {
+        return $this->channelId;
     }
 }

@@ -212,7 +212,7 @@ class SpotSentController extends CustomAbstractActionController
 
         if (is_array($spotVersionData)) {
             if ($isUpdate) {
-                // $this->removeByRequestId($requestId);
+                 $this->removeByRequestId($requestId);
             }
 
             // process spot version data

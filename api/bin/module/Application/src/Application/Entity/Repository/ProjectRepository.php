@@ -447,12 +447,15 @@ class ProjectRepository extends EntityRepository
                 ptc.requestMusicTeam, ptc.musicTeamNotes, ptc.note,
                 ptc.budget, ptc.budgetNote, ptc.por, ptc.invoiceContact, ptc.materialReceiveDate,
                 ptc.approvedByBilling,
-                ptc.customerId, cu.cardname AS customerName
+                ptc.customerId, cu.cardname AS customerName,
+                ptc.channelId, ch.channelName
                 FROM \Application\Entity\RediProjectToCampaign ptc
                 INNER JOIN \Application\Entity\RediCampaign c
                   WITH ptc.campaignId=c.id
                 LEFT JOIN \Application\Entity\RediCustomer cu
                   WITH cu.id = ptc.customerId
+                LEFT JOIN \Application\Entity\RediChannel ch
+                  WITH ch.channelId = ptc.channelId
                 WHERE ptc.projectId=:project_id";
 
         $query = $this->getEntityManager()->createQuery($dql);

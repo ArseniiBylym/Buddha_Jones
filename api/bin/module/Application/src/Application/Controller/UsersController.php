@@ -27,7 +27,7 @@ class UsersController extends CustomAbstractActionController
             $classArr = [$class];
         }
 
-        $users = $this->_usersRepo->search($search, $idsArr, $classArr, $typeArr, $offset, $length, $userAccess);
+        $users = $this->_usersRepo->searchUser($search, $idsArr, $classArr, $typeArr, $offset, $length, $userAccess);
         $userCount = $this->_usersRepo->searchCount($search, $idsArr, $classArr, $typeArr);
 
         foreach($users as &$row) {
@@ -39,10 +39,9 @@ class UsersController extends CustomAbstractActionController
         $response = array(
             'status' => 1,
             'message' => 'Request successful',
-            'data' => array(
-                'total_count' => $userCount,
-                'users' => $users
-            )
+            'total_count' => $userCount,
+            'object_count' => count($users),
+            'data' => $users
         );
 
         if ($response['status'] == 0) {
@@ -78,6 +77,8 @@ class UsersController extends CustomAbstractActionController
             $password = trim(isset($data['password']) ? $data['password'] : '');
             $firstName = trim(isset($data['first_name']) ? $data['first_name'] : '');
             $lastName = trim(isset($data['last_name']) ? $data['last_name'] : '');
+            $nickName = trim(isset($data['nick_name']) ? $data['nick_name'] : '');
+            $initials = trim(isset($data['initials']) ? $data['initials'] : '');
             $email = trim(isset($data['email']) ? $data['email'] : '');
             $typeId = (int)(isset($data['type_id']) ? $data['type_id'] : 0);
             $status = (int)trim(isset($data['status']) ? $data['status'] : 1);
@@ -98,6 +99,8 @@ class UsersController extends CustomAbstractActionController
                         $user->setUsername($userName);
                         $user->setFirstName($firstName);
                         $user->setLastName($lastName);
+                        $user->setNickName($nickName);
+                        $user->setInitials($initials);
                         $user->setEmail($email);
                         $user->setTypeId($typeId);
                         $user->setStatus($status);
@@ -172,11 +175,12 @@ class UsersController extends CustomAbstractActionController
 
     public function update($id, $data)
     {
-        $userName = isset($data['username']) ? $data['username'] : null;
         $password = isset($data['password']) ? $data['password'] : null;
         $oldPassword = isset($data['old_password']) ? $data['old_password'] : null;
         $firstName = isset($data['first_name']) ? $data['first_name'] : null;
         $lastName = isset($data['last_name']) ? $data['last_name'] : null;
+        $nickName = isset($data['nick_name']) ? $data['nick_name'] : null;
+        $initials = isset($data['initials']) ? $data['initials'] : null;
         $email = isset($data['email']) ? $data['email'] : null;
         $typeId = isset($data['type_id']) ? (int)($data['type_id']) : null;
         $status = isset($data['status']) ? (int)$data['status'] : null;
@@ -219,6 +223,14 @@ class UsersController extends CustomAbstractActionController
 
                                 if ($lastName) {
                                     $user->setLastName($lastName);
+                                }
+
+                                if($nickName) {
+                                    $user->setNickName($nickName);
+                                }
+
+                                if($initials) {
+                                    $user->setInitials($initials);
                                 }
 
                                 if ($email) {

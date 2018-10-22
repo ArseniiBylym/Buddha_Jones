@@ -142,7 +142,7 @@ class ProjectCampaignController extends CustomAbstractActionController
 
     public function get($projectCampaignId)
     {
-        $response = $this->getSingle($projectCampaignId);        
+        $response = $this->getSingle($projectCampaignId);
 
         if ($response['status'] == 0) {
             $this->getResponse()->setStatusCode(400);
@@ -188,6 +188,9 @@ class ProjectCampaignController extends CustomAbstractActionController
             $materialReceiveDate = ($canEditMaterialReceived && isset($data['material_receive_date'])) ? $data['material_receive_date'] : null;
             $approvedByBilling = ($isBillingUser && isset($data['approved_by_billing']) && strlen($data['approved_by_billing']) > 0)
                 ? (((int)$data['approved_by_billing']) ? 1 : 0)
+                : null;
+            $channelId = ($isBillingUser && isset($data['channel_id']) && strlen($data['channel_id']) > 0)
+                ? (((int)$data['channel_id']) ? 1 : 0)
                 : null;
 
             if ($projectCampaignId) {
@@ -280,6 +283,10 @@ class ProjectCampaignController extends CustomAbstractActionController
 
                     if($approvedByBilling !== null) {
                         $existingProjectToCampaign->setApprovedByBilling($approvedByBilling);
+                    }
+
+                    if($channelId !== null) {
+                        $existingProjectToCampaign->setChannelId($channelId);
                     }
 
                     $this->_em->persist($existingProjectToCampaign);
