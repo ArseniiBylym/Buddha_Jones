@@ -665,9 +665,9 @@ class SpotRepository extends EntityRepository
     public function fullSearch($filter = [], $offset = 0, $length = 10)
     {
         $dql = "SELECT 
-                    cu.customerName,
+                    cu.cardname AS customerName,
                     cu.cardcode,
-                    p.customerId,
+                    ptc.customerId,
                     p.id AS projectId,
                     ca.campaignName,
                     ca.id AS campaignId,
@@ -682,7 +682,7 @@ class SpotRepository extends EntityRepository
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id=ptc.campaignId
                 LEFT JOIN \Application\Entity\RediCustomer cu
-                    WITH cu.id=p.customerId ";
+                    WITH cu.id=ptc.customerId ";
 
         $dqlFilter = [];
 
@@ -738,7 +738,7 @@ class SpotRepository extends EntityRepository
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id=ptc.campaignId
                 LEFT JOIN \Application\Entity\RediCustomer cu
-                    WITH cu.id=p.customerId ";
+                    WITH cu.id=ptc.customerId ";
 
         $dqlFilter = [];
 

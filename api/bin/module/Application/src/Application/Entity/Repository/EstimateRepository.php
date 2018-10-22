@@ -216,7 +216,7 @@ class EstimateRepository extends EntityRepository
                   a.id, 
                   a.spotId, s.spotName, 
                   s.projectId,
-                  p.customerId, cu.customerName, cu.cardcode,
+                  p.studioId, stu.cardcode as studioCardcode, stu.studioName,
                   s.campaignId, c.campaignName,
                   a.versionId, v.versionName, 
                   a.statusId, st.status,
@@ -235,8 +235,8 @@ class EstimateRepository extends EntityRepository
                   WITH p.id=s.projectId
                 LEFT JOIN \Application\Entity\RediCampaign c
                   WITH c.id=s.campaignId 
-                LEFT JOIN \Application\Entity\RediCustomer cu
-                  WITH cu.id=p.customerId
+                LEFT JOIN \Application\Entity\RediStudio stu
+                  WITH stu.id=p.studioId
                 WHERE a.id=:id";
 
         $query = $this->getEntityManager()->createQuery($dql);

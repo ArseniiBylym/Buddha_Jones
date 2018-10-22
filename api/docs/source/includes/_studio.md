@@ -956,6 +956,13 @@ Get list of all studio
 
 `GET /studio`
 
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+false | length | int | 10 | Limit number of returned results
+false | offset | int | 0 | Offset returned results
+false | search | string | null | search string which will match with: customer name
+false | first_letter | string | null | send this param for filter with first letter of studio name (send '0-9' or any letter from 'A' to 'Z' or for others send 'other')
+
 
 ## Get distinct first letter of studio name
 
