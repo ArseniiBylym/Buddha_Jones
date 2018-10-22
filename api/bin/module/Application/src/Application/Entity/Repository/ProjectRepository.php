@@ -543,7 +543,7 @@ class ProjectRepository extends EntityRepository
     public function getLastUpdateUserByProjectId($projectId, $imagePath)
     {
         $dql = "SELECT
-                    ph2.user_id, u.first_name, u.last_name, u.image
+                    ph2.user_id, u.first_name, u.last_name, u.image, u.nick_name
                   FROM
                     redi_project_history ph2
                   INNER JOIN redi_user u
@@ -564,7 +564,8 @@ class ProjectRepository extends EntityRepository
             $response = array(
                 'userId' => (int)$result[0]['user_id'],
                 'name' => trim($result[0]['first_name'] . ' ' . $result[0]['last_name']),
-                'image' => ($result[0]['image']) ? $imagePath . $result[0]['image'] : null
+                'nickName' => $result[0]['nick_name'],
+                'image' => ($result[0]['image']) ? $imagePath . $result[0]['image'] : null,
             );
         }
 

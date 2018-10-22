@@ -234,11 +234,12 @@ class ProjectController extends CustomAbstractActionController
                         $projectNameString = '"' . $projectCode . '"';
                     }
 
-                    $historyMessage = 'Project ' . $projectNameString . ' created for client "' . $customer->getCustomerName() . '"';
+                    // add project crated history
+                    $historyMessage = 'Project created with name "' . $projectNameString . '"';
                     $projectHistory = new RediProjectHistory();
                     $projectHistory->setProjectId($projectId);
-                    $projectHistory->setUserId($this->_user_id);
                     $projectHistory->setMessage($historyMessage);
+                    $projectHistory->setUserId($this->_user_id);
                     $projectHistory->setCreatedAt(new \DateTime('now'));
                     $this->_em->persist($projectHistory);
                     $this->_em->flush();
@@ -246,6 +247,7 @@ class ProjectController extends CustomAbstractActionController
                     $data = $this->getSingle($projectId);
                     $data['project_id'] = $projectId;
 
+                    
                     $response = array(
                         'status' => 1,
                         'message' => 'Request successful.',
@@ -260,7 +262,7 @@ class ProjectController extends CustomAbstractActionController
             } else {
                 $response = array(
                     'status' => 0,
-                    'message' => 'Please provide required data(project_name or project_code and customer_id).'
+                    'message' => 'Please provide required data(project_name or project_code and studio_id).'
                 );
             }
         } else {
@@ -328,6 +330,7 @@ class ProjectController extends CustomAbstractActionController
                             $projectHistory = new RediProjectHistory();
                             $projectHistory->setProjectId($id);
                             $projectHistory->setMessage($historyMessage);
+                            $projectHistory->setUserId($this->_user_id);
                             $projectHistory->setCreatedAt(new \DateTime('now'));
                             $this->_em->persist($projectHistory);
                         }
