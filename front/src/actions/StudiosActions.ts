@@ -1,7 +1,7 @@
 import { action } from 'mobx';
 import { StudiosStore } from 'store/AllStores';
 import { API, APIPath } from 'fetch';
-import { ClientApiResponse, ClientDetailsApiResponse } from 'types/clients';
+import { StudioApiResponse } from 'types/clients';
 import { DateHandler } from 'helpers/DateHandler';
 
 enum StudiosFetchType {
@@ -13,11 +13,11 @@ enum StudiosFetchType {
 
 export class StudiosActionsClass {
     @action
-    public fetchClientsInitialsLetters = async (): Promise<string[]> => {
+    public fetchStudiosInitialsLetters = async (): Promise<string[]> => {
         try {
             StudiosStore.existingClientsInitials.loading = true;
 
-            const response = (await API.getData(APIPath.CUSTOMER_FIRST_LETTERS)) as string[];
+            const response = (await API.getData(APIPath.STUDIO_FIRST_LETTERS)) as string[];
             StudiosStore.existingClientsInitials.letters = response;
 
             return response;
@@ -28,7 +28,7 @@ export class StudiosActionsClass {
         }
     };
 
-/*    @action
+    @action
     public fetchCustomers = async (
         search: string = '',
         letter: string = '',
@@ -45,11 +45,11 @@ export class StudiosActionsClass {
             // Prepare data for either grouping by search query or letter
             if (search !== '') {
                 fetchType = StudiosFetchType.BySearch;
-                const searchIndex = ClientsStore.clientsBySearchQueryFlat.indexOf(search);
+                const searchIndex = StudiosStore.clientsBySearchQueryFlat.indexOf(search);
                 if (searchIndex !== -1) {
-                    ClientsStore.clientsBySearchQuery[searchIndex].loading = true;
+                    StudiosStore.clientsBySearchQuery[searchIndex].loading = true;
                 } else {
-                    ClientsStore.clientsBySearchQuery.push({
+                    StudiosStore.clientsBySearchQuery.push({
                         query: search,
                         loading: true,
                         clients: [],
@@ -57,11 +57,11 @@ export class StudiosActionsClass {
                 }
             } else if (letter !== '') {
                 fetchType = StudiosFetchType.ByLetter;
-                const letterIndex = ClientsStore.clientsByLetterFlat.indexOf(letter);
+                const letterIndex = StudiosStore.clientsByLetterFlat.indexOf(letter);
                 if (letterIndex !== -1) {
-                    ClientsStore.clientsByLetter[letterIndex].loading = false;
+                    StudiosStore.clientsByLetter[letterIndex].loading = false;
                 } else {
-                    ClientsStore.clientsByLetter.push({
+                    StudiosStore.clientsByLetter.push({
                         letter: letter,
                         loading: true,
                         clients: [],
@@ -73,50 +73,50 @@ export class StudiosActionsClass {
 
             if (fetchType !== StudiosFetchType.None && fetchType !== StudiosFetchType.All) {
                 // Fetch clients list
-                const response = (await API.getData(APIPath.CUSTOMER, {
+                const response = (await API.getData(APIPath.STUDIO, {
                     search: fetchType === StudiosFetchType.BySearch ? search : '',
                     first_letter: fetchType === StudiosFetchType.ByLetter ? letter : '',
                     offset,
                     length,
-                })) as ClientApiResponse[];
+                })) as StudioApiResponse[];
 
                 // Get index of clients group to update
                 const index =
                     fetchType === StudiosFetchType.BySearch
-                        ? ClientsStore.clientsBySearchQueryFlat.indexOf(search)
-                        : ClientsStore.clientsByLetterFlat.indexOf(letter);
+                        ? StudiosStore.clientsBySearchQueryFlat.indexOf(search)
+                        : StudiosStore.clientsByLetterFlat.indexOf(letter);
 
                 if (index !== -1) {
                     // Update clients list
-                    ClientsStore[
+                    StudiosStore[
                         fetchType === StudiosFetchType.BySearch ? 'clientsBySearchQuery' : 'clientsByLetter'
                     ][index].clients = response.map(client => ({
                         id: client.id,
-                        name: client.customerName,
+                        name: client.studioName,
                         cardcode: client.cardcode,
                     }));
                 }
             } else if (fetchType === StudiosFetchType.All) {
                 // Fetch only if it's not loading, forced or data might be too old
                 if (
-                    ClientsStore.allClients.loading === false &&
+                    StudiosStore.allClients.loading === false &&
                     (forceFetch ||
-                        DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, ClientsStore.allClients.lastFetchTimeStamp))
+                        DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, StudiosStore.allClients.lastFetchTimeStamp))
                 ) {
-                    ClientsStore.allClients.loading = true;
+                    StudiosStore.allClients.loading = true;
 
                     // Fetch all clients list
-                    const response = (await API.getData(APIPath.CUSTOMER, {
+                    const response = (await API.getData(APIPath.STUDIO, {
                         search: '',
                         first_letter: '',
                         offset: 0,
                         length: 9999999,
-                    })) as ClientApiResponse[];
+                    })) as StudioApiResponse[];
 
                     // Map all clients
-                    ClientsStore.allClients.clients = response.map(client => ({
+                    StudiosStore.allClients.clients = response.map(client => ({
                         id: client.id,
-                        name: client.customerName,
+                        name: client.studioName,
                         cardcode: client.cardcode,
                     }));
                 }
@@ -127,82 +127,20 @@ export class StudiosActionsClass {
             throw error;
         } finally {
             // Stop loading search results
-            const searchIndex = ClientsStore.clientsBySearchQueryFlat.indexOf(search);
+            const searchIndex = StudiosStore.clientsBySearchQueryFlat.indexOf(search);
             if (searchIndex !== -1) {
-                ClientsStore.clientsBySearchQuery[searchIndex].loading = false;
+                StudiosStore.clientsBySearchQuery[searchIndex].loading = false;
             }
 
             // Stop loading letter results
-            const letterIndex = ClientsStore.clientsByLetterFlat.indexOf(letter);
+            const letterIndex = StudiosStore.clientsByLetterFlat.indexOf(letter);
             if (letterIndex !== -1) {
-                ClientsStore.clientsByLetter[letterIndex].loading = false;
+                StudiosStore.clientsByLetter[letterIndex].loading = false;
             }
 
             // Stop loading all clients results
-            ClientsStore.allClients.loading = false;
+            StudiosStore.allClients.loading = false;
         }
     };
 
-    @action
-    public fetchCustomerDetails = async (customerId: number, forceFetch: boolean = false): Promise<boolean> => {
-        try {
-            let toFetch: boolean = true;
-
-            // Check if client data is cached and should not be updated
-            let clientMatch = ClientsStore.clientsDetailsFlatIds.findIndex(id => id === customerId);
-            if (clientMatch !== -1) {
-                const clientDetails = ClientsStore.clientsDetails[clientMatch];
-                if (
-                    forceFetch === false &&
-                    (clientDetails.loading ||
-                        (clientDetails.loading === false && clientDetails.customer === null) ||
-                        DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, clientDetails.lastFetchTimeStamp) === false)
-                ) {
-                    toFetch = false;
-                }
-            }
-
-            if (toFetch) {
-                if (clientMatch !== -1) {
-                    ClientsStore.clientsDetails[clientMatch].loading = true;
-                } else {
-                    ClientsStore.clientsDetails.push({
-                        id: customerId,
-                        lastFetchTimeStamp: 0,
-                        loading: true,
-                        customer: null,
-                    });
-                    clientMatch = ClientsStore.clientsDetails.length - 1;
-                }
-
-                const client = ClientsStore.clientsDetails[clientMatch];
-                const response = (await API.getData(APIPath.CUSTOMER + '/' + customerId)) as ClientDetailsApiResponse;
-
-                client.loading = false;
-                client.lastFetchTimeStamp = Date.now();
-                client.customer = {
-                    id: customerId,
-                    name: response.customerName,
-                    cardcode: response.cardcode,
-                    contacts: response.contact.map(creativeExecutive => ({
-                        id: creativeExecutive.id,
-                        clientId: customerId,
-                        name: creativeExecutive.name,
-                        cardcode: creativeExecutive.cardcode,
-                        email: creativeExecutive.email,
-                        mobilePhone: creativeExecutive.mobilePhone,
-                        officePhone: creativeExecutive.officePhone,
-                        postalAddress: creativeExecutive.postalAddress,
-                    })),
-                };
-            }
-
-            return true;
-        } catch (error) {
-            setTimeout(() => {
-                this.fetchCustomerDetails(customerId, true);
-            }, 768);
-            throw error;
-        }
-    };*/
 }
