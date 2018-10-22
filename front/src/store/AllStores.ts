@@ -15,6 +15,7 @@ import {
     Campaigns,
     CampaignPeople,
     Clients,
+    Studios,
     Users,
     ProjectPermissions,
     Activities,
@@ -37,6 +38,7 @@ export const ProjectsVersionsStore = new ProjectVersions();
 export const CampaignsStore = new Campaigns();
 export const CampaignPeopleStore = new CampaignPeople();
 export const ClientsStore = new Clients();
+export const StudiosStore = new Studios();
 export const UsersStore = new Users();
 export const ProjectPermissionsStore = new ProjectPermissions();
 export const ActivitiesStore = new Activities();
@@ -59,6 +61,7 @@ export interface AppStoreState {
     campaigns: Campaigns;
     campaignPeople: CampaignPeople;
     clients: Clients;
+    studios: Studios;
     users: Users;
     projectPermissions: ProjectPermissions;
     activities: Activities;
@@ -82,6 +85,7 @@ export const store: AppStoreState = {
     campaigns: CampaignsStore,
     campaignPeople: CampaignPeopleStore,
     clients: ClientsStore,
+    studios: StudiosStore,
     users: UsersStore,
     projectPermissions: ProjectPermissionsStore,
     activities: ActivitiesStore,

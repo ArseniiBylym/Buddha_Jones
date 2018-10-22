@@ -157,6 +157,7 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                                         clientName={
                                             projects.filterByClient !== null ? projects.filterByClient.name : null
                                         }
+                                        src={'studios'}
                                     />
                                 ),
                             },

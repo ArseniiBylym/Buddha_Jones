@@ -30,6 +30,7 @@ interface ClientsFilterProps {
     allAreAllowed?: boolean;
     align?: DropdownContainerAlignProp;
     type?: DropdownContainerTypeProp;
+    src?: 'clients' | 'studios';
 }
 
 // Component
@@ -48,6 +49,7 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
             allAreAllowed: true,
             align: 'right',
             type: 'oneline',
+            src: 'clients'
         };
     }
 
@@ -122,7 +124,13 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
     }
 
     public componentDidMount() {
-        ClientsActions.fetchClientsInitialsLetters();
+        switch (this.props.src) {
+            case 'studios' :
+                StudiosActions.fetchClientsInitialsLetters();
+                break;
+            default:
+                ClientsActions.fetchClientsInitialsLetters();
+        }
     }
 
     public render() {
