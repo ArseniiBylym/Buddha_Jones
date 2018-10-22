@@ -4,6 +4,12 @@ export interface ClientApiResponse {
     cardcode: string | null;
 }
 
+export interface StudioApiResponse {
+    id: number;
+    studioName: string;
+    cardcode: string | null;
+}
+
 export interface Client {
     id: number;
     name: string;

@@ -151,12 +151,13 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                                 key: 'clients-filter',
                                 element: (
                                     <ClientsFilter
-                                        onChange={this.handleClientFilterChange}
+                                        onChange={this.handleStudioFilterChange}
                                         truncuateLabelTo={64}
-                                        clientId={projects.filterByClient !== null ? projects.filterByClient.id : null}
+                                        clientId={projects.filterByStudio !== null ? projects.filterByStudio.id : null}
                                         clientName={
-                                            projects.filterByClient !== null ? projects.filterByClient.name : null
+                                            projects.filterByStudio !== null ? projects.filterByStudio.name : null
                                         }
+                                        src={'studios'}
                                     />
                                 ),
                             },
@@ -228,8 +229,8 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
         ProjectsActions.changeProjectsFilterBySearchQuery(e.target.value);
     };
 
-    private handleClientFilterChange = (client: { id: number; name: string } | null) => {
-        ProjectsActions.changeProjectsFilterByClient(client);
+    private handleStudioFilterChange = (studio: { id: number; name: string } | null) => {
+        ProjectsActions.changeProjectsFilterByStudio(studio);
     };
 
     private handleProjectClick = (

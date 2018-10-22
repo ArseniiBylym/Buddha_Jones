@@ -11,6 +11,7 @@ import {
     CampaignsActionsClass,
     CampaignPeopleActionsClass,
     ClientsActionsClass,
+    StudiosActionsClass,
     UsersActionsClass,
     ProjectPermissionsActionsClass,
     ActivitiesActionsClass,
@@ -31,6 +32,7 @@ export const ProjectsVersionsActions = new ProjectsVersionsActionsClass();
 export const CampaignsActions = new CampaignsActionsClass();
 export const CampaignPeopleActions = new CampaignPeopleActionsClass();
 export const ClientsActions = new ClientsActionsClass();
+export const StudiosActions = new StudiosActionsClass();
 export const UsersActions = new UsersActionsClass();
 export const ProjectPermissionsActions = new ProjectPermissionsActionsClass();
 export const ActivitiesActions = new ActivitiesActionsClass();

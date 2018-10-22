@@ -42,4 +42,6 @@ export enum APIPath {
     OUTSIDE_COST                            = '/outside-cost',
     STAFF                                   = '/staff',
     GRAPHICS_REQUEST                        = '/graphics-request',
+    STUDIO                                  = '/studio',
+    STUDIO_FIRST_LETTERS                    = '/studio/first-letters',
 }

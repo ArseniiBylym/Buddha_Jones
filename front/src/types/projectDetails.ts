@@ -6,8 +6,8 @@ export interface ProjectCreateData {
     name: string;
     codeName: string;
     releaseDate: string | null;
-    clientId: number | null;
-    clientName: string | null;
+    studioId?: number | null;
+    studioName?: string | null;
     notes: string;
 }
 

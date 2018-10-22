@@ -11,6 +11,7 @@ export * from './ProjectsVersions';
 export * from './Campaigns';
 export * from './CampaignPeople';
 export * from './Clients';
+export * from './Studios';
 export * from './Users';
 export * from './ProjectPermissions';
 export * from './Activities';

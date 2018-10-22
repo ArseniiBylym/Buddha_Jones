@@ -8,7 +8,7 @@ export class Projects {
     @observable public countTotal: number = 0;
 
     @observable public filterByQuery: string = '';
-    @observable public filterByClient: { id: number; name: string } | null = null;
+    @observable public filterByStudio: { id: number; name: string } | null = null;
 
     @observable public loadingProjects: boolean = false;
     @observable public updatingProjects: boolean = false;
@@ -18,7 +18,7 @@ export class Projects {
     constructor() {
         // React to client filter change
         reaction(
-            () => this.filterByClient,
+            () => this.filterByStudio,
             clientFilter => {
                 ProjectsActions.fetchProjects(1);
             }
