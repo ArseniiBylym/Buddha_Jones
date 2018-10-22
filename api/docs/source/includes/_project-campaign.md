@@ -208,6 +208,9 @@ false | music_team_notes | string | null | Note for music team
 false | note | string | null | Note for project campaign
 false | budget | string | null | Budget
 false | material_receive_date | string | null | material receive date
+false | customer_id | int | null | Customer id
+false | channel_id | int | null | Channel id (billing user will set that)
+false | approved_by_billing | int | null | send 0/1 (billing user will set that)
 
 
 ** if entry with project and campaign exists then it will be updated or a new entry with the project and campaign id will be created

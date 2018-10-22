@@ -186,11 +186,12 @@ class ProjectCampaignController extends CustomAbstractActionController
             $por = ($canEditPor && isset($data['por'])) ? $data['por'] : null;
             $invoiceContact = ($canEditInvoice && isset($data['invoice_contact'])) ? $data['invoice_contact'] : null;
             $materialReceiveDate = ($canEditMaterialReceived && isset($data['material_receive_date'])) ? $data['material_receive_date'] : null;
+            $customerId = isset($data['customer_id'])? $data['customer_id'] : null;
             $approvedByBilling = ($isBillingUser && isset($data['approved_by_billing']) && strlen($data['approved_by_billing']) > 0)
                 ? (((int)$data['approved_by_billing']) ? 1 : 0)
                 : null;
             $channelId = ($isBillingUser && isset($data['channel_id']) && strlen($data['channel_id']) > 0)
-                ? (((int)$data['channel_id']) ? 1 : 0)
+                ? (int)$data['channel_id']
                 : null;
 
             if ($projectCampaignId) {
@@ -287,6 +288,10 @@ class ProjectCampaignController extends CustomAbstractActionController
 
                     if($channelId !== null) {
                         $existingProjectToCampaign->setChannelId($channelId);
+                    }
+
+                    if($customerId !== null) {
+                        $existingProjectToCampaign->setCustomerId($customerId);
                     }
 
                     $this->_em->persist($existingProjectToCampaign);
