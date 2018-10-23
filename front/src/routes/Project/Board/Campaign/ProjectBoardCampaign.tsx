@@ -23,8 +23,14 @@ const s = require('./ProjectBoardCampaign.css');
 interface ProjectBoardCampaignProps {
     innerRef?: (ref: HTMLDivElement) => void;
     innerHeaderRef?: (ref: HTMLDivElement) => void;
+    onClientChange?: ((option: { id: number; name: string } | null) => void) | null;
     clientId: number;
     projectId: number;
+    studioId: number | null;
+    clientSelected: {
+        id: number | null;
+        name: string;
+    };
     campaign: CampaignDetails;
     isHeaderFixed: boolean;
 }
@@ -324,6 +330,9 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                 <ProjectBoardCampaignHeader
                     innerRef={this.referenceCampaignHeaderContainer}
                     projectId={this.props.projectId}
+                    studioId={this.props.studioId}
+                    clientSelected={this.props.clientSelected}
+                    onClientChange={this.props.onClientChange}
                     campaign={this.props.campaign}
                     isExpanded={this.campaignIsExpanded}
                     isFixed={this.props.isHeaderFixed}

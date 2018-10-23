@@ -9,6 +9,8 @@ import { IconDropdownArrow, IconArrowTopBlue } from 'components/Icons';
 import { action, observable, computed } from 'mobx';
 import { ProjectsDetailsActions } from 'actions';
 import { Paragraph } from 'components/Content';
+import { CustomerSelector } from '../CustomerSelector';
+import { ClientsStore } from '../../../../store/AllStores';
 
 // Styles
 const s = require('./ProjectBoardCampaignHeader.css');
@@ -17,10 +19,16 @@ const s = require('./ProjectBoardCampaignHeader.css');
 interface ProjectBoardCampaignHeaderProps {
     innerRef?: (ref: HTMLDivElement) => void;
     onExpansionToggle: () => void;
+    onClientChange?: ((option: { id: number; name: string } | null) => void) | null;
     isExpanded: boolean;
     isFixed: boolean;
     fixedWidth: number;
     projectId: number;
+    studioId: number | null;
+    clientSelected: {
+        id: number | null;
+        name: string;
+    };
     campaign: CampaignDetails;
     userCanViewNotes: boolean;
 }
@@ -89,27 +97,35 @@ export class ProjectBoardCampaignHeader extends React.Component<ProjectBoardCamp
                                 )}
                         </Col>
 
-                        {campaign.spots.length <= 0 &&
-                            campaign.creativeTeam.length <= 0 &&
-                            campaign.billingTeam.length <= 0 &&
-                            campaign.designTeam.length <= 0 &&
-                            campaign.editorialTeam.length <= 0 && (
-                                <Col className={s.campaignRemoveButtonContainer}>
-                                    <Button
-                                        onClick={this.removing !== 'saving' ? this.handleCampaignRemoval : undefined}
-                                        label={{
-                                            text:
-                                                this.removing === 'default'
-                                                    ? 'Remove'
-                                                    : this.removing === 'error'
-                                                        ? 'Could not remove, try again'
-                                                        : 'Removing...',
-                                            color: 'orange',
-                                            size: 'small',
-                                        }}
-                                    />
-                                </Col>
-                            )}
+                        <Col className={s.campaignRemoveButtonContainer}>
+                            <CustomerSelector
+                                label={'Edit Client'}
+                                onChange={this.props.onClientChange}
+                                options={ClientsStore.allClientsForStudio}
+                                value={this.props.clientSelected}
+                                studioId={this.props.studioId}
+                            />
+                            {campaign.spots.length <= 0 &&
+                                campaign.creativeTeam.length <= 0 &&
+                                campaign.billingTeam.length <= 0 &&
+                                campaign.designTeam.length <= 0 &&
+                                campaign.editorialTeam.length <= 0 && (
+                                        <Button
+                                            onClick={this.removing !== 'saving' ? this.handleCampaignRemoval : undefined}
+                                            label={{
+                                                text:
+                                                    this.removing === 'default'
+                                                        ? 'Remove'
+                                                        : this.removing === 'error'
+                                                            ? 'Could not remove, try again'
+                                                            : 'Removing...',
+                                                color: 'orange',
+                                                size: 'small',
+                                            }}
+                                        />
+                                )
+                            }
+                        </Col>
                     </Row>
                 </Col>
             </Row>

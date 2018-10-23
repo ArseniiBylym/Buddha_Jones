@@ -234,17 +234,17 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
     };
 
     private handleProjectClick = (
-        clientId: number,
-        clientName: string,
+        studioId: number,
+        studioName: string,
         projectId: number,
         projectName: string,
         projectCampaignId?: number
     ) => {
         let path =
             '/portal/project/' +
-            clientId +
+            studioId +
             '/' +
-            clientName +
+            studioName +
             '/' +
             projectId +
             '/' +

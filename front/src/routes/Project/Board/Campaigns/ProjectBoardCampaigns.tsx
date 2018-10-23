@@ -1,6 +1,6 @@
 import * as React from 'react';
 import throttle from 'lodash-es/throttle';
-import { computed, observable, reaction } from 'mobx';
+import { action, computed, observable, reaction } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { Section, Row, Col } from 'components/Section';
 import { LoadingIndicator } from 'components/Loaders';
@@ -22,6 +22,7 @@ const s = require('./ProjectBoardCampaigns.css');
 interface ProjectBoardCampaignsProps extends AppOnlyStoreState {
     project: ProjectDetails;
     projectIsUpdating: boolean;
+    studioId: number | null;
 }
 
 // Types
@@ -43,6 +44,7 @@ interface CampaignContainers {
 export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaignsPropsTypes, {}> {
     @observable private fetchedUsers: boolean = false;
     @observable private campaignsWithFixedHeader: number[] = [];
+    @observable private clientSelected: { id: number | null; name: string; } = {id: null, name: ''};
 
     @computed
     private get projectsCampaignsFlatIds(): number[] {
@@ -286,6 +288,9 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
                         innerRef={this.referenceCampaignContainer(campaign.projectCampaignId)}
                         innerHeaderRef={this.referenceCampaignHeader(campaign.projectCampaignId)}
                         clientId={this.props.project.clientId}
+                        studioId={this.props.project.studioId}
+                        onClientChange={this.handleCustomerSelectorChange}
+                        clientSelected={this.clientSelected}
                         projectId={this.props.project.projectId}
                         campaign={campaign}
                         isHeaderFixed={this.campaignsWithFixedHeader.indexOf(campaign.projectCampaignId) !== -1}
@@ -298,5 +303,12 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
     private handleDropVersionStatusFilter = (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault();
         ProjectsVersionsActions.changeFilterVersionStatus({id: null, name: 'No status'});
+    };
+
+    @action
+    private handleCustomerSelectorChange = (option: { id: number; name: string } | null) => {
+/*        if (option) {
+            this.clientSelected = option;
+        }*/
     };
 }

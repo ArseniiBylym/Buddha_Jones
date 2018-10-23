@@ -67,6 +67,10 @@ export class ProjectDetailsActionsClass {
                     history: [],
                     projectDoesNotExist: false,
                     projectCouldNotBeFetched: false,
+                    clientSelected: {
+                        id: null,
+                        name: ''
+                    }
                 });
             }
 

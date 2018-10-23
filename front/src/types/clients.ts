@@ -2,6 +2,7 @@ export interface ClientApiResponse {
     id: number;
     customerName: string;
     cardcode: string | null;
+    cardname: string | null;
 }
 
 export interface StudioApiResponse {
