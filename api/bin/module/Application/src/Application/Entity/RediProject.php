@@ -63,6 +63,13 @@ class RediProject
      */
     private $createdByUserId;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="type", type="string", length=1, nullable=true)
+     */
+    private $type;
+
 
 
     /**
@@ -211,5 +218,28 @@ class RediProject
     public function getCreatedByUserId()
     {
         return $this->createdByUserId;
+    }
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     * @return RediProject
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string 
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }

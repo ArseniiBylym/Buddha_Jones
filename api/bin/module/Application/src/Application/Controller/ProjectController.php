@@ -177,6 +177,7 @@ class ProjectController extends CustomAbstractActionController
             $notes = trim(isset($data['notes']) ? $data['notes'] : '');
             $projectCode = ($canEditProjectCodeName && !empty($data['project_code'])) ? $data['project_code'] : null;
             $projectRelease = ($canEditReleaseDate && !empty($data['project_release'])) ? $data['project_release'] : null;
+            $type = (!empty($data['type'])) ? $data['type'] : "B";
             $users = json_decode(isset($data['user']) ? $data['user'] : null, true);
 
             if ($studioId && ($projectName || $projectCode)) {
@@ -194,7 +195,7 @@ class ProjectController extends CustomAbstractActionController
                         $project->setProjectCode($projectCode);
                     }
 
-                    if ($projectRelease) {
+                    if ($projectRelease) {˝
                         $projectRelease = new \DateTime($projectRelease);
 
                         if ($projectRelease) {
@@ -204,6 +205,10 @@ class ProjectController extends CustomAbstractActionController
 
                     if ($notes) {
                         $project->setNotes($notes);
+                    }
+
+                    if($type) {
+                        $project->setType($type);
                     }
 
                     $project->setCreatedByUserId($this->_user_id);
@@ -292,6 +297,7 @@ class ProjectController extends CustomAbstractActionController
             $notes = isset($data['notes']) ? trim($data['notes']) : null;
             $projectCode = ($canEditProjectCodeName && !empty($data['project_code'])) ? $data['project_code'] : null;
             $projectRelease = ($canEditReleaseDate && !empty($data['project_release'])) ? $data['project_release'] : null;
+            $type = (!empty($data['type'])) ? $data['type'] : null;
             $users = json_decode(isset($data['user']) ? $data['user'] : null, true);
 
             $project = $this->_projectRepository->find($id);
@@ -350,6 +356,10 @@ class ProjectController extends CustomAbstractActionController
 
                     if ($notes) {
                         $project->setNotes($notes);
+                    }
+
+                    if ($type) {
+                        $project->setType($type);
                     }
 
                     if ($projectRelease) {
