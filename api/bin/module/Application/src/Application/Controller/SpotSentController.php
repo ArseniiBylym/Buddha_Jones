@@ -182,7 +182,7 @@ class SpotSentController extends CustomAbstractActionController
         $finishOption = $this->_commonRepo->filterPostData($data, 'finish_option', 'json', $this->_commonRepo->filterPostData($existingData, 'finishOption', null, null));
         $spotVersionData = $this->_commonRepo->filterPostData($data, 'spot_version', 'json', null);
         $customerContact = $this->_commonRepo->filterPostData($data, 'customer_contact', 'json', $this->_commonRepo->filterPostData($existingData, 'customerContact', null, null));
-        $specSheetFile = $this->_commonRepo->filterPostData($data, 'spec_sheet_file', 'json', $this->_commonRepo->filterPostData($existingData, 'specSheetFile', null, null));
+        $specSheetFile = $this->_commonRepo->filterPostData($data, 'spec_sheet_file', 'json', null);
 
         // array to commaseparated string
         // $sentViaMethod = $this->arrayToCommanSeparated($sentViaMethod);
@@ -196,6 +196,7 @@ class SpotSentController extends CustomAbstractActionController
         }
 
         $files = array();
+        $existingSpecSheetFile = array();
 
         try {
             if (is_array($specSheetFile)) {
@@ -204,6 +205,8 @@ class SpotSentController extends CustomAbstractActionController
                 foreach ($files as $key => $file) {
                     $files[$key] = $this->_commonRepo->base64DecodeFile($file);
                 }
+            } else if($isUpdate){
+                $existingSpecSheetFile = $this->_commonRepo->filterPostData($existingData, 'specSheetFile', 'json', null);
             }
         } catch (\Exception $e) {
             // throw some exception
@@ -374,6 +377,15 @@ class SpotSentController extends CustomAbstractActionController
                     }
 
                     $this->_em->flush();
+                } else if(count($existingSpecSheetFile)) {
+                    $spotSents = $this->_spotSentRepository->findBy(array('requestId' => $requestId));
+
+                    foreach ($spotSents as $spotSent) {
+                        $spotSent->setSpecSheetFile(json_encode($existingSpecSheetFile));
+                        $this->_em->persist($spotSent);
+                    }
+
+                    $this->_em->flush();
                 }
 
                 foreach ($spotVersionData as $row) {
@@ -436,7 +448,6 @@ class SpotSentController extends CustomAbstractActionController
 
                 $data['deliveryToClient'] = $this->commaSeparatedToArray($data['deliveryToClient'], true);
                 $data['audio'] = $this->commaSeparatedToArray($data['audio']);
-            // $data['sentViaMethod'] = $this->commaSeparatedToArray($data['sentViaMethod']);
                 $data['finishOption'] = $this->commaSeparatedToArray($data['finishOption'], true);
                 $data['customerContact'] = $this->commaSeparatedToArray($data['customerContact']);
                 $data['finishingHouseName'] = null;
