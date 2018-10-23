@@ -195,7 +195,7 @@ class ProjectController extends CustomAbstractActionController
                         $project->setProjectCode($projectCode);
                     }
 
-                    if ($projectRelease) {˝
+                    if ($projectRelease) {
                         $projectRelease = new \DateTime($projectRelease);
 
                         if ($projectRelease) {
