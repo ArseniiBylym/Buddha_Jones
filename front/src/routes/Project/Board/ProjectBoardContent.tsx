@@ -25,7 +25,7 @@ interface ProjectBoardContentProps extends AppOnlyStoreState {
     onHeaderElementsChange: (reloadTitles: boolean, reloadRightSideElements: boolean) => void;
     project: ProjectDetails;
     projectIsUpdating: boolean;
-    studioId: number | null;
+    projectMatchId: number | null;
 }
 
 // Types
@@ -251,7 +251,7 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                     <ProjectBoardCampaigns
                         project={project}
                         projectIsUpdating={project.loading}
-                        studioId={this.props.studioId}
+                        projectMatchId={this.props.projectMatchId}
                     />
                 </div>
 

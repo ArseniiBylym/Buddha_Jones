@@ -24,11 +24,6 @@ interface ProjectBoardCampaignHeaderProps {
     isFixed: boolean;
     fixedWidth: number;
     projectId: number;
-    studioId: number | null;
-    clientSelected: {
-        id: number | null;
-        name: string;
-    };
     campaign: CampaignDetails;
     userCanViewNotes: boolean;
 }
@@ -102,8 +97,7 @@ export class ProjectBoardCampaignHeader extends React.Component<ProjectBoardCamp
                                 label={'Edit Client'}
                                 onChange={this.props.onClientChange}
                                 options={ClientsStore.allClientsForStudio}
-                                value={this.props.clientSelected}
-                                studioId={this.props.studioId}
+                                value={this.props.campaign.clientSelected}
                             />
                             {campaign.spots.length <= 0 &&
                                 campaign.creativeTeam.length <= 0 &&

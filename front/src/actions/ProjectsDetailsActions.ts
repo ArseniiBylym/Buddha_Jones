@@ -67,10 +67,6 @@ export class ProjectDetailsActionsClass {
                     history: [],
                     projectDoesNotExist: false,
                     projectCouldNotBeFetched: false,
-                    clientSelected: {
-                        id: null,
-                        name: ''
-                    }
                 });
             }
 
@@ -168,6 +164,10 @@ export class ProjectDetailsActionsClass {
                                   hidden: false,
                               }))
                             : [],
+                    clientSelected: {
+                        id: c.customerId,
+                        name: c.customerName
+                    }
                 }));
             }
 

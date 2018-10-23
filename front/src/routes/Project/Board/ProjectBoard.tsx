@@ -25,12 +25,21 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
     @observable private projectId: number | null = null;
 
     @computed
-    private get project(): ProjectDetails | null {
+    private get projectMatchId(): number | null {
         if (!this.props.store || this.projectId === null) {
             return null;
         }
 
-        const projectMatchId = this.props.store.projectsDetails.fetchedProjectsIdsFlat.indexOf(this.projectId);
+        return this.props.store.projectsDetails.fetchedProjectsIdsFlat.indexOf(this.projectId);
+    }
+
+    @computed
+    private get project(): ProjectDetails | null {
+        const projectMatchId: number | null = this.projectMatchId;
+        if (!this.props.store || this.projectId === null || projectMatchId === null) {
+            return null;
+        }
+
         return projectMatchId !== -1 ? this.props.store.projectsDetails.fetchedProjects[projectMatchId] : null;
     }
 
@@ -212,7 +221,7 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
                 onHeaderElementsChange={this.changeHeaderElements}
                 project={this.project}
                 projectIsUpdating={this.projectIsUpdating}
-                studioId={(this.props.match) ? this.props.match.params['studioId'] : null}
+                projectMatchId={this.projectMatchId}
             />
         ) : null;
     }

@@ -9,7 +9,6 @@ interface ProjectBoardCampaignCustomerSelectorProps {
     value: ProjectBoardCampaignCustomerSelector;
     options: ProjectBoardCampaignCustomerSelectorOption[];
     onChange?: ((option: { id: number; name: string } | null) => void) | null;
-    studioId: number | null;
 }
 
 interface ProjectBoardCampaignCustomerSelectorOption {
@@ -24,7 +23,7 @@ interface ProjectBoardCampaignCustomerSelectorOptionSelected {
 
 interface ProjectBoardCampaignCustomerSelector {
     id: number | null;
-    name: string;
+    name: string | null;
 }
 
 // Component
@@ -40,7 +39,6 @@ export class CustomerSelector extends React.Component<ProjectBoardCampaignCustom
                 id: null,
                 name: 'Edit client'
             },
-            studioId: null,
             options: []
         };
     }
@@ -50,7 +48,7 @@ export class CustomerSelector extends React.Component<ProjectBoardCampaignCustom
             <DropdownContainer
                 ref={this.referenceCustomerSelectorDropdown}
                 label={this.props.label}
-                value={this.props.value.name}
+                value={(this.props.value.name) ? this.props.value.name : ''}
                 type="field"
             >
                 <OptionsList
