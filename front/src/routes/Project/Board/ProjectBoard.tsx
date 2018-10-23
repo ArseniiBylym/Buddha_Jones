@@ -5,7 +5,7 @@ import { unformat } from 'accounting';
 import { Row, Col } from 'components/Section';
 import { LoadingSpinner } from 'components/Loaders';
 import { AppState } from 'store/AllStores';
-import { ProjectsDetailsActions, HeaderActions, ProjectsVersionsActions, ProjectPermissionsActions } from 'actions';
+import { ProjectsDetailsActions, HeaderActions, ProjectsVersionsActions, ProjectPermissionsActions, ClientsActions } from 'actions';
 import { ButtonBack, ButtonSend } from 'components/Button';
 import { ProjectDetails } from 'types/projectDetails';
 import { Paragraph } from 'components/Content';
@@ -25,12 +25,21 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
     @observable private projectId: number | null = null;
 
     @computed
-    private get project(): ProjectDetails | null {
+    private get projectMatchId(): number | null {
         if (!this.props.store || this.projectId === null) {
             return null;
         }
 
-        const projectMatchId = this.props.store.projectsDetails.fetchedProjectsIdsFlat.indexOf(this.projectId);
+        return this.props.store.projectsDetails.fetchedProjectsIdsFlat.indexOf(this.projectId);
+    }
+
+    @computed
+    private get project(): ProjectDetails | null {
+        const projectMatchId: number | null = this.projectMatchId;
+        if (!this.props.store || this.projectId === null || projectMatchId === null) {
+            return null;
+        }
+
         return projectMatchId !== -1 ? this.props.store.projectsDetails.fetchedProjects[projectMatchId] : null;
     }
 
@@ -151,6 +160,11 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
         ProjectsVersionsActions.fetchAllCustomVersions();
         ProjectsVersionsActions.fetchAllVersionStatuses();
 
+        // Fetch all clients available for selected studio
+        if (this.props.match.params['studioId']) {
+            ClientsActions.fetchClientsForStudioOptions(this.props.match.params['studioId']);
+        }
+
         // Fetch project if the URL contains project ID
         if (typeof this.props.match.params['projectId'] !== 'undefined') {
             this.changeProject(this.props);
@@ -207,6 +221,7 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
                 onHeaderElementsChange={this.changeHeaderElements}
                 project={this.project}
                 projectIsUpdating={this.projectIsUpdating}
+                projectMatchId={this.projectMatchId}
             />
         ) : null;
     }
@@ -228,25 +243,25 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
         if (
             typeof props.match !== 'undefined' &&
             typeof props.match.params !== 'undefined' &&
-            typeof props.match.params['clientId'] !== 'undefined' &&
+            typeof props.match.params['studioId'] !== 'undefined' &&
             typeof props.match.params['studioName'] !== 'undefined' &&
             typeof props.match.params['projectId'] !== 'undefined' &&
             typeof props.match.params['projectName'] !== 'undefined'
         ) {
             const projectId: number = unformat(props.match.params['projectId']);
-            const clientId: number = unformat(props.match.params['clientId']);
+            const studioId: number = unformat(props.match.params['studioId']);
             const projectName: string = props.match.params['projectName'];
             const studioName: string = (props.match.params['studioName'] === 'null') ? null : props.match.params['studioName'];
 
             this.projectId = projectId;
 
-            if (!isNaN(projectId) && !isNaN(clientId)) {
+            if (!isNaN(projectId) && !isNaN(studioId)) {
                 // Update header
                 HeaderActions.setMainHeaderTitles(
                     projectName !== null && projectName.trim() !== ''
                         ? projectName.trim()
                         : 'Project #' + this.projectId,
-                    studioName !== null && studioName ? studioName : clientId !== null ? 'Client #' + clientId : ''
+                    studioName !== null && studioName ? studioName : studioId !== null ? 'Client #' + studioId : ''
                 );
             }
 
@@ -287,7 +302,7 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
                     : project.projectId
                         ? 'Project #' + project.projectId
                         : '',
-            project.studioName ? project.studioName : 'Studio #' + project.clientId,
+            project.studioName ? project.studioName : 'Studio #' + project.studioId,
             project.projectName && project.projectCodeName ? '(' + project.projectCodeName + ') ' : null,
             null
         );

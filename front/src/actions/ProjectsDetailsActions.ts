@@ -164,6 +164,10 @@ export class ProjectDetailsActionsClass {
                                   hidden: false,
                               }))
                             : [],
+                    clientSelected: {
+                        id: c.customerId,
+                        name: c.customerName
+                    }
                 }));
             }
 

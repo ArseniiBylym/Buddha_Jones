@@ -14,8 +14,8 @@ const s = require('./ProjectsList.css');
 interface ProjectsListCardProps {
     onProjectClick:
         | ((
-              clientId: number,
-              clientName: string,
+              studioId: number,
+              studioName: string,
               projectId: number,
               projectName: string,
               projectCampaignId?: number
@@ -85,7 +85,7 @@ export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}>
     private handleProjectClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (this.props.onProjectClick) {
             this.props.onProjectClick(
-                this.props.project.clientId,
+                this.props.project.studioId,
                 this.props.project.studioName,
                 this.props.project.id,
                 this.props.project.name
@@ -99,7 +99,7 @@ export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}>
 
         if (this.props.onProjectClick) {
             this.props.onProjectClick(
-                this.props.project.clientId,
+                this.props.project.studioId,
                 this.props.project.studioName,
                 this.props.project.id,
                 this.props.project.name,

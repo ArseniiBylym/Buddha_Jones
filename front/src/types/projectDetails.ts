@@ -6,8 +6,8 @@ export interface ProjectCreateData {
     name: string;
     codeName: string;
     releaseDate: string | null;
-    studioId?: number | null;
-    studioName?: string | null;
+    studioId: number | null;
+    studioName: string | null;
     notes: string;
 }
 
@@ -88,6 +88,10 @@ export interface CampaignDetails {
     billingTeam: ProjectCampaignBillingUser[];
     designTeam: ProjectCampaignUser[];
     editorialTeam: ProjectCampaignUser[];
+    clientSelected: {
+        id: number | null;
+        name: string | null;
+    };
     hidden?: boolean;
 }
 
@@ -165,6 +169,8 @@ interface ProjectDetailsCampaignFromApi {
     projectCampaignId: number;
     campaignId: number;
     campaignName: string;
+    customerId: number | null;
+    customerName: string | null;
     note: string | null;
     budget: number | null;
     budgetNote: string | null;

@@ -205,4 +205,25 @@ export class ClientsActionsClass {
             throw error;
         }
     };
+
+    @action
+    public fetchClientsForStudioOptions = async (studioId: number): Promise<boolean> => {
+        try {
+            const response = (await API.getData(APIPath.CUSTOMER, {
+                studio_id: studioId,
+                offset: 0,
+                length: 9999999,
+            })) as ClientApiResponse[];
+            ClientsStore.allClientsForStudio = response.map((client: ClientApiResponse) => {
+                return {
+                    id: client.id,
+                    name: client.customerName
+                };
+            });
+            return true;
+        } catch (error) {
+            throw error;
+        }
+    };
+
 }
