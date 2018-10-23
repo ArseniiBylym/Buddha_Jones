@@ -24,7 +24,8 @@ class ProjectRepository extends EntityRepository
         $dql = "SELECT
                   p.id, 
                   p.studioId, st.studioName,
-                  p.notes,  p.projectRelease, MAX(ph.createdAt) as lastUpdatedAt
+                  p.notes,  p.projectRelease, p.type,
+                  MAX(ph.createdAt) as lastUpdatedAt
                 FROM \Application\Entity\RediProject p
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
                     WITH p.id=ptc.projectId
@@ -285,6 +286,7 @@ class ProjectRepository extends EntityRepository
                   st.studio_name AS studioName,
                   p.project_release AS projectRelease,
                   p.notes,
+                  p.type,
                   MAX(ph.created_at) AS lastUpdatedAt,
                   (SELECT
                     user_id
