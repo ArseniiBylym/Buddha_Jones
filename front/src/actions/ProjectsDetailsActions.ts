@@ -874,6 +874,22 @@ export class ProjectDetailsActionsClass {
         }
     };
 
+    @action
+    public changeProjectCampaignCustomer = async (
+        projectCampaignId: number,
+        customerId: number
+    ): Promise<boolean> => {
+        try {
+            await API.putData(APIPath.PROJECT_CAMPAIGN + '/' + projectCampaignId, {
+                customer_id: customerId
+            });
+
+            return true;
+        } catch (error) {
+            throw error;
+        }
+    };
+
     private findCampaign = (projectId: number, projectCampaignId: number): CampaignDetails | null => {
         const projectIndex = ProjectsDetailsStore.fetchedProjectsIdsFlat.indexOf(projectId);
         if (projectIndex !== -1) {

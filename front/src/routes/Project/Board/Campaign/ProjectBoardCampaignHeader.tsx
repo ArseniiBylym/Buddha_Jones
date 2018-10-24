@@ -94,10 +94,10 @@ export class ProjectBoardCampaignHeader extends React.Component<ProjectBoardCamp
 
                         <Col className={s.campaignRemoveButtonContainer}>
                             <CustomerSelector
-                                label={'Edit Client'}
                                 onChange={this.props.onClientChange}
                                 options={ClientsStore.allClientsForStudio}
                                 value={this.props.campaign.clientSelected}
+                                projectCampaignId={this.props.campaign.projectCampaignId}
                             />
                             {campaign.spots.length <= 0 &&
                                 campaign.creativeTeam.length <= 0 &&
@@ -105,6 +105,7 @@ export class ProjectBoardCampaignHeader extends React.Component<ProjectBoardCamp
                                 campaign.designTeam.length <= 0 &&
                                 campaign.editorialTeam.length <= 0 && (
                                         <Button
+                                            className={s.inlineBlock}
                                             onClick={this.removing !== 'saving' ? this.handleCampaignRemoval : undefined}
                                             label={{
                                                 text:
