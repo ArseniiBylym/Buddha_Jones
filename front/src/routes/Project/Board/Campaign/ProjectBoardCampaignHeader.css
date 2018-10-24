@@ -35,6 +35,10 @@
     flex: 0 1 auto;
     padding-left: 0;
     padding-right: 0;
+    text-align: right;
+    & .inlineBlock {
+        display: inline-block;
+    }
   }
   &.campaignHeaderFixed {
     position: fixed;

@@ -7,6 +7,7 @@
   position: relative;
   display: flex;
   align-content: center;
+    outline: none;
   &>span {
     vertical-align: middle;
     align-self: center;
