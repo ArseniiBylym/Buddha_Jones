@@ -329,9 +329,8 @@ Assign Customer Contact to Project campaign relation
 
 ```javascript
 axios.post('/assign-customer-contact-to-project-campaign', {
-    first_point_of_contact_id:10,
-    project_id: 1,
-    campaign_id: 2
+    project_campaign_id:10,
+    customer_contact_id: 1,
 });
 ```
 
@@ -353,7 +352,7 @@ axios.post('/assign-customer-contact-to-project-campaign', {
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | project_campaign_id | string | null | Project Campaign ID
-false | first_point_of_contact_id | int | null | First point of contact id
+false | customer_contact_id | int | null | customer contact id
 
 
 ## Delete Customer Contact to Project campaign
