@@ -7,7 +7,7 @@ import { observer, inject } from 'mobx-react';
 import { formatMoney } from 'accounting';
 import { SpotDetails } from 'types/projectDetails';
 import { Row, Col } from 'components/Section';
-import { Button, ButtonEdit } from 'components/Button';
+import { Button, ButtonClose, ButtonEdit } from 'components/Button';
 import { DropdownContainer, OptionsList, OptionsListValuePropType, OptionsListOptionProp } from 'components/Form';
 import { Paragraph, Tag } from 'components/Content';
 import { ProjectBoardSpotVersion } from '.';
@@ -144,12 +144,24 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                             )}
 
                             {this.props.userCanEditSpotCore && (
-                                <ButtonEdit
-                                    className={s.editSpotButton}
-                                    onClick={this.handleSpotEdit}
-                                    float="right"
-                                    label={this.isEditFormVisible ? 'Stop editing' : 'Edit spot'}
-                                />
+                                <>
+                                    {this.isEditFormVisible &&
+                                        <ButtonClose
+                                            className={s.editSpotButton}
+                                            float="right"
+                                            onClick={this.handleSpotEdit}
+                                            label={'Cancel'}
+                                        />
+                                    }
+                                    {!this.isEditFormVisible &&
+                                        <ButtonEdit
+                                            className={s.editSpotButton}
+                                            float="right"
+                                            onClick={this.handleSpotEdit}
+                                            label={'Edit spot'}
+                                        />
+                                    }
+                                </>
                             )}
                         </Col>
                     </Row>

@@ -3,7 +3,7 @@ import * as classNames from 'classnames';
 import { observable, computed, action } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { ProjectsDetailsActions } from 'actions';
-import { ButtonEdit, ButtonSave } from 'components/Button';
+import { ButtonClose, ButtonEdit, ButtonSave } from 'components/Button';
 import { Paragraph } from 'components/Content';
 import { DropdownContainer, OptionsList, OptionsListValuePropType } from 'components/Form';
 import { IconEmail, IconPhone, IconBriefcase } from 'components/Icons';
@@ -150,11 +150,22 @@ export class ProjectBoardCampaignExecutive extends React.Component<
                                   {
                                       key: 'edit-creative-executive-button',
                                       element: (
-                                          <ButtonEdit
-                                              float="right"
-                                              onClick={this.handleEditingToggle}
-                                              label={this.isInEditMode ? 'Cancel edit' : 'Edit contacts'}
-                                          />
+                                          <>
+                                              {this.isInEditMode &&
+                                                  <ButtonClose
+                                                      float="right"
+                                                      onClick={this.handleEditingToggle}
+                                                      label={'Cancel'}
+                                                  />
+                                              }
+                                              {!this.isInEditMode &&
+                                                  <ButtonEdit
+                                                      float="right"
+                                                      onClick={this.handleEditingToggle}
+                                                      label={'Edit contacts'}
+                                                  />
+                                              }
+                                          </>
                                       ),
                                   },
                               ]

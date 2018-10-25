@@ -16,6 +16,15 @@ export class Projects {
     @observable public projectsList: Project[] = [];
 
     constructor() {
+
+        // React to current page change
+        reaction(
+            () => this.currentPage,
+            currentPage => {
+                ProjectsActions.fetchProjects(currentPage);
+            }
+        );
+
         // React to client filter change
         reaction(
             () => this.filterByStudio,

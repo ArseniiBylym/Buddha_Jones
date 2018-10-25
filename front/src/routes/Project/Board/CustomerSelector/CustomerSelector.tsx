@@ -2,7 +2,7 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 import { DropdownContainer, OptionsList } from '../../../../components/Form';
 import { OptionsListValuePropType } from '../../../../components/Form/OptionsList';
-import { ButtonEdit, ButtonSave } from '../../../../components/Button';
+import { ButtonClose, ButtonEdit, ButtonSave } from '../../../../components/Button';
 import { action, observable } from 'mobx';
 import { ProjectsDetailsActions } from '../../../../actions';
 
@@ -106,11 +106,20 @@ export class CustomerSelector extends React.Component<ProjectBoardCampaignCustom
                 }
 
                 <div className={s.inlineBlock}>
-                    <ButtonEdit
-                        float="right"
-                        onClick={this.handleCustomerSelectorEditModeToggle}
-                        label={(!this.isInEditMode && this.valueSelected.name) ? '' : this.isInEditMode ? 'Cancel edit' : 'Edit Client'}
-                    />
+                    {!this.isInEditMode &&
+                        <ButtonEdit
+                            float="right"
+                            onClick={this.handleCustomerSelectorEditModeToggle}
+                            label={(this.valueSelected.name) ? '' : 'Edit Client'}
+                        />
+                    }
+                    {this.isInEditMode &&
+                        <ButtonClose
+                            float="right"
+                            onClick={this.handleCustomerSelectorEditModeToggle}
+                            label={'Cancel'}
+                        />
+                    }
                 </div>
 
                 {this.isInEditMode &&

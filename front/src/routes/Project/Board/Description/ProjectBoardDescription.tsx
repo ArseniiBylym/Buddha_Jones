@@ -2,7 +2,7 @@ import * as React from 'react';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { Section, Row, Col } from 'components/Section';
-import { ButtonEdit } from 'components/Button';
+import { ButtonClose, ButtonEdit } from 'components/Button';
 import { CommentForm } from 'components/Buddha';
 import { ProjectsActions } from 'actions';
 
@@ -36,11 +36,22 @@ export class ProjectBoardDescription extends React.Component<ProjectBoardDescrip
                             {
                                 key: 'edit-note-button',
                                 element: (
-                                    <ButtonEdit
-                                        float="right"
-                                        onClick={this.handleProjectDescriptionEditModeToggle}
-                                        label={this.isInEditMode ? 'Cancel edit' : 'Edit project description'}
-                                    />
+                                    <>
+                                        {this.isInEditMode &&
+                                            <ButtonClose
+                                                float="right"
+                                                onClick={this.handleProjectDescriptionEditModeToggle}
+                                                label={'Cancel'}
+                                            />
+                                        }
+                                        {!this.isInEditMode &&
+                                            <ButtonEdit
+                                                float="right"
+                                                onClick={this.handleProjectDescriptionEditModeToggle}
+                                                label={'Edit project description'}
+                                            />
+                                        }
+                                    </>
                                 ),
                             },
                         ]
