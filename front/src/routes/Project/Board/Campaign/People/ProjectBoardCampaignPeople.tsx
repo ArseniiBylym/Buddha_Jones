@@ -7,7 +7,7 @@ import { UserTypeClassId } from 'types/user';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { LoadingIndicator, LoadingBar } from 'components/Loaders';
 import { observable, computed } from 'mobx';
-import { ButtonEdit } from 'components/Button';
+import { ButtonClose, ButtonEdit } from 'components/Button';
 import { Paragraph } from 'components/Content';
 import { PersonWithRole, PersonPickerByType } from 'components/Buddha';
 import { OptionsListValuePropType, DropdownContainer, OptionsList } from 'components/Form';
@@ -224,10 +224,20 @@ export class ProjectBoardCampaignPeople extends React.Component<
                         ? [
                               {
                                   element: (
-                                      <ButtonEdit
-                                          onClick={this.handleEditingToggle}
-                                          label={this.isEditing ? 'Stop editing' : 'Edit team'}
-                                      />
+                                      <>
+                                          {this.isEditing &&
+                                              <ButtonClose
+                                                  onClick={this.handleEditingToggle}
+                                                  label={'Cancel'}
+                                              />
+                                          }
+                                          {!this.isEditing &&
+                                              <ButtonEdit
+                                                  onClick={this.handleEditingToggle}
+                                                  label={'Edit team'}
+                                              />
+                                          }
+                                      </>
                                   ),
                               },
                           ]

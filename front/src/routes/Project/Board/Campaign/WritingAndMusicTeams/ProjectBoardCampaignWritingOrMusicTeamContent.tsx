@@ -5,7 +5,7 @@ import { observer, inject } from 'mobx-react';
 import capitalize from 'lodash-es/capitalize';
 import AnimateHeight from 'react-animate-height';
 import { Section } from 'components/Section';
-import { ButtonEdit, ButtonSave } from 'components/Button';
+import { ButtonClose, ButtonEdit, ButtonSave } from 'components/Button';
 import { TextArea, Toggle, ToggleSideContent } from 'components/Form';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { ProjectsDetailsActions } from 'actions';
@@ -107,10 +107,20 @@ export class ProjectBoardCampaignWritingOrMusicTeamContent extends React.Compone
                         ? [
                               {
                                   element: (
-                                      <ButtonEdit
-                                          onClick={this.handleEditToggle}
-                                          label={this.isEditing ? 'Cancel' : 'Edit request'}
-                                      />
+                                      <>
+                                          {this.isEditing &&
+                                              <ButtonClose
+                                                  onClick={this.handleEditToggle}
+                                                  label={'Cancel'}
+                                              />
+                                          }
+                                          {!this.isEditing &&
+                                              <ButtonEdit
+                                                  onClick={this.handleEditToggle}
+                                                  label={'Edit request'}
+                                              />
+                                          }
+                                      </>
                                   ),
                               },
                           ]
