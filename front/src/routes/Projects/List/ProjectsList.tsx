@@ -29,7 +29,7 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
     @computed
     private get userCanViewCampaignDescription(): boolean {
         if (this.props.store) {
-            const { loggedInUserPermissions } = this.props.store.projectPermissions;
+            const {loggedInUserPermissions} = this.props.store.projectPermissions;
 
             if (loggedInUserPermissions[UserPermissionKey.CampaignDescription]) {
                 return loggedInUserPermissions[UserPermissionKey.CampaignDescription].canView ? true : false;
@@ -46,10 +46,15 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
         if (this.props.store && this.props.store.user.data) {
             ProjectPermissionsActions.fetchLoggedInUserPermissions();
         }
-        ProjectsActions.fetchProjects(1);
+
+        if (this.props.match && this.props.match.params['pageId']) {
+            ProjectsActions.fetchProjects(this.props.match.params['pageId']);
+        } else {
+            ProjectsActions.fetchProjects(1);
+        }
 
         if (this.props.store) {
-            const { loggedInUserPermissions } = this.props.store.projectPermissions;
+            const {loggedInUserPermissions} = this.props.store.projectPermissions;
 
             this.setMainHeaderElements(
                 typeof loggedInUserPermissions[UserPermissionKey.ProjectCreate] !== 'undefined' &&
@@ -96,7 +101,7 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
             () => this.props.store!.projectPermissions.loadingCount,
             loadingCount => {
                 if (loadingCount <= 0 && this.isComponentMounted) {
-                    const { loggedInUserPermissions } = this.props.store!!.projectPermissions;
+                    const {loggedInUserPermissions} = this.props.store!!.projectPermissions;
 
                     this.setMainHeaderElements(
                         typeof loggedInUserPermissions[UserPermissionKey.ProjectCreate] !== 'undefined' &&
@@ -123,6 +128,7 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                 }
             }
         );
+
     }
 
     public render() {
@@ -130,7 +136,7 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
             return null;
         }
 
-        const { projects, projectPermissions } = this.props.store;
+        const {projects, projectPermissions} = this.props.store;
 
         return (
             <div>
@@ -140,11 +146,11 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                     headerElements={[
                         ...(projects.updatingProjects
                             ? [
-                                  {
-                                      key: 'updating-indicator',
-                                      element: <LoadingIndicator label="Refreshing" />,
-                                  },
-                              ]
+                                {
+                                    key: 'updating-indicator',
+                                    element: <LoadingIndicator label="Refreshing"/>,
+                                },
+                            ]
                             : []),
                         ...[
                             {
@@ -176,6 +182,16 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                     ]}
                 >
                     {projectPermissions.loadingCount <= 0 && (
+                        <Pagination
+                            className={s.paginationTop}
+                            currentPage={projects.currentPage}
+                            countPerPage={projects.countPerPage}
+                            countTotal={projects.countTotal}
+                            onPageChange={this.handleProjectsPageChange}
+                        />
+                    )}
+
+                    {projectPermissions.loadingCount <= 0 && (
                         <div className={s.board}>
                             <Row justifyContent={projects.projectsList.length === 1 ? 'center' : undefined}>
                                 <Col
@@ -200,20 +216,20 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                     {projectPermissions.loadingCount <= 0 && (
                         <Pagination
                             className={s.pagination}
-                            onPageChange={this.handleProjectsPageChange}
                             currentPage={projects.currentPage}
                             countPerPage={projects.countPerPage}
                             countTotal={projects.countTotal}
+                            onPageChange={this.handleProjectsPageChange}
                         />
                     )}
 
-                    {(projects.loadingProjects || projectPermissions.loadingCount > 0) && (
+                    {(projects.loadingProjects || projects.updatingProjects  || projectPermissions.loadingCount > 0) && (
                         <LoadingShade
                             background="rgba(247, 247, 247, 0.9)"
                             contentCentered={true}
                             contentCenteredToTop={true}
                         >
-                            <LoadingSpinner size={64} />
+                            <LoadingSpinner size={64}/>
                         </LoadingShade>
                     )}
                 </Section>
@@ -260,6 +276,10 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
     };
 
     private handleProjectsPageChange = (newPage: number) => {
+        if (!this.props.store) {
+            return;
+        }
+        this.props.store.projects.currentPage = newPage;
         history.push('/portal/projects/' + newPage);
     };
 
@@ -267,13 +287,13 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
         HeaderActions.setMainHeaderElements(
             userCanCreateNewProjects
                 ? [
-                      <ButtonAdd
-                          key="create"
-                          label="Define new project"
-                          onClick={this.handleCreateNewProject}
-                          isWhite={true}
-                      />,
-                  ]
+                    <ButtonAdd
+                        key="create"
+                        label="Define new project"
+                        onClick={this.handleCreateNewProject}
+                        isWhite={true}
+                    />,
+                ]
                 : []
         );
     };
