@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as classNames from 'classnames';
 import { observable, computed, action } from 'mobx';
 import { observer, inject } from 'mobx-react';
-import { ProjectsDetailsActions } from 'actions';
+import { ClientsActions, ProjectsDetailsActions } from 'actions';
 import { ButtonClose, ButtonEdit, ButtonSave } from 'components/Button';
 import { Paragraph } from 'components/Content';
 import { DropdownContainer, OptionsList, OptionsListValuePropType } from 'components/Form';
@@ -132,9 +132,9 @@ export class ProjectBoardCampaignExecutive extends React.Component<
     public componentDidMount() {
         if (this.props.userCanViewExecutive || this.props.userCanEditExecutive) {
             this.loading = true;
-            /*ClientsActions.fetchCustomerDetails(this.props.clientId).then(() => {
+            ClientsActions.fetchCustomerDetails(this.props.clientId).then(() => {
                 this.loading = false;
-            });*/
+            });
         }
     }
 

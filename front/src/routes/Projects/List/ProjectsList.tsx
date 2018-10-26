@@ -12,7 +12,7 @@ import { ProjectsListCard } from '.';
 import { history } from 'App';
 import { InputSearch } from 'components/Form';
 import { UserPermissionKey } from 'types/projectPermissions';
-import { reaction, computed } from 'mobx';
+import { reaction, computed, action, observable } from 'mobx';
 
 // Styles
 const s = require('./ProjectsList.css');
@@ -24,6 +24,9 @@ interface ProjectsListProps {}
 @inject('store')
 @observer
 class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
+
+    @observable private currentPage: number = 1;
+
     private isComponentMounted: boolean = false;
 
     @computed
@@ -48,7 +51,8 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
         }
 
         if (this.props.match && this.props.match.params['pageId']) {
-            ProjectsActions.fetchProjects(this.props.match.params['pageId']);
+            let currentPage: number = parseInt(this.props.match.params['pageId'], 0);
+            this.setInitialPaginator(currentPage);
         } else {
             ProjectsActions.fetchProjects(1);
         }
@@ -184,7 +188,7 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                     {projectPermissions.loadingCount <= 0 && (
                         <Pagination
                             className={s.paginationTop}
-                            currentPage={projects.currentPage}
+                            currentPage={this.currentPage}
                             countPerPage={projects.countPerPage}
                             countTotal={projects.countTotal}
                             onPageChange={this.handleProjectsPageChange}
@@ -216,7 +220,7 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                     {projectPermissions.loadingCount <= 0 && (
                         <Pagination
                             className={s.pagination}
-                            currentPage={projects.currentPage}
+                            currentPage={this.currentPage}
                             countPerPage={projects.countPerPage}
                             countTotal={projects.countTotal}
                             onPageChange={this.handleProjectsPageChange}
@@ -275,14 +279,6 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
         history.push(path);
     };
 
-    private handleProjectsPageChange = (newPage: number) => {
-        if (!this.props.store) {
-            return;
-        }
-        this.props.store.projects.currentPage = newPage;
-        history.push('/portal/projects/' + newPage);
-    };
-
     private setMainHeaderElements = (userCanCreateNewProjects: boolean = false) => {
         HeaderActions.setMainHeaderElements(
             userCanCreateNewProjects
@@ -296,6 +292,26 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                 ]
                 : []
         );
+    };
+
+    @action
+    private handleProjectsPageChange = (newPage: number) => {
+        if (!this.props.store) {
+            return;
+        }
+        this.currentPage = newPage;
+        this.props.store.projects.currentPage = newPage;
+        history.push('/portal/projects/' + newPage);
+    };
+
+    @action
+    private setInitialPaginator = (currentPage: number) => {
+        if (!this.props.store) {
+            return;
+        }
+        this.currentPage = currentPage;
+        this.props.store.projects.currentPage = currentPage;
+        ProjectsActions.fetchProjects(currentPage);
     };
 }
 

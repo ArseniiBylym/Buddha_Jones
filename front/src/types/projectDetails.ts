@@ -181,9 +181,10 @@ interface ProjectDetailsCampaignFromApi {
     writingTeamNotes: string | null;
     spot: ProjectDetailsSpotFromApi[];
     user: ProjectCampaignCreativeUserFromApi[];
-    billingUser: ProjectCampaignBillingUserFromApi[];
     designer: ProjectCampaignUserFromApi[];
     editor: ProjectCampaignUserFromApi[];
+    billingUser: ProjectCampaignBillingUserFromApi[];
+    customerContact: ProjectCampaignUserFromApi[];
 }
 
 export interface ProjectSpotCreateFromApi {
