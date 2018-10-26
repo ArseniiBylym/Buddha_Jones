@@ -125,6 +125,7 @@ export class ProjectDetailsActionsClass {
                     billingTeam: c.billingUser,
                     designTeam: c.designer,
                     editorialTeam: c.editor,
+                    customerContact: c.customerContact,
                     hidden: false,
                     spots:
                         typeof c.spot !== 'undefined' && c.spot
@@ -742,7 +743,7 @@ export class ProjectDetailsActionsClass {
             await API.postData(APIPath.ASSIGN_CONTACT_TO_PROJECT_CAMPAIGN, {
                 project_id: projectId,
                 project_campaign_id: projectCampaignId,
-                first_point_of_contact_id: executiveId,
+                customer_contact_id: executiveId,
             });
 
             const campaign = this.findCampaign(projectId, projectCampaignId);
