@@ -829,6 +829,38 @@ class SpotRepository extends EntityRepository
         return $result;
     }
 
+    public function getSpotVersionEditorBySpotAndVersion($spotId, $versionId)
+    {
+        $dql = "SELECT 
+                  u.id, 
+                  u.firstName, u.lastName,
+                  u.username,
+                  u.initials
+                FROM \Application\Entity\RediSpotVersionEditor sve
+                    INNER JOIN \Application\Entity\RediUser u
+                        WITH u.id = sve.userId
+                    INNER JOIN \Application\Entity\RediSpotVersion sv
+                        WITH sv.id = sve.spotVersionId                  
+                  WHERE sv.spotId = :spot_id
+                  AND sv.versionId = :version_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('spot_id', $spotId);
+        $query->setParameter('version_id', $versionId);
+        $result = $query->getArrayResult();
+
+        foreach ($result as &$row) {
+            $row['name'] = trim($row['firstName'] . ' ' . $row['lastName']);
+
+            $row['id'] = (int)$row['id'];
+
+            unset($row['firstName']);
+            unset($row['lastName']);
+        }
+
+        return $result;
+    }
+
     public function getNextSpotSentRequestId()
     {
         $key = 'MAX_SPOT_SENT_REQUEST_ID';

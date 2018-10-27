@@ -353,7 +353,7 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | project_campaign_id | string | null | Project Campaign ID
 false | customer_contact_id | int | null | customer contact id
-
+˝
 
 ## Delete Customer Contact to Project campaign
 

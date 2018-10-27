@@ -383,6 +383,10 @@ class ProjectCampaignController extends CustomAbstractActionController
         $canViewRequestWrittingTeam = $this->_usersRepo->extractPermission($this->_user_permission, 14, 'view_or_edit');
         $canViewPor = $this->_usersRepo->extractPermission($this->_user_permission, 20, 'view_or_edit');
         $canViewInvoice = $this->_usersRepo->extractPermission($this->_user_permission, 21, 'view_or_edit');
+        $canViewCreativeTeam = $this->_usersRepo->extractPermission($this->_user_permission, 10, 'view_or_edit');
+        $canViewDesigner = $this->_usersRepo->extractPermission($this->_user_permission, 13, 'view_or_edit');
+        $canViewEditor = $this->_usersRepo->extractPermission($this->_user_permission, 12, 'view_or_edit');
+        $canViewBilling = $this->_usersRepo->extractPermission($this->_user_permission, 11, 'view_or_edit');
 
         if ($canViewCampaign) {
             if ($projectCampaignId) {
@@ -394,6 +398,22 @@ class ProjectCampaignController extends CustomAbstractActionController
                     // set project name
                     $projectName = $this->_projectRepo->getProjectName($data['projectId'], $this->_user_type_id, true);
                     $data = array_merge($data, $projectName);
+
+                    if ($canViewCreativeTeam) {
+                        $data['user'] = $this->_campaignRepo->getCampaignProjectPeople('user', $data['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
+                    }
+
+                    if ($canViewDesigner) {
+                        $data['designer'] = $this->_campaignRepo->getCampaignProjectPeople('designer', $data['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
+                    }
+
+                    if ($canViewEditor) {
+                        $data['editor'] = $this->_campaignRepo->getCampaignProjectPeople('editor', $data['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
+                    }
+
+                    if ($canViewBilling) {
+                        $data['billingUser'] = $this->_campaignRepo->getCampaignProjectPeople('billing', $data['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
+                    }
 
                     if (!$canViewBudget) {
                         unset($data['budget']);

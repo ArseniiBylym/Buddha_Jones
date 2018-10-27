@@ -22,7 +22,11 @@ class VersionRepository extends EntityRepository
 
     public function search($filter, $offset = 0, $length = 10)
     {
-        $dql = "SELECT a.id, a.versionName, a.custom
+        $dql = "SELECT a.id, a.versionName, a.custom, 
+                (CASE 
+                    WHEN a.seq IS NOT NULL THEN a.seq
+                    ELSE a.id
+                END) AS sortOrder
                 FROM \Application\Entity\RediVersion a ";
 
         $dqlFilter = array(
@@ -45,7 +49,7 @@ class VersionRepository extends EntityRepository
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " ORDER BY a.seq ASC";
+        $dql .= " ORDER BY sortOrder ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
 
@@ -99,7 +103,11 @@ class VersionRepository extends EntityRepository
 
     public function searchWithSpot($filter, $offset = 0, $length = 10)
     {
-        $dql = "SELECT a.id, a.versionName, a.custom, sv.spotId, sv.billingType
+        $dql = "SELECT a.id, a.versionName, a.custom, sv.spotId, sv.billingType,
+                (CASE 
+                    WHEN a.seq IS NOT NULL THEN a.seq
+                    ELSE a.id
+                END) AS sortOrder
                 FROM \Application\Entity\RediVersion a
                 INNER JOIN \Application\Entity\RediSpotVersion sv 
                   WITH a.id=sv.versionId ";
@@ -122,7 +130,7 @@ class VersionRepository extends EntityRepository
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " ORDER BY a.seq ASC";
+        $dql .= " ORDER BY sortOrder ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('spot_id', $filter['spot_id']);
