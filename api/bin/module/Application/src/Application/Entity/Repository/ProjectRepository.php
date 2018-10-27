@@ -767,7 +767,11 @@ class ProjectRepository extends EntityRepository
                 sv.id AS spotVersionId,
                 v.id, v.versionName, v.custom,
                 sv.versionStatusId, vs.name AS versionStatusName, 
-                sv.versionNote
+                sv.versionNote,
+                (CASE 
+                    WHEN v.seq IS NOT NULL THEN v.seq
+                    ELSE v.id
+                END) AS sortOrder
                 FROM \Application\Entity\RediSpotVersion sv
                 INNER JOIN \Application\Entity\RediVersion v
                   WITH sv.versionId=v.id
@@ -775,7 +779,7 @@ class ProjectRepository extends EntityRepository
                     WITH vs.id=sv.versionStatusId
                 WHERE
                   sv.spotId=:spot_id 
-                ORDER BY v.seq ASC";
+                ORDER BY sortOrder ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('spot_id', $spotId);
