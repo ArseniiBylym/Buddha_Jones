@@ -93,6 +93,9 @@ export interface CampaignDetails {
         name: string | null;
     };
     hidden?: boolean;
+    approvedByBilling: boolean;
+    channelId: number | null;
+    channelName: string | null;
 }
 
 export interface SpotDetails {
@@ -185,6 +188,9 @@ interface ProjectDetailsCampaignFromApi {
     editor: ProjectCampaignUserFromApi[];
     billingUser: ProjectCampaignBillingUserFromApi[];
     customerContact: ProjectCampaignUserFromApi[];
+    approvedByBilling: boolean;
+    channelId: number | null;
+    channelName: string | null;
 }
 
 export interface ProjectSpotCreateFromApi {

@@ -14,6 +14,7 @@ import { ProjectBoardCampaignExecutive } from './Executive';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { UserPermission, UserPermissionKey } from 'types/projectPermissions';
 import { ProjectsVersionsStore } from '../../../../store/AllStores';
+import { ProjectBoardCampaignChannel } from './Channel';
 const zenscroll = require('zenscroll');
 
 // Styles
@@ -337,6 +338,17 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                 <AnimateHeight height={(this.campaignIsExpanded) ? 'auto' : 0} duration={500}>
                     {!this.isVersionStatusFilterApplied &&
                         <>
+
+                            <ProjectBoardCampaignChannel
+                                userCanView={true}
+                                userCanEdit={true}
+                                campaignId={this.props.campaign.campaignId}
+                                projectCampaignId={this.props.campaign.projectCampaignId}
+                                approvedByBilling={this.props.campaign.approvedByBilling}
+                                channelId={this.props.campaign.channelId}
+                                channelName={this.props.campaign.channelName}
+                            />
+
                             <ProjectBoardCampaignDescription
                                 userCanView={this.userCanViewCampaignDescription}
                                 userCanEdit={this.userCanEditCampaignDescription}

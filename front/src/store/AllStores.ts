@@ -23,6 +23,7 @@ import {
     TimeApproval,
     Time,
     SpotSent,
+    Channels
 } from './index';
 
 // Construct individual stores
@@ -46,6 +47,7 @@ export const TimeEntryStore = new TimeEntry();
 export const TimeApprovalStore = new TimeApproval();
 export const TimeStore = new Time();
 export const SpotSentStore = new SpotSent();
+export const ChannelsStore = new Channels();
 
 // Define combined store's interface
 export interface AppStoreState {
@@ -69,6 +71,7 @@ export interface AppStoreState {
     timeApproval: TimeApproval;
     time: Time;
     spotSent: SpotSent;
+    channels: Channels;
 }
 
 // Initialize combined stores
@@ -93,6 +96,7 @@ export const store: AppStoreState = {
     timeApproval: TimeApprovalStore,
     time: TimeStore,
     spotSent: SpotSentStore,
+    channels: ChannelsStore
 };
 
 // App interface

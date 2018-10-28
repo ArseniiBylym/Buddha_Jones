@@ -44,4 +44,5 @@ export enum APIPath {
     GRAPHICS_REQUEST                        = '/graphics-request',
     STUDIO                                  = '/studio',
     STUDIO_FIRST_LETTERS                    = '/studio/first-letters',
+    CHANNEL                                 = '/channel',
 }
