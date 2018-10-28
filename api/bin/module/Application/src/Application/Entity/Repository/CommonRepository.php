@@ -14,13 +14,14 @@ use Zend\Config\Config;
 class CommonRepository extends EntityRepository
 {
     public $mimeToExtension = array(
-        "image/bmp" => ".bmp",
-        "image/x-windows-bmp" => ".bmp",
+        // "image/bmp" => ".bmp",
+        // "image/x-windows-bmp" => ".bmp",
         "application/msword" => ".doc",
         "image/gif" => ".gif",
-        "image/x-icon" => ".ico",
+        // "image/x-icon" => ".ico",
         "image/pjpeg" => ".jpeg",
         "image/jpeg" => ".jpg",
+        "image/png" => ".png",
         "application/pdf" => ".pdf",
         "application/mspowerpoint" => ".ppt",
         "application/powerpoint" => ".ppt",
@@ -29,7 +30,10 @@ class CommonRepository extends EntityRepository
         "application/octet-stream" => ".psd",
         "application/rtf" => ".rtf",
         "application/x-rtf" => ".rtf",
-        "text/richtext" => ".rtf"
+        "text/richtext" => ".rtf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" => ".docx",
+        "application/vnd.ms-excel" => ".xls",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => ".xlsx",
     );
 
     private $_className = "\Application\Entity\RediActivity";
@@ -119,7 +123,7 @@ class CommonRepository extends EntityRepository
 
     public function base64DecodeFile($data)
     {
-        if (preg_match('/^data\:([a-zA-Z]+\/[a-zA-Z]+);base64\,([a-zA-Z0-9\+\/]+\=*)$/', $data, $matches)) {
+        if (preg_match('/^data\:([a-zA-Z]+\/[a-zA-Z\.-]+);base64\,([a-zA-Z0-9\+\/]+\=*)$/', $data, $matches)) {
             return [
                 'mime' => $matches[1],
                 "extension" => (!empty($this->mimeToExtension[$matches[1]])) ? $this->mimeToExtension[$matches[1]] : null,
