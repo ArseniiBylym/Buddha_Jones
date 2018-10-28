@@ -200,10 +200,14 @@ class SpotSentController extends CustomAbstractActionController
 
         try {
             if (is_array($specSheetFile)) {
-                $files = $specSheetFile;
+                $files = array();
 
-                foreach ($files as $key => $file) {
-                    $files[$key] = $this->_commonRepo->base64DecodeFile($file);
+                foreach ($specSheetFile as $key => $file) {
+                    $fileDecoded = $this->_commonRepo->base64DecodeFile($file);
+
+                    if(!empty($fileDecoded['extension'])) {
+                        $files[$key] = $fileDecoded;
+                    }
                 }
             } else if($isUpdate){
                 $existingSpecSheetFile = $this->_commonRepo->filterPostData($existingData, 'specSheetFile', 'json', null);
