@@ -343,6 +343,7 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                                 userCanView={true}
                                 userCanEdit={true}
                                 campaignId={this.props.campaign.campaignId}
+                                customerId={this.props.campaign.customerId}
                                 projectCampaignId={this.props.campaign.projectCampaignId}
                                 approvedByBilling={this.props.campaign.approvedByBilling}
                                 channelId={this.props.campaign.channelId}

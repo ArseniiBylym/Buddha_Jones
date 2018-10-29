@@ -1,6 +1,11 @@
-import { observable } from 'mobx';
-import { ChannelsListFromApi } from '../types/channels';
+import { computed, observable } from 'mobx';
+import { ChannelsList } from '../types/channels';
 
 export class Channels {
-    @observable public allChannelsByCampaign: ChannelsListFromApi[] = [];
+    @observable public allChannels: ChannelsList[] = [];
+
+    @computed
+    public get allChannelsFetchedByCampaignIds(): number[] {
+        return this.allChannels.map(record => record.campaignId);
+    }
 }
