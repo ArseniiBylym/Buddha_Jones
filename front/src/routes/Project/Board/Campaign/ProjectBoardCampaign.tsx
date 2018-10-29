@@ -14,6 +14,7 @@ import { ProjectBoardCampaignExecutive } from './Executive';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { UserPermission, UserPermissionKey } from 'types/projectPermissions';
 import { ProjectsVersionsStore } from '../../../../store/AllStores';
+import { ProjectBoardCampaignChannel } from './Channel';
 const zenscroll = require('zenscroll');
 
 // Styles
@@ -48,6 +49,24 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
         }
 
         return {};
+    }
+
+    @computed
+    private get userCanViewCampaignChannel(): boolean {
+        if (this.userPermissions[UserPermissionKey.CampaignChannel]) {
+            return this.userPermissions[UserPermissionKey.CampaignChannel].canView ? true : false;
+        }
+
+        return false;
+    }
+
+    @computed
+    private get userCanEditCampaignChannel(): boolean {
+        if (this.userPermissions[UserPermissionKey.CampaignChannel]) {
+            return this.userPermissions[UserPermissionKey.CampaignChannel].canEdit ? true : false;
+        }
+
+        return false;
     }
 
     @computed
@@ -337,6 +356,18 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                 <AnimateHeight height={(this.campaignIsExpanded) ? 'auto' : 0} duration={500}>
                     {!this.isVersionStatusFilterApplied &&
                         <>
+
+                            <ProjectBoardCampaignChannel
+                                userCanView={this.userCanViewCampaignChannel}
+                                userCanEdit={this.userCanEditCampaignChannel}
+                                campaignId={this.props.campaign.campaignId}
+                                customerId={this.props.campaign.clientSelected.id}
+                                projectCampaignId={this.props.campaign.projectCampaignId}
+                                approvedByBilling={this.props.campaign.approvedByBilling}
+                                channelId={this.props.campaign.channelId}
+                                channelName={this.props.campaign.channelName}
+                            />
+
                             <ProjectBoardCampaignDescription
                                 userCanView={this.userCanViewCampaignDescription}
                                 userCanEdit={this.userCanEditCampaignDescription}

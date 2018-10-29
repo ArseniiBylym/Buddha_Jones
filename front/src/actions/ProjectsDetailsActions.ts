@@ -168,7 +168,10 @@ export class ProjectDetailsActionsClass {
                     clientSelected: {
                         id: c.customerId,
                         name: c.customerName
-                    }
+                    },
+                    approvedByBilling: c.approvedByBilling,
+                    channelId: c.channelId,
+                    channelName: c.channelName
                 }));
             }
 
