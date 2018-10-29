@@ -95,7 +95,7 @@ module.exports = {
             // please link the files into your node_modules/ and let module-resolution kick in.
             // Make sure your source files are compiled, as they will not be processed in any way.
             new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
-            new TsconfigPathsPlugin({ configFile: paths.appTsConfig }),
+            new TsconfigPathsPlugin({ configFile: paths.appDevTsConfig }),
         ],
     },
     module: {
@@ -146,6 +146,7 @@ module.exports = {
                                 options: {
                                     // disable type checker - we will use it in fork plugin
                                     transpileOnly: true,
+                                    configFile: 'tsconfig.dev.json'
                                 },
                             },
                         ],
@@ -155,6 +156,31 @@ module.exports = {
                     // "style" loader turns CSS into JS modules that inject <style> tags.
                     // In production, we use a plugin to extract that CSS to a file, but
                     // in development "style" loader enables hot editing of CSS.
+
+                    {
+                        test: /\.scss/,
+                        use: [
+                            require.resolve('style-loader'),
+                            {
+                                loader: require.resolve('css-loader'),
+                                options: {
+                                    importLoaders: 1,
+                                    modules: true,
+                                    localIdentName: '[name]__[local]___[hash:base64:5]',
+                                },
+                            },
+                            "sass-loader",
+                            {
+                                loader: require.resolve('postcss-loader'),
+                                options: {
+                                    // Necessary for external CSS imports to work
+                                    // https://github.com/facebookincubator/create-react-app/issues/2677
+                                    ident: 'postcss',
+                                    plugins: () => [require('postcss-flexbugs-fixes'), require('postcss-cssnext')],
+                                },
+                            },
+                        ],
+                    },
                     {
                         test: /\.css$/,
                         use: [
@@ -237,8 +263,8 @@ module.exports = {
         new ForkTsCheckerWebpackPlugin({
             async: false,
             watch: paths.appSrc,
-            tsconfig: paths.appTsConfig,
-            tslint: paths.appTsLint,
+            tsconfig: paths.appDevTsConfig,
+            tslint: paths.appDevTsLint,
         }),
     ],
     // Some libraries import Node modules but don't use them in the browser.
