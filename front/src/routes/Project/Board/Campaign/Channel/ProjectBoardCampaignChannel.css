@@ -14,4 +14,14 @@
     background: #ffffff;
     box-shadow: 0px 4px 16px rgba(126, 117, 109, 0.1);
   }
+
+  & .channel {
+  margin-top: 10px;
+    }
+
+   & .channel > .channelItem {
+      display: inline-block;
+      width: 270px;
+      padding-right: 10px;
+   }
 }

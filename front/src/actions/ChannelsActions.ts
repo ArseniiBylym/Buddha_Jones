@@ -40,7 +40,7 @@ export class ChannelsActionsClass {
     @action
     public changeProjectCampaignChannel = async (
         projectCampaignId: number,
-        customerId: number,
+        customerId: number | null,
         channelId: number,
         approvedByBilling: boolean
     ): Promise<boolean> => {

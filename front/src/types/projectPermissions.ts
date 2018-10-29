@@ -31,6 +31,7 @@ export enum UserPermissionKey {
     CampaignPeopleDesign = 'campaign-people-design',
     CampaignWritingTeam = 'campaign-writing-team',
     CampaignMusicTeam = 'campaign-music-team',
+    CampaignChannel = 'campaign-channel',
     DateMaterialReceived = 'date-material-received',
     CampaignBudget = 'campaign-budget',
     CampaignNotes = 'campaign-notes',

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { Section, Row, Col } from 'components/Section';
+import { Section, Row, Col, ClearFix } from 'components/Section';
 import * as classNames from 'classnames';
 import { action, observable } from 'mobx';
 import { ButtonClose, ButtonEdit, ButtonSave } from '../../../../../components/Button';
-import { DropdownContainer, OptionsList } from '../../../../../components/Form';
+import { Checkmark, DropdownContainer, OptionsList } from '../../../../../components/Form';
 import { AppOnlyStoreState } from '../../../../../store/AllStores';
 import { ChannelsActions } from '../../../../../actions';
 import { ChannelsList } from '../../../../../types/channels';
@@ -17,7 +17,7 @@ interface ProjectBoardCampaignChannelProps {
     userCanView: boolean;
     userCanEdit: boolean;
     campaignId: number;
-    customerId: number;
+    customerId: number | null;
     projectCampaignId: number;
     approvedByBilling: boolean;
     channelId: number | null;
@@ -26,16 +26,6 @@ interface ProjectBoardCampaignChannelProps {
 
 // Types
 type ProjectBoardCampaignChannelPropsTypes = ProjectBoardCampaignChannelProps & AppOnlyStoreState;
-
-/*interface ProjectBoardCampaignChannelSelector {
-    id: number | null;
-    name: string | null;
-}*/
-
-/*interface ProjectBoardCampaignChannelSelectorOption {
-    id: OptionsListValuePropType;
-    name: string;
-}*/
 
 interface ProjectBoardCampaignChannelSelected {
     value: number | null;
@@ -58,9 +48,6 @@ export class ProjectBoardCampaignChannel extends React.Component<ProjectBoardCam
     public componentDidMount(): void {
         this.setInitialLocalState(this.props);
     }
-
-/*    public componentWillReceiveProps(nextProps: ProjectBoardCampaignChannelProps): void {
-    }*/
 
     public render() {
         return this.props.userCanView ? (
@@ -103,52 +90,79 @@ export class ProjectBoardCampaignChannel extends React.Component<ProjectBoardCam
                     <Row>
                         <Col size={12}>
                             {!this.isInEditMode &&
-                                <>
-                                    <h5>Approved channel: {this.channelName}</h5>
-                                    <h5>Is approved: {this.approvedByBilling ? 'yes' : 'no'}</h5>
-                                    <h5>{this.channelId}</h5>
-                                    <h5>{this.saveStatus}</h5>
-                                </>
-                            }
-                            {this.isInEditMode &&
-                                <DropdownContainer
-                                    ref={this.referenceChannelSelectorDropdown}
-                                    label={'Select channel'}
-                                    value={(this.channelName) ? this.channelName : ''}
-                                >
-                                    <OptionsList
-                                        onChange={this.handleChannelSelectorChange}
-                                        value={this.channelName}
-                                        loadingOptions={(this.channelOptions) ? this.channelOptions.loading : false}
-                                        height={100}
-                                        options={[
-                                            ...[
-                                                {
-                                                    value: null,
-                                                    label: 'not selected',
-                                                },
-                                            ],
-                                            ...(this.channelOptions && this.channelOptions.channels) ? this.channelOptions.channels
-                                                .map(status => ({
-                                                    value: status.id,
-                                                    label: status.name,
-                                                })
-                                            ) : [],
-                                        ]}
-                                    />
-                                </DropdownContainer>
-                            }
-                            {this.isInEditMode &&
-                                <ButtonSave
-                                    onClick={this.handleSaveChanges}
-                                    float="left"
-                                    label={
-                                        this.status === 'error' ? 'Could not save, please try again' : 'Save details'
+                                <div className={s.channel}>
+                                    <div className={s.channelItem}>
+                                        {!this.channelName &&
+                                            <span>No channel approved</span>
+                                        }
+                                        {this.channelName &&
+                                            <>
+                                                <span>Channel name:</span> <strong>{this.channelName}</strong>
+                                            </>
+                                        }
+                                    </div>
+
+                                    {this.channelName &&
+                                        <div className={s.channelItem}>
+                                            <span style={{paddingRight: '10px'}}>Is approved:</span>
+                                            <Checkmark
+                                                checked={this.approvedByBilling}
+                                                type={'no-icon'}
+                                            />
+                                        </div>
                                     }
-                                    labelColor={this.status === 'error' ? 'orange' : 'blue'}
-                                    savingLabel="Saving"
-                                    isSaving={this.status === 'saving'}
-                                />
+                                </div>
+                            }
+                            {this.isInEditMode &&
+                                <div className={s.channel}>
+                                    <div className={s.channelItem}>
+                                        <DropdownContainer
+                                            ref={this.referenceChannelSelectorDropdown}
+                                            label={'Select channel'}
+                                            value={(this.channelName) ? this.channelName : ''}
+                                        >
+                                            <OptionsList
+                                                onChange={this.handleChannelSelectorChange}
+                                                value={this.channelName}
+                                                loadingOptions={(this.channelOptions) ? this.channelOptions.loading : false}
+                                                height={100}
+                                                options={[
+                                                    ...[
+                                                        {
+                                                            value: null,
+                                                            label: 'not selected',
+                                                        },
+                                                    ],
+                                                    ...(this.channelOptions && this.channelOptions.channels) ? this.channelOptions.channels
+                                                        .map(status => ({
+                                                            value: status.id,
+                                                            label: status.name,
+                                                        })
+                                                    ) : [],
+                                                ]}
+                                            />
+                                        </DropdownContainer>
+                                    </div>
+                                    <div className={s.channelItem}>
+                                        <span style={{paddingRight: '10px'}}>Is approved:</span>
+                                        <Checkmark
+                                            onClick={this.handleProjectBoardPermissionToggle}
+                                            checked={this.approvedByBilling}
+                                            type={'no-icon'}
+                                        />
+                                    </div>
+                                    <ButtonSave
+                                        onClick={this.handleSaveChanges}
+                                        float="right"
+                                        label={
+                                            this.saveStatus === 'error' ? 'Could not save, please try again' : 'Save details'
+                                        }
+                                        labelColor={this.saveStatus === 'error' ? 'orange' : 'blue'}
+                                        savingLabel="Saving"
+                                        isSaving={this.saveStatus === 'saving'}
+                                    />
+                                    <ClearFix/>
+                                </div>
                             }
                         </Col>
                     </Row>
@@ -158,6 +172,11 @@ export class ProjectBoardCampaignChannel extends React.Component<ProjectBoardCam
     }
 
     private referenceChannelSelectorDropdown = (ref: DropdownContainer) => (this.channelDropdown = ref);
+
+    @action
+    private handleProjectBoardPermissionToggle = () => {
+        this.approvedByBilling = !this.approvedByBilling;
+    };
 
     @action
     private setInitialLocalState = (props: ProjectBoardCampaignChannelPropsTypes) => {
@@ -195,7 +214,7 @@ export class ProjectBoardCampaignChannel extends React.Component<ProjectBoardCam
     @action
     private handleSaveChanges = async () => {
         try {
-            if (this.props.projectCampaignId && this.valueSelected && this.valueSelected.id) {
+            if (this.props.projectCampaignId && this.channelId) {
                 this.saveStatus = 'saving';
                 await ChannelsActions.changeProjectCampaignChannel(
                     this.props.projectCampaignId,

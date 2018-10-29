@@ -52,6 +52,24 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
     }
 
     @computed
+    private get userCanViewCampaignChannel(): boolean {
+        if (this.userPermissions[UserPermissionKey.CampaignChannel]) {
+            return this.userPermissions[UserPermissionKey.CampaignChannel].canView ? true : false;
+        }
+
+        return false;
+    }
+
+    @computed
+    private get userCanEditCampaignChannel(): boolean {
+        if (this.userPermissions[UserPermissionKey.CampaignChannel]) {
+            return this.userPermissions[UserPermissionKey.CampaignChannel].canEdit ? true : false;
+        }
+
+        return false;
+    }
+
+    @computed
     private get userCanViewCampaignDescription(): boolean {
         if (this.userPermissions[UserPermissionKey.CampaignDescription]) {
             return this.userPermissions[UserPermissionKey.CampaignDescription].canView ? true : false;
@@ -340,10 +358,10 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                         <>
 
                             <ProjectBoardCampaignChannel
-                                userCanView={true}
-                                userCanEdit={true}
+                                userCanView={this.userCanViewCampaignChannel}
+                                userCanEdit={this.userCanEditCampaignChannel}
                                 campaignId={this.props.campaign.campaignId}
-                                customerId={this.props.campaign.customerId}
+                                customerId={this.props.campaign.clientSelected.id}
                                 projectCampaignId={this.props.campaign.projectCampaignId}
                                 approvedByBilling={this.props.campaign.approvedByBilling}
                                 channelId={this.props.campaign.channelId}
