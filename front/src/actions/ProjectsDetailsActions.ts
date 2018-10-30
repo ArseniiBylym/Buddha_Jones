@@ -157,7 +157,7 @@ export class ProjectDetailsActionsClass {
                                                           }
                                                         : null,
                                                 isCustom: v.custom ? true : false,
-                                                editors: (v.editors) ? v.editors : [],
+                                                editors: (v.editor) ? v.editor : [],
                                                 hidden: false,
                                             }))
                                           : [],

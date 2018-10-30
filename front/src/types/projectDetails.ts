@@ -219,7 +219,7 @@ interface ProjectDetailsVersionFromApi {
     versionStatusId: number | null;
     versionStatusName: string | null;
     custom: 1 | 0 | null;
-    editors: ProjectDetailsVersionEditorsFromApi[];
+    editor: ProjectDetailsVersionEditorsFromApi[];
 }
 
 interface ProjectDetailsVersionEditorsFromApi {
