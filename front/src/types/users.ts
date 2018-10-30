@@ -54,19 +54,19 @@ export interface OtherUserFromApi {
     username: string;
     email: string | null;
     image: string | null;
-    first_name: string | null;
-    last_name: string | null;
-    full_name: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    fullName: string | null;
     initials: string | null;
-    type_id: number;
-    type_name: string;
-    salary_type?: string;
-    salary_amount?: string;
-    min_hour?: string | null;
-    hourly_rate?: string | null;
+    typeId: number;
+    typeName: string;
+    salaryType?: string;
+    salaryAmount?: string;
+    minHour?: string | null;
+    hourlyRate?: string | null;
     status: 1 | 0;
-    last_login_date: DateObjectFromApi | null;
-    created_date: DateObjectFromApi;
+    lastLoginDate: DateObjectFromApi | null;
+    createdDate: DateObjectFromApi;
 }
 
 export interface UsersListFromApi {

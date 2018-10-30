@@ -122,13 +122,13 @@ export class UsersActionsClass {
                             id: user.id,
                             username: user.username,
                             email: user.email,
-                            firstName: user.first_name,
-                            lastName: user.last_name,
-                            fullName: user.full_name,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            fullName: user.fullName,
                             initials: user.initials,
                             image: user.image,
-                            typeId: user.type_id,
-                            typeName: user.type_name,
+                            typeId: user.typeId,
+                            typeName: user.typeName,
                             status: user.status ? true : false,
                         };
                     }
@@ -170,13 +170,13 @@ export class UsersActionsClass {
                     id: person.id,
                     username: person.username,
                     email: person.email,
-                    firstName: person.first_name,
-                    lastName: person.last_name,
-                    fullName: person.full_name,
+                    firstName: person.firstName,
+                    lastName: person.lastName,
+                    fullName: person.fullName,
                     initials: person.initials,
                     image: person.image,
-                    typeId: person.type_id,
-                    typeName: person.type_name,
+                    typeId: person.typeId,
+                    typeName: person.typeName,
                     status: person.status ? true : false,
                 };
 
@@ -252,10 +252,10 @@ export class UsersActionsClass {
                 typesIdsToRefresh.map(typeId => {
                     const typeIdFetchIndex = UsersStore.peopleFetchedByTypeFlatIds.indexOf(typeId);
                     if (typeIdFetchIndex !== -1) {
-                        const findOneUser = response.users.find(user => user.type_id === typeId);
+                        const findOneUser = response.users.find(user => user.typeId === typeId);
                         UsersStore.peopleFetchesByType[typeIdFetchIndex].typeName =
                             typeof findOneUser !== 'undefined'
-                                ? findOneUser.type_name
+                                ? findOneUser.typeName
                                 : UsersStore.peopleFetchesByType[typeIdFetchIndex].typeName;
                         UsersStore.peopleFetchesByType[typeIdFetchIndex].loading = false;
                         UsersStore.peopleFetchesByType[typeIdFetchIndex].lastFetchTimestamp = Date.now();
@@ -269,13 +269,13 @@ export class UsersActionsClass {
                         UsersStore.people[userIndex].lastFetchTimestamp = Date.now();
                         UsersStore.people[userIndex].data = {
                             id: user.id,
-                            typeId: user.type_id,
-                            typeName: user.type_name,
+                            typeId: user.typeId,
+                            typeName: user.typeName,
                             username: user.username,
                             email: user.email,
-                            firstName: user.first_name,
-                            lastName: user.last_name,
-                            fullName: user.full_name,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            fullName: user.fullName,
                             initials: user.initials,
                             image: user.image,
                             status: user.status ? true : false,
@@ -290,13 +290,13 @@ export class UsersActionsClass {
                                 id: user.id,
                                 username: user.username,
                                 email: user.email,
-                                firstName: user.first_name,
-                                lastName: user.last_name,
-                                fullName: user.full_name,
+                                firstName: user.firstName,
+                                lastName: user.lastName,
+                                fullName: user.fullName,
                                 initials: user.initials,
                                 image: user.image,
-                                typeId: user.type_id,
-                                typeName: user.type_name,
+                                typeId: user.typeId,
+                                typeName: user.typeName,
                                 status: user.status ? true : false,
                             },
                         });
@@ -337,6 +337,7 @@ export class UsersActionsClass {
                 fetchClasses.map(async fetchClass => {
                     // Check if class exists
                     let fetchClassIndexMatch = UsersStore.peopleFetchedByClassFlatIds.indexOf(fetchClass);
+
                     if (fetchClassIndexMatch !== -1) {
                         UsersStore.peopleFetchesByClass[fetchClassIndexMatch].loading = true;
                     } else {
@@ -352,7 +353,7 @@ export class UsersActionsClass {
                     const response = (await API.getData(APIPath.USERS, {
                         class: JSON.stringify(fetchClass),
                         length: 999999,
-                    })) as UsersListFromApi;
+                    })) as OtherUserFromApi[];
 
                     // Storage
                     const users: OtherUserDetails[] = [];
@@ -360,12 +361,12 @@ export class UsersActionsClass {
                     const userTypes: Array<{ id: number; name: string }> = [];
 
                     // Check if any users are returned
-                    if (response && response.users) {
+                    if (response) {
                         // Get current timestamp
                         const now = Date.now();
 
                         // Iterate all users and format them
-                        response.users.map(user => {
+                        response.map(user => {
                             // Populate formatted users array
                             users.push({
                                 id: user.id,
@@ -375,29 +376,31 @@ export class UsersActionsClass {
                                     id: user.id,
                                     username: user.username,
                                     email: user.email,
-                                    firstName: user.first_name,
-                                    lastName: user.last_name,
-                                    fullName: user.full_name,
+                                    firstName: user.firstName,
+                                    lastName: user.lastName,
+                                    fullName: user.fullName,
                                     initials: user.initials,
                                     image: user.image,
-                                    typeId: user.type_id,
-                                    typeName: user.type_name,
+                                    typeId: user.typeId,
+                                    typeName: user.typeName,
                                     status: user.status ? true : false,
                                 },
                             });
 
                             // Populate type IDs
-                            if (userTypesIds.indexOf(user.type_id) === -1) {
-                                userTypesIds.push(user.type_id);
+                            if (userTypesIds.indexOf(user.typeId) === -1) {
+                                userTypesIds.push(user.typeId);
+
                                 userTypes.push({
-                                    id: user.type_id,
-                                    name: user.type_name,
+                                    id: user.typeId,
+                                    name: user.typeName,
                                 });
                             }
                         });
 
                         // Update fetch class status
                         const fetchClassMatch = UsersStore.peopleFetchesByClass.find(c => c.classId === fetchClass);
+
                         if (fetchClassMatch) {
                             fetchClassMatch.loading = false;
                             fetchClassMatch.lastFetchTimestamp = now;
@@ -407,6 +410,7 @@ export class UsersActionsClass {
                         // Update user types included in response
                         await userTypes.map(async userType => {
                             const userTypeIndexMatch = UsersStore.peopleFetchedByTypeFlatIds.indexOf(userType.id);
+
                             if (userTypeIndexMatch !== -1) {
                                 UsersStore.peopleFetchesByType[userTypeIndexMatch].lastFetchTimestamp = now;
                                 UsersStore.peopleFetchesByType[userTypeIndexMatch].typeName = userType.name;
@@ -432,7 +436,7 @@ export class UsersActionsClass {
                             }
                         });
 
-                        return response.users;
+                        return response;
                     } else {
                         return [];
                     }
