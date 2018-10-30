@@ -5,6 +5,15 @@ export interface ClientApiResponse {
     cardname: string | null;
 }
 
+export interface CustomerContactApiResponse {
+    id: number;
+    customerId: number;
+    name: string;
+    email: string | null;
+    mobilePhone: string | null;
+    projectCampaign: number[];
+}
+
 export interface StudioApiResponse {
     id: number;
     studioName: string;

@@ -5,7 +5,7 @@ import { unformat } from 'accounting';
 import { Row, Col } from 'components/Section';
 import { LoadingSpinner } from 'components/Loaders';
 import { AppState } from 'store/AllStores';
-import { ProjectsDetailsActions, HeaderActions, ProjectsVersionsActions, ProjectPermissionsActions, ClientsActions } from 'actions';
+import { ProjectsDetailsActions, HeaderActions, ProjectsVersionsActions, ProjectPermissionsActions } from 'actions';
 import { ButtonBack, ButtonSend } from 'components/Button';
 import { ProjectDetails } from 'types/projectDetails';
 import { Paragraph } from 'components/Content';
@@ -159,11 +159,6 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
         ProjectsVersionsActions.fetchAllStandardVersions();
         ProjectsVersionsActions.fetchAllCustomVersions();
         ProjectsVersionsActions.fetchAllVersionStatuses();
-
-        // Fetch all clients available for selected studio
-        if (this.props.match.params['studioId']) {
-            ClientsActions.fetchClientsForStudioOptions(this.props.match.params['studioId']);
-        }
 
         // Fetch project if the URL contains project ID
         if (typeof this.props.match.params['projectId'] !== 'undefined') {

@@ -29,6 +29,7 @@ interface ProjectBoardCampaignExecutiveProps {
     userCanViewPORContact: boolean;
     userCanViewInvoiceContact: boolean;
     clientId: number;
+    customerId: number | null;
     projectId: number;
     projectCampaignId: number;
     campaignId: number;
@@ -297,6 +298,9 @@ export class ProjectBoardCampaignExecutive extends React.Component<
             this.isInEditMode = false;
             this.editSelectedExecutiveId = null;
         } else {
+            if (this.props.customerId) {
+                ClientsActions.fetchClientsForStudioOptions(this.props.customerId);
+            }
             this.editSelectedExecutiveId = this.selectedExecutive !== null ? this.selectedExecutive.id : null;
             this.isInEditMode = true;
         }
