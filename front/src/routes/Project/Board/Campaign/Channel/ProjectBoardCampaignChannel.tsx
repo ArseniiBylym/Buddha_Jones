@@ -127,12 +127,6 @@ export class ProjectBoardCampaignChannel extends React.Component<ProjectBoardCam
                                                 loadingOptions={(this.channelOptions) ? this.channelOptions.loading : false}
                                                 height={100}
                                                 options={[
-                                                    ...[
-                                                        {
-                                                            value: null,
-                                                            label: 'not selected',
-                                                        },
-                                                    ],
                                                     ...(this.channelOptions && this.channelOptions.channels) ? this.channelOptions.channels
                                                         .map(status => ({
                                                             value: status.id,
