@@ -13,10 +13,6 @@ class UserController extends CustomAbstractActionController
         $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
         $user = $this->_usersRepo->getUser($this->_user_id, $userAccess);
 
-        if($user && isset($user['image']) && $user['image']) {
-            $user['image'] = $this->_siteUrl . 'thumb/profile_image/' . $user['image'];
-        }
-
         $response = array(
             'status' => 1,
             'message' => 'Request successful',

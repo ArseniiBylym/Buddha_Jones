@@ -16,8 +16,11 @@ class UsersRepository extends EntityRepository
 {
     private $_className = "\Application\Entity\RediUser";
     private $_billingUserIds = array(5, 24, 100);
+    private $_config;
 
     public function __construct(EntityManager $entityManager) {
+        $this->_config = $config = new \Zend\Config\Config( include getcwd() . '/config/autoload/global.php' ); 
+
         $classMetaData = $entityManager->getClassMetadata($this->_className);
         parent::__construct($entityManager, $classMetaData);
     }
@@ -191,27 +194,19 @@ class UsersRepository extends EntityRepository
 
     public function getUser($userId, $userAccess = array())
     {
+        $imageUrl = $this->_config['site_url'] . 'thumb/profile_image/';
 
-        $selectColumn = ' a.id ';
+        $selectColumn = " a.id, a.username, a.nickName,
+                        a.email, a.image, 
+                        a.firstName, a.lastName, a.initials, 
+                        a.typeId, ut.typeName,
+                        a.lastLoginDate, a.createdDate,
+                        a.status ";
 
-        if($userAccess['can_access_basic_data']) {
-            $selectColumn = " a.id, a.username, a.firstName as first_name, a.lastName as last_name,
-                            a.image, a.email,
-                            a.initials, a.typeId as type_id, ut.typeName as type_name,
-                            a.lastLoginDate AS last_login_date, a.createdDate AS created_date,
-                            a.status ";
+        if(!empty($userAccess['can_access_extra_data'])) {
+            $selectColumn .= " , a.salaryType, a.salaryAmount, 
+                            a.minHour, a.hourlyRate ";
         }
-
-        if($userAccess['can_access_extra_data']) {
-            $selectColumn = " a.id, a.username, a.firstName as first_name, a.lastName as last_name,
-                            a.image, a.email,
-                            a.initials, a.typeId as type_id, ut.typeName as type_name,
-                            a.hourlyRate as hourly_rate, a.salaryType as salary_type,
-                            a.salaryAmount as salary_amount, a.minHour as min_hour,
-                            a.lastLoginDate AS last_login_date, a.createdDate AS created_date,
-                            a.status ";
-        }
-
 
         $dql = "SELECT " . $selectColumn . "
                 FROM \Application\Entity\RediUser a
@@ -227,7 +222,11 @@ class UsersRepository extends EntityRepository
         if(isset($user[0])) {
             $response = $user[0];
 
-            $response['full_name'] = trim(implode(' ', array($response['first_name'], $response['last_name'])));
+            $response['fullName'] = trim(implode(' ', array($response['firstName'], $response['lastName'])));
+
+            if(!empty($response['image'])) {
+                $response['image'] = $imageUrl . $response['image'];
+            }
         } else {
             $response = null;
         }
