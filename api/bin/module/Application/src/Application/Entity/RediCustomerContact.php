@@ -38,6 +38,13 @@ class RediCustomerContact
     /**
      * @var string
      *
+     * @ORM\Column(name="title", type="string", length=20, nullable=true)
+     */
+    private $title;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="email", type="string", length=255, nullable=true)
      */
     private $email;
@@ -105,6 +112,29 @@ class RediCustomerContact
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set title
+     *
+     * @param string $title
+     * @return RediCustomerContact
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * Get title
+     *
+     * @return string 
+     */
+    public function getTitle()
+    {
+        return $this->title;
     }
 
     /**
