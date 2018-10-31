@@ -228,11 +228,9 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | customer_id | int | null | Customer ID
 **true** | name | string | null | Name
+false | title | string | null | Title
 false | email | string | null | Email address
 false | mobile_phone | string | null | Mobile phone number
-false | office_phone | string | null | Office phone number
-false | postal_address | string | null | Postal address
-false | project_campaign | JSON | null | Project to campaign relation 
 
 
 ## Update Customer Contact
@@ -248,7 +246,6 @@ axios.put('/customer-contact', {
     customer_id:10,
     name:'test customer',
     email:'test@gmail.com',
-    project_campaign:[{"project_id":1,"campaign_id":2},{"project_id":3,"campaign_id":5}]
 });
 ```
 
@@ -270,12 +267,10 @@ axios.put('/customer-contact', {
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 false | customer_id | int | null | Customer ID
-false| name | string | null | Name
+false | name | string | null | Name
+false | title | string | null | Title
 false | email | string | null | Email address
 false | mobile_phone | string | null | Mobile phone number
-false | office_phone | string | null | Office phone number
-false | postal_address | string | null | Postal address
-false | project_campaign | JSON | null | Project to campaign relation 
 
 
 ## Patch Customer Contact
@@ -291,7 +286,6 @@ axios.patch('/customer-contact', {
     customer_id:10,
     name:'test customer',
     email:'test@gmail.com',
-    project_campaign:[{"project_id":1,"campaign_id":2},{"project_id":3,"campaign_id":5}]
 });
 ```
 
@@ -313,12 +307,10 @@ axios.patch('/customer-contact', {
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 false | customer_id | int | null | Customer ID
-false| name | string | null | Name
+false | name | string | null | Name
+false | title | string | null | Title
 false | email | string | null | Email address
 false | mobile_phone | string | null | Mobile phone number
-false | office_phone | string | null | Office phone number
-false | postal_address | string | null | Postal address
-false | project_campaign | JSON | null | Project to campaign relation 
 
 
 ## Assign Customer Contact to Project campaign
