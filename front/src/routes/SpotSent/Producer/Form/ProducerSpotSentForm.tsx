@@ -77,6 +77,7 @@ export interface SpotSentValueParentChildForSubmit {
 export interface SpotSentVersionForSubmit {
     campaign_id: number | null;
     campaign_name?: string;
+    project_campaign_id: number | null;
     spot_id: number | null;
     spot_name?: string;
     version_id: number | null;
@@ -830,6 +831,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     private get defaultSpotElement(): SpotSentVersionForSubmit {
         return {
             campaign_id: null,
+            project_campaign_id: null,
             spot_id: null,
             version_id: null,
             editors: [],
@@ -966,7 +968,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
             if (this.spotSentValues.spot_version && this.spotSentValues.spot_version.length > 0) {
                 (this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).forEach((spot: SpotSentVersionForSubmit) => {
-                    CampaignPeopleActions.fetchEditorsFromProjectCampaign(spot.campaign_id as number);
+                    CampaignPeopleActions.fetchEditorsFromProjectCampaign(spot.project_campaign_id as number);
                 });
             }
 

@@ -110,6 +110,7 @@ export class SpotSentActionsClass {
                         return {
                             campaign_id: spot.campaignId,
                             campaign_name: spot.campaignName,
+                            project_campaign_id: spot.projectCampaignId,
                             spot_id: spot.spotId,
                             spot_name: spot.spotName,
                             version_id: spot.versionId,

@@ -29,6 +29,8 @@ export class CampaignPeopleActionsClass {
                     APIPath.PROJECT_CAMPAIGN_EDITOR + '/' + projectCampaignId
                 )) as ProjectCampaignUserFromApi[];
 
+                debugger;
+
                 projectCampaign.editorialTeam.users = response;
                 projectCampaign.editorialTeam.isLoading = false;
             }
