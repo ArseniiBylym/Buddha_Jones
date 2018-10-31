@@ -70,7 +70,7 @@ class LoginController extends AbstractRestfulController
                         $user = $this->_userRepository->find($userId);
                         $userType = $this->_userTypeRepository->find($user->getTypeId());
 
-                        $userData = $this->_userRepo->getUser($identity->getId());
+                        $userData = $this->_userRepo->getUser($userId);
 
                         $data = array_merge($userData, array(
                             'pageAccess' => $this->_userRepo->getPageAccessOfUser($userType->getId()),
