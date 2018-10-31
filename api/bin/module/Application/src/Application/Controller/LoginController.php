@@ -158,6 +158,7 @@ class LoginController extends AbstractRestfulController
                     $userData = $this->_userRepo->getUser($identity->getId());
 
                     $data = array_merge($userData, array(
+                        'token' => $jwtToken,
                         'pageAccess' => $this->_userRepo->getPageAccessOfUser($userType->getId()),
                         'projectPermissions' => $this->_userRepo->getUserTypeProjectPermission($userType->getId()),
                     ));
