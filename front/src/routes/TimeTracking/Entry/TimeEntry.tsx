@@ -16,7 +16,8 @@ interface TimeEntryUserWithType {
 }
 
 // Props
-interface TimeEntryProps {}
+interface TimeEntryProps {
+}
 
 // Types
 type TimeEntryPropsTypes = TimeEntryProps & AppState;
@@ -39,8 +40,8 @@ class TimeEntry extends React.Component<TimeEntryPropsTypes, {}> {
         if (this.props.store && this.props.store.user.data) {
             return {
                 id: this.props.store.user.data.id,
-                typeId: this.props.store.user.data.type.id,
-                typeName: this.props.store.user.data.type.name,
+                typeId: this.props.store.user.data.typeId,
+                typeName: this.props.store.user.data.typeName,
             };
         }
 
@@ -70,9 +71,9 @@ class TimeEntry extends React.Component<TimeEntryPropsTypes, {}> {
 
         return this.essentialDataIsLoading === false ? (
             <>
-                <TimeEntryCalendar />
+                <TimeEntryCalendar/>
 
-                <TimeEntryModal openOnPage="time-entry" />
+                <TimeEntryModal openOnPage="time-entry"/>
 
                 <Modal
                     show={timeEntry.minimumHoursNotMetModal.show && timeEntry.minimumHoursNotMetModal.minminumHours > 0}
@@ -138,7 +139,7 @@ class TimeEntry extends React.Component<TimeEntryPropsTypes, {}> {
         ) : (
             <Row justifyContent="center">
                 <Col width={64}>
-                    <LoadingSpinner size={64} />
+                    <LoadingSpinner size={64}/>
                 </Col>
             </Row>
         );

@@ -80,7 +80,7 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
             return;
         }
         const query = (this.props.location) ? parse(this.props.location.search) : null;
-        const typeName: string = (query && query.type_name) ? query.type_name : null;
+        const typeName: string = (query && query.typeName) ? query.typeName : null;
 
         // Fetch required data
         UsersActions.fetchProjectPermissionsTypes(this.props.match.params['id'], true);

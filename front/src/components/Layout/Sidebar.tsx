@@ -150,8 +150,8 @@ export class Sidebar extends React.Component<SidebarPropsTypes, {}> {
                                 />
                                 <span>
                                     {user.data
-                                        ? user.data.name.full
-                                            ? user.data.name.full
+                                        ? user.data.fullName
+                                            ? user.data.fullName
                                             : user.data.username
                                         : 'My Account'}
                                 </span>

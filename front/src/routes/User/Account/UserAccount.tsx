@@ -17,7 +17,8 @@ const s = require('./UserAccount.css');
 const emptyUserProfilePicture = require('./../../../assets/images/account/empty-user-profile-picture.png');
 
 // Props
-interface UserAccountProps {}
+interface UserAccountProps {
+}
 
 // Types
 type UserAccountPropsTypes = UserAccountProps & AppState;
@@ -79,12 +80,12 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
             HeaderActions.setMainHeaderTitlesAndElements(
                 'My account',
                 this.props.store.user.isLoggedIn && this.props.store.user.data
-                    ? this.props.store.user.data.name.full
+                    ? this.props.store.user.data.fullName
                     : 'You are not logged in',
                 null,
                 null,
                 [
-                    <ButtonBack key="back-button" onClick={this.handleGoingBack} label="Back to previous page" />,
+                    <ButtonBack key="back-button" onClick={this.handleGoingBack} label="Back to previous page"/>,
                     <Button
                         key="logout-button"
                         onClick={this.handleUserLogout}
@@ -97,7 +98,7 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
                         icon={{
                             size: 'small',
                             background: 'orange',
-                            element: <IconLockWhite width={12} height={18} />,
+                            element: <IconLockWhite width={12} height={18}/>,
                         }}
                     />,
                 ]
@@ -107,8 +108,8 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
             if (this.props.store.user.isLoggedIn && this.props.store.user.data) {
                 this.userFields = {
                     username: this.props.store.user.data.username,
-                    firstName: this.props.store.user.data.name.first || '',
-                    lastName: this.props.store.user.data.name.last || '',
+                    firstName: this.props.store.user.data.firstName || '',
+                    lastName: this.props.store.user.data.lastName || '',
                     initials: this.props.store.user.data.initials || '',
                     email: this.props.store.user.data.email || '',
                     oldPassword: '',
@@ -160,16 +161,16 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
                     <Section noSeparator={true}>
                         <Row className={s.profileDetails} justifyContent="flex-start">
                             {this.userFields.username && (
-                                <UserAccountName label="Username:" value={this.userFields.username} />
+                                <UserAccountName label="Username:" value={this.userFields.username}/>
                             )}
                             {this.userFields.firstName && (
-                                <UserAccountName label="First name:" value={this.userFields.firstName} />
+                                <UserAccountName label="First name:" value={this.userFields.firstName}/>
                             )}
                             {this.userFields.lastName && (
-                                <UserAccountName label="Last name:" value={this.userFields.lastName} />
+                                <UserAccountName label="Last name:" value={this.userFields.lastName}/>
                             )}
                             {this.userFields.initials && (
-                                <UserAccountName label="Initials:" value={this.userFields.initials} />
+                                <UserAccountName label="Initials:" value={this.userFields.initials}/>
                             )}
                         </Row>
                     </Section>
@@ -181,7 +182,7 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
                             label="Email address"
                             type="text"
                         />
-                        <br />
+                        <br/>
                         <Button
                             onClick={this.handleProfileInfoChangeSave}
                             float="right"
@@ -190,25 +191,25 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
                                     this.profileUploadStatus === 'uploading'
                                         ? 'Saving profile changes'
                                         : this.profileUploadStatus === 'error-emailrequired'
-                                            ? 'Email is required'
-                                            : this.profileUploadStatus === 'error'
-                                                ? 'Could not save changes, try again'
-                                                : this.profileUploadStatus === 'success'
-                                                    ? 'Changes have been saved'
-                                                    : 'Save profile changes',
+                                        ? 'Email is required'
+                                        : this.profileUploadStatus === 'error'
+                                            ? 'Could not save changes, try again'
+                                            : this.profileUploadStatus === 'success'
+                                                ? 'Changes have been saved'
+                                                : 'Save profile changes',
                                 color:
                                     this.profileUploadStatus === 'uploading'
                                         ? 'black'
                                         : this.profileUploadStatus === 'error' ||
-                                          this.profileUploadStatus === 'error-emailrequired'
-                                            ? 'orange'
-                                            : this.profileUploadStatus === 'success'
-                                                ? 'green'
-                                                : 'blue',
+                                        this.profileUploadStatus === 'error-emailrequired'
+                                        ? 'orange'
+                                        : this.profileUploadStatus === 'success'
+                                            ? 'green'
+                                            : 'blue',
                                 size: 'large',
                             }}
                         />
-                        <br />
+                        <br/>
                     </Section>
 
                     <Section title="Change password">
@@ -218,21 +219,21 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
                             label="Old password"
                             type="password"
                         />
-                        <br />
+                        <br/>
                         <Input
                             onChange={this.handlePasswordChange('new')}
                             value={this.userFields.newPassword}
                             label="New password"
                             type="password"
                         />
-                        <br />
+                        <br/>
                         <Input
                             onChange={this.handlePasswordChange('new-repeat')}
                             value={this.userFields.newPasswordRepeat}
                             label="Repeat new password"
                             type="password"
                         />
-                        <br />
+                        <br/>
                         <Button
                             onClick={this.handlePasswordChangeSave}
                             float="right"
@@ -241,23 +242,23 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
                                     this.passwordUploadStatus === 'uploading'
                                         ? 'Saving new password'
                                         : this.passwordUploadStatus === 'error'
-                                            ? 'Could not save changes, ' +
-                                              'make sure old password is not mispelled and try again'
-                                            : this.passwordUploadStatus === 'error-allfieldsrequired'
-                                                ? 'All fields are required, try again'
-                                                : this.passwordUploadStatus === 'error-newpasswordsnomatch'
-                                                    ? 'New passwords do no match, try again'
-                                                    : this.passwordUploadStatus === 'success'
-                                                        ? 'Password has been changed'
-                                                        : 'Save new password',
+                                        ? 'Could not save changes, ' +
+                                        'make sure old password is not mispelled and try again'
+                                        : this.passwordUploadStatus === 'error-allfieldsrequired'
+                                            ? 'All fields are required, try again'
+                                            : this.passwordUploadStatus === 'error-newpasswordsnomatch'
+                                                ? 'New passwords do no match, try again'
+                                                : this.passwordUploadStatus === 'success'
+                                                    ? 'Password has been changed'
+                                                    : 'Save new password',
                                 color:
                                     this.passwordUploadStatus === 'uploading'
                                         ? 'black'
                                         : this.passwordUploadStatus === 'success'
-                                            ? 'green'
-                                            : this.passwordUploadStatus === 'none'
-                                                ? 'blue'
-                                                : 'orange',
+                                        ? 'green'
+                                        : this.passwordUploadStatus === 'none'
+                                            ? 'blue'
+                                            : 'orange',
                                 size: 'large',
                             }}
                         />

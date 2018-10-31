@@ -107,8 +107,8 @@ export class TimeEntryCalendarColumns extends React.Component<TimeEntryCalendarC
                                         <TimeEntryCalendarReview
                                             forUser={{
                                                 id: this.props.store.user.data.id,
-                                                typeId: this.props.store.user.data.type.id,
-                                                typeName: this.props.store.user.data.type.name,
+                                                typeId: this.props.store.user.data.typeId,
+                                                typeName: this.props.store.user.data.typeName,
                                             }}
                                             now={this.props.store.time.now}
                                             entries={day.timeEntries.map(entry => ({
@@ -243,10 +243,10 @@ export class TimeEntryCalendarColumns extends React.Component<TimeEntryCalendarC
         TimeEntryActions.viewDaySummary(
             {
                 id: this.props.store.user.data.id,
-                typeId: this.props.store.user.data.type.id,
-                typeName: this.props.store.user.data.type.name,
+                typeId: this.props.store.user.data.typeId,
+                typeName: this.props.store.user.data.typeName,
             },
-            this.props.store.user.data.rates.minHour || 0,
+            this.props.store.user.data.minHour || 0,
             dayIndex
         );
     };
