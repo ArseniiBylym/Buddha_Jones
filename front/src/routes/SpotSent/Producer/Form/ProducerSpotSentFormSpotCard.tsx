@@ -134,11 +134,11 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                     </div>
                 </Section>
 
-                <section>
+                {/*<section>
                     <pre>
                         {JSON.stringify(this.campaignEditorialUsers, null, 2)}
                     </pre>
-                </section>
+                </section>*/}
 
                 <Section
                     title={`Spot #${this.props.spotIndex + 1} editors`}
