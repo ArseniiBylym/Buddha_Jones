@@ -26,8 +26,6 @@ interface ExecutiveContactInfo {
 interface ProjectBoardCampaignExecutiveProps {
     userCanViewExecutive: boolean;
     userCanEditExecutive: boolean;
-    userCanViewPORContact: boolean;
-    userCanViewInvoiceContact: boolean;
     clientId: number;
     customerId: number | null;
     projectId: number;
@@ -207,21 +205,6 @@ export class ProjectBoardCampaignExecutive extends React.Component<
                             {this.selectedExecutive !== null && <strong>{this.selectedExecutive.name}</strong>}
                         </Paragraph>
 
-                        {this.props.userCanViewPORContact &&
-                            this.selectedExecutive && (
-                                <Paragraph>
-                                    <span>PO contact: </span>
-                                    <strong>{this.selectedExecutive.name}</strong>
-                                </Paragraph>
-                            )}
-
-                        {this.props.userCanViewInvoiceContact &&
-                            this.selectedExecutive && (
-                                <Paragraph>
-                                    <span>Invoice contact: </span>
-                                    <strong>{this.selectedExecutive.name}</strong>
-                                </Paragraph>
-                            )}
                     </div>
 
                     {this.selectedExecutiveContactInfo.length > 0 && (

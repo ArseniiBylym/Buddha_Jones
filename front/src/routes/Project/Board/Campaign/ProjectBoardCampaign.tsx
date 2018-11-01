@@ -142,24 +142,6 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
     }
 
     @computed
-    private get userCanViewPORContact(): boolean {
-        if (this.userPermissions[UserPermissionKey.CampaignPOR]) {
-            return this.userPermissions[UserPermissionKey.CampaignPOR].canView ? true : false;
-        }
-
-        return false;
-    }
-
-    @computed
-    private get userCanViewInvoiceContact(): boolean {
-        if (this.userPermissions[UserPermissionKey.CampaignInvoiceContact]) {
-            return this.userPermissions[UserPermissionKey.CampaignInvoiceContact].canView ? true : false;
-        }
-
-        return false;
-    }
-
-    @computed
     private get userCanViewCreativeTeam(): boolean {
         if (this.userPermissions[UserPermissionKey.CampaignPeopleCreative]) {
             return this.userPermissions[UserPermissionKey.CampaignPeopleCreative].canView ? true : false;
@@ -389,8 +371,6 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                             <ProjectBoardCampaignExecutive
                                 userCanViewExecutive={this.userCanViewCreativeExecutive}
                                 userCanEditExecutive={this.userCanEditCreativeExecutive}
-                                userCanViewPORContact={this.userCanViewPORContact}
-                                userCanViewInvoiceContact={this.userCanViewInvoiceContact}
                                 clientId={this.props.clientId}
                                 customerId={this.props.campaign.clientSelected.id}
                                 projectId={this.props.projectId}
