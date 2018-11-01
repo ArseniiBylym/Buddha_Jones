@@ -13,7 +13,8 @@ import { TimeEntryUserWithType } from 'types/timeEntry';
 const s = require('./TimeEntryCalendarDuration.css');
 
 // Props
-interface TimeEntryCalendarDurationProps {}
+interface TimeEntryCalendarDurationProps {
+}
 
 // Types
 type TimeEntryCalendarDurationPropsTypes = TimeEntryCalendarDurationProps & AppOnlyStoreState;
@@ -82,26 +83,26 @@ export class TimeEntryCalendarDuration extends React.Component<TimeEntryCalendar
                             {timeEntry.viewTimeline.map((entry, index) => {
                                 return (
                                     <Col key={index} size={1}>
-                                        <hr />
+                                        <hr/>
                                     </Col>
                                 );
                             })}
 
                             {timeEntry.selectedDay &&
-                                timeEntry.selectedDay.timeEntries.map(entry => {
-                                    const startMinutesTotal = DateHandler.getTotalMinutesFromDateTime(entry.startDate);
-                                    return (
-                                        <div
-                                            key={'timeline-entry-' + entry.id}
-                                            className={s.timelineBox}
-                                            style={this.calculateTimelineEntryStyle(
-                                                startMinutesTotal,
-                                                startMinutesTotal + entry.hours * 60,
-                                                false
-                                            )}
-                                        />
-                                    );
-                                })}
+                            timeEntry.selectedDay.timeEntries.map(entry => {
+                                const startMinutesTotal = DateHandler.getTotalMinutesFromDateTime(entry.startDate);
+                                return (
+                                    <div
+                                        key={'timeline-entry-' + entry.id}
+                                        className={s.timelineBox}
+                                        style={this.calculateTimelineEntryStyle(
+                                            startMinutesTotal,
+                                            startMinutesTotal + entry.hours * 60,
+                                            false
+                                        )}
+                                    />
+                                );
+                            })}
 
                             {timeEntry.values !== null && (
                                 <div
@@ -144,8 +145,8 @@ export class TimeEntryCalendarDuration extends React.Component<TimeEntryCalendar
         if (date !== null) {
             const forUser: TimeEntryUserWithType = {
                 id: this.props.store.user.data.id,
-                typeId: this.props.store.user.data.type.id,
-                typeName: this.props.store.user.data.type.name,
+                typeId: this.props.store.user.data.typeId,
+                typeName: this.props.store.user.data.typeName,
             };
 
             TimeEntryActions.setEntryStartDate(forUser, date);
