@@ -368,7 +368,6 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                                         }}
                                         label="Select version"
                                         directHint={
-                                            this.filteredAvailableToAddVersions.length <= 0 &&
                                             this.versionDropdownSearchTrimmedLowerCase.length > 0
                                                 ? {
                                                       value: 'createCustomVersion',

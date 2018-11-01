@@ -231,12 +231,6 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
                                 [s['align' + _capitalize(this.props.align)]]: this.props.align !== 'left',
                             })}
                         >
-                            {this.props.label !== null &&
-                                this.props.label && (
-                                    <li className="optionsListLabel">
-                                        <p>{this.props.label}</p>
-                                    </li>
-                                )}
 
                             {this.props.directHint && (
                                 <li key="direct-hint" className="optionsListCreate">
@@ -250,6 +244,13 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
                                     </button>
                                 </li>
                             )}
+
+                            {this.props.label !== null &&
+                                this.props.label && (
+                                    <li className="optionsListLabel">
+                                        <p>{this.props.label}</p>
+                                    </li>
+                                )}
 
                             {this.props.loadingOptions && (
                                 <li className="optionsListLoadingResults">
