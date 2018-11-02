@@ -1,11 +1,11 @@
 import * as React from 'react';
 import * as styles from './CustomerSelector.scss';
 import { observer } from 'mobx-react';
-import { DropdownContainer, OptionsList } from '../../../../components/Form';
-import { OptionsListValuePropType } from '../../../../components/Form/OptionsList';
-import { ButtonClose, ButtonEdit, ButtonSave } from '../../../../components/Button';
+import { DropdownContainer, OptionsList } from 'components/Form';
+import { OptionsListValuePropType } from 'components/Form/OptionsList';
+import { ButtonClose, ButtonSave } from 'components/Button';
 import { action, observable } from 'mobx';
-import { ProjectsDetailsActions } from '../../../../actions';
+import { ProjectsDetailsActions } from 'actions';
 
 // Props
 interface Props {
@@ -14,8 +14,7 @@ interface Props {
     options: ProjectBoardCampaignCustomerSelectorOption[];
     onChange?: ((option: { id: number; name: string } | null) => void) | null;
     projectCampaignId: number | null;
-    isEditMode?: boolean;
-    onToggleEditMode: () => void | null;
+    onToggleEditModeButton: () => void | null;
 }
 
 interface ProjectBoardCampaignCustomerSelectorOption {
@@ -33,7 +32,6 @@ interface ProjectBoardCampaignCustomerSelector {
     name: string | null;
 }
 
-// Component
 @observer
 export class CustomerSelector extends React.Component<Props, {}> {
     @observable private status: 'default' | 'saving' | 'success' | 'error' = 'default';
@@ -54,8 +52,7 @@ export class CustomerSelector extends React.Component<Props, {}> {
             },
             options: [],
             projectCampaignId: null,
-            isEditMode: false,
-            onToggleEditMode: () => undefined
+            onToggleEditModeButton: () => undefined
         };
     }
 
@@ -72,75 +69,49 @@ export class CustomerSelector extends React.Component<Props, {}> {
     public render() {
         return (
             <div className={styles.customerSelector}>
-
-                {
-                    !this.props.isEditMode &&
-                    <div className={styles.inlineBlock}>
-                        <h5>{this.valueSelected.name}</h5>
-                    </div>
-                }
-
-                {
-                    this.props.isEditMode &&
-                    <DropdownContainer
-                        className={styles.dropDownSelector}
-                        ref={this.referenceCustomerSelectorDropdown}
-                        label={(this.props.label) ? this.props.label : ''}
-                        value={(this.valueSelected.name) ? this.valueSelected.name : ''}
-                        type="field"
-                    >
-                        <OptionsList
-                            onChange={this.handleCustomerSelectorChange}
-                            value={this.valueSelected.name}
-                            options={[
-                                ...[
-                                    {
-                                        value: null,
-                                        label: 'not selected',
-                                    },
-                                ],
-                                ...this.props.options.map(status => ({
-                                    value: status.id,
-                                    label: status.name,
-                                })),
-                            ]}
-                        />
-                    </DropdownContainer>
-                }
+                <DropdownContainer
+                    className={styles.dropDownSelector}
+                    ref={this.referenceCustomerSelectorDropdown}
+                    label={(this.props.label) ? this.props.label : ''}
+                    value={(this.valueSelected.name) ? this.valueSelected.name : ''}
+                    type="field"
+                >
+                    <OptionsList
+                        onChange={this.handleCustomerSelectorChange}
+                        value={this.valueSelected.name}
+                        options={[
+                            ...[
+                                {
+                                    value: null,
+                                    label: 'not selected',
+                                },
+                            ],
+                            ...this.props.options.map(status => ({
+                                value: status.id,
+                                label: status.name,
+                            })),
+                        ]}
+                    />
+                </DropdownContainer>
 
                 <div className={styles.inlineBlock}>
-                    {
-                        !this.props.isEditMode &&
-                        <ButtonEdit
-                            float="right"
-                            onClick={this.handleCustomerSelectorEditModeToggle}
-                            label={(this.valueSelected.name) ? '' : 'Edit Client'}
-                        />
-                    }
-
-                    {
-                        this.props.isEditMode &&
-                        <ButtonClose
-                            float="right"
-                            onClick={this.handleCustomerSelectorEditModeToggle}
-                            label={'Cancel'}
-                        />
-                    }
+                    <ButtonClose
+                        float="right"
+                        onClick={this.handleCustomerSelectorEditModeToggle}
+                        label={'Cancel'}
+                    />
                 </div>
 
-                {
-                    this.props.isEditMode &&
-                    <ButtonSave
-                        onClick={this.handleSaveChanges}
-                        float="left"
-                        label={
-                            this.status === 'error' ? 'Could not save, please try again' : 'Save details'
-                        }
-                        labelColor={this.status === 'error' ? 'orange' : 'blue'}
-                        savingLabel="Saving"
-                        isSaving={this.status === 'saving'}
-                    />
-                }
+                <ButtonSave
+                    onClick={this.handleSaveChanges}
+                    float="left"
+                    label={
+                        this.status === 'error' ? 'Could not save, please try again' : 'Save details'
+                    }
+                    labelColor={this.status === 'error' ? 'orange' : 'blue'}
+                    savingLabel="Saving"
+                    isSaving={this.status === 'saving'}
+                />
             </div>
         );
     }
@@ -173,7 +144,7 @@ export class CustomerSelector extends React.Component<Props, {}> {
     @action
     private toggleEditMode = () => {
         this.setInitialCustomerIdSelected(this.props.value);
-        this.props.onToggleEditMode();
+        this.props.onToggleEditModeButton();
     };
 
     @action
@@ -189,7 +160,7 @@ export class CustomerSelector extends React.Component<Props, {}> {
                     this.props.onChange(this.valueSelected as { id: number; name: string });
                 }
                 this.status = 'success';
-                this.props.onToggleEditMode();
+                this.props.onToggleEditModeButton();
             }
         } catch (error) {
             this.setInitialCustomerIdSelected(this.props.value);

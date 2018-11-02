@@ -4,9 +4,9 @@ import * as styles from './ProjectBoardCampaignHeader.scss';
 import truncate from 'lodash-es/truncate';
 import { inject, observer } from 'mobx-react';
 import { Row, Col } from 'components/Section';
-import { Button, ButtonIcon, ButtonLabel } from 'components/Button';
+import { Button, ButtonEdit, ButtonIcon, ButtonLabel } from 'components/Button';
 import { CampaignDetails } from 'types/projectDetails';
-import { IconDropdownArrow, IconArrowTopBlue } from 'components/Icons';
+import { IconDropdownArrow, IconArrowTopBlue, IconClose } from 'components/Icons';
 import { action, observable, computed } from 'mobx';
 import { ProjectsDetailsActions } from 'actions';
 import { Paragraph } from 'components/Content';
@@ -30,7 +30,8 @@ interface Props {
 @observer
 export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyStoreState, {}> {
     @observable public removing: 'default' | 'saving' | 'success' | 'error' = 'default';
-    @observable private isHeaderEditMode: boolean = false;
+    @observable private isEditMode: boolean = false;
+    @observable private isCustomerFormShow: boolean = false;
 
     @computed
     private get isHeaderFixed(): boolean {
@@ -73,32 +74,39 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
                         </Col>
 
                         <Col className={styles.campaignRemoveButtonContainer}>
-                            <CustomerSelector
-                                onChange={this.props.onClientChange}
-                                options={ClientsStore.allClientsForStudio}
-                                value={this.props.campaign.clientSelected}
-                                projectCampaignId={this.props.campaign.projectCampaignId}
-                                isEditMode={this.isHeaderEditMode}
-                                onToggleEditMode={this.onEditModeToggleHandler}
-                            />
+                            {
+                                !this.isEditMode &&
+                                this.getEditButtonWithClientName()
+                            }
 
                             {
-                                this.isShowRemoveButton() &&
+                                (this.isEditMode && !this.isCustomerFormShow) &&
                                 <Button
-                                    className={styles.inlineBlock}
-                                    onClick={this.handleCampaignRemoval}
-                                    label={this.getRemoveButtonLabel()}
+                                    className={styles.newCustomerButton}
+                                    onClick={this.onCustomerFormShowToggleHandler}
+                                    label={this.getAddNewCustomerButtonLabel()}
+                                />
+                            }
+
+                            {
+                                this.isEditMode &&
+                                <CustomerSelector
+                                    onChange={this.props.onClientChange}
+                                    options={ClientsStore.allClientsForStudio}
+                                    value={this.props.campaign.clientSelected}
+                                    projectCampaignId={this.props.campaign.projectCampaignId}
+                                    onToggleEditModeButton={this.onCustomerSelectorEditModeToggleHandler}
                                 />
                             }
                         </Col>
                     </Row>
 
                     {
-                        this.isHeaderEditMode &&
+                        this.isCustomerFormShow &&
                         <Row>
                             <div className={styles.colWrapper}>
                                 <NewCustomerForm
-                                    onToggleEditMode={this.onEditModeToggleHandler}
+                                    onToggleEditMode={this.onCustomerFormShowToggleHandler}
                                     studioId={this.props.store ? this.props.store.studios.currentStudioId : null}
                                 />
                             </div>
@@ -106,6 +114,30 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
                     }
                 </div>
             </Row>
+        );
+    }
+
+    private getEditButtonWithClientName(): JSX.Element {
+        return (
+            <div className={styles.editButtonWithLabel}>
+                <h5>{this.props.campaign.clientSelected.name}</h5>
+
+                <ButtonEdit
+                    float="right"
+                    onClick={this.onCustomerSelectorEditModeToggleHandler}
+                    label={(this.props.campaign.clientSelected.name) ? '' : 'Edit Client'}
+                />
+
+                {
+                    this.isShowRemoveButton() &&
+                    <Button
+                        icon={this.getRemoveButtonIcon()}
+                        className={styles.removeButton}
+                        onClick={this.handleCampaignRemoval}
+                        label={this.getRemoveButtonLabel()}
+                    />
+                }
+            </div>
         );
     }
 
@@ -121,10 +153,27 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
         };
     }
 
+    private getRemoveButtonIcon(): ButtonIcon {
+        return {
+            size: 'small',
+            background: 'white',
+            element: (<IconClose width={10} height={16}/>)
+        };
+    }
+
     private getCampaignNameButtonLabel(): ButtonLabel {
         return {
             text: this.props.campaign.name || 'Campaign',
             size: 'large',
+            color: 'black',
+            onLeft: false,
+        };
+    }
+
+    private getAddNewCustomerButtonLabel(): ButtonLabel {
+        return {
+            text: 'New client',
+            size: 'small',
             color: 'black',
             onLeft: false,
         };
@@ -160,8 +209,14 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
     }
 
     @action
-    private onEditModeToggleHandler = (): void => {
-        this.isHeaderEditMode = !this.isHeaderEditMode;
+    private onCustomerSelectorEditModeToggleHandler = (): void => {
+        this.isEditMode = !this.isEditMode;
+        this.isCustomerFormShow = false;
+    };
+
+    @action
+    private onCustomerFormShowToggleHandler = (): void => {
+        this.isCustomerFormShow = !this.isCustomerFormShow;
     };
 
     private referenceHeaderContainer = (ref: HTMLDivElement) => {

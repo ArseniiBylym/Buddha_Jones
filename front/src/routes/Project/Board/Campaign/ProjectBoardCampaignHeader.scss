@@ -6,6 +6,24 @@
     padding-bottom: 12px;
     padding-top: 12px;
     
+    .newCustomerButton {
+        margin-right: 20px;
+        padding-bottom: 8px;
+    }
+    
+    .editButtonWithLabel {
+        display: flex;
+        align-items: center;
+        
+        > h5 {
+            margin-right: 10px;
+        }
+    }
+    
+    .removeButton {
+        margin-left: 10px;
+    }
+    
     .colWrapper {
         width: 100%;
         box-sizing: border-box;
@@ -43,10 +61,13 @@
     }
     
     .campaignRemoveButtonContainer {
+        display: flex;
+        align-items: flex-end;
         flex: 0 1 auto;
         padding-left: 0;
         padding-right: 0;
         text-align: right;
+        
         .inlineBlock {
             display: inline-block;
         }

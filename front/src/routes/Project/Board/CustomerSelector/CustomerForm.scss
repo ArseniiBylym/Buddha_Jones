@@ -9,6 +9,23 @@
             padding: 0 5px;
             flex-grow: 1;
             margin-bottom: 10px;
+            width: calc(100% / 3);
+            
+            &.groupInputs {
+                display: flex;
+                
+                > div {
+                    padding: 0 5px;
+                    
+                    &:first-child {
+                        padding-left: 0;
+                    }
+                    
+                    &:last-child {
+                        padding-right: 0;
+                    }
+                }
+            }
             
             &:first-child {
                 padding-left: 0;
@@ -17,14 +34,30 @@
             &:last-child {
                 padding-right: 0;
             }
+            
+            &.bigField {
+                flex-grow: 1;
+            }
+            
+            &.smallField {
+                width: calc(33% / 2);
+                flex-grow: 0;
+            }
         }
         
         @media (max-width: 900px) {
             flex-direction: column;
             
             .col {
+                width: 100%;
                 margin-bottom: 5px;
                 padding: 0;
+    
+                &.groupInputs {
+                    > div {
+                        width: 50%;
+                    }
+                }
             }
         }
     }

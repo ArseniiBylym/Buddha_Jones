@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as styles from './CustomerForm.scss';
+import * as classnames from 'classnames';
 import { observer } from 'mobx-react';
 import { action, observable } from 'mobx';
 import { Input, InputColorProp } from 'components/Form/index';
@@ -64,18 +65,9 @@ export class NewCustomerForm extends React.Component<Props, {}> {
                                 <div className={styles.col}>
                                     <Input
                                         onChange={this.handleSpotNameChange}
-                                        value={this.newCustomerFormData.zip}
-                                        label="ZIP..."
-                                        name={'zip'}
-                                    />
-                                </div>
-
-                                <div className={styles.col}>
-                                    <Input
-                                        onChange={this.handleSpotNameChange}
-                                        value={this.newCustomerFormData.state}
-                                        label="State..."
-                                        name={'state'}
+                                        value={this.newCustomerFormData.street}
+                                        label="Street..."
+                                        name={'street'}
                                     />
                                 </div>
 
@@ -88,12 +80,19 @@ export class NewCustomerForm extends React.Component<Props, {}> {
                                     />
                                 </div>
 
-                                <div className={styles.col}>
+                                <div className={classnames(styles.col, styles.groupInputs)}>
                                     <Input
                                         onChange={this.handleSpotNameChange}
-                                        value={this.newCustomerFormData.street}
-                                        label="Street..."
-                                        name={'street'}
+                                        value={this.newCustomerFormData.state}
+                                        label="State..."
+                                        name={'state'}
+                                    />
+
+                                    <Input
+                                        onChange={this.handleSpotNameChange}
+                                        value={this.newCustomerFormData.zip}
+                                        label="ZIP..."
+                                        name={'zip'}
                                     />
                                 </div>
                             </div>
