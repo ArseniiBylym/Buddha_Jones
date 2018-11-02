@@ -11,7 +11,30 @@ enum CustomersFetchType {
     BySearch,
 }
 
+export interface NewCustomerFormData {
+    studio_id: number | null;
+    name: string;
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+    email: string;
+    phone: string;
+    billing_contact: string;
+    billing_email: string;
+    billing_phone: string;
+}
+
 export class ClientsActionsClass {
+    @action
+    public createNewCustomer = async (customer: NewCustomerFormData | null): Promise<any> => {
+        try {
+            await API.postData(APIPath.CUSTOMER_NEW, customer as Object);
+        } catch (error) {
+            throw error;
+        }
+    };
+
     @action
     public fetchClientsInitialsLetters = async (): Promise<string[]> => {
         try {
@@ -90,7 +113,7 @@ export class ClientsActionsClass {
                     // Update clients list
                     ClientsStore[
                         fetchType === CustomersFetchType.BySearch ? 'clientsBySearchQuery' : 'clientsByLetter'
-                    ][index].clients = response.map(client => ({
+                        ][index].clients = response.map(client => ({
                         id: client.id,
                         name: client.customerName,
                         cardcode: client.cardcode,

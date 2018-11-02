@@ -18,7 +18,7 @@ import {
     TimeEntryActionsClass,
     TimeApprovalActionsClass,
     SpotSentActionsClass,
-    ChannelsActionsClass,
+    ChannelsActionsClass
 } from './index';
 
 export const WindowActions = new WindowActionsClass();

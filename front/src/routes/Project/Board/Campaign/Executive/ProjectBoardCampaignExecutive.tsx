@@ -37,10 +37,8 @@ interface ProjectBoardCampaignExecutiveProps {
 // Component
 @inject('store')
 @observer
-export class ProjectBoardCampaignExecutive extends React.Component<
-    ProjectBoardCampaignExecutiveProps & AppOnlyStoreState,
-    {}
-> {
+export class ProjectBoardCampaignExecutive extends React.Component<ProjectBoardCampaignExecutiveProps & AppOnlyStoreState,
+    {}> {
     private executiveDropdown: DropdownContainer | null = null;
 
     @observable private loading: boolean = false;
@@ -146,33 +144,33 @@ export class ProjectBoardCampaignExecutive extends React.Component<
                     headerElements={
                         this.props.userCanEditExecutive && this.clientExecutives.length > 0
                             ? [
-                                  {
-                                      key: 'edit-creative-executive-button',
-                                      element: (
-                                          <>
-                                              {this.isInEditMode &&
-                                                  <ButtonClose
-                                                      float="right"
-                                                      onClick={this.handleEditingToggle}
-                                                      label={'Cancel'}
-                                                  />
-                                              }
-                                              {!this.isInEditMode &&
-                                                  <ButtonEdit
-                                                      float="right"
-                                                      onClick={this.handleEditingToggle}
-                                                      label={'Edit contacts'}
-                                                  />
-                                              }
-                                          </>
-                                      ),
-                                  },
-                              ]
+                                {
+                                    key: 'edit-creative-executive-button',
+                                    element: (
+                                        <>
+                                            {this.isInEditMode &&
+                                            <ButtonClose
+                                                float="right"
+                                                onClick={this.handleEditingToggle}
+                                                label={'Cancel'}
+                                            />
+                                            }
+                                            {!this.isInEditMode &&
+                                            <ButtonEdit
+                                                float="right"
+                                                onClick={this.handleEditingToggle}
+                                                label={'Edit contacts'}
+                                            />
+                                            }
+                                        </>
+                                    ),
+                                },
+                            ]
                             : []
                     }
                 >
                     {this.loading ? (
-                        <LoadingIndicator label="Loading studio contacts" />
+                        <LoadingIndicator label="Loading studio contacts"/>
                     ) : this.isInEditMode ? (
                         this.renderEditable()
                     ) : (
@@ -211,9 +209,9 @@ export class ProjectBoardCampaignExecutive extends React.Component<
                         <ul className={s.addresses}>
                             {this.selectedExecutiveContactInfo.map(info => (
                                 <li key={`value-${info.key}`}>
-                                    {(info.type === 'email' && <IconEmail width={15} height={12} />) ||
-                                        (info.type === 'address' && <IconBriefcase width={14} height={12} />) ||
-                                        (info.type === 'phone' && <IconPhone width={14} height={12} />)}
+                                    {(info.type === 'email' && <IconEmail width={15} height={12}/>) ||
+                                    (info.type === 'address' && <IconBriefcase width={14} height={12}/>) ||
+                                    (info.type === 'phone' && <IconPhone width={14} height={12}/>)}
                                     {(info.type === 'email' && <a href={`mailto:${info.label}`}>{info.label}</a>) || (
                                         <p>{info.label}</p>
                                     )}
@@ -267,7 +265,7 @@ export class ProjectBoardCampaignExecutive extends React.Component<
                         isSaving={this.changingExecutive === 'saving'}
                     />
 
-                    <ClearFix />
+                    <ClearFix/>
                 </Col>
             </Row>
         );

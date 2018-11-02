@@ -8,7 +8,7 @@ const s = require('./Input.css');
 
 // Types
 type InputAlignProp = 'left' | 'center' | 'right';
-type InputColorProp = 'default' | 'blue' | 'brown' | 'blueFill' | 'brownFill' | 'greenFill' | 'red';
+export type InputColorProp = 'default' | 'blue' | 'brown' | 'blueFill' | 'brownFill' | 'greenFill' | 'red';
 type InputType = 'text' | 'email' | 'password';
 
 // Props

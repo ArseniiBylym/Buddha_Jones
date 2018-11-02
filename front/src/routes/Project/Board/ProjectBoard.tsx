@@ -5,7 +5,7 @@ import { unformat } from 'accounting';
 import { Row, Col } from 'components/Section';
 import { LoadingSpinner } from 'components/Loaders';
 import { AppState } from 'store/AllStores';
-import { ProjectsDetailsActions, HeaderActions, ProjectsVersionsActions, ProjectPermissionsActions } from 'actions';
+import { ProjectsDetailsActions, HeaderActions, ProjectsVersionsActions, ProjectPermissionsActions, StudiosActions } from 'actions';
 import { ButtonBack, ButtonSend } from 'components/Button';
 import { ProjectDetails } from 'types/projectDetails';
 import { Paragraph } from 'components/Content';
@@ -15,7 +15,8 @@ import { ProjectBoardContent } from '.';
 const s = require('./ProjectBoard.css');
 
 // Props
-interface ProjectBoardProps extends AppState {}
+interface ProjectBoardProps extends AppState {
+}
 
 // Component
 @inject('store')
@@ -164,6 +165,8 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
         if (typeof this.props.match.params['projectId'] !== 'undefined') {
             this.changeProject(this.props);
         }
+
+        StudiosActions.setCurrentStudioId(unformat(this.props.match.params['studioId']));
     }
 
     public componentWillReceiveProps(nextProps: ProjectBoardProps) {
@@ -187,7 +190,7 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
         return this.projectIsLoading ? (
             <Row justifyContent="center">
                 <Col width={64}>
-                    <LoadingSpinner className={s.projectLoading} size={64} />
+                    <LoadingSpinner className={s.projectLoading} size={64}/>
                 </Col>
             </Row>
         ) : this.projectDoesNotExist ? (
@@ -208,7 +211,7 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
                     <Paragraph className={s.errorNote} type="alert">
                         Project #{this.projectId} could not be loaded
                     </Paragraph>
-                    <ButtonSend className={s.retryButton} onClick={this.handleProjectFetchRetry} label="Try again" />
+                    <ButtonSend className={s.retryButton} onClick={this.handleProjectFetchRetry} label="Try again"/>
                 </Col>
             </Row>
         ) : this.project !== null ? (
@@ -293,10 +296,10 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
             project.projectName
                 ? project.projectName
                 : project.projectCodeName
-                    ? project.projectCodeName
-                    : project.projectId
-                        ? 'Project #' + project.projectId
-                        : '',
+                ? project.projectCodeName
+                : project.projectId
+                    ? 'Project #' + project.projectId
+                    : '',
             project.studioName ? project.studioName : 'Studio #' + project.studioId,
             project.projectName && project.projectCodeName ? '(' + project.projectCodeName + ') ' : null,
             null

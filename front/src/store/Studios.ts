@@ -2,6 +2,8 @@ import { observable, computed } from 'mobx';
 import { Client, ClientDetails, ClientContact } from 'types/clients';
 
 export class Studios {
+    @observable currentStudioId: number | null = null;
+
     @observable
     public existingClientsInitials: {
         loading: boolean;

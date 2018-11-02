@@ -4,7 +4,11 @@
         "baseUrl": "src",
         "module": "esnext",
         "target": "es5",
-        "lib": ["es6", "es7", "dom"],
+        "lib": [
+            "es6",
+            "es7",
+            "dom"
+        ],
         "sourceMap": false,
         "allowJs": true,
         "jsx": "react",
@@ -20,5 +24,14 @@
         "suppressImplicitAnyIndexErrors": true,
         "noUnusedLocals": true
     },
-    "exclude": ["node_modules", "build", "scripts", "acceptance-tests", "webpack", "jest", "src/setupTests.ts"]
+    "paths": {},
+    "exclude": [
+        "node_modules",
+        "build",
+        "scripts",
+        "acceptance-tests",
+        "webpack",
+        "jest",
+        "src/setupTests.ts"
+    ]
 }

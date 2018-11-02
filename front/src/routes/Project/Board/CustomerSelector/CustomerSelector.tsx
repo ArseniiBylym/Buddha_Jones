@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as styles from './CustomerSelector.scss';
 import { observer } from 'mobx-react';
 import { DropdownContainer, OptionsList } from '../../../../components/Form';
 import { OptionsListValuePropType } from '../../../../components/Form/OptionsList';
@@ -6,16 +7,15 @@ import { ButtonClose, ButtonEdit, ButtonSave } from '../../../../components/Butt
 import { action, observable } from 'mobx';
 import { ProjectsDetailsActions } from '../../../../actions';
 
-// Styles
-const s = require('./CustomerSelector.css');
-
 // Props
-interface ProjectBoardCampaignCustomerSelectorProps {
+interface Props {
     label?: string;
     value: ProjectBoardCampaignCustomerSelector;
     options: ProjectBoardCampaignCustomerSelectorOption[];
     onChange?: ((option: { id: number; name: string } | null) => void) | null;
     projectCampaignId: number | null;
+    isEditMode?: boolean;
+    onToggleEditMode: () => void | null;
 }
 
 interface ProjectBoardCampaignCustomerSelectorOption {
@@ -35,18 +35,17 @@ interface ProjectBoardCampaignCustomerSelector {
 
 // Component
 @observer
-export class CustomerSelector extends React.Component<ProjectBoardCampaignCustomerSelectorProps, {}> {
+export class CustomerSelector extends React.Component<Props, {}> {
+    @observable private status: 'default' | 'saving' | 'success' | 'error' = 'default';
 
-    @observable private isInEditMode: boolean = false;
     @observable private valueSelected: ProjectBoardCampaignCustomerSelector = {
         id: null,
         name: null
     };
-    @observable private status: 'default' | 'saving' | 'success' | 'error' = 'default';
 
     private versionStatusDropdown: DropdownContainer | null = null;
 
-    static get defaultProps(): ProjectBoardCampaignCustomerSelectorProps {
+    static get defaultProps(): Partial<Props> {
         return {
             label: '',
             value: {
@@ -54,7 +53,9 @@ export class CustomerSelector extends React.Component<ProjectBoardCampaignCustom
                 name: 'Edit client'
             },
             options: [],
-            projectCampaignId: null
+            projectCampaignId: null,
+            isEditMode: false,
+            onToggleEditMode: () => undefined
         };
     }
 
@@ -62,7 +63,7 @@ export class CustomerSelector extends React.Component<ProjectBoardCampaignCustom
         this.setInitialCustomerIdSelected(this.props.value);
     }
 
-    public componentWillReceiveProps(nextProps: ProjectBoardCampaignCustomerSelectorProps) {
+    public componentWillReceiveProps(nextProps: Props) {
         if (this.props.value.id !== nextProps.value.id) {
             this.setInitialCustomerIdSelected(nextProps.value);
         }
@@ -70,17 +71,19 @@ export class CustomerSelector extends React.Component<ProjectBoardCampaignCustom
 
     public render() {
         return (
-            <div className={s.customerSelector}>
+            <div className={styles.customerSelector}>
 
-                {!this.isInEditMode &&
-                    <div className={s.inlineBlock}>
+                {
+                    !this.props.isEditMode &&
+                    <div className={styles.inlineBlock}>
                         <h5>{this.valueSelected.name}</h5>
                     </div>
                 }
 
-                {this.isInEditMode &&
+                {
+                    this.props.isEditMode &&
                     <DropdownContainer
-                        className={s.dropDownSelector}
+                        className={styles.dropDownSelector}
                         ref={this.referenceCustomerSelectorDropdown}
                         label={(this.props.label) ? this.props.label : ''}
                         value={(this.valueSelected.name) ? this.valueSelected.name : ''}
@@ -105,15 +108,18 @@ export class CustomerSelector extends React.Component<ProjectBoardCampaignCustom
                     </DropdownContainer>
                 }
 
-                <div className={s.inlineBlock}>
-                    {!this.isInEditMode &&
+                <div className={styles.inlineBlock}>
+                    {
+                        !this.props.isEditMode &&
                         <ButtonEdit
                             float="right"
                             onClick={this.handleCustomerSelectorEditModeToggle}
                             label={(this.valueSelected.name) ? '' : 'Edit Client'}
                         />
                     }
-                    {this.isInEditMode &&
+
+                    {
+                        this.props.isEditMode &&
                         <ButtonClose
                             float="right"
                             onClick={this.handleCustomerSelectorEditModeToggle}
@@ -122,7 +128,8 @@ export class CustomerSelector extends React.Component<ProjectBoardCampaignCustom
                     }
                 </div>
 
-                {this.isInEditMode &&
+                {
+                    this.props.isEditMode &&
                     <ButtonSave
                         onClick={this.handleSaveChanges}
                         float="left"
@@ -134,7 +141,6 @@ export class CustomerSelector extends React.Component<ProjectBoardCampaignCustom
                         isSaving={this.status === 'saving'}
                     />
                 }
-
             </div>
         );
     }
@@ -167,7 +173,7 @@ export class CustomerSelector extends React.Component<ProjectBoardCampaignCustom
     @action
     private toggleEditMode = () => {
         this.setInitialCustomerIdSelected(this.props.value);
-        this.isInEditMode = !this.isInEditMode;
+        this.props.onToggleEditMode();
     };
 
     @action
@@ -183,7 +189,7 @@ export class CustomerSelector extends React.Component<ProjectBoardCampaignCustom
                     this.props.onChange(this.valueSelected as { id: number; name: string });
                 }
                 this.status = 'success';
-                this.isInEditMode = false;
+                this.props.onToggleEditMode();
             }
         } catch (error) {
             this.setInitialCustomerIdSelected(this.props.value);

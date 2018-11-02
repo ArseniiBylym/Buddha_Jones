@@ -13,6 +13,11 @@ enum StudiosFetchType {
 
 export class StudiosActionsClass {
     @action
+    public setCurrentStudioId(studioId: number) {
+        StudiosStore.currentStudioId = studioId;
+    }
+
+    @action
     public fetchStudiosInitialsLetters = async (): Promise<string[]> => {
         try {
             StudiosStore.existingClientsInitials.loading = true;
@@ -90,7 +95,7 @@ export class StudiosActionsClass {
                     // Update clients list
                     StudiosStore[
                         fetchType === StudiosFetchType.BySearch ? 'clientsBySearchQuery' : 'clientsByLetter'
-                    ][index].clients = response.map(client => ({
+                        ][index].clients = response.map(client => ({
                         id: client.id,
                         name: client.studioName,
                         cardcode: client.cardcode,
