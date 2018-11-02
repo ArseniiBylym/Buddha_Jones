@@ -129,7 +129,7 @@ export class ProjectBoardCampaignExecutive extends React.Component<
     }
 
     public componentDidMount() {
-        if (this.props.userCanViewExecutive || this.props.userCanEditExecutive) {
+        if (this.props.clientId && (this.props.userCanViewExecutive || this.props.userCanEditExecutive)) {
             this.loading = true;
             ClientsActions.fetchCustomerDetails(this.props.clientId).then(() => {
                 this.loading = false;
