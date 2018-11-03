@@ -21,7 +21,7 @@ class CustomerNewController extends CustomAbstractActionController
 {
   public function getList()
   {
-    $filter['completed'] = $this->getRequest()->getQuery('completed', null);
+    $filter['completed'] = $this->getRequest()->getQuery('completed', 0);
     $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
     $length = (int)trim($this->getRequest()->getQuery('length', 10));
 

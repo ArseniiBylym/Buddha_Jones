@@ -75,7 +75,7 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 false | length | int | 10 | Limit number of returned results
 false | offset | int | 0 | Offset returned results
-false | completed | int | null | Completed or not (send 0/1 if needed)
+false | completed | int | 0 | Completed or not (send 0/1 if needed)
 
 
 ## Get Single new Cusotmer
