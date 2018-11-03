@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as styles from './TimeEntryModal.scss';
 import { computed, observable, action } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { Modal } from 'components/Modals';
@@ -9,21 +10,13 @@ import { AppOnlyStoreState } from 'store/AllStores';
 import { LoadingSpinner } from 'components/Loaders';
 import { Paragraph } from 'components/Content';
 
-// Styles
-const s = require('./TimeEntryModal.css');
-
-// Props
-interface TimeEntryModalProps {
+interface Props {
     openOnPage: 'time-entry' | 'time-approve';
 }
 
-// Types
-type TimeEntryModalPropsTypes = TimeEntryModalProps & AppOnlyStoreState;
-
-// Component
 @inject('store')
 @observer
-export class TimeEntryModal extends React.Component<TimeEntryModalPropsTypes, {}> {
+export class TimeEntryModal extends React.Component<Props & AppOnlyStoreState, {}> {
     @observable private showEntryRemovalModal: boolean = false;
     @observable private removingEntry: boolean = false;
     @observable private errorRemovingEntry: boolean = false;
@@ -59,7 +52,8 @@ export class TimeEntryModal extends React.Component<TimeEntryModalPropsTypes, {}
                     noPadding={true}
                     closeButton={true}
                 >
-                    <TimeEntryCalendarDuration />
+                    <TimeEntryCalendarDuration/>
+                    
                     <TimeEntryContent
                         onDeleteConfirmationOpen={this.handleOpeningEntryDeleteConfirmation}
                         onReset={this.handleModalClose}
@@ -86,8 +80,8 @@ export class TimeEntryModal extends React.Component<TimeEntryModalPropsTypes, {}
                         },
                     ]}
                 >
-                    <div className={s.centered}>
-                        {this.removingEntry && <LoadingSpinner />}
+                    <div className={styles.centered}>
+                        {this.removingEntry && <LoadingSpinner/>}
 
                         {this.errorRemovingEntry && (
                             <Paragraph bold={true} type="alert">
@@ -101,15 +95,15 @@ export class TimeEntryModal extends React.Component<TimeEntryModalPropsTypes, {}
     }
 
     @action
-    private handleModalClose = () => {
+    private handleModalClose = (): void => {
         TimeEntryActions.closeTimeEntryModal();
     };
 
-    private handleOpeningEntryDeleteConfirmation = () => {
+    private handleOpeningEntryDeleteConfirmation = (): void  => {
         this.showEntryRemovalModal = true;
     };
 
-    private handleClosingEntryDeleteConfirmation = () => {
+    private handleClosingEntryDeleteConfirmation = (): void  => {
         this.showEntryRemovalModal = false;
     };
 

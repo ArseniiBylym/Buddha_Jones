@@ -355,7 +355,7 @@ export class TimeEntryActionsClass {
             // If minimum work hours for the user are not met
             if (totalMinutes < minUserHours * 60) {
                 TimeEntryStore.minimumHoursNotMetModal.show = true;
-                TimeEntryStore.minimumHoursNotMetModal.minminumHours = minUserHours;
+                TimeEntryStore.minimumHoursNotMetModal.minHours = minUserHours;
                 return true;
             }
 

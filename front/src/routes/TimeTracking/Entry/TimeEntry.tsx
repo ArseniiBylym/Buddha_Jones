@@ -69,18 +69,17 @@ class TimeEntry extends React.Component<TimeEntryPropsTypes, {}> {
 
         const { timeEntry } = this.props.store;
 
-        return this.essentialDataIsLoading === false ? (
+        return !this.essentialDataIsLoading ? (
             <>
                 <TimeEntryCalendar/>
-
                 <TimeEntryModal openOnPage="time-entry"/>
 
                 <Modal
-                    show={timeEntry.minimumHoursNotMetModal.show && timeEntry.minimumHoursNotMetModal.minminumHours > 0}
+                    show={timeEntry.minimumHoursNotMetModal.show && timeEntry.minimumHoursNotMetModal.minHours > 0}
                     title="Minimum work time not met"
                     text={
                         'You are required to account for at least ' +
-                        timeEntry.minimumHoursNotMetModal.minminumHours +
+                        timeEntry.minimumHoursNotMetModal.minHours +
                         ' hours of activity time during a work day.'
                     }
                     actions={[
@@ -147,7 +146,7 @@ class TimeEntry extends React.Component<TimeEntryPropsTypes, {}> {
 
     private handleMinimumHoursNotMetModalClose = (e?: React.MouseEvent<HTMLButtonElement>) => {
         this.props.store!.timeEntry.minimumHoursNotMetModal.show = false;
-        this.props.store!.timeEntry.minimumHoursNotMetModal.minminumHours = 0;
+        this.props.store!.timeEntry.minimumHoursNotMetModal.minHours = 0;
     };
 
     private handleLunchBreakModalClick = (forceSubmit: boolean) => (e?: React.MouseEvent<HTMLButtonElement>) => {
