@@ -506,6 +506,10 @@ class SpotSentController extends CustomAbstractActionController
 
     private function commaSeparatedToArray($str, $isParentChild = false)
     {
+        if (!$str) {
+            return array();
+        }
+
         $result = explode(',', $str);
 
         if (!count($result)) {
