@@ -108,9 +108,23 @@ class RediCustomerNew
     /**
      * @var integer
      *
+     * @ORM\Column(name="completed", type="smallint", nullable=true)
+     */
+    private $completed;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="created_by", type="integer", nullable=true)
      */
     private $createdBy;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="updated_by", type="integer", nullable=true)
+     */
+    private $updatedBy;
 
     /**
      * @var \DateTime
@@ -118,6 +132,13 @@ class RediCustomerNew
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     */
+    private $updatedAt;
 
 
 
@@ -408,6 +429,29 @@ class RediCustomerNew
     }
 
     /**
+     * Set completed
+     *
+     * @param integer $completed
+     * @return RediCustomerNew
+     */
+    public function setCompleted($completed)
+    {
+        $this->completed = $completed;
+
+        return $this;
+    }
+
+    /**
+     * Get completed
+     *
+     * @return integer 
+     */
+    public function getCompleted()
+    {
+        return $this->completed;
+    }
+
+    /**
      * Set createdBy
      *
      * @param integer $createdBy
@@ -431,6 +475,29 @@ class RediCustomerNew
     }
 
     /**
+     * Set updatedBy
+     *
+     * @param integer $updatedBy
+     * @return RediCustomerNew
+     */
+    public function setUpdatedBy($updatedBy)
+    {
+        $this->updatedBy = $updatedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedBy
+     *
+     * @return integer 
+     */
+    public function getUpdatedBy()
+    {
+        return $this->updatedBy;
+    }
+
+    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
@@ -451,5 +518,28 @@ class RediCustomerNew
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     * @return RediCustomerNew
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return \DateTime 
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
     }
 }

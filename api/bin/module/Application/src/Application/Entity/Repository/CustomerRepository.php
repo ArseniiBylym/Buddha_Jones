@@ -514,4 +514,63 @@ class CustomerRepository extends EntityRepository
 
         return (isset($result[0]['total_count'])?(int)$result[0]['total_count']:0);
     }
+
+    public function searchNewCustomer($filter=array(), $offset = 0, $length = 10)
+    {
+        $dql = "SELECT  
+                  cn
+                FROM \Application\Entity\RediCustomerNew cn ";
+
+        $dqlFilter = [];
+
+        if (isset($filter['completed']) && $filter['completed'] !== null) {
+            $dqlFilter[] = " cn.completed = :completed ";
+        }
+
+        if(count($dqlFilter)) {
+            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        }
+
+        $dql .= " ORDER BY cn.id ASC";
+
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setFirstResult($offset);
+        $query->setMaxResults($length);
+
+        if (isset($filter['completed']) && $filter['completed'] !== null) {
+            $query->setParameter('completed', $filter['completed']);
+        }
+
+        $data = $query->getArrayResult();
+
+        return $data;
+    }
+
+    public function searchNewCustomerCount($filter=array())
+    {
+        $dql = "SELECT 
+                  COUNT(cn.id) AS total_count 
+                FROM \Application\Entity\RediCustomerNew cn ";
+
+        $dqlFilter = [];
+
+        if (isset($filter['completed']) && $filter['completed'] !== null) {
+            $dqlFilter[] = " cn.completed = :completed ";
+        }
+
+        if(count($dqlFilter)) {
+            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        }
+
+        $query = $this->getEntityManager()->createQuery($dql);
+
+        if (isset($filter['completed']) && $filter['completed'] !== null) {
+            $query->setParameter('completed', $filter['completed']);
+        }
+
+        $result =  $query->getArrayResult();
+
+        return (isset($result[0]['total_count'])?(int)$result[0]['total_count']:0);
+    }
 }
