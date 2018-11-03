@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as styles from './TimeEntryContent.scss';
 import * as classNames from 'classnames';
 import AnimateHeight from 'react-animate-height';
 import { observer, inject } from 'mobx-react';
@@ -16,8 +17,21 @@ import { DurationPicker } from 'components/Calendar';
 import { BottomBar } from 'components/Layout';
 import { TimeEntryUserWithType } from 'types/timeEntry';
 
-// Styles
-import * as styles from './TimeEntryContent.scss';
+enum SubmittingStatus {
+    none,
+    saving,
+    success,
+    error,
+    errorDateTimeRequired,
+    errorMinimumDurationRequired,
+    errorActivityRequired,
+    errorDescriptionRequired,
+    errorProjectRequired,
+    errorVersionRequired,
+    errorFilesDurationWrong,
+    errorFilesRequired,
+    errorFilesNamesRequired
+}
 
 interface Props {
     onReset: () => void;
@@ -26,22 +40,6 @@ interface Props {
 }
 
 type ComponentProps = Props & AppOnlyStoreState;
-
-enum SubmittingStatus {
-    none = 'none',
-    saving = 'saving',
-    success = 'success',
-    error = 'error',
-    errorDateTimeRequired = 'error-datetimerequired',
-    errorMiniminumDurationRequired = 'error-miniminumdurationrequired',
-    errorActivityRequired = 'error-activityrequired',
-    errorDescriptionRequired = 'error-descriptionrequired',
-    errorProjectRequired = 'error-projectrequired',
-    errorVersionRequired = 'error-versionrequired',
-    errorFilesDurationWrong = 'error-filesdurationwrong',
-    errorFilesRequired = 'error-filesrequired',
-    errorFilesNamesRequired = 'error-filesnamesrequired'
-}
 
 @inject('store')
 @observer
@@ -60,7 +58,7 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                 return 'Saved';
             case SubmittingStatus.errorDateTimeRequired:
                 return 'Date and time are required';
-            case SubmittingStatus.errorMiniminumDurationRequired:
+            case SubmittingStatus.errorMinimumDurationRequired:
                 return 'Entry duration is too short';
             case SubmittingStatus.errorActivityRequired:
                 return 'Activity type needs to be selected';
@@ -77,7 +75,7 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
             case SubmittingStatus.errorVersionRequired:
                 return 'Project, campaign, spot and version are required';
             default:
-                return 'We could not save the entry, please try again';
+                return 'Save time entry';
         }
     }
 
@@ -115,8 +113,6 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
             return null;
         }
 
-        const { user, timeEntry } = this.props.store;
-
         return (
             <div className={styles.timeEntryContent}>
                 <ProjectPicker
@@ -125,52 +121,247 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                     title="Pick the spot"
                     show="all"
                     forUserId={this.props.forUser ? this.props.forUser.id : 0}
-                    requiredSelection={
-                        timeEntry.selectedActivity
-                            ? timeEntry.selectedActivity.isSpotVersionRequired
-                            ? 'all'
-                            : timeEntry.selectedActivity.isProjectCampaignRequired
-                                ? 'project-campaign'
-                                : null
-                            : null
+                    requiredSelection={this.getProjectPickerRequiredSelection()}
+                    value={
+                        this.props.store.timeEntry.values ?
+                            this.props.store.timeEntry.values.projectPicked :
+                            null
                     }
-                    value={timeEntry.values ? timeEntry.values.projectPicked : null}
                 />
 
-                <Section title="Activity">
-                    {this.activitiesForUser.length > 0 && (
-                        <DropdownContainer
-                            ref={this.referenceActivityDropdown}
-                            label={timeEntry.selectedActivity ? '' : 'Pick activity type'}
-                            value={timeEntry.selectedActivity ? timeEntry.selectedActivity.name : undefined}
-                            align="left"
-                            type="field"
-                        >
-                            <OptionsList
-                                onChange={this.handleActivitySelectionChange}
-                                value={timeEntry.values ? timeEntry.values.activityId : 0}
-                                options={this.activitiesForUser
-                                    .filter(activity => {
-                                        if (
-                                            timeEntry.values &&
-                                            timeEntry.values.projectPicked &&
-                                            timeEntry.values.projectPicked.project
-                                        ) {
-                                            return activity.isProjectCampaignRequired || activity.isSpotVersionRequired;
-                                        } else {
-                                            return !activity.isProjectCampaignRequired && !activity.isSpotVersionRequired;
-                                        }
-                                    })
-                                    .map(activity => ({
-                                        value: activity.id,
-                                        label: activity.name,
-                                    }))}
-                                search={{ autoFocus: true }}
-                            />
-                        </DropdownContainer>
+                {this.getActivitySection()}
+                {this.getDescriptionSection()}
+
+                <AnimateHeight
+                    height={
+                        this.props.store.timeEntry.selectedActivity &&
+                        this.props.store.timeEntry.selectedActivity.areFilesRequired ?
+                            'auto' :
+                            0
+                    }
+                >
+                    {this.getFilesWorkOnSection()}
+                </AnimateHeight>
+
+                <br/>
+
+                {this.getBottomBar()}
+            </div>
+        );
+    }
+
+    private getFilesWorkOnSection(): JSX.Element | null {
+        if (!this.props.store) {
+            return null;
+        }
+
+        const { timeEntry } = this.props.store;
+
+        return (
+            <Section title="Files worked on">
+                <Table
+                    type="compact"
+                    header={[
+                        { title: 'Filename', align: 'left' },
+                        { title: 'Description', align: 'left' },
+                        { title: 'Duration', align: 'center' },
+                        { title: 'Remove', align: 'right' },
+                    ]}
+                    columnsWidths={['200px', '366px', '128px', '92px']}
+                >
+                    {timeEntry.values &&
+                    timeEntry.values.files.map((file, fileIndex) => (
+                        <TableRow key={fileIndex}>
+                            <TableCell>
+                                <Input
+                                    maxWidth={200}
+                                    label="Filename"
+                                    value={file.filename}
+                                    onChange={this.handleFileChangeText('filename', fileIndex)}
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    minWidth={320}
+                                    label="Description (optional)"
+                                    value={file.description}
+                                    onChange={this.handleFileChangeText('description', fileIndex)}
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <DurationPicker
+                                    className={styles.fileDuration}
+                                    onChange={this.handleFileWorkDurationChange(fileIndex)}
+                                    totalMinutesValue={file.durationInMinutes}
+                                    increments={timeEntry.durationIncrements}
+                                />
+                            </TableCell>
+                            <TableCell align="right">
+                                <ButtonClose
+                                    onClick={this.handleFileRemove(fileIndex)}
+                                    label="Remove"
+                                    float="right"
+                                />
+                            </TableCell>
+                        </TableRow>
+                    ))}
+
+                    {(timeEntry.values === null || timeEntry.values.files.length <= 0) && (
+                        <TableRow key="no-files">
+                            <TableCell colSpan={4}>
+                                <Paragraph type="alert">Files are required</Paragraph>
+                            </TableCell>
+                        </TableRow>
                     )}
 
-                    {this.activitiesForUser.length <= 0 &&
+                    <TableRow key="add">
+                        <TableCell colSpan={4} align="right">
+                            <ButtonAdd
+                                onClick={this.handleFileAdd}
+                                label="Add file"
+                                labelOnLeft={true}
+                                float="right"
+                            />
+                        </TableCell>
+                    </TableRow>
+                </Table>
+            </Section>
+        );
+    }
+
+    private getProjectPickerRequiredSelection(): 'all' | 'project-campaign' | null {
+        if (!this.props.store) {
+            return null;
+        }
+
+        if (this.props.store.timeEntry.selectedActivity) {
+            if (this.props.store.timeEntry.selectedActivity.isSpotVersionRequired) {
+                return 'all';
+            } else if (this.props.store.timeEntry.selectedActivity.isProjectCampaignRequired) {
+                return 'project-campaign';
+            }
+        }
+
+        return null;
+    }
+
+    private getBottomBar(): JSX.Element | null {
+        if (!this.props.store) {
+            return null;
+        }
+
+        const isButtonCloseShow: boolean = Boolean(
+            this.props.store.timeEntry.values &&
+            this.props.store.timeEntry.values.editingEntryId
+        );
+
+        return (
+            <BottomBar
+                isWholeWidth={true}
+                show={this.isBottomBarShow()}
+            >
+                <div className={styles.summary}>
+                    <div className={styles.left}>
+                        {
+                            isButtonCloseShow &&
+                            <ButtonClose
+                                onClick={this.handleTimeEntryDeleteConfirmation}
+                                label="Delete this time entry"
+                                labelColor="orange"
+                                labelOnLeft={false}
+                            />
+                        }
+
+                        <Paragraph
+                            className={classNames(styles.errorMessage, { [styles.show]: this.props.store.timeEntry.error.show })}
+                            type="alert"
+                        >
+                            {this.props.store.timeEntry.error.message}
+                        </Paragraph>
+                    </div>
+
+                    <ButtonSend
+                        onClick={this.handleTimeEntrySubmit}
+                        savingLabel="Saving"
+                        saving={this.submittingStatus === SubmittingStatus.saving}
+                        labelColor={
+                            this.submittingStatus === SubmittingStatus.none
+                                ? 'blue'
+                                : this.submittingStatus === SubmittingStatus.success
+                                ? 'green'
+                                : 'orange'
+                        }
+                        label={this.submitLabel}
+                    />
+                </div>
+            </BottomBar>
+        );
+    }
+
+    private getDescriptionSection(): JSX.Element | null {
+        if (!this.props.store) {
+            return null;
+        }
+
+        const isRequired: boolean = Boolean(this.props.store.timeEntry.selectedActivity && this.props.store.timeEntry.selectedActivity.isDescriptionRequired);
+
+        return (
+            <Section title="Description">
+                    <TextArea
+                        onChange={this.handleDescriptionChange}
+                        label={'Description ' + (isRequired ? '(required)' : '(optional)')}
+                        value={this.props.store.timeEntry.values && this.props.store.timeEntry.values.description ? this.props.store.timeEntry.values.description : ''}
+                        width={1152}
+                        height={96}
+                    />
+            </Section>
+        );
+    }
+
+    private getActivitySection(): JSX.Element | null {
+        if (!this.props.store) {
+            return null;
+        }
+
+        const { user, timeEntry } = this.props.store;
+
+        return (
+            <Section title="Activity">
+                {
+                    this.activitiesForUser.length > 0 &&
+                    <DropdownContainer
+                        ref={this.referenceActivityDropdown}
+                        label={timeEntry.selectedActivity ? '' : 'Pick activity type'}
+                        value={timeEntry.selectedActivity ? timeEntry.selectedActivity.name : undefined}
+                        align="left"
+                        type="field"
+                    >
+                        <OptionsList
+                            onChange={this.handleActivitySelectionChange}
+                            value={timeEntry.values ? timeEntry.values.activityId : 0}
+                            options={this.activitiesForUser
+                                .filter(activity => {
+                                    if (
+                                        timeEntry.values &&
+                                        timeEntry.values.projectPicked &&
+                                        timeEntry.values.projectPicked.project
+                                    ) {
+                                        return activity.isProjectCampaignRequired || activity.isSpotVersionRequired;
+                                    } else {
+                                        return !activity.isProjectCampaignRequired && !activity.isSpotVersionRequired;
+                                    }
+                                })
+                                .map(activity => ({
+                                    value: activity.id,
+                                    label: activity.name,
+                                }))}
+                            search={{ autoFocus: true }}
+                        />
+                    </DropdownContainer>
+                }
+
+                {
+                    this.activitiesForUser.length <= 0 &&
                     this.props.forUser && (
                         <Paragraph type="alert">
                             {'No activities are available for your user type. ' +
@@ -185,139 +376,9 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                                 </>
                             )}
                         </Paragraph>
-                    )}
-                </Section>
-
-                <Section title="Description">
-                    <TextArea
-                        onChange={this.handleDescriptionChange}
-                        label={
-                            'Description ' +
-                            (timeEntry.selectedActivity && timeEntry.selectedActivity.isDescriptionRequired
-                                ? '(required)'
-                                : '(optional)')
-                        }
-                        value={timeEntry.values && timeEntry.values.description ? timeEntry.values.description : ''}
-                        width={1152}
-                        height={96}
-                    />
-                </Section>
-
-                <AnimateHeight
-                    height={timeEntry.selectedActivity && timeEntry.selectedActivity.areFilesRequired ? 'auto' : 0}
-                >
-                    <Section title="Files worked on">
-                        <Table
-                            type="compact"
-                            header={[
-                                { title: 'Filename', align: 'left' },
-                                { title: 'Description', align: 'left' },
-                                { title: 'Duration', align: 'center' },
-                                { title: 'Remove', align: 'right' },
-                            ]}
-                            columnsWidths={['200px', '366px', '128px', '92px']}
-                        >
-                            {timeEntry.values &&
-                            timeEntry.values.files.map((file, fileIndex) => (
-                                <TableRow key={fileIndex}>
-                                    <TableCell>
-                                        <Input
-                                            maxWidth={200}
-                                            label="Filename"
-                                            value={file.filename}
-                                            onChange={this.handleFileChangeText('filename', fileIndex)}
-                                        />
-                                    </TableCell>
-                                    <TableCell>
-                                        <Input
-                                            minWidth={320}
-                                            label="Description (optional)"
-                                            value={file.description}
-                                            onChange={this.handleFileChangeText('description', fileIndex)}
-                                        />
-                                    </TableCell>
-                                    <TableCell>
-                                        <DurationPicker
-                                            className={styles.fileDuration}
-                                            onChange={this.handleFileWorkDurationChange(fileIndex)}
-                                            totalMinutesValue={file.durationInMinutes}
-                                            increments={timeEntry.durationIncrements}
-                                        />
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        <ButtonClose
-                                            onClick={this.handleFileRemove(fileIndex)}
-                                            label="Remove"
-                                            float="right"
-                                        />
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-
-                            {(timeEntry.values === null || timeEntry.values.files.length <= 0) && (
-                                <TableRow key="no-files">
-                                    <TableCell colSpan={4}>
-                                        <Paragraph type="alert">Files are required</Paragraph>
-                                    </TableCell>
-                                </TableRow>
-                            )}
-
-                            <TableRow key="add">
-                                <TableCell colSpan={4} align="right">
-                                    <ButtonAdd
-                                        onClick={this.handleFileAdd}
-                                        label="Add file"
-                                        labelOnLeft={true}
-                                        float="right"
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        </Table>
-                    </Section>
-                </AnimateHeight>
-
-                <br/>
-
-                <BottomBar
-                    isWholeWidth={true}
-                    show={this.isBottomBarShow()}
-                >
-                    <div className={styles.summary}>
-                        <div className={styles.left}>
-                            {timeEntry.values &&
-                            timeEntry.values.editingEntryId && (
-                                <ButtonClose
-                                    onClick={this.handleTimeEntryDeleteConfirmation}
-                                    label="Delete this time entry"
-                                    labelColor="orange"
-                                    labelOnLeft={false}
-                                />
-                            )}
-
-                            <Paragraph
-                                className={classNames(styles.errorMessage, { [styles.show]: timeEntry.error.show })}
-                                type="alert"
-                            >
-                                {timeEntry.error.message}
-                            </Paragraph>
-                        </div>
-
-                        <ButtonSend
-                            onClick={this.handleTimeEntrySubmit}
-                            savingLabel="Saving"
-                            saving={this.submittingStatus === 'saving'}
-                            labelColor={
-                                this.submittingStatus === 'none'
-                                    ? 'blue'
-                                    : this.submittingStatus === 'success'
-                                    ? 'green'
-                                    : 'orange'
-                            }
-                            label={this.submitLabel}
-                        />
-                    </div>
-                </BottomBar>
-            </div>
+                    )
+                }
+            </Section>
         );
     }
 
@@ -383,20 +444,20 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
         );
     };
 
-    private handleFileAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleFileAdd = () => {
         TimeEntryActions.setFileDetails({}, null);
     };
 
-    private handleFileRemove = (fileIndex: number) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleFileRemove = (fileIndex: number) => () => {
         TimeEntryActions.removeFile(fileIndex);
     };
 
-    private handleTimeEntryDeleteConfirmation = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleTimeEntryDeleteConfirmation = () => {
         this.props.onDeleteConfirmationOpen();
     };
 
     @action
-    private handleTimeEntrySubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleTimeEntrySubmit = async () => {
         try {
             if (!this.props.store) {
                 this.submittingStatus = SubmittingStatus.error;
@@ -415,24 +476,12 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
 
             // Minimum duration is required
             if (timeEntry.durationInMinutes < timeEntry.durationIncrements) {
-                this.submittingStatus = SubmittingStatus.errorMiniminumDurationRequired;
+                this.submittingStatus = SubmittingStatus.errorMinimumDurationRequired;
                 return;
             }
 
             // Activity type is required
-            if (
-                timeEntry.selectedActivity === null ||
-                (timeEntry.selectedActivity &&
-                    timeEntry.selectedActivity.isProjectCampaignRequired === false &&
-                    timeEntry.values &&
-                    timeEntry.values.projectPicked &&
-                    timeEntry.values.projectPicked.project) ||
-                (timeEntry.selectedActivity &&
-                    timeEntry.selectedActivity.isSpotVersionRequired === false &&
-                    timeEntry.values &&
-                    timeEntry.values.projectPicked &&
-                    timeEntry.values.projectPicked.version)
-            ) {
+            if (timeEntry.selectedActivity === null) {
                 this.submittingStatus = SubmittingStatus.errorActivityRequired;
                 return;
             }
