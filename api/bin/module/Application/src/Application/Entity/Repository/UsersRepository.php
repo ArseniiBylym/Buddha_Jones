@@ -84,7 +84,8 @@ class UsersRepository extends EntityRepository
             $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " ORDER BY a.id ASC";
+        $dql .= " GROUP BY a.id
+                ORDER BY a.id ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setFirstResult($offset);
@@ -165,7 +166,8 @@ class UsersRepository extends EntityRepository
             $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " ORDER BY a.id ASC";
+        $dql .= " GROUP BY a.id
+                ORDER BY a.id ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setFirstResult($offset);
@@ -306,7 +308,7 @@ class UsersRepository extends EntityRepository
 
     public function searchCount($search='', $ids=[], $class=[], $type=[])
     {
-        $dql = "SELECT COUNT(a.id) AS total_count
+        $dql = "SELECT COUNT(DISTINCT a.id) AS total_count
                 FROM \Application\Entity\RediUser a
                 LEFT JOIN \Application\Entity\RediUserTypeClass utc
                     WITH a.typeId=utc.typeId";
