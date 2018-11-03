@@ -276,6 +276,20 @@ class RediSpotSent
     /**
      * @var integer
      *
+     * @ORM\Column(name="prod_accept", type="smallint", nullable=true)
+     */
+    private $prodAccept;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="finish_accept", type="smallint", nullable=true)
+     */
+    private $finishAccept;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="line_status_id", type="integer", nullable=true)
      */
     private $lineStatusId;
@@ -1153,6 +1167,52 @@ class RediSpotSent
     public function getSpotVersionId()
     {
         return $this->spotVersionId;
+    }
+
+    /**
+     * Set prodAccept
+     *
+     * @param integer $prodAccept
+     * @return RediSpotSent
+     */
+    public function setProdAccept($prodAccept)
+    {
+        $this->prodAccept = $prodAccept;
+
+        return $this;
+    }
+
+    /**
+     * Get prodAccept
+     *
+     * @return integer 
+     */
+    public function getProdAccept()
+    {
+        return $this->prodAccept;
+    }
+
+    /**
+     * Set finishAccept
+     *
+     * @param integer $finishAccept
+     * @return RediSpotSent
+     */
+    public function setFinishAccept($finishAccept)
+    {
+        $this->finishAccept = $finishAccept;
+
+        return $this;
+    }
+
+    /**
+     * Get finishAccept
+     *
+     * @return integer 
+     */
+    public function getFinishAccept()
+    {
+        return $this->finishAccept;
     }
 
     /**
