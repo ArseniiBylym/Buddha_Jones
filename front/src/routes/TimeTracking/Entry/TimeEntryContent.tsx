@@ -17,73 +17,75 @@ import { BottomBar } from 'components/Layout';
 import { TimeEntryUserWithType } from 'types/timeEntry';
 
 // Styles
-const s = require('./TimeEntryContent.css');
+import * as styles from './TimeEntryContent.scss';
 
-// Props
-interface TimeEntryContentProps {
+interface Props {
     onReset: () => void;
     onDeleteConfirmationOpen: () => void;
     forUser: TimeEntryUserWithType | null;
 }
 
-// Types
-type TimeEntryContentPropsTypes = TimeEntryContentProps & AppOnlyStoreState;
+type ComponentProps = Props & AppOnlyStoreState;
 
-// Component
+enum SubmittingStatus {
+    none = 'none',
+    saving = 'saving',
+    success = 'success',
+    error = 'error',
+    errorDateTimeRequired = 'error-datetimerequired',
+    errorMiniminumDurationRequired = 'error-miniminumdurationrequired',
+    errorActivityRequired = 'error-activityrequired',
+    errorDescriptionRequired = 'error-descriptionrequired',
+    errorProjectRequired = 'error-projectrequired',
+    errorVersionRequired = 'error-versionrequired',
+    errorFilesDurationWrong = 'error-filesdurationwrong',
+    errorFilesRequired = 'error-filesrequired',
+    errorFilesNamesRequired = 'error-filesnamesrequired'
+}
+
 @inject('store')
 @observer
-export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes, {}> {
+export class TimeEntryContent extends React.Component<ComponentProps, {}> {
     private activityDropdown: DropdownContainer | null = null;
 
     @observable
-    private submittingStatus:
-        | 'none'
-        | 'saving'
-        | 'success'
-        | 'error'
-        | 'error-datetimerequired'
-        | 'error-miniminumdurationrequired'
-        | 'error-activityrequired'
-        | 'error-descriptionrequired'
-        | 'error-projectrequired'
-        | 'error-versionrequired'
-        | 'error-filesdurationwrong'
-        | 'error-filesrequired'
-        | 'error-filesnamesrequired' =
-        'none';
+    private submittingStatus: SubmittingStatus;
 
     @computed
     private get submitLabel(): string {
-        return this.submittingStatus === 'none'
-            ? 'Save time entry'
-            : this.submittingStatus === 'success'
-                ? 'Saved'
-                : this.submittingStatus === 'error-datetimerequired'
-                    ? 'Date and time are required'
-                    : this.submittingStatus === 'error-miniminumdurationrequired'
-                        ? 'Entry duration is too short'
-                        : this.submittingStatus === 'error-activityrequired'
-                            ? 'Activity type needs to be selected'
-                            : this.submittingStatus === 'error-descriptionrequired'
-                                ? 'Activity description is required'
-                                : this.submittingStatus === 'error-filesrequired'
-                                    ? 'Files are required'
-                                    : this.submittingStatus === 'error-filesnamesrequired'
-                                        ? 'All files need a filename'
-                                        : this.submittingStatus === 'error-filesdurationwrong'
-                                            ? 'Files work time does not match entry duration'
-                                            : this.submittingStatus === 'error-projectrequired'
-                                                ? 'Project and campaign are required'
-                                                : this.submittingStatus === 'error-versionrequired'
-                                                    ? 'Project, campaign, spot and version are required'
-                                                    : 'We could not save the entry, please try again';
+        switch (this.submittingStatus) {
+            case SubmittingStatus.none:
+                return 'Save time entry';
+            case SubmittingStatus.success:
+                return 'Saved';
+            case SubmittingStatus.errorDateTimeRequired:
+                return 'Date and time are required';
+            case SubmittingStatus.errorMiniminumDurationRequired:
+                return 'Entry duration is too short';
+            case SubmittingStatus.errorActivityRequired:
+                return 'Activity type needs to be selected';
+            case SubmittingStatus.errorDescriptionRequired:
+                return 'Activity description is required';
+            case SubmittingStatus.errorFilesRequired:
+                return 'Files are required';
+            case SubmittingStatus.errorFilesNamesRequired:
+                return 'All files need a filename';
+            case SubmittingStatus.errorFilesDurationWrong:
+                return 'Files work time does not match entry duration';
+            case SubmittingStatus.errorProjectRequired:
+                return 'Project and campaign are required';
+            case SubmittingStatus.errorVersionRequired:
+                return 'Project, campaign, spot and version are required';
+            default:
+                return 'We could not save the entry, please try again';
+        }
     }
 
     @computed
     private get activitiesForUser(): Activity[] {
         if (this.props.store && this.props.store.user.isLoggedIn && this.props.forUser) {
             return this.props.store.activities.activities.filter(activity => {
-                if (activity.isActive === false) {
+                if (!activity.isActive) {
                     return false;
                 }
 
@@ -95,7 +97,7 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
         return [];
     }
 
-    constructor(props: TimeEntryContentPropsTypes) {
+    constructor(props: ComponentProps) {
         super(props);
 
         reaction(
@@ -116,7 +118,7 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
         const { user, timeEntry } = this.props.store;
 
         return (
-            <div className={s.timeEntryContent}>
+            <div className={styles.timeEntryContent}>
                 <ProjectPicker
                     noSeparator={true}
                     onChange={this.handleProjectChange}
@@ -126,10 +128,10 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
                     requiredSelection={
                         timeEntry.selectedActivity
                             ? timeEntry.selectedActivity.isSpotVersionRequired
-                                ? 'all'
-                                : timeEntry.selectedActivity.isProjectCampaignRequired
-                                    ? 'project-campaign'
-                                    : null
+                            ? 'all'
+                            : timeEntry.selectedActivity.isProjectCampaignRequired
+                                ? 'project-campaign'
+                                : null
                             : null
                     }
                     value={timeEntry.values ? timeEntry.values.projectPicked : null}
@@ -156,10 +158,7 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
                                         ) {
                                             return activity.isProjectCampaignRequired || activity.isSpotVersionRequired;
                                         } else {
-                                            return (
-                                                activity.isProjectCampaignRequired === false &&
-                                                activity.isSpotVersionRequired === false
-                                            );
+                                            return !activity.isProjectCampaignRequired && !activity.isSpotVersionRequired;
                                         }
                                     })
                                     .map(activity => ({
@@ -172,21 +171,21 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
                     )}
 
                     {this.activitiesForUser.length <= 0 &&
-                        this.props.forUser && (
-                            <Paragraph type="alert">
-                                {'No activities are available for your user type. ' +
-                                    'You will not be able to create time entry.'}
-                                {user.data && (
-                                    <>
-                                        <br />
-                                        {'Please consult administrator to get access to activities for your user type:'}
-                                        <strong>
-                                            {'#' + this.props.forUser.typeId + ' - ' + this.props.forUser.typeName}
-                                        </strong>
-                                    </>
-                                )}
-                            </Paragraph>
-                        )}
+                    this.props.forUser && (
+                        <Paragraph type="alert">
+                            {'No activities are available for your user type. ' +
+                            'You will not be able to create time entry.'}
+                            {user.data && (
+                                <>
+                                    <br/>
+                                    {'Please consult administrator to get access to activities for your user type:'}
+                                    <strong>
+                                        {'#' + this.props.forUser.typeId + ' - ' + this.props.forUser.typeName}
+                                    </strong>
+                                </>
+                            )}
+                        </Paragraph>
+                    )}
                 </Section>
 
                 <Section title="Description">
@@ -219,41 +218,41 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
                             columnsWidths={['200px', '366px', '128px', '92px']}
                         >
                             {timeEntry.values &&
-                                timeEntry.values.files.map((file, fileIndex) => (
-                                    <TableRow key={fileIndex}>
-                                        <TableCell>
-                                            <Input
-                                                maxWidth={200}
-                                                label="Filename"
-                                                value={file.filename}
-                                                onChange={this.handleFileChangeText('filename', fileIndex)}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Input
-                                                minWidth={320}
-                                                label="Description (optional)"
-                                                value={file.description}
-                                                onChange={this.handleFileChangeText('description', fileIndex)}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <DurationPicker
-                                                className={s.fileDuration}
-                                                onChange={this.handleFileWorkDurationChange(fileIndex)}
-                                                totalMinutesValue={file.durationInMinutes}
-                                                increments={timeEntry.durationIncrements}
-                                            />
-                                        </TableCell>
-                                        <TableCell align="right">
-                                            <ButtonClose
-                                                onClick={this.handleFileRemove(fileIndex)}
-                                                label="Remove"
-                                                float="right"
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                            timeEntry.values.files.map((file, fileIndex) => (
+                                <TableRow key={fileIndex}>
+                                    <TableCell>
+                                        <Input
+                                            maxWidth={200}
+                                            label="Filename"
+                                            value={file.filename}
+                                            onChange={this.handleFileChangeText('filename', fileIndex)}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <Input
+                                            minWidth={320}
+                                            label="Description (optional)"
+                                            value={file.description}
+                                            onChange={this.handleFileChangeText('description', fileIndex)}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <DurationPicker
+                                            className={styles.fileDuration}
+                                            onChange={this.handleFileWorkDurationChange(fileIndex)}
+                                            totalMinutesValue={file.durationInMinutes}
+                                            increments={timeEntry.durationIncrements}
+                                        />
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <ButtonClose
+                                            onClick={this.handleFileRemove(fileIndex)}
+                                            label="Remove"
+                                            float="right"
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
 
                             {(timeEntry.values === null || timeEntry.values.files.length <= 0) && (
                                 <TableRow key="no-files">
@@ -277,31 +276,26 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
                     </Section>
                 </AnimateHeight>
 
-                <br />
+                <br/>
 
                 <BottomBar
                     isWholeWidth={true}
-                    show={
-                        timeEntry.error.show ||
-                        (timeEntry.values && (timeEntry.values.isModified || timeEntry.values.editingEntryId !== null))
-                            ? true
-                            : false
-                    }
+                    show={this.isBottomBarShow()}
                 >
-                    <div className={s.summary}>
-                        <div className={s.left}>
+                    <div className={styles.summary}>
+                        <div className={styles.left}>
                             {timeEntry.values &&
-                                timeEntry.values.editingEntryId && (
-                                    <ButtonClose
-                                        onClick={this.handleTimeEntryDeleteConfirmation}
-                                        label="Delete this time entry"
-                                        labelColor="orange"
-                                        labelOnLeft={false}
-                                    />
-                                )}
+                            timeEntry.values.editingEntryId && (
+                                <ButtonClose
+                                    onClick={this.handleTimeEntryDeleteConfirmation}
+                                    label="Delete this time entry"
+                                    labelColor="orange"
+                                    labelOnLeft={false}
+                                />
+                            )}
 
                             <Paragraph
-                                className={classNames(s.errorMessage, { [s.show]: timeEntry.error.show })}
+                                className={classNames(styles.errorMessage, { [styles.show]: timeEntry.error.show })}
                                 type="alert"
                             >
                                 {timeEntry.error.message}
@@ -316,14 +310,31 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
                                 this.submittingStatus === 'none'
                                     ? 'blue'
                                     : this.submittingStatus === 'success'
-                                        ? 'green'
-                                        : 'orange'
+                                    ? 'green'
+                                    : 'orange'
                             }
                             label={this.submitLabel}
                         />
                     </div>
                 </BottomBar>
             </div>
+        );
+    }
+
+    private isBottomBarShow(): boolean {
+        if (!this.props.store) {
+            return false;
+        }
+
+        return Boolean(
+            this.props.store.timeEntry.error.show ||
+            (
+                this.props.store.timeEntry.values &&
+                (
+                    this.props.store.timeEntry.values.isModified ||
+                    this.props.store.timeEntry.values.editingEntryId !== null
+                )
+            )
         );
     }
 
@@ -353,8 +364,8 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
             {
                 ...(type === 'filename'
                     ? {
-                          filename: e.target.value,
-                      }
+                        filename: e.target.value,
+                    }
                     : type === 'description'
                         ? { description: e.target.value }
                         : {}),
@@ -388,23 +399,23 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
     private handleTimeEntrySubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
         try {
             if (!this.props.store) {
-                this.submittingStatus = 'error';
+                this.submittingStatus = SubmittingStatus.error;
                 return;
             }
 
             const { timeEntry } = this.props.store;
 
-            this.submittingStatus = 'saving';
+            this.submittingStatus = SubmittingStatus.saving;
 
             // Date and time are required
             if (timeEntry.values === null) {
-                this.submittingStatus = 'error-datetimerequired';
+                this.submittingStatus = SubmittingStatus.errorDateTimeRequired;
                 return;
             }
 
             // Minimum duration is required
             if (timeEntry.durationInMinutes < timeEntry.durationIncrements) {
-                this.submittingStatus = 'error-miniminumdurationrequired';
+                this.submittingStatus = SubmittingStatus.errorMiniminumDurationRequired;
                 return;
             }
 
@@ -422,7 +433,7 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
                     timeEntry.values.projectPicked &&
                     timeEntry.values.projectPicked.version)
             ) {
-                this.submittingStatus = 'error-activityrequired';
+                this.submittingStatus = SubmittingStatus.errorActivityRequired;
                 return;
             }
 
@@ -431,7 +442,7 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
                 timeEntry.selectedActivity.isDescriptionRequired &&
                 (timeEntry.values.description === null || timeEntry.values.description.trim().length <= 0)
             ) {
-                this.submittingStatus = 'error-descriptionrequired';
+                this.submittingStatus = SubmittingStatus.errorDescriptionRequired;
                 return;
             }
 
@@ -442,7 +453,7 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
                     timeEntry.values.projectPicked.project === null ||
                     timeEntry.values.projectPicked.projectCampaign === null)
             ) {
-                this.submittingStatus = 'error-projectrequired';
+                this.submittingStatus = SubmittingStatus.errorProjectRequired;
                 return;
             }
 
@@ -455,13 +466,13 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
                     timeEntry.values.projectPicked.spot === null ||
                     timeEntry.values.projectPicked.version === null)
             ) {
-                this.submittingStatus = 'error-versionrequired';
+                this.submittingStatus = SubmittingStatus.errorVersionRequired;
                 return;
             }
 
             // For some activities files are required
             if (timeEntry.selectedActivity.areFilesRequired && timeEntry.values.files.length <= 0) {
-                this.submittingStatus = 'error-filesrequired';
+                this.submittingStatus = SubmittingStatus.errorFilesRequired;
                 return;
             }
 
@@ -476,31 +487,31 @@ export class TimeEntryContent extends React.Component<TimeEntryContentPropsTypes
                 }, 0);
 
                 if (minutesSum !== timeEntry.durationInMinutes) {
-                    this.submittingStatus = 'error-filesdurationwrong';
+                    this.submittingStatus = SubmittingStatus.errorFilesDurationWrong;
                     return;
                 }
 
                 const fileNameMissing = timeEntry.values.files.find(file => file.filename.trim() === '');
                 if (fileNameMissing) {
-                    this.submittingStatus = 'error-filesnamesrequired';
+                    this.submittingStatus = SubmittingStatus.errorFilesNamesRequired;
                     return;
                 }
             }
 
             // Submit
             await TimeEntryActions.submitActivity();
-            this.submittingStatus = 'success';
+            this.submittingStatus = SubmittingStatus.success;
 
             setTimeout(() => {
-                if (this.submittingStatus === 'success') {
-                    this.submittingStatus = 'none';
+                if (this.submittingStatus === SubmittingStatus.success) {
+                    this.submittingStatus = SubmittingStatus.none;
                     this.props.onReset();
                 }
             }, 1024);
             return;
         } catch (error) {
-            if (this.submittingStatus === 'saving') {
-                this.submittingStatus = 'error';
+            if (this.submittingStatus === SubmittingStatus.saving) {
+                this.submittingStatus = SubmittingStatus.error;
             }
         }
     };

@@ -53,7 +53,7 @@ export class TimeEntryModal extends React.Component<Props & AppOnlyStoreState, {
                     closeButton={true}
                 >
                     <TimeEntryCalendarDuration/>
-                    
+
                     <TimeEntryContent
                         onDeleteConfirmationOpen={this.handleOpeningEntryDeleteConfirmation}
                         onReset={this.handleModalClose}
