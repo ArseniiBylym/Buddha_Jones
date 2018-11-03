@@ -168,6 +168,8 @@ class SpotSentController extends CustomAbstractActionController
         $musicCueSheet = $this->_commonRepo->filterPostData($data, 'music_cue_sheet', 'boolean', $this->_commonRepo->filterPostData($existingData, 'musicCueSheet', 'boolean', 0));
         $audioPrep = $this->_commonRepo->filterPostData($data, 'audio_prep', 'boolean', $this->_commonRepo->filterPostData($existingData, 'audioPrep', 'boolean', 0));
         $graphicsFinish = $this->_commonRepo->filterPostData($data, 'graphics_finish', 'boolean', $this->_commonRepo->filterPostData($existingData, 'graphicsFinish', 'boolean', 0));
+        // $prodAccept = $this->_commonRepo->filterPostData($data, 'prod_accept', 'boolean', $this->_commonRepo->filterPostData($existingData, 'prodAccept', 'boolean', 0));
+        // $finishAccept = $this->_commonRepo->filterPostData($data, 'finish_accept', 'boolean', $this->_commonRepo->filterPostData($existingData, 'finishAccept', 'boolean', 0));
         $gfxFinish = $this->_commonRepo->filterPostData($data, 'gfx_finish', 'boolean', $this->_commonRepo->filterPostData($existingData, 'gfxFinish', 'boolean', 0));
         $videoPrep = $this->_commonRepo->filterPostData($data, 'video_prep', 'boolean', $this->_commonRepo->filterPostData($existingData, 'videoPrep', 'boolean', 0));
         $specNote = $this->_commonRepo->filterPostData($data, 'spec_note', 'string', $this->_commonRepo->filterPostData($existingData, 'specNote', 'string', null));
@@ -282,6 +284,8 @@ class SpotSentController extends CustomAbstractActionController
                 $sv['editors_string'] = (!empty($sv['editors_string'])) ? $sv['editors_string'] : null;
                 $sv['spot_resend'] = (!empty($sv['spot_resend'])) ? 1 : 0;
                 $sv['finish_request'] = (!empty($sv['finish_request'])) ? 1 : 0;
+                $sv['finish_accept'] = (!empty($sv['finish_accept'])) ? 1 : 0;
+                $sv['prod_accept'] = (!empty($sv['prod_accept'])) ? 1 : 0;
                 $sv['line_status_id'] = $this->_commonRepo->filterPostData($sv, 'line_status_id', 'int', 1);
                 $sentViaMethod = $this->_commonRepo->filterPostData($sv, 'sent_via_method', 'array', array());
 
@@ -329,6 +333,8 @@ class SpotSentController extends CustomAbstractActionController
                 $spotSent->setFinishOption($finishOption);
                 $spotSent->setCustomerContact($customerContact);
 
+                $spotSent->setProdAccept($svd['prod_accept']);
+                $spotSent->setFinishAccept($svd['finish_accept']);
                 $spotSent->setSpotId($svd['spot_id']);
                 $spotSent->setVersionId($svd['version_id']);
                 $spotSent->setSpotVersionId($svd['spot_version_id']);
@@ -582,6 +588,8 @@ class SpotSentController extends CustomAbstractActionController
 
             $sv['spot_resend'] = (!empty($sv['spot_resend'])) ? 1 : 0;
             $sv['finish_request'] = (!empty($sv['finish_request'])) ? 1 : 0;
+            $sv['prod_accept'] = (!empty($sv['prod_accept'])) ? 1 : 0;
+            $sv['finish_accept'] = (!empty($sv['finish_accept'])) ? 1 : 0;
         }
 
         return $spotVersionData;

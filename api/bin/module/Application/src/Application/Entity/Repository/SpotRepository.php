@@ -476,6 +476,8 @@ class SpotRepository extends EntityRepository
                     sc.sentViaMethod,
                     sc.finishRequest,
                     sc.spotResend,
+                    sc.prodAccept,
+                    sc.finishAccept,
                     sc.lineStatusId,
                     sc.editor
                 FROM \Application\Entity\RediSpotSent sc
@@ -517,7 +519,9 @@ class SpotRepository extends EntityRepository
                     sc.spot_resend,
                     sc.line_status_id,
                     sc.editor,
-                    sc.editor AS editors_string
+                    sc.editor AS editors_string,
+                    sc.prod_accept,
+                    sc.finish_accept
                 FROM redi_spot_sent sc
                   WHERE sc.request_id = :request_id ";
 

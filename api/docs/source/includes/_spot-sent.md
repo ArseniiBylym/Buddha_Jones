@@ -885,6 +885,26 @@ false | spot_sent_date | date| null | spot sent date
 
 
 
+### Spot version Parameters
+
+`spot_version` is array of objects. each object element will have following element
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+**true** | campaign_id | int | null | campaign id
+**true** | spot_id | int | null | spot id
+false | version_id | int| null | Version Id
+false | spot_resend | int | 0 | send 0/1
+false | prod_accept | int | 0 | send 0/1
+false | finish_accept | int | 0 | send 0/1
+false | editors | JSON encoded array | null | list of editor ids (Like: [12,4,5,3,4])
+
+### sample spot version data
+
+```json
+[{"campaign_id":1,"spot":40,"versoin_id":1,"editors":[12,4,5,3,4],"spot_resend":1,"finish_request":0,"prod_accept":1,"finish_accept":1},{"campaign_id":4,"spot_id":99,"version_id":2,"editors":[1,3,2],"spot_resend":0,"finish_request":1},{"campaign_id":68,"spot_id":40,"version_id":2,"editors":[12,4],"spot_resend":1,"finish_request":0}]
+```
+
 ## spot_sent array form above has follwoing params
 
 campaign_id, spot_version_id, editors, spot_resend, finish_request, line_status_id, sent_via_method
