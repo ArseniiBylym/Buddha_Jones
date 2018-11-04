@@ -6,12 +6,14 @@ import { OptionsListValuePropType } from 'components/Form/OptionsList';
 import { ButtonClose, ButtonSave } from 'components/Button';
 import { action, observable } from 'mobx';
 import { ProjectsDetailsActions } from 'actions';
+import { ClientForStudio } from '../../../../types/clients';
 
 // Props
 interface Props {
     label?: string;
-    value: ProjectBoardCampaignCustomerSelector;
+    value: ClientForStudio;
     options: ProjectBoardCampaignCustomerSelectorOption[];
+    optionsLoading?: boolean;
     onChange?: ((option: { id: number; name: string } | null) => void) | null;
     projectCampaignId: number | null;
     onToggleEditModeButton: () => void | null;
@@ -27,16 +29,11 @@ interface ProjectBoardCampaignCustomerSelectorOptionSelected {
     label: string;
 }
 
-interface ProjectBoardCampaignCustomerSelector {
-    id: number | null;
-    name: string | null;
-}
-
 @observer
 export class CustomerSelector extends React.Component<Props, {}> {
     @observable private status: 'default' | 'saving' | 'success' | 'error' = 'default';
 
-    @observable private valueSelected: ProjectBoardCampaignCustomerSelector = {
+    @observable private valueSelected: ClientForStudio = {
         id: null,
         name: null
     };
@@ -51,6 +48,7 @@ export class CustomerSelector extends React.Component<Props, {}> {
                 name: 'Edit client'
             },
             options: [],
+            optionsLoading: false,
             projectCampaignId: null,
             onToggleEditModeButton: () => undefined
         };
@@ -69,16 +67,19 @@ export class CustomerSelector extends React.Component<Props, {}> {
     public render() {
         return (
             <div className={styles.customerSelector}>
+
                 <DropdownContainer
                     className={styles.dropDownSelector}
                     ref={this.referenceCustomerSelectorDropdown}
                     label={(this.props.label) ? this.props.label : ''}
-                    value={(this.valueSelected.name) ? this.valueSelected.name : ''}
+                    value={(this.valueSelected.name) ? this.valueSelected.name : 'not selected'}
                     type="field"
                 >
                     <OptionsList
                         onChange={this.handleCustomerSelectorChange}
                         value={this.valueSelected.name}
+                        loadingOptions={this.props.optionsLoading}
+                        loadingOptionsLabel={'loading...'}
                         options={[
                             ...[
                                 {
@@ -86,9 +87,9 @@ export class CustomerSelector extends React.Component<Props, {}> {
                                     label: 'not selected',
                                 },
                             ],
-                            ...this.props.options.map(status => ({
-                                value: status.id,
-                                label: status.name,
+                            ...this.props.options.map(option => ({
+                                value: option.id,
+                                label: option.name,
                             })),
                         ]}
                     />
@@ -117,7 +118,7 @@ export class CustomerSelector extends React.Component<Props, {}> {
     }
 
     private handleCustomerSelectorChange = (option: ProjectBoardCampaignCustomerSelectorOptionSelected) => {
-        let selectedCustomerSelector: ProjectBoardCampaignCustomerSelector = {
+        let selectedCustomerSelector: ClientForStudio = {
             id: option.value
             , name: option.label
         };
@@ -134,7 +135,7 @@ export class CustomerSelector extends React.Component<Props, {}> {
     };
 
     @action
-    private setInitialCustomerIdSelected = (value: ProjectBoardCampaignCustomerSelector) => {
+    private setInitialCustomerIdSelected = (value: ClientForStudio) => {
         this.valueSelected = {
             id: value.id,
             name: value.name

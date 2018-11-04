@@ -10,9 +10,11 @@ import { IconDropdownArrow, IconArrowTopBlue, IconClose } from 'components/Icons
 import { action, observable, computed } from 'mobx';
 import { ProjectsDetailsActions } from 'actions';
 import { Paragraph } from 'components/Content';
-import { AppOnlyStoreState, ClientsStore } from 'store/AllStores';
+import { AppOnlyStoreState } from 'store/AllStores';
 import { NewCustomerForm } from '../CustomerSelector/CustomerForm';
 import { CustomerSelector } from '../CustomerSelector';
+import { ClientForStudio } from '../../../../types/clients';
+import { ClientsActions } from '../../../../actions';
 
 interface Props {
     innerRef?: (ref: HTMLDivElement) => void;
@@ -32,6 +34,8 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
     @observable public removing: 'default' | 'saving' | 'success' | 'error' = 'default';
     @observable private isEditMode: boolean = false;
     @observable private isCustomerFormShow: boolean = false;
+    @observable private customerSelectorOptions: ClientForStudio[] = [];
+    @observable private customerSelectorOptionsLoading: boolean = false;
 
     @computed
     private get isHeaderFixed(): boolean {
@@ -92,7 +96,8 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
                                 this.isEditMode &&
                                 <CustomerSelector
                                     onChange={this.props.onClientChange}
-                                    options={ClientsStore.allClientsForStudio}
+                                    options={this.customerSelectorOptions as Array<{id: number; name: string}>}
+                                    optionsLoading={this.customerSelectorOptionsLoading}
                                     value={this.props.campaign.clientSelected}
                                     projectCampaignId={this.props.campaign.projectCampaignId}
                                     onToggleEditModeButton={this.onCustomerSelectorEditModeToggleHandler}
@@ -210,8 +215,23 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
 
     @action
     private onCustomerSelectorEditModeToggleHandler = (): void => {
+        this.getOptionsForCustomerSelectors();
         this.isEditMode = !this.isEditMode;
         this.isCustomerFormShow = false;
+    };
+
+    @action
+    private getOptionsForCustomerSelectors = async (): Promise<boolean> => {
+        try {
+            if (this.props.campaign.clientSelected.id) {
+                this.customerSelectorOptionsLoading = true;
+                this.customerSelectorOptions = await ClientsActions.fetchClientsForStudioOptions(this.props.campaign.clientSelected.id);
+                this.customerSelectorOptionsLoading = false;
+            }
+            return true;
+        } catch (e) {
+            throw e;
+        }
     };
 
     @action

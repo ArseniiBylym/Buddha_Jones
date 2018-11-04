@@ -1,3 +1,8 @@
+export interface ClientForStudio {
+    id: number | null;
+    name: string | null;
+}
+
 export interface ClientApiResponse {
     id: number;
     customerName: string;
@@ -46,7 +51,7 @@ export interface ClientContactApiResponse {
 
 export interface ClientDetails {
     id: number;
-    name: string;
+    name: string | null;
     cardcode: string | null;
     contacts: ClientContact[];
 }

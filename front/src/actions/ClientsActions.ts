@@ -1,7 +1,7 @@
 import { action } from 'mobx';
 import { ClientsStore } from 'store/AllStores';
 import { API, APIPath } from 'fetch';
-import { ClientApiResponse, ClientDetailsApiResponse, CustomerContactApiResponse } from 'types/clients';
+import { ClientApiResponse, ClientDetailsApiResponse, ClientForStudio, CustomerContactApiResponse } from 'types/clients';
 import { DateHandler } from 'helpers/DateHandler';
 
 enum CustomersFetchType {
@@ -205,7 +205,7 @@ export class ClientsActionsClass {
                 client.lastFetchTimeStamp = Date.now();
                 client.customer = {
                     id: customerId,
-                    name: response.customerName,
+                    name: (response.customerName) ? response.customerName : null,
                     cardcode: response.cardcode,
                     contacts: response.contact.map(creativeExecutive => ({
                         id: creativeExecutive.id,
@@ -230,7 +230,7 @@ export class ClientsActionsClass {
     };
 
     @action
-    public fetchClientsForStudioOptions = async (customerId: number): Promise<boolean> => {
+    public fetchClientsForStudioOptions = async (customerId: number): Promise<ClientForStudio[]> => {
         try {
 
             const response = (await API.getData(APIPath.CUSTOMER_CONTACT, {
@@ -239,13 +239,12 @@ export class ClientsActionsClass {
                 length: 9999999,
             })) as CustomerContactApiResponse[];
 
-            ClientsStore.allClientsForStudio = response.map((client: CustomerContactApiResponse) => {
+            return response.map((client: CustomerContactApiResponse) => {
                 return {
                     id: client.id,
                     name: client.name
                 };
             });
-            return true;
         } catch (error) {
             throw error;
         }
