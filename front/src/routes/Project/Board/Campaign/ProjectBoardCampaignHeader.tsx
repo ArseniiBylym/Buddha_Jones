@@ -26,6 +26,7 @@ interface Props {
     projectId: number;
     campaign: CampaignDetails;
     userCanViewNotes: boolean;
+    studioId: number;
 }
 
 @inject('store')
@@ -225,7 +226,7 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
         try {
             if (this.props.campaign.clientSelected.id) {
                 this.customerSelectorOptionsLoading = true;
-                this.customerSelectorOptions = await ClientsActions.fetchClientsForStudioOptions(this.props.campaign.clientSelected.id);
+                this.customerSelectorOptions = await ClientsActions.fetchClientsForStudioOptions(this.props.studioId);
                 this.customerSelectorOptionsLoading = false;
             }
             return true;

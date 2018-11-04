@@ -80,6 +80,7 @@ export class CustomerSelector extends React.Component<Props, {}> {
                         value={this.valueSelected.name}
                         loadingOptions={this.props.optionsLoading}
                         loadingOptionsLabel={'loading...'}
+                        height={200}
                         options={[
                             ...[
                                 {

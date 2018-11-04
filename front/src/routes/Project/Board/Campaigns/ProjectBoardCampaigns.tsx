@@ -289,6 +289,7 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
                         innerRef={this.referenceCampaignContainer(campaign.projectCampaignId)}
                         innerHeaderRef={this.referenceCampaignHeader(campaign.projectCampaignId)}
                         clientId={campaign.clientSelected.id as number}
+                        studioId={this.props.project.studioId}
                         onClientChange={this.handleCustomerSelectorChange.bind(this, ind)}
                         projectId={this.props.project.projectId}
                         campaign={campaign}
