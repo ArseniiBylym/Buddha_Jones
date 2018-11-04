@@ -82,12 +82,6 @@ export class CustomerSelector extends React.Component<Props, {}> {
                         loadingOptionsLabel={'loading...'}
                         height={200}
                         options={[
-                            ...[
-                                {
-                                    value: null,
-                                    label: 'not selected',
-                                },
-                            ],
                             ...this.props.options.map(option => ({
                                 value: option.id,
                                 label: option.name,
