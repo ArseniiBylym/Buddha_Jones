@@ -15,7 +15,7 @@ import { UserPermissionKey } from 'types/projectPermissions';
 const s = require('./ProjectPicker.css');
 
 // Types
-type ProjectPickerPropsTypes = ProjectPickerProps & AppOnlyStoreState;
+type ProjectPickerPropsTypes = Props & AppOnlyStoreState;
 type ProjectPickerLevels =
     | 'all'
     | 'project-campaign-spot'
@@ -23,7 +23,9 @@ type ProjectPickerLevels =
     | 'project'
     | 'campaign-spot-version'
     | null;
+
 export type ProjectPickerSections = 'project' | 'projectCampaign' | 'spot' | 'version';
+
 type ProjectPickerColumn = {
     section: ProjectPickerSections;
     isDisabled: boolean;
@@ -37,13 +39,13 @@ export type ProjectPickerValues = {
     version: ProjectPickerGroupValues | null;
     customerId: number | null;
 };
+
 export interface ProjectPickerGroupValues {
     id: number;
     name: string;
 }
 
-// Props
-interface ProjectPickerProps {
+interface Props {
     onChange?: (values: ProjectPickerValues | null) => void;
     title?: string;
     subTitle?: string;
@@ -63,11 +65,10 @@ interface ProjectPickerProps {
     }>;
 }
 
-// Component
 @inject('store')
 @observer
 export class ProjectPicker extends React.Component<ProjectPickerPropsTypes, {}> {
-    static get defaultProps(): ProjectPickerProps {
+    static get defaultProps(): Props {
         return {
             forUserId: 0,
             onChange: undefined,
@@ -267,8 +268,9 @@ export class ProjectPicker extends React.Component<ProjectPickerPropsTypes, {}> 
         if (this.isCampaignVisible) {
             cols.push({
                 section: 'projectCampaign',
-                isDisabled:
-                    this.props.value === null || (this.props.value && this.props.value.project === null) ? true : false,
+                isDisabled: Boolean(
+                    this.props.value === null || (this.props.value && this.props.value.project === null)
+                ),
                 classNames: this.getSectionButtonClassName('projectCampaign'),
                 label:
                     this.props.value && this.props.value.projectCampaign
@@ -280,12 +282,13 @@ export class ProjectPicker extends React.Component<ProjectPickerPropsTypes, {}> 
         if (this.isSpotVisible) {
             cols.push({
                 section: 'spot',
-                isDisabled:
+                isDisabled: Boolean(
                     this.props.value === null ||
-                    ((this.props.value && this.props.value.project === null) ||
-                        (this.props.value && this.props.value.projectCampaign === null))
-                        ? true
-                        : false,
+                    (
+                        (this.props.value && this.props.value.project === null) ||
+                        (this.props.value && this.props.value.projectCampaign === null)
+                    )
+                ),
                 classNames: this.getSectionButtonClassName('spot'),
                 label:
                     this.props.value && this.props.value.spot
@@ -297,13 +300,14 @@ export class ProjectPicker extends React.Component<ProjectPickerPropsTypes, {}> 
         if (this.isVersionVisible) {
             cols.push({
                 section: 'version',
-                isDisabled:
+                isDisabled: Boolean(
                     this.props.value === null ||
-                    ((this.props.value && this.props.value.project === null) ||
+                    (
+                        (this.props.value && this.props.value.project === null) ||
                         (this.props.value && this.props.value.projectCampaign === null) ||
-                        (this.props.value && this.props.value.spot === null))
-                        ? true
-                        : false,
+                        (this.props.value && this.props.value.spot === null)
+                    )
+                ),
                 classNames: this.getSectionButtonClassName('version'),
                 label:
                     this.props.value && this.props.value.version
@@ -318,72 +322,70 @@ export class ProjectPicker extends React.Component<ProjectPickerPropsTypes, {}> 
     @computed
     private get showClearValuesButton(): boolean {
         if (this.props.value) {
-            return this.isProjectVisible && this.props.value.project
-                ? true
-                : this.isCampaignVisible && this.props.value.projectCampaign
-                    ? true
-                    : this.isSpotVisible && this.props.value.spot
-                        ? true
-                        : this.isVersionVisible && this.props.value.version
-                            ? true
-                            : false;
+            return !!(this.isProjectVisible && this.props.value.project ||
+                this.isCampaignVisible && this.props.value.projectCampaign ||
+                this.isSpotVisible && this.props.value.spot ||
+                this.isVersionVisible && this.props.value.version);
         }
 
         return false;
     }
 
     public componentDidMount() {
-        const areProjectsOpenByDefaultAllowed: boolean = this.isProjectVisible ? true : false;
-        const areCampaignsOpenByDefaultAllowed: boolean =
+        const areProjectsOpenByDefaultAllowed: boolean = this.isProjectVisible;
+
+        const areCampaignsOpenByDefaultAllowed: boolean = Boolean(
             areProjectsOpenByDefaultAllowed &&
             this.isCampaignVisible &&
             this.props.value &&
             this.props.value.project !== null
-                ? true
-                : false;
-        const areSpotsOpenByDefaultAllowed: boolean =
+        );
+
+        const areSpotsOpenByDefaultAllowed: boolean = Boolean(
             areCampaignsOpenByDefaultAllowed &&
             this.isSpotVisible &&
             this.props.value &&
             this.props.value.projectCampaign !== null
-                ? true
-                : false;
-        const areVersionsOpenByDefaultAllowed: boolean =
-            areSpotsOpenByDefaultAllowed && this.isVersionVisible && this.props.value && this.props.value.spot !== null
-                ? true
-                : false;
+        );
+
+        const areVersionsOpenByDefaultAllowed: boolean = Boolean(
+            areSpotsOpenByDefaultAllowed &&
+            this.isVersionVisible &&
+            this.props.value &&
+            this.props.value.spot !== null
+        );
 
         if (this.props.openOn) {
             this.sectionOpen =
                 this.props.openOn === 'version'
                     ? areVersionsOpenByDefaultAllowed
-                        ? 'version'
-                        : areSpotsOpenByDefaultAllowed
-                            ? 'spot'
-                            : areCampaignsOpenByDefaultAllowed
-                                ? 'projectCampaign'
-                                : areProjectsOpenByDefaultAllowed
-                                    ? 'project'
-                                    : null
+                    ? 'version'
+                    : areSpotsOpenByDefaultAllowed
+                        ? 'spot'
+                        : areCampaignsOpenByDefaultAllowed
+                            ? 'projectCampaign'
+                            : areProjectsOpenByDefaultAllowed
+                                ? 'project'
+                                : null
                     : this.props.openOn === 'spot'
-                        ? areSpotsOpenByDefaultAllowed
-                            ? 'spot'
-                            : areCampaignsOpenByDefaultAllowed
-                                ? 'projectCampaign'
-                                : areProjectsOpenByDefaultAllowed
-                                    ? 'project'
-                                    : null
-                        : this.props.openOn === 'projectCampaign'
-                            ? areCampaignsOpenByDefaultAllowed
-                                ? 'projectCampaign'
-                                : areProjectsOpenByDefaultAllowed
-                                    ? 'project'
-                                    : null
-                            : this.props.openOn === 'project'
-                                ? areProjectsOpenByDefaultAllowed
-                                    ? 'project'
-                                    : null
-                                : null;
+                    ? areSpotsOpenByDefaultAllowed
+                        ? 'spot'
+                        : areCampaignsOpenByDefaultAllowed
+                            ? 'projectCampaign'
+                            : areProjectsOpenByDefaultAllowed
+                                ? 'project'
+                                : null
+                    : this.props.openOn === 'projectCampaign'
+                        ? areCampaignsOpenByDefaultAllowed
+                            ? 'projectCampaign'
+                            : areProjectsOpenByDefaultAllowed
+                                ? 'project'
+                                : null
+                        : this.props.openOn === 'project'
+                            ? areProjectsOpenByDefaultAllowed
+                                ? 'project'
+                                : null
+                            : null;
         }
 
         if (this.props.store && this.props.store.user.data) {
@@ -404,8 +406,8 @@ export class ProjectPicker extends React.Component<ProjectPickerPropsTypes, {}> 
                 subTitle={
                     this.subTitleLabel
                         ? this.props.title && this.subTitleLabel
-                            ? this.subTitleLabel
-                            : capitalize(this.subTitleLabel)
+                        ? this.subTitleLabel
+                        : capitalize(this.subTitleLabel)
                         : undefined
                 }
                 noSeparator={this.props.noSeparator}
@@ -413,20 +415,20 @@ export class ProjectPicker extends React.Component<ProjectPickerPropsTypes, {}> 
                     ...(this.props.headerElements || []),
                     ...(this.showClearValuesButton
                         ? [
-                              {
-                                  element: (
-                                      <Button
-                                          onClick={this.handleClearingSelectedValues}
-                                          className={s.clearButton}
-                                          label={{
-                                              text: 'Clear selection',
-                                              size: 'small',
-                                              color: 'orange',
-                                          }}
-                                      />
-                                  ),
-                              },
-                          ]
+                            {
+                                element: (
+                                    <Button
+                                        onClick={this.handleClearingSelectedValues}
+                                        className={s.clearButton}
+                                        label={{
+                                            text: 'Clear selection',
+                                            size: 'small',
+                                            color: 'orange',
+                                        }}
+                                    />
+                                ),
+                            },
+                        ]
                         : []),
                 ]}
             >
@@ -451,7 +453,7 @@ export class ProjectPicker extends React.Component<ProjectPickerPropsTypes, {}> 
                     onSearchQueryChange={this.handleSearchQueryChange}
                     onSectionClose={this.handleSectionClose}
                     entriesPerPage={this.ENTRIES_PER_PAGE}
-                    readOnly={this.props.readOnly ? true : false}
+                    readOnly={Boolean(this.props.readOnly)}
                     sectionOpen={this.sectionOpen}
                     forUserId={this.props.forUserId}
                     value={this.props.value}
@@ -483,42 +485,40 @@ export class ProjectPicker extends React.Component<ProjectPickerPropsTypes, {}> 
                 this.isProjectVisible
                     ? null
                     : this.isCampaignVisible && this.props.value && this.props.value.project
+                    ? {
+                        project: this.props.value.project,
+                        projectCampaign: null,
+                        spot: null,
+                        version: null,
+                        customerId: this.props.value.customerId,
+                    }
+                    : this.isSpotVisible && this.props.value && this.props.value.projectCampaign
                         ? {
-                              project: this.props.value.project,
-                              projectCampaign: null,
-                              spot: null,
-                              version: null,
-                              customerId: this.props.value.customerId,
-                          }
-                        : this.isSpotVisible && this.props.value && this.props.value.projectCampaign
+                            project: this.props.value.project,
+                            projectCampaign: this.props.value.projectCampaign,
+                            spot: null,
+                            version: null,
+                            customerId: this.props.value.customerId,
+                        }
+                        : this.isVersionVisible && this.props.value && this.props.value.spot
                             ? {
-                                  project: this.props.value.project,
-                                  projectCampaign: this.props.value.projectCampaign,
-                                  spot: null,
-                                  version: null,
-                                  customerId: this.props.value.customerId,
-                              }
-                            : this.isVersionVisible && this.props.value && this.props.value.spot
-                                ? {
-                                      project: this.props.value.project,
-                                      projectCampaign: this.props.value.projectCampaign,
-                                      spot: this.props.value.spot,
-                                      version: null,
-                                      customerId: this.props.value.customerId,
-                                  }
-                                : null
+                                project: this.props.value.project,
+                                projectCampaign: this.props.value.projectCampaign,
+                                spot: this.props.value.spot,
+                                version: null,
+                                customerId: this.props.value.customerId,
+                            }
+                            : null
             );
         }
     };
 
-    private handleClearingSelectedValues = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleClearingSelectedValues = () => {
         this.clearSelectedValues();
     };
 
     @action
-    private handleOpeningSection = (section: ProjectPickerSections | null) => (
-        e: React.MouseEvent<HTMLButtonElement>
-    ) => {
+    private handleOpeningSection = (section: ProjectPickerSections | null) => () => {
         this.sectionOpen = this.sectionOpen === section ? null : section;
 
         if (section === null) {
@@ -567,52 +567,52 @@ export class ProjectPicker extends React.Component<ProjectPickerPropsTypes, {}> 
                 result === null
                     ? null
                     : {
-                          project:
-                              result.section === 'project'
-                                  ? {
-                                        id: result.id,
-                                        name: result.name,
-                                    }
-                                  : value && value.project
-                                      ? value.project
-                                      : null,
-                          projectCampaign:
-                              result.section === 'projectCampaign'
-                                  ? {
-                                        id: result.id,
-                                        name: result.name,
-                                    }
-                                  : result.section === 'project'
-                                      ? null
-                                      : value && value.projectCampaign
-                                          ? value.projectCampaign
-                                          : null,
-                          spot:
-                              result.section === 'spot'
-                                  ? {
-                                        id: result.id,
-                                        name: result.name,
-                                    }
-                                  : result.section === 'project' || result.section === 'projectCampaign'
-                                      ? null
-                                      : value && value.spot
-                                          ? value.spot
-                                          : null,
-                          version:
-                              result.section === 'version'
-                                  ? {
-                                        id: result.id,
-                                        name: result.name,
-                                    }
-                                  : result.section === 'project' ||
-                                    result.section === 'projectCampaign' ||
-                                    result.section === 'spot'
-                                      ? null
-                                      : value && value.version
-                                          ? value.version
-                                          : null,
-                          customerId: result.clientId,
-                      }
+                        project:
+                            result.section === 'project'
+                                ? {
+                                    id: result.id,
+                                    name: result.name,
+                                }
+                                : value && value.project
+                                ? value.project
+                                : null,
+                        projectCampaign:
+                            result.section === 'projectCampaign'
+                                ? {
+                                    id: result.id,
+                                    name: result.name,
+                                }
+                                : result.section === 'project'
+                                ? null
+                                : value && value.projectCampaign
+                                    ? value.projectCampaign
+                                    : null,
+                        spot:
+                            result.section === 'spot'
+                                ? {
+                                    id: result.id,
+                                    name: result.name,
+                                }
+                                : result.section === 'project' || result.section === 'projectCampaign'
+                                ? null
+                                : value && value.spot
+                                    ? value.spot
+                                    : null,
+                        version:
+                            result.section === 'version'
+                                ? {
+                                    id: result.id,
+                                    name: result.name,
+                                }
+                                : result.section === 'project' ||
+                                result.section === 'projectCampaign' ||
+                                result.section === 'spot'
+                                ? null
+                                : value && value.version
+                                    ? value.version
+                                    : null,
+                        customerId: result.clientId,
+                    }
             );
         }
     };

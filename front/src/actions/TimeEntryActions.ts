@@ -292,23 +292,29 @@ export class TimeEntryActionsClass {
                     {
                         start_date_time: dateFormat(startDateTime, 'YYYY-MM-DD HH:mm:ss'),
                         duration: DateHandler.convertTotalMinutesToHoursDotMinutes(durationInMinutes),
+
                         project_id:
                             TimeEntryStore.values.projectPicked && TimeEntryStore.values.projectPicked.project
                                 ? TimeEntryStore.values.projectPicked.project.id
                                 : undefined,
+
                         project_campaign_id:
                             TimeEntryStore.values.projectPicked && TimeEntryStore.values.projectPicked.projectCampaign
                                 ? TimeEntryStore.values.projectPicked.projectCampaign.id
                                 : undefined,
+
                         spot_id:
                             TimeEntryStore.values.projectPicked && TimeEntryStore.values.projectPicked.spot
                                 ? TimeEntryStore.values.projectPicked.spot.id
                                 : undefined,
+
                         version_id:
                             TimeEntryStore.values.projectPicked && TimeEntryStore.values.projectPicked.version
                                 ? TimeEntryStore.values.projectPicked.version.id
                                 : undefined,
+
                         activity_id: TimeEntryStore.values.activityId,
+
                         activity_description: TimeEntryStore.values.description || '',
                         ...(TimeEntryStore.values.files.length > 0
                             ? {
