@@ -11,30 +11,24 @@ import { InputSearch, DropdownContainer, OptionsList, OptionsListValuePropType }
 import { Table, TableRow, TableCell } from 'components/Table';
 import { ActivitiesDefinitionListEntry } from '.';
 import { Paragraph } from 'components/Content';
+
 const zenscroll = require('zenscroll');
 
-// Props
-interface ActivitiesDefinitionListProps {}
+type ComponentProps = AppState;
 
-// Types
-type ActivitiesDefinitionListPropsTypes = ActivitiesDefinitionListProps & AppState;
-
-// Component
 @inject('store')
 @observer
-class ActivitiesDefinitionList extends React.Component<ActivitiesDefinitionListPropsTypes, {}> {
+class ActivitiesDefinitionList extends React.Component<ComponentProps, {}> {
     private USER_TYPES_LIMIT_TO_LIST: number = 5;
 
     @computed
     private get essentialDataIsLoading(): boolean {
         if (this.props.store) {
-            return this.props.store.activities.activitiesLoading
-                ? true
-                : this.props.store.activities.activitiesTypesLoading
-                    ? true
-                    : this.props.store.users.typesLoading
-                        ? true
-                        : false;
+            return Boolean(
+                this.props.store.activities.activitiesLoading ||
+                this.props.store.activities.activitiesTypesLoading ||
+                this.props.store.users.typesLoading
+            );
         }
 
         return true;
@@ -88,13 +82,13 @@ class ActivitiesDefinitionList extends React.Component<ActivitiesDefinitionListP
         }
     }
 
-    public constructor(props: ActivitiesDefinitionListPropsTypes) {
+    public constructor(props: ComponentProps) {
         super(props);
 
         reaction(
             () => this.essentialDataIsLoading,
             isLoading => {
-                if (isLoading === false) {
+                if (!isLoading) {
                     // Scroll to element
                     if (
                         this.props.match &&
@@ -120,7 +114,7 @@ class ActivitiesDefinitionList extends React.Component<ActivitiesDefinitionListP
 
         const { users } = this.props.store;
 
-        return this.essentialDataIsLoading === false ? (
+        return !this.essentialDataIsLoading ? (
             <Section
                 noSeparator={true}
                 title="All activities"
@@ -197,7 +191,7 @@ class ActivitiesDefinitionList extends React.Component<ActivitiesDefinitionListP
         ) : (
             <Row justifyContent="center">
                 <Col width={64}>
-                    <LoadingSpinner size={64} />
+                    <LoadingSpinner size={64}/>
                 </Col>
             </Row>
         );

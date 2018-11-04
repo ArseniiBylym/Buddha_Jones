@@ -21,6 +21,12 @@ import {
 import { ProjectPickerValues } from 'components/Buddha';
 import { DateHandler } from 'helpers/DateHandler';
 
+export interface FieldDetails {
+    filename?: string;
+    description?: string;
+    durationInMinutes?: number;
+}
+
 export class TimeEntryActionsClass {
     @action
     public resetTimeEntry = () => {
@@ -38,10 +44,10 @@ export class TimeEntryActionsClass {
                 isModified: false,
                 forUser: entry.userId
                     ? {
-                          id: entry.userId,
-                          typeId: entry.userTypeId,
-                          typeName: entry.userTypeName,
-                      }
+                        id: entry.userId,
+                        typeId: entry.userTypeId,
+                        typeName: entry.userTypeName,
+                    }
                     : null,
                 editingEntryId: entry.id,
                 startDate: entry.startDate,
@@ -53,39 +59,39 @@ export class TimeEntryActionsClass {
                 projectPicked:
                     entry.projectId || entry.projectCampaignId || entry.spotId || entry.versionId
                         ? {
-                              project: entry.projectId
-                                  ? {
-                                        id: entry.projectId,
-                                        name: entry.projectName || '',
-                                    }
-                                  : null,
-                              projectCampaign: entry.projectCampaignId
-                                  ? {
-                                        id: entry.projectCampaignId,
-                                        name: entry.projectCampaignName || '',
-                                    }
-                                  : null,
-                              spot: entry.spotId
-                                  ? {
-                                        id: entry.spotId,
-                                        name: entry.spotName || '',
-                                    }
-                                  : null,
-                              version: entry.versionId
-                                  ? {
-                                        id: entry.versionId,
-                                        name: entry.versionName || '',
-                                    }
-                                  : null,
-                              customerId: entry.clientId,
-                          }
+                            project: entry.projectId
+                                ? {
+                                    id: entry.projectId,
+                                    name: entry.projectName || '',
+                                }
+                                : null,
+                            projectCampaign: entry.projectCampaignId
+                                ? {
+                                    id: entry.projectCampaignId,
+                                    name: entry.projectCampaignName || '',
+                                }
+                                : null,
+                            spot: entry.spotId
+                                ? {
+                                    id: entry.spotId,
+                                    name: entry.spotName || '',
+                                }
+                                : null,
+                            version: entry.versionId
+                                ? {
+                                    id: entry.versionId,
+                                    name: entry.versionName || '',
+                                }
+                                : null,
+                            customerId: entry.clientId,
+                        }
                         : null,
                 files: entry.files
                     ? entry.files.map(file => ({
-                          filename: file.filename,
-                          description: file.description || '',
-                          durationInMinutes: file.durationInMinutes || 0,
-                      }))
+                        filename: file.filename,
+                        description: file.description || '',
+                        durationInMinutes: file.durationInMinutes || 0,
+                    }))
                     : [],
             };
         }
@@ -193,58 +199,61 @@ export class TimeEntryActionsClass {
                     const entriesForDay = TimeEntryStore.entriesForDay[dateUserKey];
 
                     let dayStatusCount = {};
+
                     entriesForDay.timeEntries = dateEntries
                         ? dateEntries.map(entry => {
-                              dayStatusCount[entry.status] =
-                                  typeof dayStatusCount[entry.status] !== 'undefined'
-                                      ? dayStatusCount[entry.status] + 1
-                                      : 1;
+                            dayStatusCount[entry.status] =
+                                typeof dayStatusCount[entry.status] !== 'undefined'
+                                    ? dayStatusCount[entry.status] + 1
+                                    : 1;
 
-                              return {
-                                  id: entry.id,
-                                  userId: forUser.id,
-                                  userTypeId: forUser.typeId,
-                                  userTypeName: forUser.typeName,
-                                  notes: entry.activityDescription,
-                                  activityId: entry.activityId,
-                                  activityName: entry.activityValue,
-                                  name: [entry.activityValue, entry.projectName, entry.campaignName, entry.spotName]
-                                      .filter(name => typeof name === 'string' && name !== null && name !== '')
-                                      .join(' - ')
-                                      .concat(entry.versionName ? ' - ver. #' + entry.versionName : ''),
-                                  clientId: entry.customerId ? entry.customerId : null,
-                                  projectId: entry.projectId,
-                                  projectName: entry.projectName,
-                                  projectCampaignId: entry.projectCampaignId,
-                                  projectCampaignName: entry.campaignName,
-                                  spotId: entry.spotId,
-                                  spotName: entry.spotName,
-                                  versionId: entry.versionId,
-                                  versionName: entry.versionName,
-                                  hours: this.splitEntryDurationAndCalculateHoursFloat(entry.duration),
-                                  startDate: dateParse(entry.startDate.date),
-                                  status: entry.status,
-                                  statusName: entry.statusName,
-                                  files: entry.files.map(file => ({
-                                      filename: file.fileName,
-                                      description: file.description,
-                                      durationInMinutes: DateHandler.convertHoursDotMinutesToTotalMinutes(
-                                          file.duration
-                                      ),
-                                  })),
-                              };
-                          })
+                            return {
+                                id: entry.id,
+                                userId: forUser.id,
+                                userTypeId: forUser.typeId,
+                                userTypeName: forUser.typeName,
+                                notes: entry.activityDescription,
+                                activityId: entry.activityId,
+                                activityName: entry.activityValue,
+                                name: [entry.activityValue, entry.projectName, entry.campaignName, entry.spotName]
+                                    .filter(name => typeof name === 'string' && name !== null && name !== '')
+                                    .join(' - ')
+                                    .concat(entry.versionName ? ' - ver. #' + entry.versionName : ''),
+                                clientId: entry.customerId ? entry.customerId : null,
+                                projectId: entry.projectId,
+                                projectName: entry.projectName,
+                                projectCampaignId: entry.projectCampaignId,
+                                projectCampaignName: entry.campaignName,
+                                spotId: entry.spotId,
+                                spotName: entry.spotName,
+                                versionId: entry.versionId,
+                                versionName: entry.versionName,
+                                hours: this.splitEntryDurationAndCalculateHoursFloat(entry.duration),
+                                startDate: dateParse(entry.startDate.date),
+                                status: entry.status,
+                                statusName: entry.statusName,
+                                files: entry.files.map(file => ({
+                                    filename: file.fileName,
+                                    description: file.description,
+                                    durationInMinutes: DateHandler.convertHoursDotMinutesToTotalMinutes(
+                                        file.duration
+                                    ),
+                                })),
+                            };
+                        })
                         : entriesForDay.timeEntries;
 
                     entriesForDay.isDayLoading = false;
-                    entriesForDay.isDayApproved =
+
+                    entriesForDay.isDayApproved = Boolean(
                         dayStatusCount[TimeEntryStatus.Approved] ||
                         dayStatusCount[TimeEntryStatus.Final] ||
                         dayStatusCount[TimeEntryStatus.SentToCustomer]
-                            ? true
-                            : false;
-                    entriesForDay.isDayClosed =
-                        entriesForDay.isDayApproved || dayStatusCount[TimeEntryStatus.UnderReview] ? true : false;
+                    );
+
+                    entriesForDay.isDayClosed = Boolean(
+                        entriesForDay.isDayApproved || dayStatusCount[TimeEntryStatus.UnderReview]
+                    );
                 });
             }
 
@@ -277,9 +286,9 @@ export class TimeEntryActionsClass {
             if (TimeEntryStore.values && TimeEntryStore.values.isModified) {
                 await API[TimeEntryStore.values.editingEntryId !== null ? 'putData' : 'postData'](
                     APIPath.TIME_ENTRY +
-                        (TimeEntryStore.values.editingEntryId !== null
-                            ? '/' + TimeEntryStore.values.editingEntryId
-                            : ''),
+                    (TimeEntryStore.values.editingEntryId !== null
+                        ? '/' + TimeEntryStore.values.editingEntryId
+                        : ''),
                     {
                         start_date_time: dateFormat(startDateTime, 'YYYY-MM-DD HH:mm:ss'),
                         duration: DateHandler.convertTotalMinutesToHoursDotMinutes(durationInMinutes),
@@ -303,16 +312,16 @@ export class TimeEntryActionsClass {
                         activity_description: TimeEntryStore.values.description || '',
                         ...(TimeEntryStore.values.files.length > 0
                             ? {
-                                  files: JSON.stringify(
-                                      TimeEntryStore.values.files.map(file => ({
-                                          filename: file.filename.trim(),
-                                          description: file.description.trim(),
-                                          duration: DateHandler.convertTotalMinutesToHoursDotMinutes(
-                                              file.durationInMinutes
-                                          ),
-                                      }))
-                                  ),
-                              }
+                                files: JSON.stringify(
+                                    TimeEntryStore.values.files.map(file => ({
+                                        filename: file.filename.trim(),
+                                        description: file.description.trim(),
+                                        duration: DateHandler.convertTotalMinutesToHoursDotMinutes(
+                                            file.durationInMinutes
+                                        ),
+                                    }))
+                                ),
+                            }
                             : {}),
                     }
                 );
@@ -355,7 +364,7 @@ export class TimeEntryActionsClass {
             // If minimum work hours for the user are not met
             if (totalMinutes < minUserHours * 60) {
                 TimeEntryStore.minimumHoursNotMetModal.show = true;
-                TimeEntryStore.minimumHoursNotMetModal.minminumHours = minUserHours;
+                TimeEntryStore.minimumHoursNotMetModal.minHours = minUserHours;
                 return true;
             }
 
@@ -397,7 +406,7 @@ export class TimeEntryActionsClass {
 
     @action
     public closeLunchBreakNotTakenModal = (closeAndSubmit: boolean = false) => {
-        if (closeAndSubmit === true && TimeEntryStore.lunchBreakNotTakenModal.forUser) {
+        if (closeAndSubmit && TimeEntryStore.lunchBreakNotTakenModal.forUser) {
             this.viewDaySummary(
                 TimeEntryStore.lunchBreakNotTakenModal.forUser,
                 TimeEntryStore.lunchBreakNotTakenModal.minUserHours,
@@ -422,11 +431,7 @@ export class TimeEntryActionsClass {
 
     @action
     public setFileDetails = (
-        details: {
-            filename?: string;
-            description?: string;
-            durationInMinutes?: number;
-        },
+        details: FieldDetails,
         index: number | null = null
     ) => {
         if (TimeEntryStore.values) {
@@ -472,38 +477,38 @@ export class TimeEntryActionsClass {
                 project:
                     values !== null
                         ? values.project
-                            ? {
-                                  id: values.project.id,
-                                  name: values.project.name,
-                              }
-                            : null
+                        ? {
+                            id: values.project.id,
+                            name: values.project.name,
+                        }
+                        : null
                         : null,
                 projectCampaign:
                     values !== null
                         ? values.projectCampaign
-                            ? {
-                                  id: values.projectCampaign.id,
-                                  name: values.projectCampaign.name,
-                              }
-                            : null
+                        ? {
+                            id: values.projectCampaign.id,
+                            name: values.projectCampaign.name,
+                        }
+                        : null
                         : null,
                 spot:
                     values !== null
                         ? values.spot
-                            ? {
-                                  id: values.spot.id,
-                                  name: values.spot.name,
-                              }
-                            : null
+                        ? {
+                            id: values.spot.id,
+                            name: values.spot.name,
+                        }
+                        : null
                         : null,
                 version:
                     values !== null
                         ? values.version
-                            ? {
-                                  id: values.version.id,
-                                  name: values.version.name,
-                              }
-                            : null
+                        ? {
+                            id: values.version.id,
+                            name: values.version.name,
+                        }
+                        : null
                         : null,
                 customerId: values !== null ? values.customerId : null,
             };
@@ -643,7 +648,7 @@ export class TimeEntryActionsClass {
     private getClosestToIncrementHour = (date: Date): number => {
         const { durationIncrements } = TimeEntryStore;
 
-        let totalMinutes = 0;
+        let totalMinutes: number = 0;
 
         // Minutes
         const minutes = dateGetMinutes(date);
@@ -651,6 +656,7 @@ export class TimeEntryActionsClass {
 
         // Difference
         const difference = minutes % durationIncrements;
+
         if (difference > 0) {
             totalMinutes -= difference;
         }
@@ -691,7 +697,7 @@ export class TimeEntryActionsClass {
                 startTimeInMinutes += durationIncrements;
                 endTimeInMinutes += durationIncrements;
             }
-        } while (isOverlappingOtherEntry === true);
+        } while (isOverlappingOtherEntry);
 
         return {
             startTimeInMinutes,
@@ -706,18 +712,16 @@ export class TimeEntryActionsClass {
     ) => {
         // Check if day has any existing entries
         if (existingEntries) {
-            return existingEntries.findIndex(entry => {
-                const startTimeInMinutes = dateGetHours(entry.startDate) * 60 + dateGetMinutes(entry.startDate);
-                const endTimeInMinutes = startTimeInMinutes + entry.hours * 60;
+            return existingEntries.findIndex(
+                entry => {
+                    const startTimeInMinutes = dateGetHours(entry.startDate) * 60 + dateGetMinutes(entry.startDate);
+                    const endTimeInMinutes = startTimeInMinutes + entry.hours * 60;
 
-                if (Math.max(fromTotalMinutes, startTimeInMinutes) - Math.min(tilTotalMinutes, endTimeInMinutes) < 0) {
-                    return true;
+                    return Math.max(
+                        fromTotalMinutes, startTimeInMinutes) - Math.min(tilTotalMinutes, endTimeInMinutes
+                    ) < 0;
                 }
-
-                return false;
-            }) !== -1
-                ? true
-                : false;
+            ) !== -1;
         }
 
         return false;

@@ -23,10 +23,10 @@ export class TimeEntry {
     @observable
     public minimumHoursNotMetModal: {
         show: boolean;
-        minminumHours: number;
+        minHours: number;
     } = {
         show: false,
-        minminumHours: 0,
+        minHours: 0,
     };
 
     @observable
