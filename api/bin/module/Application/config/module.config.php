@@ -122,6 +122,10 @@ return array(
                 $entityManager = $serviceManager->get('Doctrine\ORM\EntityManager');
                 return new \Application\Entity\Repository\VersionRepository($entityManager);
             },
+            'Application\Entity\Repository\NotificationRepository' => function ($serviceManager) {
+                $entityManager = $serviceManager->get('Doctrine\ORM\EntityManager');
+                return new \Application\Entity\Repository\NotificationRepository($entityManager);
+            },
         ),
     ),
 //    'translator' => array(
