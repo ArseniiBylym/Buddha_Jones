@@ -37,7 +37,7 @@ interface ProjectBoardCampaignExecutiveProps {
 // Component
 @inject('store')
 @observer
-export class ProjectBoardCampaignExecutive extends React.Component<ProjectBoardCampaignExecutiveProps & AppOnlyStoreState,
+export class ProjectBoardCampaignExecutive_old extends React.Component<ProjectBoardCampaignExecutiveProps & AppOnlyStoreState,
     {}> {
     private executiveDropdown: DropdownContainer | null = null;
 

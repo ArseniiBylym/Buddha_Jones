@@ -33,12 +33,20 @@ export interface Client {
 
 export interface ClientDetailsApiResponse {
     id: number;
-    customerName: string;
+    studioId: number;
     cardcode: string | null;
-    contact: ClientContactApiResponse[];
+    cardname: string | null;
+    contact: Array<{
+        id: number;
+        customerId: number;
+        name: string;
+        title: string | null;
+        email: string | null;
+        mobilePhone: string | null;
+    }>;
 }
 
-export interface ClientContactApiResponse {
+/*export interface ClientContactApiResponse {
     id: number;
     name: string;
     customerId: number;
@@ -47,7 +55,7 @@ export interface ClientContactApiResponse {
     mobilePhone: string | null;
     officePhone: string | null;
     postalAddress: string | null;
-}
+}*/
 
 export interface ClientDetails {
     id: number;
@@ -58,11 +66,6 @@ export interface ClientDetails {
 
 export interface ClientContact {
     id: number;
-    clientId: number;
     name: string;
-    cardcode: string | null;
-    email: string | null;
-    mobilePhone: string | null;
-    officePhone: string | null;
-    postalAddress: string | null;
+    title: string | null;
 }

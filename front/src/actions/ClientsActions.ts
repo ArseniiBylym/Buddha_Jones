@@ -178,7 +178,7 @@ export class ClientsActionsClass {
                 if (
                     forceFetch === false &&
                     (clientDetails.loading ||
-                        (clientDetails.loading === false && clientDetails.customer === null) ||
+                        (clientDetails.loading === false && clientDetails.contacts.length === 0) ||
                         DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, clientDetails.lastFetchTimeStamp) === false)
                 ) {
                     toFetch = false;
@@ -193,7 +193,7 @@ export class ClientsActionsClass {
                         id: customerId,
                         lastFetchTimeStamp: 0,
                         loading: true,
-                        customer: null,
+                        contacts: []
                     });
                     clientMatch = ClientsStore.clientsDetails.length - 1;
                 }
@@ -201,23 +201,15 @@ export class ClientsActionsClass {
                 const client = ClientsStore.clientsDetails[clientMatch];
                 const response = (await API.getData(APIPath.CUSTOMER + '/' + customerId)) as ClientDetailsApiResponse;
 
-                client.loading = false;
                 client.lastFetchTimeStamp = Date.now();
-                client.customer = {
-                    id: customerId,
-                    name: (response.customerName) ? response.customerName : null,
-                    cardcode: response.cardcode,
-                    contacts: response.contact.map(creativeExecutive => ({
-                        id: creativeExecutive.id,
-                        clientId: customerId,
-                        name: creativeExecutive.name,
-                        cardcode: creativeExecutive.cardcode,
-                        email: creativeExecutive.email,
-                        mobilePhone: creativeExecutive.mobilePhone,
-                        officePhone: creativeExecutive.officePhone,
-                        postalAddress: creativeExecutive.postalAddress,
-                    })),
-                };
+                client.loading = false;
+                client.contacts = response.contact.map(contact => {
+                    return {
+                        id: contact.customerId,
+                        name: contact.name,
+                        title: contact.title
+                    };
+                });
             }
 
             return true;
