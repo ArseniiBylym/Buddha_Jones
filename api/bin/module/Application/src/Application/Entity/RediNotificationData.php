@@ -24,11 +24,11 @@ class RediNotificationData
     /**
      * @var string
      *
-     * @ORM\Column(name="key", type="string", length=50, nullable=false)
+     * @ORM\Column(name="name", type="string", length=50, nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
      */
-    private $key;
+    private $name;
 
     /**
      * @var string
@@ -63,26 +63,26 @@ class RediNotificationData
     }
 
     /**
-     * Set key
+     * Set name
      *
-     * @param string $key
+     * @param string $name
      * @return RediNotificationData
      */
-    public function setKey($key)
+    public function setName($name)
     {
-        $this->key = $key;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get key
+     * Get name
      *
      * @return string 
      */
-    public function getKey()
+    public function getName()
     {
-        return $this->key;
+        return $this->name;
     }
 
     /**

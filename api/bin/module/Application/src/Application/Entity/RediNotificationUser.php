@@ -30,13 +30,6 @@ class RediNotificationUser
      */
     private $userId;
 
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="complete", type="smallint", nullable=true)
-     */
-    private $complete;
-
 
 
     /**
@@ -83,28 +76,5 @@ class RediNotificationUser
     public function getUserId()
     {
         return $this->userId;
-    }
-
-    /**
-     * Set complete
-     *
-     * @param integer $complete
-     * @return RediNotificationUser
-     */
-    public function setComplete($complete)
-    {
-        $this->complete = $complete;
-
-        return $this;
-    }
-
-    /**
-     * Get complete
-     *
-     * @return integer 
-     */
-    public function getComplete()
-    {
-        return $this->complete;
     }
 }

@@ -29,6 +29,13 @@ class RediNotification
     private $message;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="link", type="text", nullable=true)
+     */
+    private $link;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="complete", type="smallint", nullable=true)
@@ -96,6 +103,29 @@ class RediNotification
     public function getMessage()
     {
         return $this->message;
+    }
+
+    /**
+     * Set link
+     *
+     * @param string $link
+     * @return RediNotification
+     */
+    public function setLink($link)
+    {
+        $this->link = $link;
+
+        return $this;
+    }
+
+    /**
+     * Get link
+     *
+     * @return string 
+     */
+    public function getLink()
+    {
+        return $this->link;
     }
 
     /**

@@ -300,6 +300,16 @@ class ProjectCampaignController extends CustomAbstractActionController
                     $id = (int)$existingProjectToCampaign->getId();
                     $data = $this->getSingle($id);
 
+                    // send notification
+                    // notification for music team
+                    $notificationUsers = array(1,2,3);
+                    $nofiticationData = array(
+                        "projectId" => $existingProjectToCampaign->getProjectId(),
+                        "campaignId" => $existingProjectToCampaign->getCampaignId(),
+                    );
+
+                    $this->_notificationRepo->create('request_music_team', $nofiticationData, $notificationUsers, $this->_user_id);
+                    
                     $response = array(
                         'status' => 1,
                         'message' => 'Request successful.',
