@@ -156,7 +156,6 @@ export class ProjectBoardCampaignStudioContactsForm extends React.Component<Prop
 
         if (this.isFormValid) {
             try {
-                debugger;
                 this.status = 'saving';
 
                 await ClientsActions.createNewStudioContact(this.newStudioContactFormData);

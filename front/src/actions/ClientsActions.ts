@@ -216,13 +216,16 @@ export class ClientsActionsClass {
                 }
 
                 const client = ClientsStore.clientsDetails[clientMatch];
-                const response = (await API.getData(APIPath.CUSTOMER + '/' + customerId)) as ClientDetailsApiResponse;
+                const response = (await API.getData(APIPath.CUSTOMER_CONTACT, {
+                    customer_id: customerId
+                })) as ClientDetailsApiResponse[];
 
                 client.lastFetchTimeStamp = Date.now();
                 client.loading = false;
-                client.contacts = response.contact.map(contact => {
+                client.contacts = response.map(contact => {
                     return {
-                        id: contact.customerId,
+                        id: contact.id,
+                        customerId: contact.customerId,
                         name: contact.name,
                         title: contact.title,
                         email: contact.email,

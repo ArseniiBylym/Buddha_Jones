@@ -62,14 +62,6 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
     }
 
     @computed
-    private get existingContactsFlatIds(): number[] {
-        if (this.props.store && this.props.store.clients && this.props.store.clients.clientsDetailsFlatIds) {
-            return this.props.store.clients.clientsDetailsFlatIds;
-        }
-        return [];
-    }
-
-    @computed
     private get savedContact(): ClientContact | null {
         if (this.props.store && this.selectedContact && this.selectedContact.id && this.studioContactsOptions && this.studioContactsOptions.data) {
             for (let i = 0; i < this.studioContactsOptions.data.length; i++) {
@@ -100,12 +92,6 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
         this.setInitialContactList(this.props.contactList);
     }
 
-/*    public componentWillReceiveProps(nextProps: Props) {
-        if (this.props.value.id !== nextProps.value.id) {
-            this.setInitialCustomerIdSelected(nextProps.value);
-        }
-    }*/
-
     public render() {
         return (
             <div className={classNames(styles.studioContactsContainer, { [styles.editing]: this.isInEditMode })}>
@@ -125,6 +111,11 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                                                 onClick={this.onStudioContactFormShowToggleHandler}
                                                 label={this.getAddNewStudioContactButtonLabel()}
                                             />
+                                            <ButtonClose
+                                                float="right"
+                                                onClick={this.handleEditingToggle}
+                                                label={'Cancel'}
+                                            />
                                             <ButtonSave
                                                 onClick={this.onAssignContactHandler}
                                                 float="right"
@@ -132,11 +123,6 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                                                 labelColor={this.status === 'error' ? 'orange' : 'blue'}
                                                 savingLabel="Saving"
                                                 isSaving={this.status === 'saving'}
-                                            />
-                                            <ButtonClose
-                                                float="right"
-                                                onClick={this.handleEditingToggle}
-                                                label={'Cancel'}
                                             />
                                         </>
                                     }
@@ -179,8 +165,8 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                     options={[
                         ...this.studioContactsOptions.data
                             .filter((contact: ClientContact) => {
-                                let contactMatch: number = this.existingContactsFlatIds.findIndex(id => id === contact.id);
-                                return (contactMatch !== -1) ? true : false;
+                                let contactMatch: number = this.existingContactsFlatIds().findIndex(id => id === contact.id);
+                                return (contactMatch !== -1) ? false : true;
                             })
                             .map((contact: ClientContact) => {
                                 return {
@@ -191,6 +177,7 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                     ]}
                     loadingOptions={this.studioContactsOptions.loading}
                     loadingOptionsLabel={'Loading contacts...'}
+                    height={100}
                 />
             </DropdownContainer>
         );
@@ -280,7 +267,6 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
         event.preventDefault();
         if (this.selectedContact && this.selectedContact.id) {
             try {
-                debugger;
                 this.isContactListLoading = true;
                 this.status = 'saving';
 
@@ -315,5 +301,14 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
             ClientsActions.fetchCustomerDetails(this.props.customerId, force);
         }
     };
+
+    private existingContactsFlatIds(): number[] {
+        if (this.props.contactList) {
+            return this.props.contactList.map((contact: ClientContact) => {
+                return contact.id;
+            });
+        }
+        return [];
+    }
 
 }

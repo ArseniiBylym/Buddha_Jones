@@ -174,6 +174,7 @@ export class ProjectDetailsActionsClass {
                     customerContact: c.customerContact.map(contact => {
                         return {
                             id: contact.id,
+                            customerId: contact.customerId,
                             name: contact.name,
                             title: contact.title,
                             email: contact.email
