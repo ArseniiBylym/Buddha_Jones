@@ -125,7 +125,6 @@ export class ProjectDetailsActionsClass {
                     billingTeam: c.billingUser,
                     designTeam: c.designer,
                     editorialTeam: c.editor,
-                    customerContact: c.customerContact,
                     hidden: false,
                     spots:
                         typeof c.spot !== 'undefined' && c.spot
@@ -171,7 +170,15 @@ export class ProjectDetailsActionsClass {
                     },
                     approvedByBilling: c.approvedByBilling,
                     channelId: c.channelId,
-                    channelName: c.channelName
+                    channelName: c.channelName,
+                    customerContact: c.customerContact.map(contact => {
+                        return {
+                            id: contact.id,
+                            name: contact.name,
+                            title: contact.title,
+                            email: contact.email
+                        };
+                    })
                 }));
             }
 
@@ -737,22 +744,15 @@ export class ProjectDetailsActionsClass {
     };
 
     @action
-    public changeProjectCampaignCreativeExecutive = async (
-        projectId: number,
+    public changeProjectCampaignAssignCustomerContact = async (
         projectCampaignId: number,
-        executiveId: number | null
+        contactId: number,
     ): Promise<boolean> => {
         try {
             await API.postData(APIPath.ASSIGN_CONTACT_TO_PROJECT_CAMPAIGN, {
-                project_id: projectId,
                 project_campaign_id: projectCampaignId,
-                customer_contact_id: executiveId,
+                customer_contact_id: contactId
             });
-
-            const campaign = this.findCampaign(projectId, projectCampaignId);
-            if (campaign) {
-                campaign.firstPointOfContactId = executiveId;
-            }
 
             return true;
         } catch (error) {

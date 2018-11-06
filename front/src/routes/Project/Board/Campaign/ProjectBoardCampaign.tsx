@@ -15,7 +15,6 @@ import { UserPermission, UserPermissionKey } from 'types/projectPermissions';
 import { ProjectsVersionsStore } from '../../../../store/AllStores';
 import { ProjectBoardCampaignChannel } from './Channel';
 import { ProjectBoardCampaignStudioContacts } from './StudioContacts/ProjectBoardCampaignStudioContacts';
-import { ClientsActions } from '../../../../actions';
 import { ClientContact } from '../../../../types/clients';
 
 const zenscroll = require('zenscroll');
@@ -282,27 +281,6 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
         return false;
     }
 
-    @computed
-    private get studioContacts(): {data: ClientContact[], loading: boolean} {
-        let defaultReturn = {
-            data: [],
-            loading: false
-        };
-        if (this.props.store && this.props.campaign && this.props.campaign.clientSelected && this.props.campaign.clientSelected.id) {
-            let customerId: number = this.props.campaign.clientSelected.id;
-            let clientMatch: number = this.props.store.clients.clientsDetailsFlatIds.findIndex(id => id === customerId);
-            if (clientMatch !== -1 && this.props.store.clients.clientsDetails[clientMatch].contacts) {
-                return {
-                    data: this.props.store.clients.clientsDetails[clientMatch].contacts,
-                    loading: this.props.store.clients.clientsDetails[clientMatch].loading
-                };
-            } else {
-                return defaultReturn;
-            }
-        }
-        return defaultReturn;
-    }
-
     private campaignContainer: HTMLDivElement | null = null;
     private spotsContainer: HTMLDivElement | null = null;
 
@@ -317,14 +295,6 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
             }
         );
 
-        reaction(
-            () => this.campaignIsExpanded,
-            campaignIsExpanded => {
-                if (campaignIsExpanded) {
-                    this.loadStudioContacts.call(this, false);
-                }
-            }
-        );
     }
 
     public componentWillUpdate(nextProps: ProjectBoardCampaignProps) {
@@ -403,10 +373,10 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                         />
 
                         <ProjectBoardCampaignStudioContacts
+                            projectCampaignId={this.props.campaign.projectCampaignId}
                             customerId={this.props.campaign.clientSelected.id}
-                            contactsData={this.studioContacts.data}
-                            contactsLoading={this.studioContacts.loading}
-                            onUpdateContacts={this.loadStudioContacts.bind(this, true)}
+                            contactList={this.props.campaign.customerContact}
+                            onUpdateContacts={this.updateContacts}
                         />
 
                         {/*<ProjectBoardCampaignExecutive
@@ -496,10 +466,8 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
         );
     }
 
-    private loadStudioContacts = (force: boolean = false, e: React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLInputElement>) => {
-        if (this.props && this.props.campaign && this.props.campaign.clientSelected && this.props.campaign.clientSelected.id) {
-            ClientsActions.fetchCustomerDetails(this.props.campaign.clientSelected.id, force);
-        }
+    private updateContacts = (savedContact: ClientContact) => {
+        debugger;
     };
 
     private referenceCampaignContainer = (ref: HTMLDivElement) => {

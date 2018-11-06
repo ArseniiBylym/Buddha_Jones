@@ -2,8 +2,7 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 import { action, computed, observable } from 'mobx';
 import { ButtonClose, ButtonSave } from '../../../../../components/Button';
-import { NewStudioContactFormData } from '../../../../../actions/ClientsActions';
-import { ClientsActions } from '../../../../../actions';
+import { ClientsActions, NewStudioContactFormData } from '../../../../../actions';
 import { Input } from '../../../../../components/Form';
 
 // Styles
@@ -11,7 +10,7 @@ import * as styles from './ProjectBoardCampaignStudioContactsForm.scss';
 
 // Props
 interface Props {
-    onUpdateContacts: () => void | null;
+    onUpdateStudioContactOptions: () => void | null;
     onToggleEditMode: () => void | null;
     customerId: number | null;
 }
@@ -164,7 +163,7 @@ export class ProjectBoardCampaignStudioContactsForm extends React.Component<Prop
 
                 this.status = 'success';
                 this.setFormInitialState();
-                this.props.onUpdateContacts();
+                this.props.onUpdateStudioContactOptions();
             } catch (error) {
                 this.status = 'error';
                 throw error;
