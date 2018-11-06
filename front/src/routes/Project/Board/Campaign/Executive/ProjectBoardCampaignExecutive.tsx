@@ -1,3 +1,4 @@
+/*
 import * as React from 'react';
 import * as classNames from 'classnames';
 import { observable, computed, action } from 'mobx';
@@ -37,7 +38,7 @@ interface ProjectBoardCampaignExecutiveProps {
 // Component
 @inject('store')
 @observer
-export class ProjectBoardCampaignExecutive_old extends React.Component<ProjectBoardCampaignExecutiveProps & AppOnlyStoreState,
+export class ProjectBoardCampaignExecutive extends React.Component<ProjectBoardCampaignExecutiveProps & AppOnlyStoreState,
     {}> {
     private executiveDropdown: DropdownContainer | null = null;
 
@@ -319,3 +320,4 @@ export class ProjectBoardCampaignExecutive_old extends React.Component<ProjectBo
         }
     };
 }
+*/

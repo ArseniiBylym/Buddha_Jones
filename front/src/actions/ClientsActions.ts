@@ -25,11 +25,28 @@ export interface NewCustomerFormData {
     billing_phone: string;
 }
 
+export interface NewStudioContactFormData {
+    customer_id: number | null;
+    name: string;
+    title: string;
+    email: string;
+    mobile_phone: string;
+}
+
 export class ClientsActionsClass {
     @action
     public createNewCustomer = async (customer: NewCustomerFormData | null): Promise<any> => {
         try {
             await API.postData(APIPath.CUSTOMER_NEW, customer as Object);
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    @action
+    public createNewStudioContact = async (studioContact: NewStudioContactFormData | null): Promise<any> => {
+        try {
+            await API.postData(APIPath.CUSTOMER_CONTACT , studioContact as Object);
         } catch (error) {
             throw error;
         }
@@ -207,7 +224,8 @@ export class ClientsActionsClass {
                     return {
                         id: contact.customerId,
                         name: contact.name,
-                        title: contact.title
+                        title: contact.title,
+                        email: contact.email,
                     };
                 });
             }

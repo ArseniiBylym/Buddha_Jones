@@ -166,12 +166,12 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         if (
             clientDetailsIndex !== -1 &&
             clientsDetails[clientDetailsIndex] &&
-            clientsDetails[clientDetailsIndex].customer !== null
+            clientsDetails[clientDetailsIndex].contacts !== null
         ) {
             const details = clientsDetails[clientDetailsIndex];
             return {
                 isLoading: details.loading,
-                contacts: details.customer ? details.customer.contacts : [],
+                contacts: details.contacts,
             };
         } else {
             return {

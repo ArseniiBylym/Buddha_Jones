@@ -68,4 +68,5 @@ export interface ClientContact {
     id: number;
     name: string;
     title: string | null;
+    email: string | null;
 }
