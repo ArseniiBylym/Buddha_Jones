@@ -5,12 +5,12 @@ namespace Application\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * RediNotificationMessage
+ * RediNotificationMessageType
  *
- * @ORM\Table(name="redi_notification_message", indexes={@ORM\Index(name="key", columns={"name"})})
+ * @ORM\Table(name="redi_notification_message_type", indexes={@ORM\Index(name="key", columns={"name"})})
  * @ORM\Entity
  */
-class RediNotificationMessage
+class RediNotificationMessageType
 {
     /**
      * @var integer
@@ -65,7 +65,7 @@ class RediNotificationMessage
      * Set name
      *
      * @param string $name
-     * @return RediNotificationMessage
+     * @return RediNotificationMessageType
      */
     public function setName($name)
     {
@@ -88,7 +88,7 @@ class RediNotificationMessage
      * Set message
      *
      * @param string $message
-     * @return RediNotificationMessage
+     * @return RediNotificationMessageType
      */
     public function setMessage($message)
     {
@@ -111,7 +111,7 @@ class RediNotificationMessage
      * Set link
      *
      * @param string $link
-     * @return RediNotificationMessage
+     * @return RediNotificationMessageType
      */
     public function setLink($link)
     {
@@ -134,7 +134,7 @@ class RediNotificationMessage
      * Set params
      *
      * @param string $params
-     * @return RediNotificationMessage
+     * @return RediNotificationMessageType
      */
     public function setParams($params)
     {

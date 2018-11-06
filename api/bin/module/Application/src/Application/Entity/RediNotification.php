@@ -22,6 +22,13 @@ class RediNotification
     private $id;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="message_type_id", type="integer", nullable=true)
+     */
+    private $messageTypeId;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="message", type="text", nullable=true)
@@ -80,6 +87,29 @@ class RediNotification
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set messageTypeId
+     *
+     * @param integer $messageTypeId
+     * @return RediNotification
+     */
+    public function setMessageTypeId($messageTypeId)
+    {
+        $this->messageTypeId = $messageTypeId;
+
+        return $this;
+    }
+
+    /**
+     * Get messageTypeId
+     *
+     * @return integer 
+     */
+    public function getMessageTypeId()
+    {
+        return $this->messageTypeId;
     }
 
     /**

@@ -30,64 +30,117 @@ class NotificationRepository extends EntityRepository
 
   }
 
+  /**
+   * Create notification
+   *
+   * @param string $key
+   * @param array $data
+   * @param array $notificationUserIds
+   * @param int $createdByUserId
+   * @return void
+   */
   public function create($key, $data, $notificationUserIds, $createdByUserId)
   {
-    $messageData = $this->getFullMessageData($key, $data);
+    try {
+      $messageData = $this->getFullMessageData($key, $data);
 
-    if ($messageData) {
-      $now = new \DateTime('now');
-      $notification = new RediNotification();
-      $notification->setMessage($messageData['message']);
-      $notification->setLink($messageData['link']);
-      $notification->setComplete(0);
-      $notification->setCreatedby($createdByUserId);
-      $notification->setCreatedAt($now);
-      $this->_entityManager->persist($notification);
-      $this->_entityManager->flush();
+      if ($messageData) {
+        $now = new \DateTime('now');
+        $notification = new RediNotification();
+        $notification->setMessageTypeId($messageData['typeId']);
+        $notification->setMessage($messageData['message']);
+        $notification->setLink($messageData['link']);
+        $notification->setComplete(0);
+        $notification->setCreatedby($createdByUserId);
+        $notification->setCreatedAt($now);
+        $this->_entityManager->persist($notification);
+        $this->_entityManager->flush();
 
-      $notificationId = $notification->getId();
+        $notificationId = $notification->getId();
 
-      foreach ($data as $key => $value) {
-        $notificationData = new RediNotificationData();
-        $notificationData->setNotificatonId($notificationId);
-        $notificationData->setName($key);
-        $notificationData->setValue($value);
+        foreach ($data as $key => $value) {
+          $notificationData = new RediNotificationData();
+          $notificationData->setNotificatonId($notificationId);
+          $notificationData->setName($key);
+          $notificationData->setValue($value);
 
-        $this->_entityManager->persist($notificationData);
+          $this->_entityManager->persist($notificationData);
+        }
+
+        foreach ($notificationUserIds as $userId) {
+          $notificationUser = new RediNotificationUser();
+          $notificationUser->setNotificationId($notificationId);
+          $notificationUser->setUserId($userId);
+
+          $this->_entityManager->persist($notificationUser);
+        }
+
+        $this->_entityManager->flush();
       }
-
-      foreach($notificationUserIds as $userId) {
-        $notificationUser = new RediNotificationUser();
-        $notificationUser->setNotificationId($notificationId);
-        $notificationUser->setUserId($userId);
-
-        $this->_entityManager->persist($notificationUser);
-      }
-
-      $this->_entityManager->flush();
+    } catch (\Exception $e) {
+      // do something when exception occures
+      echo $e->getMessage(); exit;
     }
   }
 
+  /**
+   * Get full message and link from general structured message
+   *
+   * @param string $name
+   * @param array $data
+   * @return void
+   */
   public function getFullMessageData($name, $data)
   {
-    $messageData = $this->getNotificationMessageByName($name);
+    $messageData = $this->getNotificationMessageTypeByName($name);
 
     if ($messageData) {
+      // check if message data valid
+      $params = $messageData['params'];
+      $message = $messageData['message'];
+      $link = $messageData['link'];
+      $typeId = $messageData['id'];
+
+      if ($params) {
+        $params = json_decode($params, true);
+
+        if ($params) {
+          $paramsNotProvided = array_filter($params, function ($param, $paramKey) use ($data) {
+            return (!$param || !isset($data[$paramKey]));
+          }, ARRAY_FILTER_USE_BOTH);
+
+          if (count($paramsNotProvided)) {
+            throw new \Exception('Required parameter not provided for notification message type: ' . json_encode($paramsNotProvided));
+          }
+        }
+      }
+      foreach ($data as $key => $value) {
+        $value = trim($value);
+        if ($message) {
+          $message = str_replace("#{" . $key . "}", $value, $message);
+        }
+
+        if ($link) {
+          $link = str_replace("#{" . $key . "}", $value, $link);
+        }
+      }
+
       return array(
-        "message" => $messageData['message'],
-        "link" => $messageData['link'],
+        "typeId" => $typeId,
+        "message" => $message,
+        "link" => $link,
       );
     }
 
     return null;
   }
 
-  public function getNotificationMessageByName($name)
+  public function getNotificationMessageTypeByName($name)
   {
     $dql = "SELECT 
               nm
             FROM
-              \Application\Entity\RediNotificationMessage nm
+              \Application\Entity\RediNotificationMessageType nm
             WHERE nm.name = :name ";
 
     $query = $this->getEntityManager()->createQuery($dql);

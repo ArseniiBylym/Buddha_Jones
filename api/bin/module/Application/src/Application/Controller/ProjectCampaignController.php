@@ -199,6 +199,24 @@ class ProjectCampaignController extends CustomAbstractActionController
 
                 if ($existingProjectToCampaign) {
                     $campaign = $this->_campaignRepository->find($existingProjectToCampaign->getCampaignId());
+                    $project = $this->_projectRepository->find($existingProjectToCampaign->getProjectId());
+                    $studio = null;
+
+                    if ($project->getStudioId()) {
+                        $studio = $this->_studioRepository->find($project->getStudioId());
+                    }
+
+                    $nofiticationData = array(
+                        "projectId" => $existingProjectToCampaign->getProjectId(),
+                        "projectName" => $project->getProjectName(),
+                        "campaignId" => $existingProjectToCampaign->getCampaignId(),
+                        "campaignName" => $campaign->getCampaignName(),
+                        "studioId" => $studio ? $studio->getId() : null,
+                        "studioName" => $studio ? $studio->getStudioName() : null,
+                    );
+
+                    $projectCampaignUsers = $this->_campaignRepo->getCampaignProjectPeople('user', $projectCampaignId, null, null, null, '');
+                    $notificationUsers = array_column($projectCampaignUsers, 'userId');
 
                     if ($requestMusicTeam != $existingProjectToCampaign->getRequestMusicTeam()
                         || $musicTeamNote != $existingProjectToCampaign->getMusicTeamNotes()) {
@@ -212,6 +230,12 @@ class ProjectCampaignController extends CustomAbstractActionController
                         $projectHistory->setCreatedAt(new \DateTime('now'));
                         $this->_em->persist($projectHistory);
                         $this->_em->flush();
+
+                        // send notification
+                        // notification for music team
+                        if($requestMusicTeam) {
+                            $this->_notificationRepo->create('request_music_team', $nofiticationData, $notificationUsers, $this->_user_id); 
+                        }
                     }
 
                     if ($requestWritingTeam != $existingProjectToCampaign->getRequestWritingTeam()
@@ -300,16 +324,6 @@ class ProjectCampaignController extends CustomAbstractActionController
                     $id = (int)$existingProjectToCampaign->getId();
                     $data = $this->getSingle($id);
 
-                    // send notification
-                    // notification for music team
-                    $notificationUsers = array(1,2,3);
-                    $nofiticationData = array(
-                        "projectId" => $existingProjectToCampaign->getProjectId(),
-                        "campaignId" => $existingProjectToCampaign->getCampaignId(),
-                    );
-
-                    $this->_notificationRepo->create('request_music_team', $nofiticationData, $notificationUsers, $this->_user_id);
-                    
                     $response = array(
                         'status' => 1,
                         'message' => 'Request successful.',
