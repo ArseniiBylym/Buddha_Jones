@@ -37,11 +37,13 @@ export type ProjectPickerValues = {
     projectCampaign: ProjectPickerGroupValues | null;
     spot: ProjectPickerGroupValues | null;
     version: ProjectPickerGroupValues | null;
-    customerId: number | null;
+    customerId: number | null | undefined;
+
 };
 
 export interface ProjectPickerGroupValues {
     id: number;
+    campaignId?: number | null;
     name: string;
 }
 
@@ -580,6 +582,7 @@ export class ProjectPicker extends React.Component<ProjectPickerPropsTypes, {}> 
                             result.section === 'projectCampaign'
                                 ? {
                                     id: result.id,
+                                    campaignId: result.campaignId ? result.campaignId : null,
                                     name: result.name,
                                 }
                                 : result.section === 'project'

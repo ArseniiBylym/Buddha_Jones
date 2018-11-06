@@ -37,6 +37,7 @@ export interface ProjectPickerResult {
     name: string;
     clientId: number | null;
     clientName: string | null;
+    campaignId?: number | null;
 }
 
 // Props
@@ -308,6 +309,7 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
                                 : ''),
                         clientId: null,
                         clientName: null,
+                        campaignId: result.campaignId
                     };
                 });
             } else if (this.props.sectionOpen === 'spot') {
@@ -345,7 +347,8 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
                         result.id,
                         result.name,
                         result.clientId,
-                        result.clientName
+                        result.clientName,
+                        result.campaignId ? result.campaignId : null
                     )}
                     label={{
                         text: result.name,
@@ -371,7 +374,8 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         id: number,
         name: string,
         clientId: number | null,
-        clientName: string | null
+        clientName: string | null,
+        campaignId: number | null = null
     ) => (e: React.MouseEvent<HTMLButtonElement>) => {
         this.props.onResultPicked({
             section: section,
@@ -379,6 +383,7 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
             name: name,
             clientId: clientId,
             clientName: clientName,
+            campaignId: campaignId
         });
     };
 
@@ -432,7 +437,7 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
                         value
                             ? {
                                 projectId: value.project ? value.project.id : null,
-                                projectCampaignId: value.projectCampaign ? value.projectCampaign.id : null,
+                                projectCampaignId: value.projectCampaign && value.projectCampaign.campaignId ? value.projectCampaign.campaignId : null
                             }
                             : null,
                         search,

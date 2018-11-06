@@ -463,7 +463,7 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                 this.submittingStatus = SubmittingStatus.error;
                 return;
             }
-            
+
             const { timeEntry } = this.props.store;
 
             this.submittingStatus = SubmittingStatus.saving;
