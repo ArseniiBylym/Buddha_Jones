@@ -15,7 +15,6 @@ import { UserPermission, UserPermissionKey } from 'types/projectPermissions';
 import { ProjectsVersionsStore } from '../../../../store/AllStores';
 import { ProjectBoardCampaignChannel } from './Channel';
 import { ProjectBoardCampaignStudioContacts } from './StudioContacts/ProjectBoardCampaignStudioContacts';
-import { ClientContact } from '../../../../types/clients';
 
 const zenscroll = require('zenscroll');
 
