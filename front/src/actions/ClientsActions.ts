@@ -25,11 +25,28 @@ export interface NewCustomerFormData {
     billing_phone: string;
 }
 
+export interface NewStudioContactFormData {
+    customer_id: number | null;
+    name: string;
+    title: string;
+    email: string;
+    mobile_phone: string;
+}
+
 export class ClientsActionsClass {
     @action
     public createNewCustomer = async (customer: NewCustomerFormData | null): Promise<any> => {
         try {
             await API.postData(APIPath.CUSTOMER_NEW, customer as Object);
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    @action
+    public createNewStudioContact = async (studioContact: NewStudioContactFormData | null): Promise<any> => {
+        try {
+            await API.postData(APIPath.CUSTOMER_CONTACT , studioContact as Object);
         } catch (error) {
             throw error;
         }
@@ -178,7 +195,7 @@ export class ClientsActionsClass {
                 if (
                     forceFetch === false &&
                     (clientDetails.loading ||
-                        (clientDetails.loading === false && clientDetails.customer === null) ||
+                        (clientDetails.loading === false && clientDetails.contacts.length === 0) ||
                         DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, clientDetails.lastFetchTimeStamp) === false)
                 ) {
                     toFetch = false;
@@ -193,31 +210,27 @@ export class ClientsActionsClass {
                         id: customerId,
                         lastFetchTimeStamp: 0,
                         loading: true,
-                        customer: null,
+                        contacts: []
                     });
                     clientMatch = ClientsStore.clientsDetails.length - 1;
                 }
 
                 const client = ClientsStore.clientsDetails[clientMatch];
-                const response = (await API.getData(APIPath.CUSTOMER + '/' + customerId)) as ClientDetailsApiResponse;
+                const response = (await API.getData(APIPath.CUSTOMER_CONTACT, {
+                    customer_id: customerId
+                })) as ClientDetailsApiResponse[];
 
-                client.loading = false;
                 client.lastFetchTimeStamp = Date.now();
-                client.customer = {
-                    id: customerId,
-                    name: (response.customerName) ? response.customerName : null,
-                    cardcode: response.cardcode,
-                    contacts: response.contact.map(creativeExecutive => ({
-                        id: creativeExecutive.id,
-                        clientId: customerId,
-                        name: creativeExecutive.name,
-                        cardcode: creativeExecutive.cardcode,
-                        email: creativeExecutive.email,
-                        mobilePhone: creativeExecutive.mobilePhone,
-                        officePhone: creativeExecutive.officePhone,
-                        postalAddress: creativeExecutive.postalAddress,
-                    })),
-                };
+                client.loading = false;
+                client.contacts = response.map(contact => {
+                    return {
+                        id: contact.id,
+                        customerId: contact.customerId,
+                        name: contact.name,
+                        title: contact.title,
+                        email: contact.email,
+                    };
+                });
             }
 
             return true;

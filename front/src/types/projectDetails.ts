@@ -1,5 +1,6 @@
 import { DateObjectFromApi } from './api';
 import { SpotBillingType } from './projectDetailsEnums';
+import { ClientContact } from './clients';
 
 export interface ProjectCreateData {
     id: number;
@@ -96,6 +97,7 @@ export interface CampaignDetails {
     approvedByBilling: boolean;
     channelId: number | null;
     channelName: string | null;
+    customerContact: ClientContact[];
 }
 
 export interface SpotDetails {
@@ -187,14 +189,23 @@ interface ProjectDetailsCampaignFromApi {
     designer: ProjectCampaignUserFromApi[];
     editor: ProjectCampaignUserFromApi[];
     billingUser: ProjectCampaignBillingUserFromApi[];
-    customerContact: ProjectCampaignUserFromApi[];
     approvedByBilling: boolean;
     channelId: number | null;
     channelName: string | null;
+    customerContact: ProjectDetailsCustomerContactFromApi[];
 }
 
 export interface ProjectSpotCreateFromApi {
     spot_id: string;
+}
+
+export interface ProjectDetailsCustomerContactFromApi {
+    id: number;
+    customerId: number;
+    name: string;
+    title: string | null;
+    email: string | null;
+    mobilePhone: string | null;
 }
 
 export interface ProjectDetailsSpotFromApi {

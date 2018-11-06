@@ -6,7 +6,7 @@ import { upperFirst as _upperFirst } from 'lodash';
 // Styles
 const s = require('./Input.css');
 
-// Types
+// Type
 type InputAlignProp = 'left' | 'center' | 'right';
 export type InputColorProp = 'default' | 'blue' | 'brown' | 'blueFill' | 'brownFill' | 'greenFill' | 'red';
 type InputType = 'text' | 'email' | 'password';

@@ -10,11 +10,11 @@ import { ProjectBoardCampaignWritingAndMusicTeams } from './WritingAndMusicTeams
 import { ProjectBoardCampaignsSpots } from './Spots';
 import { ProjectBoardCampaignDescription } from './Description';
 import { ProjectBoardCampaignMisc } from './Misc';
-import { ProjectBoardCampaignExecutive } from './Executive';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { UserPermission, UserPermissionKey } from 'types/projectPermissions';
 import { ProjectsVersionsStore } from '../../../../store/AllStores';
 import { ProjectBoardCampaignChannel } from './Channel';
+import { ProjectBoardCampaignStudioContacts } from './StudioContacts/ProjectBoardCampaignStudioContacts';
 
 const zenscroll = require('zenscroll');
 
@@ -125,23 +125,23 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
         return false;
     }
 
-    @computed
+/*    @computed
     private get userCanViewCreativeExecutive(): boolean {
         if (this.userPermissions[UserPermissionKey.CampaignClientExecutive]) {
             return this.userPermissions[UserPermissionKey.CampaignClientExecutive].canView;
         }
 
         return false;
-    }
+    }*/
 
-    @computed
+/*    @computed
     private get userCanEditCreativeExecutive(): boolean {
         if (this.userPermissions[UserPermissionKey.CampaignClientExecutive]) {
             return this.userPermissions[UserPermissionKey.CampaignClientExecutive].canEdit;
         }
 
         return false;
-    }
+    }*/
 
     @computed
     private get userCanViewCreativeTeam(): boolean {
@@ -293,6 +293,7 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                 this.spotsAreExpanded = true;
             }
         );
+
     }
 
     public componentWillUpdate(nextProps: ProjectBoardCampaignProps) {
@@ -370,7 +371,13 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                             campaign={this.props.campaign}
                         />
 
-                        <ProjectBoardCampaignExecutive
+                        <ProjectBoardCampaignStudioContacts
+                            projectCampaignId={this.props.campaign.projectCampaignId}
+                            customerId={this.props.campaign.clientSelected.id}
+                            contactList={this.props.campaign.customerContact}
+                        />
+
+                        {/*<ProjectBoardCampaignExecutive
                             userCanViewExecutive={this.userCanViewCreativeExecutive}
                             userCanEditExecutive={this.userCanEditCreativeExecutive}
                             clientId={this.props.clientId}
@@ -379,7 +386,7 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                             projectCampaignId={this.props.campaign.projectCampaignId}
                             campaignId={this.props.campaign.campaignId}
                             executiveId={this.props.campaign.firstPointOfContactId}
-                        />
+                        />*/}
 
                         <ProjectBoardCampaignPeople
                             userCanView={this.userCanViewCreativeTeam}

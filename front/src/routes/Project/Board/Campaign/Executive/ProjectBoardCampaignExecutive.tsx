@@ -1,3 +1,4 @@
+/*
 import * as React from 'react';
 import * as classNames from 'classnames';
 import { observable, computed, action } from 'mobx';
@@ -319,3 +320,4 @@ export class ProjectBoardCampaignExecutive extends React.Component<ProjectBoardC
         }
     };
 }
+*/
