@@ -20,7 +20,6 @@ interface ProjectBoardCampaignStudioContactsProps {
     projectCampaignId: number;
     customerId: number | null;
     contactList: ClientContact[];
-    onUpdateContacts: (savedContact: ClientContact) => void | null;
 }
 
 // Types

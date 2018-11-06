@@ -376,7 +376,6 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                             projectCampaignId={this.props.campaign.projectCampaignId}
                             customerId={this.props.campaign.clientSelected.id}
                             contactList={this.props.campaign.customerContact}
-                            onUpdateContacts={this.updateContacts}
                         />
 
                         {/*<ProjectBoardCampaignExecutive
@@ -465,10 +464,6 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
             </div>
         );
     }
-
-    private updateContacts = (savedContact: ClientContact) => {
-        debugger;
-    };
 
     private referenceCampaignContainer = (ref: HTMLDivElement) => {
         this.campaignContainer = ref;
