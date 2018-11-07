@@ -494,6 +494,7 @@ export class TimeEntryActionsClass {
                         ? values.projectCampaign
                         ? {
                             id: values.projectCampaign.id,
+                            campaignId: values.projectCampaign.campaignId,
                             name: values.projectCampaign.name,
                         }
                         : null
