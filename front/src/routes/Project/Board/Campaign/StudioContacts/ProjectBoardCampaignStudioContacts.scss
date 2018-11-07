@@ -94,8 +94,18 @@
     }
 
     .newStudioContactButton {
-        float: left;
         height: 27px;
+    }
+
+    .saveStudioContactButton {
         margin-right: 20px;
+    }
+
+    .studioContactRemoveButton {
+        width: 25px;
+        height: 25px;
+        color: red;
+        font-weight: bolder;
+        cursor: pointer;
     }
 }

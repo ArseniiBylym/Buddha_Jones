@@ -47,6 +47,7 @@ export class ButtonSave extends React.Component<ButtonSaveProps, {}> {
     public render() {
         return this.props.isSaving === false ? (
             <Button
+                className={this.props.className}
                 onClick={this.props.onClick}
                 float={this.props.float}
                 label={

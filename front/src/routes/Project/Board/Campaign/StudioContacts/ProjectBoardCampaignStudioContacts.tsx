@@ -4,7 +4,7 @@ import { inject, observer } from 'mobx-react';
 import { AppOnlyStoreState } from '../../../../../store/AllStores';
 import { ClientContact } from '../../../../../types/clients';
 import { action, computed, observable, reaction } from 'mobx';
-import { Col, Row, Section } from '../../../../../components/Section';
+import { ClearFix, Col, Row, Section } from '../../../../../components/Section';
 import { Button, ButtonClose, ButtonEdit, ButtonLabel, ButtonSave } from '../../../../../components/Button';
 import { Paragraph } from '../../../../../components/Content';
 import { ProjectBoardCampaignStudioContactsForm } from './ProjectBoardCampaignStudioContactsForm';
@@ -104,24 +104,25 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                                 <>
                                     {(this.isInEditMode && !this.isStudioContactFormShow) &&
                                         <>
-                                            {this.renderDropdownList()}
-                                            <Button
-                                                className={styles.newStudioContactButton}
-                                                onClick={this.onStudioContactFormShowToggleHandler}
-                                                label={this.getAddNewStudioContactButtonLabel()}
-                                            />
                                             <ButtonClose
                                                 float="right"
                                                 onClick={this.handleEditingToggle}
                                                 label={'Cancel'}
                                             />
                                             <ButtonSave
+                                                className={styles.saveStudioContactButton}
                                                 onClick={this.onAssignContactHandler}
                                                 float="right"
                                                 label={this.status === 'error' ? 'Could not save, please try again' : 'Save'}
                                                 labelColor={this.status === 'error' ? 'orange' : 'blue'}
                                                 savingLabel="Saving"
                                                 isSaving={this.status === 'saving'}
+                                            />
+                                            <ClearFix/>
+                                            <Button
+                                                className={styles.newStudioContactButton}
+                                                onClick={this.onStudioContactFormShowToggleHandler}
+                                                label={this.getAddNewStudioContactButtonLabel()}
                                             />
                                         </>
                                     }
@@ -207,9 +208,15 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                                             <p className={styles.title}>
                                                 <span>{(contact.title) ? contact.title : 'No role assigned'}</span>
                                             </p>
+                                            <span onClick={this.handleContactListRemove.bind(this, ind)} className={styles.studioContactRemoveButton}>X</span>
                                         </span>
                                     </li>
                                 ))}
+                                {(this.isInEditMode && !this.isStudioContactFormShow) &&
+                                    <li key={`studio-contact-${this.contactList.length + 1}`}>
+                                        {this.renderDropdownList()}
+                                    </li>
+                                }
                             </ul>
                         )}
                     </Col>
@@ -240,6 +247,12 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
     @action
     private handleEditingToggle = (): void => {
         this.isInEditMode = !this.isInEditMode;
+    };
+
+    @action
+    private handleContactListRemove = (ind: number): void => {
+        debugger;
+        /*this.isInEditMode = !this.isInEditMode;*/
     };
 
     @action
