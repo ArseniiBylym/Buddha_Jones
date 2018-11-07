@@ -198,6 +198,7 @@ export class ProjectsCampaignsSpotsActionsClass {
             search = this.prepareSearchQuery(search);
 
             let spotData = this.getSpotResult(userId, ids, search, page);
+            
             if (spotData === null) {
                 ProjectsCampaignsSpotsStore.spots.push({
                     projectId: ids ? ids.projectId : null,
@@ -210,6 +211,7 @@ export class ProjectsCampaignsSpotsActionsClass {
                     isLoading: false,
                     results: [],
                 });
+                
                 spotData = ProjectsCampaignsSpotsStore.spots[ProjectsCampaignsSpotsStore.spots.length - 1];
             }
 

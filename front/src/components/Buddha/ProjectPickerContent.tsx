@@ -30,18 +30,16 @@ import { truncate } from 'lodash-es';
 // Styles
 const s = require('./ProjectPicker.css');
 
-// Types
 export interface ProjectPickerResult {
     section: ProjectPickerSections;
     id: number;
+    campaignId: number | null;
     name: string;
     clientId: number | null;
     clientName: string | null;
-    campaignId?: number | null;
 }
 
-// Props
-interface ProjectPickerContentProps {
+interface Props {
     onResultPicked: (result: ProjectPickerResult | null) => void;
     onSearchQueryChange: (query: string) => void;
     onSectionClose: () => void;
@@ -61,9 +59,8 @@ interface ProjectPickerContentProps {
     userCanViewProjectCodeName: boolean;
 }
 
-// Component
 @observer
-export class ProjectPickerContent extends React.Component<ProjectPickerContentProps, {}> {
+export class ProjectPickerContent extends React.Component<Props, {}> {
     @observable private resultsPage: number = 1;
 
     @computed
@@ -77,7 +74,7 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         return ProjectsCampaignsSpotsActions.prepareSearchQuery(this.props.searchQuery);
     }
 
-    constructor(props: ProjectPickerContentProps) {
+    constructor(props: Props) {
         super(props);
 
         this.fetchResultsDebounced = debounce(this.fetchResultsDebounced, 300);
@@ -114,7 +111,7 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         }
     }
 
-    public componentWillReceiveProps(nextProps: ProjectPickerContentProps) {
+    public componentWillReceiveProps(nextProps: Props) {
         if (nextProps.sectionOpen && this.props.value !== nextProps.value) {
             this.fetchResults(
                 nextProps.forUserId,
@@ -154,44 +151,46 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         const currentResults =
             this.props.sectionOpen === 'project'
                 ? ProjectsCampaignsSpotsActions.getProjectResult(forUserId, this.search, this.resultsPage)
-                : this.props.sectionOpen === 'projectCampaign' ?
-                ProjectsCampaignsSpotsActions.getCampaignResult(
+                : this.props.sectionOpen === 'projectCampaign'
+                ? ProjectsCampaignsSpotsActions.getCampaignResult(
                     forUserId,
                     value && value.project ? value.project.id : null,
                     this.search,
                     this.resultsPage
-                ) :
-                this.props.sectionOpen === 'spot' ?
-                    ProjectsCampaignsSpotsActions.getSpotResult(
+                )
+                : this.props.sectionOpen === 'spot'
+                    ? ProjectsCampaignsSpotsActions.getSpotResult(
                         forUserId,
                         value && (value.project || value.projectCampaign)
                             ? {
                                 projectId: value.project ? value.project.id : null,
-                                projectCampaignId: value.projectCampaign ? value.projectCampaign.id : null,
+                                projectCampaignId: value.projectCampaign && value.projectCampaign.campaignId ?
+                                    value.projectCampaign.campaignId :
+                                    null,
                             }
                             : null,
                         this.search,
                         this.resultsPage
-                    ) :
-                    this.props.sectionOpen === 'version' ?
-                        ProjectsCampaignsSpotsActions.getVersionResult(
+                    )
+                    : this.props.sectionOpen === 'version'
+                        ? ProjectsCampaignsSpotsActions.getVersionResult(
                             forUserId,
-                            value && (value.project || value.projectCampaign || value.spot) ?
-                                {
+                            value && (value.project || value.projectCampaign || value.spot)
+                                ? {
                                     projectId: value.project ? value.project.id : null,
                                     projectCampaignId: value.projectCampaign ? value.projectCampaign.id : null,
                                     spotId: value.spot ? value.spot.id : null,
-                                } :
-                                null,
+                                }
+                                : null,
                             this.search,
                             this.resultsPage
-                        ) :
-                        null;
+                        )
+                        : null;
 
-        const areCurrentResultsLoading = Boolean(currentResults && currentResults.isLoading);
+        const areCurrentResultsLoading = currentResults && currentResults.isLoading ? true : false;
 
         return (
-            <AnimateHeight height={this.props.sectionOpen !== null && !this.props.readOnly ? 'auto' : 0}>
+            <AnimateHeight height={this.props.sectionOpen !== null && this.props.readOnly === false ? 'auto' : 0}>
                 <Row removeGutter={true}>
                     <Col className={s.searchResults}>
                         <Row className={s.searchCreateCloseRow} removeMargins={true}>
@@ -221,10 +220,7 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
                             })}
                             start={this.resultsCountFrom > 0 ? this.resultsCountFrom : 1}
                         >
-                            {
-                                (currentResults && currentResults.results) &&
-                                this.renderEntries(currentResults)
-                            }
+                            {currentResults && currentResults.results ? this.renderEntries(currentResults) : null}
 
                             {(currentResults === null || currentResults.results.length <= 0) && (
                                 <li className={s.noEntries} key="noEntries">
@@ -261,7 +257,9 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         );
     }
 
-    private renderEntries(currentResults: ProjectsResult | CampaignsResult | SpotsResult | VersionsResult | null) {
+    private renderEntries(
+        currentResults: ProjectsResult | CampaignsResult | SpotsResult | VersionsResult | null
+    ): JSX.Element[] {
         let entries: Array<{
             section: ProjectPickerSections;
             id: number;
@@ -272,11 +270,11 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         }> = [];
 
         if (currentResults) {
-            if (this.props.sectionOpen === 'project') {
+            if (this.props.sectionOpen === ProjectPickerSections.project) {
                 const results = currentResults.results as ProjectsResultsEntry[];
-
                 entries = results.map(result => {
                     let name = '';
+
                     if (this.props.userCanViewProjectCodeName && this.props.userCanViewProjectName) {
                         name = result.projectCode
                             ? `(${result.projectCode})` + (result.projectName ? ' - ' + result.projectName : '')
@@ -288,20 +286,21 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
                     }
 
                     return {
-                        section: 'project' as ProjectPickerSections,
+                        section: ProjectPickerSections.project,
                         id: result.id,
                         name: name,
                         clientId: result.customerId,
                         clientName: result.customerName,
                     };
                 });
-            } else if (this.props.sectionOpen === 'projectCampaign') {
+            } else if (this.props.sectionOpen === ProjectPickerSections.projectCampaign) {
                 const results = currentResults.results as CampaignsResultsEntry[];
 
                 entries = results.map(result => {
                     return {
-                        section: 'projectCampaign' as ProjectPickerSections,
+                        section: ProjectPickerSections.projectCampaign,
                         id: result.id,
+                        campaignId: result.campaignId,
                         name:
                             (result.campaignName || '') +
                             (result.note && result.note !== result.campaignName
@@ -309,27 +308,26 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
                                 : ''),
                         clientId: null,
                         clientName: null,
-                        campaignId: result.campaignId
                     };
                 });
-            } else if (this.props.sectionOpen === 'spot') {
+            } else if (this.props.sectionOpen === ProjectPickerSections.spot) {
                 const results = currentResults.results as SpotsResultsEntry[];
 
                 entries = results.map(result => {
                     return {
-                        section: 'spot' as ProjectPickerSections,
+                        section: ProjectPickerSections.spot,
                         id: result.id,
                         name: result.spotName,
                         clientId: null,
                         clientName: null,
                     };
                 });
-            } else if (this.props.sectionOpen === 'version') {
+            } else if (this.props.sectionOpen === ProjectPickerSections.version) {
                 const results = currentResults.results as VersionsResultsEntry[];
 
                 entries = results.map(result => {
                     return {
-                        section: 'version' as ProjectPickerSections,
+                        section: ProjectPickerSections.version,
                         id: result.id,
                         name: result.versionName,
                         clientId: null,
@@ -365,7 +363,7 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         this.props.onSearchQueryChange(e.target.value);
     };
 
-    private handlePickerCollapse = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handlePickerCollapse = () => {
         this.props.onSectionClose();
     };
 
@@ -375,15 +373,15 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         name: string,
         clientId: number | null,
         clientName: string | null,
-        campaignId: number | null = null
-    ) => (e: React.MouseEvent<HTMLButtonElement>) => {
+        campaignId: number | null
+    ) => () => {
         this.props.onResultPicked({
-            section: section,
-            id: id,
-            name: name,
-            clientId: clientId,
-            clientName: clientName,
-            campaignId: campaignId
+            section,
+            id,
+            campaignId,
+            name,
+            clientId,
+            clientName,
         });
     };
 
@@ -437,7 +435,7 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
                         value
                             ? {
                                 projectId: value.project ? value.project.id : null,
-                                projectCampaignId: value.projectCampaign && value.projectCampaign.campaignId ? value.projectCampaign.campaignId : null
+                                projectCampaignId: value.projectCampaign && value.projectCampaign.campaignId ? value.projectCampaign.campaignId : null,
                             }
                             : null,
                         search,

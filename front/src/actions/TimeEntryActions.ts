@@ -479,6 +479,7 @@ export class TimeEntryActionsClass {
     public setProjectCampaignSpotVersionId = (values: ProjectPickerValues | null) => {
         if (TimeEntryStore.values) {
             TimeEntryStore.values.isModified = true;
+
             TimeEntryStore.values.projectPicked = {
                 project:
                     values !== null
