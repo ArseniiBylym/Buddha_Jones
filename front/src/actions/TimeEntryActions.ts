@@ -479,6 +479,7 @@ export class TimeEntryActionsClass {
     public setProjectCampaignSpotVersionId = (values: ProjectPickerValues | null) => {
         if (TimeEntryStore.values) {
             TimeEntryStore.values.isModified = true;
+
             TimeEntryStore.values.projectPicked = {
                 project:
                     values !== null
@@ -496,6 +497,7 @@ export class TimeEntryActionsClass {
                             id: values.projectCampaign.id,
                             campaignId: values.projectCampaign.campaignId,
                             name: values.projectCampaign.name,
+                            campaignId: values.projectCampaign.campaignId
                         }
                         : null
                         : null,
