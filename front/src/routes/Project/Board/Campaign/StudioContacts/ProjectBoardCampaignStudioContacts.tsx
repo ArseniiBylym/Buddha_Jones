@@ -17,6 +17,8 @@ import { LoadingIndicator } from '../../../../../components/Loaders';
 
 // Props
 interface ProjectBoardCampaignStudioContactsProps {
+    userCanViewExecutive: boolean;
+    userCanEditExecutive: boolean;
     projectCampaignId: number;
     customerId: number | null;
     contactList: ClientContact[];
@@ -92,7 +94,7 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
     }
 
     public render() {
-        return (
+        return this.props.userCanViewExecutive || this.props.userCanEditExecutive ? (
             <div className={classNames(styles.studioContactsContainer, { [styles.editing]: this.isInEditMode })}>
                 <Section
                     title="Studio contacts"
@@ -119,11 +121,13 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                                                 isSaving={this.status === 'saving'}
                                             />
                                             <ClearFix/>
-                                            <Button
-                                                className={styles.newStudioContactButton}
-                                                onClick={this.onStudioContactFormShowToggleHandler}
-                                                label={this.getAddNewStudioContactButtonLabel()}
-                                            />
+                                            {this.props.userCanEditExecutive &&
+                                                <Button
+                                                    className={styles.newStudioContactButton}
+                                                    onClick={this.onStudioContactFormShowToggleHandler}
+                                                    label={this.getAddNewStudioContactButtonLabel()}
+                                                />
+                                            }
                                         </>
                                     }
                                     {!this.isInEditMode &&
@@ -145,7 +149,7 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                     )}
                 </Section>
             </div>
-        );
+        ) : null;
     }
 
     private referenceStudioContactOptionsDropdown = (ref: DropdownContainer) => (this.studioContactOptionsDropdown = ref);
@@ -207,8 +211,13 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                                             <p className={styles.name}>{contact.name}</p>
                                             <p className={styles.title}>
                                                 <span>{(contact.title) ? contact.title : 'No role assigned'}</span>
+                                                <span
+                                                    onClick={this.onRemoveContactHandler.bind(this, ind)}
+                                                    className={styles.studioContactRemoveButton}
+                                                >
+                                                    &#x2716;
+                                                </span>
                                             </p>
-                                            <span onClick={this.handleContactListRemove.bind(this, ind)} className={styles.studioContactRemoveButton}>X</span>
                                         </span>
                                     </li>
                                 ))}
@@ -250,12 +259,6 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
     };
 
     @action
-    private handleContactListRemove = (ind: number): void => {
-        debugger;
-        /*this.isInEditMode = !this.isInEditMode;*/
-    };
-
-    @action
     private onStudioContactFormShowToggleHandler = (): void => {
         this.isStudioContactFormShow = !this.isStudioContactFormShow;
     };
@@ -275,6 +278,30 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
     };
 
     @action
+    private onRemoveContactHandler = async (ind: number, event: any) => {
+        if (ind > -1 && this.contactList[ind] && this.contactList[ind].id) {
+            try {
+                this.isContactListLoading = true;
+
+                await ProjectsDetailsActions.changeProjectCampaignAssignCustomerContact(
+                    this.props.projectCampaignId,
+                    this.contactList[ind].id,
+                    'remove'
+                );
+
+                this.contactList.splice(ind, 1);
+                this.isContactListLoading = false;
+                this.selectedContact = {
+                    id: null,
+                    name: null
+                };
+            } catch (error) {
+                throw error;
+            }
+        }
+    };
+
+    @action
     private onAssignContactHandler = async (event: any) => {
         event.preventDefault();
         if (this.selectedContact && this.selectedContact.id) {
@@ -284,7 +311,8 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
 
                 await ProjectsDetailsActions.changeProjectCampaignAssignCustomerContact(
                     this.props.projectCampaignId,
-                    this.selectedContact.id
+                    this.selectedContact.id,
+                    'add'
                 );
 
                 this.status = 'success';
@@ -292,6 +320,10 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                     this.contactList.push(this.savedContact);
                 }
                 this.isContactListLoading = false;
+                this.selectedContact = {
+                    id: null,
+                    name: null
+                };
             } catch (error) {
                 this.status = 'error';
                 throw error;

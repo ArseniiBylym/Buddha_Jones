@@ -35,7 +35,7 @@ export enum UserPermissionKey {
     DateMaterialReceived = 'date-material-received',
     CampaignBudget = 'campaign-budget',
     CampaignNotes = 'campaign-notes',
-    CampaignClientExecutive = 'campaign-client-executive',
+    CampaignCustomerContact = 'campaign-customer-contact',
     Spot = 'spot',
     SpotRevision = 'spot-revision',
     SpotRevisionStatus = 'version-status',

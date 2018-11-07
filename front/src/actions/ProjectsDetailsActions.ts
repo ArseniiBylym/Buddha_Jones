@@ -748,12 +748,18 @@ export class ProjectDetailsActionsClass {
     public changeProjectCampaignAssignCustomerContact = async (
         projectCampaignId: number,
         contactId: number,
+        mode: 'add' | 'remove'
     ): Promise<boolean> => {
         try {
-            await API.postData(APIPath.ASSIGN_CONTACT_TO_PROJECT_CAMPAIGN, {
-                project_campaign_id: projectCampaignId,
-                customer_contact_id: contactId
-            });
+
+            if (mode === 'add') {
+                await API.postData(APIPath.ASSIGN_CONTACT_TO_PROJECT_CAMPAIGN, {
+                    project_campaign_id: projectCampaignId,
+                    customer_contact_id: contactId
+                });
+            } else if (mode === 'remove') {
+                await API.deleteData(APIPath.ASSIGN_CONTACT_TO_PROJECT_CAMPAIGN + '/' + contactId + '/' + projectCampaignId);
+            }
 
             return true;
         } catch (error) {

@@ -102,10 +102,12 @@
     }
 
     .studioContactRemoveButton {
-        width: 25px;
-        height: 25px;
-        color: red;
-        font-weight: bolder;
-        cursor: pointer;
+      width: 25px;
+      height: 25px;
+      color: red !important;
+      font-weight: bolder;
+      cursor: pointer;
+      margin-left: 5px;
     }
+
 }
