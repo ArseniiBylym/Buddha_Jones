@@ -3,10 +3,8 @@ import { observer } from 'mobx-react';
 import * as classNames from 'classnames';
 import { Row, Col } from './index';
 
-// Styles
 require('./Section.css');
 
-// Interfaces
 export interface SectionElement {
     key?: string | number;
     element: JSX.Element;
@@ -14,8 +12,7 @@ export interface SectionElement {
     maxWidth?: number;
 }
 
-// Props
-interface SectionProps {
+interface Props {
     innerRef?: (ref: HTMLDivElement) => void;
     className?: string | null;
     title?: string;
@@ -26,10 +23,9 @@ interface SectionProps {
     headerElements?: SectionElement[];
 }
 
-// Component
 @observer
-export class Section extends React.Component<SectionProps, {}> {
-    static get defaultProps(): SectionProps {
+export class Section extends React.Component<Props, {}> {
+    static get defaultProps(): Props {
         return {
             className: null,
             title: '',
@@ -44,7 +40,7 @@ export class Section extends React.Component<SectionProps, {}> {
     public render() {
         return (
             <div ref={this.referenceContainer} className={classNames('section', this.props.className)}>
-                {this.props.noSeparator === false && <hr />}
+                {this.props.noSeparator === false && <hr/>}
 
                 {(this.props.title ||
                     this.props.subTitle ||
@@ -65,36 +61,36 @@ export class Section extends React.Component<SectionProps, {}> {
                         )}
 
                         {typeof this.props.headerElements !== 'undefined' &&
-                            this.props.headerElements.length > 0 && (
-                                <Col className={'sectionElements'}>
-                                    <Row removeGutter={true}>
-                                        {this.props.headerElements.map((el, index) => {
-                                            if (typeof el !== 'undefined' && el !== null) {
-                                                return (
-                                                    <Col
-                                                        key={
-                                                            typeof el.key !== 'undefined' && el.key
-                                                                ? el.key
-                                                                : 'element-' + index
-                                                        }
-                                                        minWidth={typeof el.minWidth !== 'undefined' ? el.minWidth : 0}
-                                                        maxWidth={typeof el.maxWidth !== 'undefined' ? el.maxWidth : 0}
-                                                    >
-                                                        {el.element}
-                                                    </Col>
-                                                );
-                                            } else {
-                                                return null;
-                                            }
-                                        })}
-                                    </Row>
-                                </Col>
-                            )}
+                        this.props.headerElements.length > 0 && (
+                            <Col className={'sectionElements'}>
+                                <Row removeGutter={true}>
+                                    {this.props.headerElements.map((el, index) => {
+                                        if (typeof el !== 'undefined' && el !== null) {
+                                            return (
+                                                <Col
+                                                    key={
+                                                        typeof el.key !== 'undefined' && el.key
+                                                            ? el.key
+                                                            : 'element-' + index
+                                                    }
+                                                    minWidth={typeof el.minWidth !== 'undefined' ? el.minWidth : 0}
+                                                    maxWidth={typeof el.maxWidth !== 'undefined' ? el.maxWidth : 0}
+                                                >
+                                                    {el.element}
+                                                </Col>
+                                            );
+                                        } else {
+                                            return null;
+                                        }
+                                    })}
+                                </Row>
+                            </Col>
+                        )}
                     </Row>
                 )}
 
                 {typeof this.props.children !== 'undefined' &&
-                    this.props.children && <div className={'sectionInner'}>{this.props.children}</div>}
+                this.props.children && <div className={'sectionInner'}>{this.props.children}</div>}
             </div>
         );
     }

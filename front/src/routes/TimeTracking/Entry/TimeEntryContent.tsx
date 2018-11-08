@@ -122,11 +122,7 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                     show="all"
                     forUserId={this.props.forUser ? this.props.forUser.id : 0}
                     requiredSelection={this.getProjectPickerRequiredSelection()}
-                    value={
-                        this.props.store.timeEntry.values ?
-                            this.props.store.timeEntry.values.projectPicked :
-                            null
-                    }
+                    value={this.props.store.timeEntry.values ? this.props.store.timeEntry.values.projectPicked : null}
                 />
 
                 {this.getActivitySection()}
@@ -135,9 +131,7 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                 <AnimateHeight
                     height={
                         this.props.store.timeEntry.selectedActivity &&
-                        this.props.store.timeEntry.selectedActivity.areFilesRequired ?
-                            'auto' :
-                            0
+                        this.props.store.timeEntry.selectedActivity.areFilesRequired ? 'auto' : 0
                     }
                 >
                     {this.getFilesWorkOnSection()}

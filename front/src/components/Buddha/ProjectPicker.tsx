@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as classNames from 'classnames';
 import capitalize from 'lodash-es/capitalize';
 import { observer, inject } from 'mobx-react';
-import { Section, Row, Col } from '../Section';
+import { Section, Row, Col, SectionElement } from '../Section';
 import { computed, observable, action } from 'mobx';
 import { ProjectPickerSelectionRequirementLabel } from '.';
 import { Button } from '../Button';
@@ -50,7 +50,6 @@ export interface ProjectPickerGroupValues {
     campaignId?: number | null;
 }
 
-// Props
 interface Props {
     onChange?: (values: ProjectPickerValues | null) => void;
     title?: string;
@@ -73,7 +72,6 @@ interface Props {
 
 declare type ComponentProps = Props & AppOnlyStoreState;
 
-// Component
 @inject('store')
 @observer
 export class ProjectPicker extends React.Component<ComponentProps, {}> {
@@ -442,34 +440,9 @@ export class ProjectPicker extends React.Component<ComponentProps, {}> {
         return (
             <Section
                 title={this.props.title}
-                subTitle={
-                    this.subTitleLabel
-                        ? this.props.title && this.subTitleLabel
-                        ? this.subTitleLabel
-                        : capitalize(this.subTitleLabel)
-                        : undefined
-                }
+                subTitle={this.getSectionSubtitle()}
                 noSeparator={this.props.noSeparator}
-                headerElements={[
-                    ...(this.props.headerElements || []),
-                    ...(this.showClearValuesButton
-                        ? [
-                            {
-                                element: (
-                                    <Button
-                                        onClick={this.handleClearingSelectedValues}
-                                        className={s.clearButton}
-                                        label={{
-                                            text: 'Clear selection',
-                                            size: 'small',
-                                            color: 'orange',
-                                        }}
-                                    />
-                                ),
-                            },
-                        ]
-                        : []),
-                ]}
+                headerElements={this.getHeaderElementsArray()}
             >
                 <Row removeGutter={true}>
                     {this.columns.map((col, colIndex) => (
@@ -551,6 +524,37 @@ export class ProjectPicker extends React.Component<ComponentProps, {}> {
             );
         }
     };
+
+    private getSectionSubtitle(): string | undefined {
+        if (!this.subTitleLabel) {
+            return undefined;
+        }
+
+        return this.props.title && this.subTitleLabel ? this.subTitleLabel : capitalize(this.subTitleLabel);
+    }
+
+    private getHeaderElementsArray(): SectionElement[] {
+        return [
+            ...(this.props.headerElements || []),
+            ...(
+                this.showClearValuesButton ? [
+                    {
+                        element: (
+                            <Button
+                                onClick={this.handleClearingSelectedValues}
+                                className={s.clearButton}
+                                label={{
+                                    text: 'Clear selection',
+                                    size: 'small',
+                                    color: 'orange',
+                                }}
+                            />
+                        ),
+                    },
+                ] : []
+            ),
+        ];
+    }
 
     private handleClearingSelectedValues = (e: React.MouseEvent<HTMLButtonElement>) => {
         this.clearSelectedValues();
