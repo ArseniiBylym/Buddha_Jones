@@ -45,9 +45,9 @@ class RediNotification
     /**
      * @var integer
      *
-     * @ORM\Column(name="complete", type="smallint", nullable=true)
+     * @ORM\Column(name="confirm", type="smallint", nullable=true)
      */
-    private $complete;
+    private $confirm;
 
     /**
      * @var integer
@@ -159,26 +159,26 @@ class RediNotification
     }
 
     /**
-     * Set complete
+     * Set confirm
      *
-     * @param integer $complete
+     * @param integer $confirm
      * @return RediNotification
      */
-    public function setComplete($complete)
+    public function setConfirm($confirm)
     {
-        $this->complete = $complete;
+        $this->confirm = $confirm;
 
         return $this;
     }
 
     /**
-     * Get complete
+     * Get confirm
      *
      * @return integer 
      */
-    public function getComplete()
+    public function getConfirm()
     {
-        return $this->complete;
+        return $this->confirm;
     }
 
     /**

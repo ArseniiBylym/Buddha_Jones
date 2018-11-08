@@ -20,16 +20,111 @@ class NotificationRepository extends EntityRepository
     parent::__construct($entityManager, $classMetaData);
   }
 
-  public function searchNotification($filter = array())
+  /**
+   * search notification and get list and count
+   *
+   * @param array $filter
+   * @param integer $offset
+   * @param integer $length
+   * @return void
+   */
+  public function search($filter = array(), $offset = 0, $length = 10)
   {
+    $dataColumns = " n ";
+    $countColumns = " COUNT(DISTINCT n.id) AS total_count ";
+    $dqlFilter = [];
+    $dqlParam = [];
 
+    $dql = "SELECT 
+                %s
+              FROM \Application\Entity\RediNotification n
+              LEFT JOIN \Application\Entity\RediNotificationUser nu
+                WITH nu.notificationId = n.id ";
+
+    if (!empty($filter['user_id'])) {
+      $dqlParam['user_id'] = $filter['user_id'];
+      $dqlFilter[] = " nu.userId = :user_id ";
+    }
+
+    if (isset($filter['confirm'])) {
+      $dqlParam['confirm'] = $filter['confirm'];
+      $dqlFilter[] = " n.confirm = :confirm ";
+    }
+
+    if (count($dqlFilter)) {
+      $dql .= " WHERE " . implode(" AND ", $dqlFilter);
+    }
+
+    $result = [
+      'data' => null,
+      'count' => null,
+    ];
+    if (!isset($filter['get_data']) || !empty($filter['get_data'])) {
+      $dataQuery = $this->getEntityManager()->createQuery(sprintf(
+        $dql . " GROUP BY n.id
+        ORDER BY n.id DESC ",
+        $dataColumns
+      ));
+
+      foreach ($dqlParam as $key => $value) {
+        $dataQuery->setParameter($key, $value);
+      }
+
+      $result['data'] = $dataQuery->getArrayResult();
+
+      if (!empty($filter['get_details'])) {
+        $ids = array_column($result['data'], 'id');
+        $notificationData = $this->getNotificationData($ids);
+
+        $result['data'] = array_map(function ($row) use ($notificationData) {
+          $row['data'] = (!empty($notificationData[$row['id']])) ? $notificationData[$row['id']] : array();
+          return $row;
+        }, $result['data']);
+      }
+    }
+
+    if (!isset($filter['get_count']) || !empty($filter['get_count'])) {
+      $countQuery = $this->getEntityManager()->createQuery(sprintf($dql, $countColumns));
+
+      foreach ($dqlParam as $key => $value) {
+        $countQuery->setParameter($key, $value);
+      }
+
+      $countResult = $countQuery->getArrayResult();
+      $result['count'] = (isset($countResult[0]['total_count']) ? (int)$countResult[0]['total_count'] : 0);
+    }
+
+    return $result;
   }
 
-  public function searchNotificationCount($filter = array())
+  /**
+   * get notification data
+   *
+   * @param array $ids
+   * @return array
+   */
+  public function getNotificationData($ids)
   {
+    $ids = (array($ids));
 
+    $dql = "SELECT 
+              nd
+            FROM
+              \Application\Entity\RediNotificationData nd
+            WHERE nd.notificationId IN (:notification_ids) ";
+
+    $query = $this->getEntityManager()->createQuery($dql);
+    $query->setParameter('notification_ids', $ids, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+    $data = $query->getArrayResult();
+
+    $result = array();
+
+    foreach ($data as $row) {
+      $result[$row['notificationId']][] = $row;
+    }
+
+    return $result;
   }
-
   /**
    * Create notification
    *
@@ -50,7 +145,7 @@ class NotificationRepository extends EntityRepository
         $notification->setMessageTypeId($messageData['typeId']);
         $notification->setMessage($messageData['message']);
         $notification->setLink($messageData['link']);
-        $notification->setComplete(0);
+        $notification->setConfirm(0);
         $notification->setCreatedby($createdByUserId);
         $notification->setCreatedAt($now);
         $this->_entityManager->persist($notification);
@@ -60,7 +155,7 @@ class NotificationRepository extends EntityRepository
 
         foreach ($data as $key => $value) {
           $notificationData = new RediNotificationData();
-          $notificationData->setNotificatonId($notificationId);
+          $notificationData->setNotificationId($notificationId);
           $notificationData->setName($key);
           $notificationData->setValue($value);
 
@@ -79,7 +174,8 @@ class NotificationRepository extends EntityRepository
       }
     } catch (\Exception $e) {
       // do something when exception occures
-      echo $e->getMessage(); exit;
+      // echo $e->getMessage();
+      // exit;
     }
   }
 

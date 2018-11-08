@@ -15,11 +15,11 @@ class RediNotificationData
     /**
      * @var integer
      *
-     * @ORM\Column(name="notificaton_id", type="bigint", nullable=false)
+     * @ORM\Column(name="notification_id", type="bigint", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
      */
-    private $notificatonId;
+    private $notificationId;
 
     /**
      * @var string
@@ -40,26 +40,26 @@ class RediNotificationData
 
 
     /**
-     * Set notificatonId
+     * Set notificationId
      *
-     * @param integer $notificatonId
+     * @param integer $notificationId
      * @return RediNotificationData
      */
-    public function setNotificatonId($notificatonId)
+    public function setNotificationId($notificationId)
     {
-        $this->notificatonId = $notificatonId;
+        $this->notificationId = $notificationId;
 
         return $this;
     }
 
     /**
-     * Get notificatonId
+     * Get notificationId
      *
      * @return integer 
      */
-    public function getNotificatonId()
+    public function getNotificationId()
     {
-        return $this->notificatonId;
+        return $this->notificationId;
     }
 
     /**

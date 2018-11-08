@@ -213,10 +213,8 @@ class ProjectCampaignController extends CustomAbstractActionController
                         "campaignName" => $campaign->getCampaignName(),
                         "studioId" => $studio ? $studio->getId() : null,
                         "studioName" => $studio ? $studio->getStudioName() : null,
+                        "projectCampaignId" => $projectCampaignId,
                     );
-
-                    $projectCampaignUsers = $this->_campaignRepo->getCampaignProjectPeople('user', $projectCampaignId, null, null, null, '');
-                    $notificationUsers = array_column($projectCampaignUsers, 'userId');
 
                     if ($requestMusicTeam != $existingProjectToCampaign->getRequestMusicTeam()
                         || $musicTeamNote != $existingProjectToCampaign->getMusicTeamNotes()) {
@@ -231,10 +229,10 @@ class ProjectCampaignController extends CustomAbstractActionController
                         $this->_em->persist($projectHistory);
                         $this->_em->flush();
 
-                        // send notification
                         // notification for music team
                         if($requestMusicTeam) {
-                            $this->_notificationRepo->create('request_music_team', $nofiticationData, $notificationUsers, $this->_user_id); 
+                            $musicUserIds = array_column($this->_usersRepo->getUserByTypeName('music'), 'id');
+                            $this->_notificationRepo->create('request_music_team', $nofiticationData, $musicUserIds, $this->_user_id); 
                         }
                     }
 
@@ -250,6 +248,12 @@ class ProjectCampaignController extends CustomAbstractActionController
                         $projectHistory->setCreatedAt(new \DateTime('now'));
                         $this->_em->persist($projectHistory);
                         $this->_em->flush();
+
+                        // notification for music team
+                        if($requestWritingTeam) {
+                            $writterUserIds = array_column($this->_usersRepo->getUserByTypeName('writer'), 'id');
+                            $this->_notificationRepo->create('request_writing_team', $nofiticationData, $writterUserIds, $this->_user_id); 
+                        }
                     }
 
                     if ($firstPointOfContact !== 0) {
