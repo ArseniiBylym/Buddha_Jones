@@ -161,6 +161,8 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                 label={'Select contacts'}
                 value={(this.selectedContact && this.selectedContact.name) ? this.selectedContact.name : ''}
                 align="left"
+                minWidth={300}
+                minHeight={200}
             >
                 <OptionsList
                     onChange={this.handleStudioContactsChange}
@@ -181,7 +183,6 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                     ]}
                     loadingOptions={this.studioContactsOptions.loading}
                     loadingOptionsLabel={'Loading contacts...'}
-                    height={100}
                 />
             </DropdownContainer>
         );
@@ -192,42 +193,36 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
             <>
                 <Row>
                     <Col>
-                        {this.props.contactList.length === 0 &&
-                            <div className={styles.noContacts}>
-                                <Paragraph
-                                    align="left"
-                                    type={'dim'}
-                                >
-                                    <span>Studio has no contacts</span>
-                                </Paragraph>
-                            </div>
-                        }
+                        <ul className={styles.contactsList}>
+                            {this.contactList.length === 0 &&
+                                <li>
+                                    <p>Studio has no contacts</p>
+                                </li>
+                            }
 
-                        {this.contactList.length > 0 && (
-                            <ul className={styles.contactsList}>
-                                {this.contactList.map((contact: ClientContact, ind: number) => (
-                                    <li key={`studio-contact-${ind}`}>
-                                        <span className={styles.container}>
-                                            <p className={styles.name}>{contact.name}</p>
-                                            <p className={styles.title}>
-                                                <span>{(contact.title) ? contact.title : 'No role assigned'}</span>
-                                                <span
-                                                    onClick={this.onRemoveContactHandler.bind(this, ind)}
-                                                    className={styles.studioContactRemoveButton}
-                                                >
-                                                    &#x2716;
-                                                </span>
-                                            </p>
-                                        </span>
-                                    </li>
-                                ))}
-                                {(this.isInEditMode && !this.isStudioContactFormShow) &&
-                                    <li key={`studio-contact-${this.contactList.length + 1}`}>
-                                        {this.renderDropdownList()}
-                                    </li>
-                                }
-                            </ul>
-                        )}
+                            {this.contactList.length > 0 && this.contactList.map((contact: ClientContact, ind: number) => (
+                                <li key={`studio-contact-${ind}`}>
+                                    <span className={styles.container}>
+                                        <p className={styles.name}>{contact.name}</p>
+                                        <p className={styles.title}>
+                                            <span>{(contact.title) ? contact.title : 'No role assigned'}</span>
+                                            <span
+                                                onClick={this.onRemoveContactHandler.bind(this, ind)}
+                                                className={styles.studioContactRemoveButton}
+                                            >
+                                                &#x2716;
+                                            </span>
+                                        </p>
+                                    </span>
+                                </li>
+                            ))}
+
+                            {(this.isInEditMode && !this.isStudioContactFormShow) &&
+                                <li key={`studio-contact-${this.contactList.length + 1}`}>
+                                    {this.renderDropdownList()}
+                                </li>
+                            }
+                        </ul>
                     </Col>
                 </Row>
 
