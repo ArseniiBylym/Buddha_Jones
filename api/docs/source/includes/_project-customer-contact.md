@@ -39,7 +39,7 @@
 
 ### HTTP Request
 
-`GET /project-customer-customer/[:project_id]`
+`GET /project-customer-contact/[:project_id]`
 
 ### Query Parameters˝
 
