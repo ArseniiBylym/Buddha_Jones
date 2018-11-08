@@ -358,11 +358,14 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                     this.activitiesForUser.length <= 0 &&
                     this.props.forUser && (
                         <Paragraph type="alert">
-                            {'No activities are available for your user type. ' +
-                            'You will not be able to create time entry.'}
+                            {
+                                'No activities are available for your user type. ' +
+                                'You will not be able to create time entry.'
+                            }
                             {user.data && (
                                 <>
                                     <br/>
+                                    
                                     {'Please consult administrator to get access to activities for your user type:'}
                                     <strong>
                                         {'#' + this.props.forUser.typeId + ' - ' + this.props.forUser.typeName}

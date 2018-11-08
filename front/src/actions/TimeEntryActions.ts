@@ -125,7 +125,7 @@ export class TimeEntryActionsClass {
     };
 
     @action
-    public refetchLastTimeEntries = async (): Promise<boolean> => {
+    public reFetchLastTimeEntries = async (): Promise<boolean> => {
         try {
             if (TimeEntryStore.lastFetch.userId !== 0 && TimeEntryStore.lastFetch.fetchTimeStamp > 0) {
                 await this.fetchTimeEntriesOfUser(
@@ -154,6 +154,8 @@ export class TimeEntryActionsClass {
         tilDate = typeof tilDate !== 'undefined' ? tilDate : fromDate;
 
         TimeEntryStore.lastFetch.userId = forUser.id;
+        TimeEntryStore.lastFetch.userTypeId = forUser.typeId;
+        TimeEntryStore.lastFetch.userTypeName = forUser.typeName;
         TimeEntryStore.lastFetch.fromDate = fromDate;
         TimeEntryStore.lastFetch.tilDate = tilDate;
         TimeEntryStore.lastFetch.fetchTimeStamp = Date.now();
@@ -333,7 +335,7 @@ export class TimeEntryActionsClass {
                 );
             }
 
-            this.refetchLastTimeEntries();
+            this.reFetchLastTimeEntries();
 
             return true;
         } catch (error) {

@@ -99,11 +99,11 @@ export class TimeEntryModal extends React.Component<Props & AppOnlyStoreState, {
         TimeEntryActions.closeTimeEntryModal();
     };
 
-    private handleOpeningEntryDeleteConfirmation = (): void  => {
+    private handleOpeningEntryDeleteConfirmation = (): void => {
         this.showEntryRemovalModal = true;
     };
 
-    private handleClosingEntryDeleteConfirmation = (): void  => {
+    private handleClosingEntryDeleteConfirmation = (): void => {
         this.showEntryRemovalModal = false;
     };
 
@@ -117,6 +117,7 @@ export class TimeEntryModal extends React.Component<Props & AppOnlyStoreState, {
 
             if (this.props.store) {
                 const { timeEntry } = this.props.store;
+
                 if (timeEntry.values && timeEntry.values.editingEntryId && timeEntry.values.forUser) {
                     this.removingEntry = true;
 
@@ -130,7 +131,9 @@ export class TimeEntryModal extends React.Component<Props & AppOnlyStoreState, {
                     }
 
                     await TimeEntryActions.deleteExistingEntry(timeEntry.values.editingEntryId);
+
                     this.handleClosingEntryDeleteConfirmation();
+
                     TimeEntryActions.closeTimeEntryModal();
 
                     this.removingEntry = false;
