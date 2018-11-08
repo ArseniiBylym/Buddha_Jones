@@ -6,7 +6,6 @@ import { ClientContact } from '../../../../../types/clients';
 import { action, computed, observable, reaction } from 'mobx';
 import { ClearFix, Col, Row, Section } from '../../../../../components/Section';
 import { Button, ButtonClose, ButtonEdit, ButtonLabel, ButtonSave } from '../../../../../components/Button';
-import { Paragraph } from '../../../../../components/Content';
 import { ProjectBoardCampaignStudioContactsForm } from './ProjectBoardCampaignStudioContactsForm';
 import { DropdownContainer, OptionsList, OptionsListValuePropType } from '../../../../../components/Form';
 import { ClientsActions, ProjectsDetailsActions } from '../../../../../actions';
