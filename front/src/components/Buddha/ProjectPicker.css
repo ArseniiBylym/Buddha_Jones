@@ -66,6 +66,7 @@ button:global(.button).pickerSectionButton {
 }
 
 .searchResults {
+  width: 100%;
   position: relative;
   margin-top: 24px;
   border-radius: 8px;
@@ -76,11 +77,12 @@ button:global(.button).pickerSectionButton {
 }
 
 .searchResultsList {
-  padding: 0;
-  margin: 12px 24px;
   column-count: 4;
   column-gap: 12px;
   list-style: decimal-leading-zero;
+  padding: 0 50px;
+  box-sizing: border-box;
+  width: 100%;
   &:global(.resultsCount1) {
     column-count: 1;
     column-gap: 0px;

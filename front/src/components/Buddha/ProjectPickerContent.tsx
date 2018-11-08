@@ -4,27 +4,27 @@ import AnimateHeight from 'react-animate-height';
 import debounce from 'lodash-es/debounce';
 import { observer } from 'mobx-react';
 import { ProjectPickerSections, ProjectPickerValues } from '.';
-import { observable, reaction, computed } from 'mobx';
-import { Row, Col } from '../Section';
+import { computed, observable, reaction } from 'mobx';
+import { Col, Row } from '../Section';
 import { ProjectsCampaignsSpotsActions } from 'actions';
 import { LoadingShade, LoadingSpinner } from '../Loaders';
 import {
-    SpotsResult,
-    ProjectsResult,
-    CampaignsResult,
-    VersionsResult,
-    ProjectsResultsEntry,
-    CampaignsResultsEntry,
-    SpotsResultsEntry,
-    VersionsResultsEntry,
-    ProjectResult,
     CampaignResult,
+    CampaignsResult,
+    CampaignsResultsEntry,
+    ProjectResult,
+    ProjectsResult,
+    ProjectsResultsEntry,
     SpotResult,
+    SpotsResult,
+    SpotsResultsEntry,
     VersionResult,
+    VersionsResult,
+    VersionsResultsEntry,
 } from 'types/projectsCampaignsSpots';
 import { Pagination } from '../Pagination';
 import { InputSearch } from '../Form';
-import { ButtonClose, Button } from '../Button';
+import { Button, ButtonClose } from '../Button';
 import { truncate } from 'lodash-es';
 
 // Styles
@@ -149,16 +149,16 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
         const { value, forUserId } = this.props;
 
         const currentResults =
-            this.props.sectionOpen === 'project'
+            this.props.sectionOpen === ProjectPickerSections.project
                 ? ProjectsCampaignsSpotsActions.getProjectResult(forUserId, this.search, this.resultsPage)
-                : this.props.sectionOpen === 'projectCampaign'
+                : this.props.sectionOpen === ProjectPickerSections.projectCampaign
                 ? ProjectsCampaignsSpotsActions.getCampaignResult(
                     forUserId,
                     value && value.project ? value.project.id : null,
                     this.search,
                     this.resultsPage
                 )
-                : this.props.sectionOpen === 'spot'
+                : this.props.sectionOpen === ProjectPickerSections.spot
                     ? ProjectsCampaignsSpotsActions.getSpotResult(
                         forUserId,
                         value && (value.project || value.projectCampaign)
@@ -172,7 +172,7 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
                         this.search,
                         this.resultsPage
                     )
-                    : this.props.sectionOpen === 'version'
+                    : this.props.sectionOpen === ProjectPickerSections.version
                         ? ProjectsCampaignsSpotsActions.getVersionResult(
                             forUserId,
                             value && (value.project || value.projectCampaign || value.spot)
@@ -187,10 +187,10 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
                         )
                         : null;
 
-        const areCurrentResultsLoading = currentResults && currentResults.isLoading ? true : false;
+        const areCurrentResultsLoading = currentResults && currentResults.isLoading;
 
         return (
-            <AnimateHeight height={this.props.sectionOpen !== null && this.props.readOnly === false ? 'auto' : 0}>
+            <AnimateHeight height={this.props.sectionOpen !== null && !this.props.readOnly ? 'auto' : 0}>
                 <Row removeGutter={true}>
                     <Col className={s.searchResults}>
                         <Row className={s.searchCreateCloseRow} removeMargins={true}>
