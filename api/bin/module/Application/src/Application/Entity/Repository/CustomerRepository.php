@@ -357,18 +357,16 @@ class CustomerRepository extends EntityRepository
         $dql = "SELECT  
                   a.id AS activityId,
                   a.name AS activityName,
-                  att.typeId AS activityTypeId,
+                  a.typeId AS activityTypeId,
                   aty.activityType,
                   cp.customerId, 
                   cp.price
                 FROM \Application\Entity\RediActivity a
                 LEFT JOIN \Application\Entity\RediCustomerPrice cp
                   WITH a.id=cp.activityId 
-                LEFT JOIN \Application\Entity\RediActivityToType att 
-                  WITH att.activityId=a.id
                 INNER JOIN \Application\Entity\RediActivityType aty
-                  WITH aty.id=att.typeId
-                WHERE att.typeId IN (1,4)
+                  WITH aty.id=a.typeId
+                WHERE a.typeId IN (1,4)
                 AND (cp.customerId=:customer_id OR cp.customerId IS NULL)
                 GROUP BY a.id
                 ORDER BY a.name ASC";

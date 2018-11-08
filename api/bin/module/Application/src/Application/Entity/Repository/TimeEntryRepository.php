@@ -72,10 +72,8 @@ class TimeEntryRepository extends EntityRepository
                     WITH u.typeId=tap.submittingUserTypeId
                 LEFT JOIN \Application\Entity\RediActivity ac
                   WITH ac.id=a.activityId
-                LEFT JOIN \Application\Entity\RediActivityToType att
-                    WITH att.activityId=a.activityId
                 LEFT JOIN \Application\Entity\RediActivityType  atp
-                    WITH att.typeId=atp.id
+                    WITH ac.typeId=atp.id
                 LEFT JOIN \Application\Entity\RediCustomer cu
                     WITH cu.id=ptc.customerId ";
 
@@ -374,10 +372,8 @@ class TimeEntryRepository extends EntityRepository
                   WITH a.status=st.id
                 LEFT JOIN \Application\Entity\RediActivity ac
                   WITH ac.id=a.activityId
-                LEFT JOIN \Application\Entity\RediActivityToType att
-                    WITH att.activityId=a.activityId
                 LEFT JOIN \Application\Entity\RediActivityType  atp
-                    WITH att.typeId=atp.id
+                    WITH ac.typeId=atp.id
                 LEFT JOIN \Application\Entity\RediCustomer cu
                     WITH cu.id=ptc.customerId
                 LEFT JOIN \Application\Entity\RediUser u
@@ -442,10 +438,8 @@ class TimeEntryRepository extends EntityRepository
                   WITH ac.id=a.activityId
                 LEFT JOIN \Application\Entity\RediStatus st
                   WITH a.status=st.id
-                LEFT JOIN \Application\Entity\RediActivityToType att
-                    WITH att.activityId=a.activityId
                 LEFT JOIN \Application\Entity\RediActivityType  atp
-                    WITH att.typeId=atp.id
+                    WITH ac.typeId=atp.id
                 WHERE a.id=:id";
 
         $query = $this->getEntityManager()->createQuery($dql);

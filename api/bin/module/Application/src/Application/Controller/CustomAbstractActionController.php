@@ -34,7 +34,6 @@ class CustomAbstractActionController extends AbstractRestfulController
 
     protected $_userRepository;
     protected $_activityRepository;
-    protected $_activityToTypeRepository;
     protected $_activityToUserTypeRepository;
     protected $_billingRepository;
     protected $_billingApprovalRepository;
@@ -124,7 +123,6 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_billingRepository = $this->_em->getRepository('Application\Entity\RediBilling');
         $this->_billingApprovalRepository = $this->_em->getRepository('Application\Entity\RediBillingApproval');
         $this->_activityRepository = $this->_em->getRepository('Application\Entity\RediActivity');
-        $this->_activityToTypeRepository = $this->_em->getRepository('Application\Entity\RediActivityToType');
         $this->_activityToUserTypeRepository = $this->_em->getRepository('Application\Entity\RediActivityToUserType');
         $this->_campaignRepository = $this->_em->getRepository('Application\Entity\RediCampaign');
         $this->_commentRepository = $this->_em->getRepository('Application\Entity\RediComment');

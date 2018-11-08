@@ -27,12 +27,10 @@ class ActivityRepository extends EntityRepository
                     a.projectCampaignRequired, a.projectCampaignSpotVersionRequired,
                     a.filesIncluded, a.status, a.allowedInFuture
                 FROM \Application\Entity\RediActivity a
-                LEFT JOIN \Application\Entity\RediActivityToType att
-                  WITH att.activityId=a.id
                 LEFT JOIN \Application\Entity\RediActivityToUserType atut
                   WITH atut.activityId=a.id
                 LEFT JOIN \Application\Entity\RediActivityType at
-                  WITH at.id=att.typeId ";
+                  WITH at.id=a.typeId ";
 
         $dqlFilter = [];
 
@@ -41,7 +39,7 @@ class ActivityRepository extends EntityRepository
         }
 
         if (isset($filter['type_id']) && count($filter['type_id'])) {
-            $dqlFilter[] = " (att.typeId IN (" . implode(',', $filter['type_id']) . ")) ";
+            $dqlFilter[] = " (a.typeId IN (" . implode(',', $filter['type_id']) . ")) ";
         }
 
         if (isset($filter['user_type_id']) && $filter['user_type_id']) {
@@ -101,10 +99,8 @@ class ActivityRepository extends EntityRepository
                     a.projectCampaignRequired, a.projectCampaignSpotVersionRequired,
                     a.filesIncluded, a.status, a.allowedInFuture, cp.price
                 FROM \Application\Entity\RediActivity a
-                LEFT JOIN \Application\Entity\RediActivityToType att
-                  WITH att.activityId=a.id
                 LEFT JOIN \Application\Entity\RediActivityType at
-                  WITH at.id=att.typeId
+                  WITH at.id=a.typeId
                 LEFT JOIN \Application\Entity\RediActivityToUserType atut
                   WITH atut.activityId=a.id
                 LEFT JOIN \Application\Entity\RediCustomerPrice cp
@@ -117,7 +113,7 @@ class ActivityRepository extends EntityRepository
         }
 
         if (isset($filter['type_id']) && count($filter['type_id'])) {
-            $dqlFilter[] = " (att.typeId IN (" . implode(',', $filter['type_id']) . ")) ";
+            $dqlFilter[] = " (a.typeId IN (" . implode(',', $filter['type_id']) . ")) ";
         }
 
         if (isset($filter['user_type_id']) && $filter['user_type_id']) {
@@ -176,8 +172,6 @@ class ActivityRepository extends EntityRepository
     {
         $dql = "SELECT COUNT(DISTINCT a.id) AS total_count
                 FROM \Application\Entity\RediActivity a
-                LEFT JOIN \Application\Entity\RediActivityToType att
-                  WITH att.activityId=a.id
                 LEFT JOIN \Application\Entity\RediActivityToUserType atut
                   WITH atut.activityId=a.id";
 
@@ -188,7 +182,7 @@ class ActivityRepository extends EntityRepository
         }
 
         if (isset($filter['type_id']) && count($filter['type_id'])) {
-            $dqlFilter[] = " (att.typeId IN (" . implode(',', $filter['type_id']) . ")) ";
+            $dqlFilter[] = " (a.typeId IN (" . implode(',', $filter['type_id']) . ")) ";
         }
 
         if (isset($filter['user_type_id']) && $filter['user_type_id']) {
@@ -240,12 +234,10 @@ class ActivityRepository extends EntityRepository
                 a.projectCampaignRequired, a.projectCampaignSpotVersionRequired,
                 a.filesIncluded, a.status, a.allowedInFuture
             FROM \Application\Entity\RediActivity a
-            LEFT JOIN \Application\Entity\RediActivityToType att
-            WITH att.activityId=a.id
             LEFT JOIN \Application\Entity\RediActivityToUserType atut
             WITH atut.activityId=a.id
             LEFT JOIN \Application\Entity\RediActivityType at
-            WITH at.id=att.typeId ";
+            WITH at.id=a.typeId ";
         $dql .= " WHERE a.id = :activity_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -291,10 +283,10 @@ class ActivityRepository extends EntityRepository
 
     public function getActivityTypeByActivityId($activityId) {
         $dql = "SELECT at
-                FROM \Application\Entity\RediActivityToType att
+                FROM \Application\Entity\RediActivity a
                 INNER JOIN \Application\Entity\RediActivityType at
-                  WITH at.id=att.typeId
-                WHERE att.activityId=:activity_id
+                  WITH at.id=a.typeId
+                WHERE a.id=:activity_id
                 GROUP BY at.id
                 ORDER BY at.activityType ASC";
 

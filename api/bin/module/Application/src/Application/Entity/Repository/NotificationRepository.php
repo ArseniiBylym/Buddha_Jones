@@ -107,6 +107,10 @@ class NotificationRepository extends EntityRepository
   {
     $ids = (array($ids));
 
+    if(!$ids) {
+      return array();
+    }
+
     $dql = "SELECT 
               nd
             FROM
