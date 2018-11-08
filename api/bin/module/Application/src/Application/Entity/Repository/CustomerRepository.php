@@ -265,10 +265,50 @@ class CustomerRepository extends EntityRepository
 
         $data = $query->getArrayResult();
 
-        foreach($data as &$row) {
-            $row['projectCampaign'] = $this->getProjectCampaignOfCustomerContact($row['id']);
+        if(!empty($filter['get_details'])) {
+            foreach($data as &$row) {
+                $row['projectCampaign'] = $this->getProjectCampaignOfCustomerContact($row['id']);
+            }
         }
 
+        return $data;
+    }
+
+    public function getProjectCustomerContact($projectId)
+    {
+        $dql = "SELECT  
+                    cc.id,
+                    cc.customer_id AS customerId,
+                    cc.name,
+                    cc.title,
+                    cc.email,
+                    cc.mobile_phone AS mobilePhone,
+                    ptc.project_id AS projectId,
+                    GROUP_CONCAT(ptc.id) AS projectCampaignIds
+                FROM redi_customer_contact cc 
+                INNER JOIN redi_project_to_campaign_cc ptcc
+                    ON cc.id = ptcc.customer_contact_id
+                INNER JOIN redi_project_to_campaign ptc
+                    ON ptc.id = ptcc.project_campaign_id
+                WHERE ptc.project_id = :project_id
+                GROUP BY cc.id 
+                ORDER BY cc.name ASC";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('project_id', $projectId);
+        $query->execute();
+        $data = $query->fetchAll();
+
+        foreach ($data as &$row ) {
+            $row['id'] = (int)$row['id'];
+            $row['customerId'] = (int)$row['customerId'];
+            $row['projectId'] = (int)$row['projectId'];
+            $row['projectCampaignIds'] = explode(',', $row['projectCampaignIds']);
+            $row['projectCampaignIds'] = array_map(function($id) {
+                return (int)$id;
+            }, $row['projectCampaignIds']);
+        }
+        
         return $data;
     }
 
