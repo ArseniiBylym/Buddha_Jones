@@ -193,7 +193,7 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                 <Row>
                     <Col>
                         <ul className={styles.contactsList}>
-                            {this.contactList.length === 0 &&
+                            {!this.isInEditMode && this.contactList.length === 0 &&
                                 <li>
                                     <p>Studio has no contacts</p>
                                 </li>
