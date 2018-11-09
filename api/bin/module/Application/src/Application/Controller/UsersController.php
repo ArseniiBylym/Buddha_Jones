@@ -16,8 +16,10 @@ class UsersController extends CustomAbstractActionController
         $ids = trim($this->getRequest()->getQuery('ids', ''));
         $type = trim($this->getRequest()->getQuery('type', ''));
         $search = trim($this->getRequest()->getQuery('search', ''));
-        $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
+        $page = (int)trim($this->getRequest()->getQuery('page', 0));
         $length = (int)trim($this->getRequest()->getQuery('length', 10));
+        $offset = (int)trim($this->getRequest()->getQuery('offset', ($page - 1) * $length));
+        $offset = ($offset >= 0) ? $offset : 0;
 
         $idsArr = (array)json_decode($ids, true);
         $classArr = (array)json_decode($class, true);
@@ -41,6 +43,10 @@ class UsersController extends CustomAbstractActionController
             'message' => 'Request successful',
             'total_count' => $userCount,
             'object_count' => count($users),
+            'offset' => $offset,
+            'length' => $length,
+            'page' => floor($offset / $length) + 1,
+            'totalPages' => ceil($userCount / $length),
             'data' => $users
         );
 
