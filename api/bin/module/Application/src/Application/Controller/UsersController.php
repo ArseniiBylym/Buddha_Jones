@@ -21,6 +21,7 @@ class UsersController extends CustomAbstractActionController
         $offset = (int)trim($this->getRequest()->getQuery('offset', ($page - 1) * $length));
         $offset = ($offset >= 0) ? $offset : 0;
         
+
         $idsArr = (array)json_decode($ids, true);
         $classArr = (array)json_decode($class, true);
         $typeArr = (array)json_decode($type, true);
