@@ -98,6 +98,13 @@ class RediSpot
      */
     private $billingNote;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="trt_id", type="integer", nullable=true)
+     */
+    private $trtId;
+
 
 
     /**
@@ -361,5 +368,28 @@ class RediSpot
     public function getBillingNote()
     {
         return $this->billingNote;
+    }
+
+    /**
+     * Set trtId
+     *
+     * @param integer $trtId
+     * @return RediSpot
+     */
+    public function setTrtId($trtId)
+    {
+        $this->trtId = $trtId;
+
+        return $this;
+    }
+
+    /**
+     * Get trtId
+     *
+     * @return integer 
+     */
+    public function getTrtId()
+    {
+        return $this->trtId;
     }
 }

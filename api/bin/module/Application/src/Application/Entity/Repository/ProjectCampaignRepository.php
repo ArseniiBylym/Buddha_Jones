@@ -237,4 +237,16 @@ class ProjectCampaignRepository extends EntityRepository
 
         return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
     }
+
+    public function getAllTrt() {
+        $dql = "SELECT
+                  trt
+                FROM \Application\Entity\RediTrt trt
+                ORDER BY trt.id ASC ";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $result =  $query->getArrayResult();
+
+        return $result;
+    }
 }

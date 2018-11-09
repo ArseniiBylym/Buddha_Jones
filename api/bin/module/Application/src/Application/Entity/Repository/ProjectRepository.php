@@ -688,10 +688,13 @@ class ProjectRepository extends EntityRepository
     public function getSpotByProjectAndCampaign($projectId, $campaignId)
     {
         $dql = "SELECT s.id, s.spotName, s.revisionNotCounted, s.notes, s.revisions, s.graphicsRevisions,
-                    s.billingType, s.billingNote, s.firstRevisionCost, s.internalDeadline, s.clientDeadline
+                    s.billingType, s.billingNote, s.firstRevisionCost, s.internalDeadline, s.clientDeadline,
+                    s.trtId, trt.runtime
                 FROM \Application\Entity\RediSpot s
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
                     WITH ptc.id=s.projectCampaignId
+                LEFT JOIN \Application\Entity\RediTrt trt
+                    WITH trt.id = s.trtId
                 WHERE
                   ptc.projectId=:project_id
                   AND ptc.campaignId=:campaign_id";
@@ -712,8 +715,10 @@ class ProjectRepository extends EntityRepository
     {
         $dql = "SELECT s.id, s.spotName, s.revisionNotCounted, s.notes, s.revisions, s.graphicsRevisions,
                     s.billingType, s.billingNote, s.firstRevisionCost, s.internalDeadline, s.clientDeadline,
-                    s.projectCampaignId
+                    s.projectCampaignId, s.trtId, trt.runtime
                 FROM \Application\Entity\RediSpot s
+                LEFT JOIN \Application\Entity\RediTrt trt
+                    WITH trt.id = s.trtId
                 WHERE
                   s.projectCampaignId=:project_campaign_id";
 

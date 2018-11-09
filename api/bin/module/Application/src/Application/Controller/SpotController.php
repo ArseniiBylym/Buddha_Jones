@@ -122,6 +122,7 @@ class SpotController extends CustomAbstractActionController
             $clientDeadline = ($canEditClientDeadline && isset($data['client_deadline'])) ? $data['client_deadline'] : null;
             $billingType = ($canEditFirstRevisionCost && isset($data['billing_type'])) ? $data['billing_type'] : null;
             $billingNote = ($canEditFirstRevisionCost && isset($data['billing_note'])) ? trim($data['billing_note']) : null;
+            $trtId = (isset($data['trt_id'])) ? trim($data['trt_id']) : null;
 
             if ($name && $projectCampaignId) {
                 $projectCampaign = $this->_projectToCampaignRepository->find($projectCampaignId);
@@ -152,6 +153,8 @@ class SpotController extends CustomAbstractActionController
                     $spot->setGraphicsRevisions($graphicsRevisions);
                     $spot->setFirstRevisionCost($firstRevisionCost);
                     $spot->setBillingType($billingType);
+                    $spot->setTrtId($trtId);
+
                     if ($billingNote) {
                         $spot->setBillingNote($billingNote);
                     }
@@ -225,6 +228,7 @@ class SpotController extends CustomAbstractActionController
             $clientDeadline = ($canEditClientDeadline && isset($data['client_deadline'])) ? $data['client_deadline'] : null;
             $billingType = ($canEditFirstRevisionCost && isset($data['billing_type'])) ? $data['billing_type'] : null;
             $billingNote = ($canEditFirstRevisionCost && isset($data['billing_note'])) ? trim($data['billing_note']) : null;
+            $trtId = (isset($data['trt_id'])) ? trim($data['trt_id']) : null;
 
             $spot = $this->_spotRepository->find($id);
 
@@ -255,6 +259,10 @@ class SpotController extends CustomAbstractActionController
 
                 if ($firstRevisionCost) {
                     $spot->setFirstRevisionCost($firstRevisionCost);
+                }
+
+                if ($trtId) {
+                    $spot->setTrtId($trtId);
                 }
 
                 if ($internalDeadline) {
