@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { observable, computed, action } from 'mobx';
 import { HeaderActions, CampaignPeopleActions, SpotSentActions } from 'actions';
 import { ProducerSpotSentFormProject } from './ProducerSpotSentFormProject';
-import { ProjectPickerValues } from 'components/Buddha';
+import { ProjectPickerSections, ProjectPickerValues } from 'components/Buddha';
 import { ButtonBack, ButtonAdd, ButtonSend } from 'components/Button';
 import { history } from 'App';
 import AnimateHeight from 'react-animate-height';
@@ -723,7 +723,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     @action
-    private handleSpotChange = (spotIndex: number) => (values: ProjectPickerValues | null) => {
+    private handleSpotChange = (spotIndex: number) => (values: ProjectPickerValues | null, type?: ProjectPickerSections) => {
         if (values && values.projectCampaign) {
             CampaignPeopleActions.fetchEditorsFromProjectCampaign(values.projectCampaign.id);
         }
@@ -731,13 +731,45 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         /*this.values.spots[spotIndex].projectCampaign = values && values.projectCampaign ? values.projectCampaign : null;
         this.values.spots[spotIndex].spot = values && values.spot ? values.spot : null;
         this.values.spots[spotIndex].version = values && values.version ? values.version : null;*/
-
-        (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).campaign_id = (values && values.projectCampaign && values.projectCampaign.id) ? values.projectCampaign.id : null;
-        (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).campaign_name = (values && values.projectCampaign && values.projectCampaign.name) ? values.projectCampaign.name : '';
-        (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_id = (values && values.spot && values.spot.id) ? values.spot.id : null;
-        (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_name = (values && values.spot && values.spot.name) ? values.spot.name : '';
-        (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = (values && values.version && values.version.id) ? values.version.id : null;
-        (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = (values && values.version && values.version.name) ? values.version.name : '';
+        if (type) {
+            switch (type) {
+                case ProjectPickerSections.projectCampaign:
+                    if (values && values.projectCampaign) {
+                        if (values.projectCampaign.campaignId) {
+                            (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).campaign_id = values.projectCampaign.campaignId;
+                        }
+                        if (values.projectCampaign.id) {
+                            (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).project_campaign_id = values.projectCampaign.id;
+                        }
+                        if (values.projectCampaign.name) {
+                            (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).campaign_name = values.projectCampaign.name;
+                        }
+                    }
+                    break;
+                case ProjectPickerSections.spot:
+                    if (values && values.spot) {
+                        if (values.spot.id) {
+                            (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_id = values.spot.id;
+                        }
+                        if (values.spot.name) {
+                            (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_name = values.spot.name;
+                        }
+                    }
+                    break;
+                case ProjectPickerSections.version:
+                    if (values && values.version) {
+                        if (values.version.id) {
+                            (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = values.version.id;
+                        }
+                        if (values.version.name) {
+                            (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = values.version.name;
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
 
     };
 

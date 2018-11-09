@@ -51,7 +51,7 @@ export interface ProjectPickerGroupValues {
 }
 
 interface Props {
-    onChange?: (values: ProjectPickerValues | null) => void;
+    onChange?: (values: ProjectPickerValues | null, type?: ProjectPickerSections | null) => void;
     title?: string;
     subTitle?: string;
     noSeparator?: boolean;
@@ -669,7 +669,8 @@ export class ProjectPicker extends React.Component<ComponentProps, {}> {
                                     ? value.version
                                     : null,
                         customerId: result.clientId,
-                    }
+                    },
+                (result && result.section) ? result.section : null
             );
         }
     };
