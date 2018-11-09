@@ -15,17 +15,9 @@ interface TimeEntryUserWithType {
     typeName: string;
 }
 
-// Props
-interface TimeEntryProps {
-}
-
-// Types
-type TimeEntryPropsTypes = TimeEntryProps & AppState;
-
-// Component
 @inject('store')
 @observer
-class TimeEntry extends React.Component<TimeEntryPropsTypes, {}> {
+class TimeEntry extends React.Component<AppState, {}> {
     @computed
     private get essentialDataIsLoading(): boolean {
         if (this.props.store) {
