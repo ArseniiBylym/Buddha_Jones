@@ -26,7 +26,8 @@ export enum ProjectPickerSections {
     project = 'project',
     projectCampaign = 'projectCampaign',
     spot = 'spot',
-    version = 'version'
+    version = 'version',
+    clear = 'clear'
 }
 
 type ProjectPickerColumn = {
@@ -520,8 +521,8 @@ export class ProjectPicker extends React.Component<ComponentProps, {}> {
                                 version: null,
                                 customerId: this.props.value.customerId,
                             }
-                            : null
-            );
+                            : null,
+                ProjectPickerSections.clear);
         }
     };
 

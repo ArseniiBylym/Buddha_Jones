@@ -281,8 +281,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     }}
                                     clientId={this.values.project ? this.values.project.clientId : null}
                                     spot={{
-                                        projectCampaign: (spot.campaign_id) ? {
-                                            id: spot.campaign_id as number,
+                                        projectCampaign: (spot.project_campaign_id) ? {
+                                            id: spot.project_campaign_id as number,
                                             name: spot.campaign_name as string
                                         } : null,
                                         spot: (spot.spot_id) ? {
@@ -724,13 +724,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     @action
     private handleSpotChange = (spotIndex: number) => (values: ProjectPickerValues | null, type?: ProjectPickerSections) => {
-        if (values && values.projectCampaign) {
-            CampaignPeopleActions.fetchEditorsFromProjectCampaign(values.projectCampaign.id);
-        }
-
-        /*this.values.spots[spotIndex].projectCampaign = values && values.projectCampaign ? values.projectCampaign : null;
-        this.values.spots[spotIndex].spot = values && values.spot ? values.spot : null;
-        this.values.spots[spotIndex].version = values && values.version ? values.version : null;*/
         if (type) {
             switch (type) {
                 case ProjectPickerSections.projectCampaign:
@@ -744,6 +737,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         if (values.projectCampaign.name) {
                             (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).campaign_name = values.projectCampaign.name;
                         }
+                        CampaignPeopleActions.fetchEditorsFromProjectCampaign(values.projectCampaign.id);
                     }
                     break;
                 case ProjectPickerSections.spot:
@@ -766,11 +760,25 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         }
                     }
                     break;
+                case ProjectPickerSections.clear:
+                    this.dropSpotVersion(spotIndex);
+                    break;
                 default:
                     break;
             }
         }
+    };
 
+    @action
+    private dropSpotVersion = (ind: number) => {
+        (this.spotSentValues.spot_version[ind] as SpotSentVersionForSubmit).project_campaign_id = null;
+        (this.spotSentValues.spot_version[ind] as SpotSentVersionForSubmit).campaign_id = null;
+        (this.spotSentValues.spot_version[ind] as SpotSentVersionForSubmit).campaign_name = '';
+        (this.spotSentValues.spot_version[ind] as SpotSentVersionForSubmit).spot_id = null;
+        (this.spotSentValues.spot_version[ind] as SpotSentVersionForSubmit).spot_name = '';
+        (this.spotSentValues.spot_version[ind] as SpotSentVersionForSubmit).version_id = null;
+        (this.spotSentValues.spot_version[ind] as SpotSentVersionForSubmit).version_name = '';
+        (this.spotSentValues.spot_version[ind] as SpotSentVersionForSubmit).editors = [];
     };
 
     @action
