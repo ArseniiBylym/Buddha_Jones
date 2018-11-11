@@ -9,6 +9,20 @@ use Application\Entity\RediNavigationPermission;
 
 class UsersController extends CustomAbstractActionController
 {
+    /**
+     * Min length of auto generated password
+     *
+     * @var integer
+     */
+    protected $_passwordMinLength = 10;
+    /**
+     * Max length of auto generate password
+     *
+     * @var integer
+     */
+    protected $_passwordMaxLength = 15;
+
+
     public function getList()
     {
         $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
@@ -80,8 +94,9 @@ class UsersController extends CustomAbstractActionController
         $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
 
         if ($userAccess['can_edit']) {
-            $userName = strtolower(trim(isset($data['username']) ? $data['username'] : ''));
+            $userName = trim(isset($data['username']) ? $data['username'] : '');
             $password = trim(isset($data['password']) ? $data['password'] : '');
+            $generatePassword = (int)trim(isset($data['generate_password']) ? $data['generate_password'] : 0);
             $firstName = trim(isset($data['first_name']) ? $data['first_name'] : '');
             $lastName = trim(isset($data['last_name']) ? $data['last_name'] : '');
             $nickName = trim(isset($data['nick_name']) ? $data['nick_name'] : '');
@@ -95,6 +110,10 @@ class UsersController extends CustomAbstractActionController
             $minHour = isset($data['min_hour']) ? trim($data['min_hour']) : null;
             $image = isset($data['image']) ? $data['image'] : null;
 
+            // if generate password is selected
+            if ($generatePassword) {
+                $password = $this->_commonRepo->generateRandomString($this->_passwordMinLength, $this->_passwordMaxLength);
+            }
 
             if ($userName && ($firstName || $lastName) && $email && $password && $typeId) {
                 $userNameCheck = $this->_userRepository->findOneBy(array('username' => $userName));
@@ -142,6 +161,8 @@ class UsersController extends CustomAbstractActionController
                         $data = $this->getSingle($userId);
                         $data['user_id'] = $userId;
 
+                        $this->sendUserCreateEmail($userId, $password);
+
                         $response = array(
                             'status' => 1,
                             'message' => 'User created successfully',
@@ -183,6 +204,7 @@ class UsersController extends CustomAbstractActionController
     public function update($id, $data)
     {
         $password = isset($data['password']) ? $data['password'] : null;
+        $generatePassword = (int)trim(isset($data['generate_password']) ? $data['generate_password'] : 0);
         $oldPassword = isset($data['old_password']) ? $data['old_password'] : null;
         $firstName = isset($data['first_name']) ? $data['first_name'] : null;
         $lastName = isset($data['last_name']) ? $data['last_name'] : null;
@@ -198,6 +220,11 @@ class UsersController extends CustomAbstractActionController
         $image = isset($data['image']) ? $data['image'] : null;
 
         $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
+
+        // if generate password is selected
+        if ($generatePassword) {
+            $password = $this->_commonRepo->generateRandomString($this->_passwordMinLength, $this->_passwordMaxLength);
+        }
 
         if ($id && ($id == $this->_user_id || $userAccess['can_edit'])) {
             $emailCheck = $this->_userRepository->findOneBy(array('email' => $email));
@@ -267,7 +294,7 @@ class UsersController extends CustomAbstractActionController
                                     $user->setMinHour($minHour);
                                 }
                             }
-                            
+
                             if ($image) {
                                 $uploadedImage = $this->_save_base64_image($image, $user->getId(), $this->_tempProfileImagePath);
                                 $tempImage = $this->_tempProfileImagePath . $uploadedImage;
@@ -290,6 +317,10 @@ class UsersController extends CustomAbstractActionController
                             $this->_em->flush();
 
                             $updatedUser = $this->getSingle($id);
+
+                            if ($password) {
+                                $this->sendUserUpdateEmail($id, $password);
+                            }
 
                             $response = array(
                                 'status' => 1,
@@ -363,10 +394,6 @@ class UsersController extends CustomAbstractActionController
     {
         $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
         $user = $this->_usersRepo->getUser($id, $userAccess);
-
-        if ($user && isset($user['image']) && $user['image']) {
-            $user['image'] = $this->_siteUrl . 'thumb/profile_image/' . $user['image'];
-        }
 
         return $user;
     }
@@ -502,6 +529,52 @@ class UsersController extends CustomAbstractActionController
         ImageDestroy($output);
 
         return $ext;
+    }
+
+    public function sendUserCreateEmail($userId, $password)
+    {
+        $user = $this->getSingle($userId);
+
+        if ($user) {
+            $data = array(
+                'to' => $user['email'],
+                'subject' => 'User account created',
+            );
+
+            $templateName = 'user-account-create';
+
+            $templateData = array(
+                'fullName' => $user['fullName'],
+                'username' => $user['username'],
+                'email' => $user['email'],
+                'password' => $password,
+            );
+
+            $this->_commonRepo->sendEmail($data, $templateName, $templateData);
+        }
+    }
+
+    public function sendUserUpdateEmail($userId, $password)
+    {
+        $user = $this->getSingle($userId);
+
+        if ($user) {
+            $data = array(
+                'to' => $user['email'],
+                'subject' => 'User account updated',
+            );
+
+            $templateName = 'user-account-update';
+
+            $templateData = array(
+                'fullName' => $user['fullName'],
+                'username' => $user['username'],
+                'email' => $user['email'],
+                'password' => $password,
+            );
+
+            $this->_commonRepo->sendEmail($data, $templateName, $templateData);
+        }
     }
 
 }
