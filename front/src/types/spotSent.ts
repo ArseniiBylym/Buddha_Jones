@@ -1,4 +1,5 @@
 import { ProjectPickerGroupValues } from 'components/Buddha';
+import { ClientDetailsApiResponse } from './clients';
 
 export interface SpotSentSpot {
     projectCampaign: ProjectPickerGroupValues | null;
@@ -104,7 +105,6 @@ export interface SpotSentDetailsFromApi {
     spotResend: 0 | 1;
     statusId: 1 | 2;
     editor: string | null;
-    customerContact: number[];
     createdBy: number;
     updatedBy: number;
     createdAt: SpotSentAllSpotsFromApi;
@@ -117,6 +117,8 @@ export interface SpotSentDetailsFromApi {
     audioList: SpotSentAudioOptionsFromApi[];
     deliveryToClientList: SpotSentOptionsStdSectionFromApi;
     projectName: string;
+    customerContact: number[];
+    customerContactList: ClientDetailsApiResponse[];
 }
 
 export interface SpotSentDetailsSpotDataFromApi {

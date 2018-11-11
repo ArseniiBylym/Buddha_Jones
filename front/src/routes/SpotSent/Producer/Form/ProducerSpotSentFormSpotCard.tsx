@@ -8,7 +8,7 @@ import { ProjectPicker, ProjectPickerGroupValues, ProjectPickerValues, PersonWit
 import { Paragraph } from 'components/Content';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { ProjectCampaignUserFromApi } from 'types/projectDetails';
-import { computed } from 'mobx';
+import { action, computed } from 'mobx';
 import { LoadingIndicator } from 'components/Loaders';
 import { SpotSentStore } from '../../../../store/AllStores';
 import { SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
@@ -24,6 +24,7 @@ interface ProducerSpotSentFormSpotCardProps {
     onFinishingRequestToggle: (checked: boolean) => void;
     onSentViaMethodChange: (method: number) => void;
     onEditorAdd: (id: number) => void;
+    onEditorRemove: (editorIndex: number) => void;
     project: ProjectPickerGroupValues | null;
     clientId: number | null;
     spot: SpotSentSpot;
@@ -200,24 +201,37 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                         this.campaignEditorialUsers.users.length > 0 &&
                         this.selectedEditors.length <= 0 && <Paragraph type="dim">Add editors</Paragraph>}
 
-                    {this.selectedEditors.map(selectedEditor => (
-                        <PersonWithRole
-                            key={selectedEditor.userId}
-                            className={s.spotEditor}
-                            userId={selectedEditor.userId}
-                            userFullName={selectedEditor.fullName}
-                            userImage={selectedEditor.image}
-                            roleId={null}
-                            roleName={null}
-                            hideRole={true}
-                            selected={true}
-                            editing={false}
-                        />
+                    {this.selectedEditors.map((selectedEditor: ProjectCampaignUserFromApi, ind: number) => (
+                        <div className={s.editorBlock} key={`spot-sent-editor-${selectedEditor.userId}`}>
+                            <PersonWithRole
+                                className={s.spotEditor}
+                                userId={selectedEditor.userId}
+                                userFullName={selectedEditor.fullName}
+                                userImage={selectedEditor.image}
+                                roleId={null}
+                                roleName={null}
+                                hideRole={true}
+                                selected={true}
+                                editing={false}
+                            />
+                            <span
+                                onClick={this.onRemoveEditorHandler.bind(this, ind)}
+                                className={s.editorRemoveButton}
+                            >
+                                &#x2716;
+                            </span>
+                        </div>
                     ))}
+
                 </Section>
             </Card>
         );
     }
+
+    @action
+    private onRemoveEditorHandler = (ind: number, e: React.MouseEvent<HTMLButtonElement>): void => {
+        this.props.onEditorRemove(ind);
+    };
 
     private referenceEditorDropdown = (ref: DropdownContainer) => (this.editorDropdown = ref);
 

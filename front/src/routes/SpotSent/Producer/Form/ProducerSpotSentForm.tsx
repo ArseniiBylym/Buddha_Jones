@@ -22,6 +22,7 @@ import { DatePicker } from '../../../../components/Calendar';
 import { FinishingHousesPicker } from '../../../../components/Buddha/FinishingHousesPicker';
 import { match } from 'react-router';
 import * as dateFormat from 'date-fns/format';
+import { ClientDetailsApiResponse } from '../../../../types/clients';
 
 export interface ProducerSpotSentValue {
     date: Date;
@@ -67,6 +68,7 @@ export interface SpotSentValueForSubmit {
     graphics_finish?: 0 | 1;
     gfx_finish?: 0 | 1;
     customer_contact?: number[];
+    customer_contact_list?: ClientDetailsApiResponse[];
 }
 
 export interface SpotSentValueParentChildForSubmit {
@@ -275,6 +277,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     onFinishingRequestToggle={this.handleFinishingRequestToggle(spotIndex)}
                                     onSentViaMethodChange={this.handleSentViaMethodsChange(spotIndex)}
                                     onEditorAdd={this.handleSpotAddingEditor(spotIndex)}
+                                    onEditorRemove={this.handleSpotRemovingEditor(spotIndex)}
                                     project={{
                                         id: this.spotSentValues.project_id as number,
                                         name: this.spotSentValues.project_name as string
@@ -798,12 +801,15 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     @action
     private handleSpotAddingEditor = (spotIndex: number) => (userId: number) => {
-/*        if (this.values.spots[spotIndex].selectedEditorsIds.indexOf(userId) === -1) {
-            this.values.spots[spotIndex].selectedEditorsIds.push(userId);
-        }*/
-
         if ((this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).editors.indexOf(userId) === -1) {
             (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).editors.push(userId);
+        }
+    };
+
+    @action
+    private handleSpotRemovingEditor = (spotIndex: number) => (editorIndex: number) => {
+        if (editorIndex > -1 && (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).editors[editorIndex]) {
+            (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).editors.splice(editorIndex, 1);
         }
     };
 
