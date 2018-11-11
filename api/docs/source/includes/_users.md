@@ -87,7 +87,7 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **false** | search   | string | null | search string (this will search in first_name, last_name, initials)
 **false** | class    | char or JSON Array   | null | E - Editor section, G - Graphics section, C - Creative section, B- Billing contact selection
-**false** | type_id  | int or JSON Array   | null | Type id
+**false** | type  | int or JSON Array   | null | Type id
 **false** | ids      | int or JSON Array   | null | User id
 **false** | offset   | int    | 0    | offset to start
 **false** | length   | int    | 10   | length/count of data that will be returned

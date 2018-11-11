@@ -20,21 +20,21 @@ class UsersController extends CustomAbstractActionController
         $length = (int)trim($this->getRequest()->getQuery('length', 10));
         $offset = (int)trim($this->getRequest()->getQuery('offset', ($page - 1) * $length));
         $offset = ($offset >= 0) ? $offset : 0;
-        
+
 
         $idsArr = (array)json_decode($ids, true);
         $classArr = (array)json_decode($class, true);
         $typeArr = (array)json_decode($type, true);
 
-        if(!count($classArr) && $class) {
+        if (!count($classArr) && $class) {
             $classArr = [$class];
         }
 
         $users = $this->_usersRepo->searchUser($search, $idsArr, $classArr, $typeArr, $offset, $length, $userAccess);
         $userCount = $this->_usersRepo->searchCount($search, $idsArr, $classArr, $typeArr);
 
-        foreach($users as &$row) {
-            if($row['image']) {
+        foreach ($users as &$row) {
+            if ($row['image']) {
                 $row['image'] = $this->_siteUrl . 'thumb/profile_image/' . $row['image'];
             }
         }
@@ -80,7 +80,7 @@ class UsersController extends CustomAbstractActionController
         $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
 
         if ($userAccess['can_edit']) {
-            $userName = trim(isset($data['username']) ? $data['username'] : '');
+            $userName = strtolower(trim(isset($data['username']) ? $data['username'] : ''));
             $password = trim(isset($data['password']) ? $data['password'] : '');
             $firstName = trim(isset($data['first_name']) ? $data['first_name'] : '');
             $lastName = trim(isset($data['last_name']) ? $data['last_name'] : '');
@@ -126,7 +126,7 @@ class UsersController extends CustomAbstractActionController
 
                         $this->_em->flush();
 
-                        if($image) {
+                        if ($image) {
                             $uploadedImage = $this->_save_base64_image($image, $userId, $this->_tempProfileImagePath);
                             $tempImage = $this->_tempProfileImagePath . $uploadedImage;
 
@@ -200,60 +200,55 @@ class UsersController extends CustomAbstractActionController
         $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
 
         if ($id && ($id == $this->_user_id || $userAccess['can_edit'])) {
-            $userNameCheck = $this->_userRepository->findOneBy(array('username' => $userName));
             $emailCheck = $this->_userRepository->findOneBy(array('email' => $email));
 
-            if (!$userName || !$userNameCheck || ($userNameCheck && $userNameCheck->getId() == $id)) {
-                if (!$email || !$emailCheck || ($emailCheck && $emailCheck->getId() == $id)) {
-                    $user = $this->_userRepository->find($id);
+            if (!$email || !$emailCheck || ($emailCheck && $emailCheck->getId() == $id)) {
+                $user = $this->_userRepository->find($id);
 
-                    if($user) {
-                        if($id == $this->_user_id && $password && !$oldPassword) {
+                if ($user) {
+                    if ($id == $this->_user_id && $password && !$oldPassword) {
+                        $response = array(
+                            'status' => 0,
+                            'message' => 'Please provide current password.'
+                        );
+                    } else {
+                        if ($id == $this->_user_id && $password && md5($oldPassword) != $user->getPassword()) {
                             $response = array(
                                 'status' => 0,
-                                'message' => 'Please provide current password.'
+                                'message' => 'Current password does not match.'
                             );
                         } else {
-                            if ($id == $this->_user_id && $password && md5($oldPassword)!=$user->getPassword()) {
-                                $response = array(
-                                    'status' => 0,
-                                    'message' => 'Current password does not match.'
-                                );
-                            } else {
-                                if ($userName) {
-                                    $user->setUsername($userName);
-                                }
+                            if ($firstName) {
+                                $user->setFirstName($firstName);
+                            }
 
-                                if ($firstName) {
-                                    $user->setFirstName($firstName);
-                                }
+                            if ($lastName) {
+                                $user->setLastName($lastName);
+                            }
 
-                                if ($lastName) {
-                                    $user->setLastName($lastName);
-                                }
+                            if ($nickName) {
+                                $user->setNickName($nickName);
+                            }
 
-                                if($nickName) {
-                                    $user->setNickName($nickName);
-                                }
+                            if ($initials) {
+                                $user->setInitials($initials);
+                            }
 
-                                if($initials) {
-                                    $user->setInitials($initials);
-                                }
+                            if ($email) {
+                                $user->setEmail($email);
+                            }
 
-                                if ($email) {
-                                    $user->setEmail($email);
-                                }
+                            if ($password) {
+                                $user->setPassword(md5($password));
+                            }
 
+                            if ($userAccess['can_edit']) {
                                 if ($typeId) {
                                     $user->setTypeId($typeId);
                                 }
 
-                                if ($status !== NULL) {
+                                if ($status !== null) {
                                     $user->setStatus($status);
-                                }
-
-                                if ($password) {
-                                    $user->setPassword(md5($password));
                                 }
 
                                 if ($hourlyRate) {
@@ -271,56 +266,50 @@ class UsersController extends CustomAbstractActionController
                                 if ($minHour) {
                                     $user->setMinHour($minHour);
                                 }
-
-                                if ($image) {
-                                    $uploadedImage = $this->_save_base64_image($image, $user->getId(), $this->_tempProfileImagePath);
-                                    $tempImage = $this->_tempProfileImagePath . $uploadedImage;
-
-                                    if (file_exists($tempImage)) {
-                                        // delete current image (if exists)
-                                        if ($user->getImage()) {
-                                            if (file_exists($this->_profileImagePath . $user->getImage())) {
-                                                unlink($this->_profileImagePath . $user->getImage());
-                                            }
-                                        }
-                                        $imageExt = $this->_resizeImage($tempImage, $this->_profileImagePath . $user->getId(), 128, 128);
-                                        unlink($this->_tempProfileImagePath . $uploadedImage);
-
-                                        $user->setImage($user->getId() . '.' . $imageExt);
-                                        $this->_em->flush();
-                                    }
-                                }
-                                $this->_em->persist($user);
-                                $this->_em->flush();
-
-                                $updatedUser = $this->getSingle($id);
-
-                                $response = array(
-                                    'status' => 1,
-                                    'message' => 'User updated successfully',
-                                    'data' => $updatedUser
-                                );
                             }
+                            
+                            if ($image) {
+                                $uploadedImage = $this->_save_base64_image($image, $user->getId(), $this->_tempProfileImagePath);
+                                $tempImage = $this->_tempProfileImagePath . $uploadedImage;
+
+                                if (file_exists($tempImage)) {
+                                        // delete current image (if exists)
+                                    if ($user->getImage()) {
+                                        if (file_exists($this->_profileImagePath . $user->getImage())) {
+                                            unlink($this->_profileImagePath . $user->getImage());
+                                        }
+                                    }
+                                    $imageExt = $this->_resizeImage($tempImage, $this->_profileImagePath . $user->getId(), 128, 128);
+                                    unlink($this->_tempProfileImagePath . $uploadedImage);
+
+                                    $user->setImage($user->getId() . '.' . $imageExt);
+                                    $this->_em->flush();
+                                }
+                            }
+                            $this->_em->persist($user);
+                            $this->_em->flush();
+
+                            $updatedUser = $this->getSingle($id);
+
+                            $response = array(
+                                'status' => 1,
+                                'message' => 'User updated successfully',
+                                'data' => $updatedUser
+                            );
                         }
-                    } else {
-                        $response = array(
-                            'status' => 0,
-                            'message' => 'User does not exist.'
-                        );
                     }
                 } else {
                     $response = array(
                         'status' => 0,
-                        'message' => 'Email address already exists'
+                        'message' => 'User does not exist.'
                     );
                 }
             } else {
                 $response = array(
                     'status' => 0,
-                    'message' => 'User name already exists'
+                    'message' => 'Email address already exists'
                 );
             }
-
         } else {
             $response = array(
                 'status' => 0,
@@ -370,7 +359,8 @@ class UsersController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    private function getSingle($id) {
+    private function getSingle($id)
+    {
         $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
         $user = $this->_usersRepo->getUser($id, $userAccess);
 
@@ -482,9 +472,18 @@ class UsersController extends CustomAbstractActionController
             imagefill($output, 0, 0, $transparent);
         }
 
-        imagecopyresampled($output, $source, $dst_x, $dst_y, $src_x, $src_y,
-            $new_width - 2 * $dst_x, $new_height - 2 * $dst_y,
-            $width - 2 * $src_x, $height - 2 * $src_y);
+        imagecopyresampled(
+            $output,
+            $source,
+            $dst_x,
+            $dst_y,
+            $src_x,
+            $src_y,
+            $new_width - 2 * $dst_x,
+            $new_height - 2 * $dst_y,
+            $width - 2 * $src_x,
+            $height - 2 * $src_y
+        );
         //free resources
         ImageDestroy($source);
 
@@ -493,7 +492,7 @@ class UsersController extends CustomAbstractActionController
 //        header('Content-Type: image/' . $ext);
         $func = "image" . $ext;
 
-        if(file_exists($newPath . '.' . $ext)) {
+        if (file_exists($newPath . '.' . $ext)) {
             unlink($newPath . '.' . $ext);
         }
 
