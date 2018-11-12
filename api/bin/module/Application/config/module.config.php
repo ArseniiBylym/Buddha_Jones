@@ -180,7 +180,7 @@ return array(
             'Application\Controller\ProjectCampaignBillingUser'                     => 'Application\Controller\ProjectCampaignBillingUserController',
             'Application\Controller\ProjectCampaignEditor'                          => 'Application\Controller\ProjectCampaignEditorController',
             'Application\Controller\ProjectCampaignDesigner'                        => 'Application\Controller\ProjectCampaignDesignerController',
-            'Application\Controller\ProjectCustomerContact'                         => 'Application\Controller\ProjectCustomerContactController',
+            'Application\Controller\ProjectCampaignCustomerContact'                 => 'Application\Controller\ProjectCampaignCustomerContactController',
             'Application\Controller\ProjectPermission'                              => 'Application\Controller\ProjectPermissionController',
             'Application\Controller\Search'                                         => 'Application\Controller\SearchController',
             'Application\Controller\Spot'                                           => 'Application\Controller\SpotController',

@@ -91,6 +91,8 @@ class UsersController extends CustomAbstractActionController
 
     public function create($data)
     {
+        $data = $this->paramNameProxy($data);
+
         $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
 
         if ($userAccess['can_edit']) {
@@ -146,15 +148,22 @@ class UsersController extends CustomAbstractActionController
                         $this->_em->flush();
 
                         if ($image) {
-                            $uploadedImage = $this->_save_base64_image($image, $userId, $this->_tempProfileImagePath);
-                            $tempImage = $this->_tempProfileImagePath . $uploadedImage;
+                            try {
+                                $uploadedImage = $this->_save_base64_image($image, $userId, $this->_tempProfileImagePath);
 
-                            if (file_exists($tempImage)) {
-                                $imageExt = $this->_resizeImage($tempImage, $this->_profileImagePath . $userId, 128, 128);
-                                unlink($this->_tempProfileImagePath . $uploadedImage);
+                                if ($uploadedImage) {
+                                    $tempImage = $this->_tempProfileImagePath . $uploadedImage;
 
-                                $user->setImage($userId . '.' . $imageExt);
-                                $this->_em->flush();
+                                    if (file_exists($tempImage)) {
+                                        $imageExt = $this->_resizeImage($tempImage, $this->_profileImagePath . $userId, 128, 128);
+                                        unlink($this->_tempProfileImagePath . $uploadedImage);
+
+                                        $user->setImage($userId . '.' . $imageExt);
+                                        $this->_em->flush();
+                                    }
+                                }
+                            } catch (\Exception $e) {
+
                             }
                         }
 
@@ -203,6 +212,8 @@ class UsersController extends CustomAbstractActionController
 
     public function update($id, $data)
     {
+        $data = $this->paramNameProxy($data);
+
         $password = isset($data['password']) ? $data['password'] : null;
         $generatePassword = (int)trim(isset($data['generate_password']) ? $data['generate_password'] : 0);
         $oldPassword = isset($data['old_password']) ? $data['old_password'] : null;
@@ -296,21 +307,27 @@ class UsersController extends CustomAbstractActionController
                             }
 
                             if ($image) {
-                                $uploadedImage = $this->_save_base64_image($image, $user->getId(), $this->_tempProfileImagePath);
-                                $tempImage = $this->_tempProfileImagePath . $uploadedImage;
+                                try {
+                                    $uploadedImage = $this->_save_base64_image($image, $user->getId(), $this->_tempProfileImagePath);
 
-                                if (file_exists($tempImage)) {
+                                    if ($uploadedImage) {
+                                        $tempImage = $this->_tempProfileImagePath . $uploadedImage;
+
+                                        if (file_exists($tempImage)) {
                                         // delete current image (if exists)
-                                    if ($user->getImage()) {
-                                        if (file_exists($this->_profileImagePath . $user->getImage())) {
-                                            unlink($this->_profileImagePath . $user->getImage());
+                                            if ($user->getImage()) {
+                                                if (file_exists($this->_profileImagePath . $user->getImage())) {
+                                                    unlink($this->_profileImagePath . $user->getImage());
+                                                }
+                                            }
+                                            $imageExt = $this->_resizeImage($tempImage, $this->_profileImagePath . $user->getId(), 128, 128);
+                                            unlink($this->_tempProfileImagePath . $uploadedImage);
+
+                                            $user->setImage($user->getId() . '.' . $imageExt);
+                                            $this->_em->flush();
                                         }
                                     }
-                                    $imageExt = $this->_resizeImage($tempImage, $this->_profileImagePath . $user->getId(), 128, 128);
-                                    unlink($this->_tempProfileImagePath . $uploadedImage);
-
-                                    $user->setImage($user->getId() . '.' . $imageExt);
-                                    $this->_em->flush();
+                                } catch (\Exception $e) {
                                 }
                             }
                             $this->_em->persist($user);
@@ -404,6 +421,11 @@ class UsersController extends CustomAbstractActionController
         //
         //data is like:    data:image/png;base64,asdfasdfasdf
         $splited = explode(',', substr($base64_image_string, 5), 2);
+
+        if (count($splited) < 2) {
+            return null;
+        }
+
         $mime = $splited[0];
         $data = $splited[1];
 
@@ -575,6 +597,29 @@ class UsersController extends CustomAbstractActionController
 
             $this->_commonRepo->sendEmail($data, $templateName, $templateData);
         }
+    }
+
+    public function paramNameProxy($data)
+    {
+        $proxy = array(
+            'first_name' => 'firstName',
+            'last_name' => 'lastName',
+            'generate_password' => 'generatePassword',
+            'nick_name' => 'nickName',
+            'type_id' => 'typeId',
+            'hourly_rate' => 'hourlyRate',
+            'salary_type' => 'salaryType',
+            'salary_amount' => 'salaryAmount',
+            'min_hour' => 'minHour',
+        );
+
+        foreach ($proxy as $key => $value) {
+            if (isset($data[$value])) {
+                $data[$key] = $data[$value];
+            }
+        }
+
+        return $data;
     }
 
 }

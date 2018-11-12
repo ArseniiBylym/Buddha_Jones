@@ -15,11 +15,11 @@ use League\Csv\Reader;
 use Application\Entity\RediCcStatement;
 use Application\Entity\RediCcStatementLine;
 
-class ProjectCustomerContactController extends CustomAbstractActionController
+class ProjectCampaignCustomerContactController extends CustomAbstractActionController
 {
-    public function get($projectId)
+    public function get($projectCampaignId)
     {
-        $data = $this->_customerRepo->getProjectCustomerContact($projectId);
+        $data = $this->_customerRepo->getCampaignProjectCustomerContact($projectCampaignId);
 
         $response = array(
             'status' => 1,

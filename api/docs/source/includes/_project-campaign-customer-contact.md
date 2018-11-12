@@ -1,6 +1,6 @@
-# Project Customer Contact
+# Customer Contact for a project campaign
 
-## Get customer contact list for a project
+## Get customer contact list for a project campaign
 
 > 200: success response
 
@@ -15,11 +15,7 @@
             "name": "Danielle Wright",
             "title": null,
             "email": null,
-            "mobilePhone": null,
-            "projectId": 47,
-            "projectCampaignIds": [
-                156
-            ]
+            "mobilePhone": null
         },
         {
             "id": 3,
@@ -27,11 +23,7 @@
             "name": "Dave Dore\r\n",
             "title": null,
             "email": null,
-            "mobilePhone": null,
-            "projectId": 47,
-            "projectCampaignIds": [
-                156
-            ]
+            "mobilePhone": null
         }
     ]
 }
@@ -39,10 +31,10 @@
 
 ### HTTP Request
 
-`GET /project-customer-contact/[:project_id]`
+`GET /project-campaign-customer-contact/[:project_campaign_id]`
 
 ### Query Parameters˝
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true** | project_id | int | null | project id
+**true** | project_campaign_id | int | null | project campaign id
