@@ -13,7 +13,7 @@ import { Paragraph } from 'components/Content';
 import { ProducerSpotSentFormSpotCard } from '.';
 import { Checkmark, Input, TextArea, Toggle } from 'components/Form';
 import { ClientContact } from 'types/clients';
-import { LoadingIndicator, LoadingSpinner } from 'components/Loaders';
+import { LoadingSpinner } from 'components/Loaders';
 import { ToggleSideContent } from '../../../../components/Form';
 import { SpotSentAudioOptionsFromApi, SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
 import { ProjectPickerGroupValues } from '../../../../components/Buddha';
@@ -23,6 +23,7 @@ import { FinishingHousesPicker } from '../../../../components/Buddha/FinishingHo
 import { match } from 'react-router';
 import * as dateFormat from 'date-fns/format';
 import { ClientDetailsApiResponse } from '../../../../types/clients';
+import { ProducerSpotSentFormSentTo } from './SentTo/ProducerSpotSentFormSentTo';
 
 export interface ProducerSpotSentValue {
     date: Date;
@@ -150,7 +151,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         audio_note: '',
         graphics_finish: 0,
         gfx_finish: 0,
-        customer_contact: []
+        customer_contact: [],
+        customer_contact_list: []
     };
 
     @observable private isFinishingTypeSectionOpen: boolean = false;
@@ -315,71 +317,12 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         </Section>
                     }
 
-                    <Section
-                        title="Sent to"
-                        noSeparator={true}
-                        headerElements={[
-                            {
-                                key: 'sent-to-button',
-                                element: (
-                                    <>
-                                        {(this.isInEditMode && !this.isStudioContactFormShow) &&
-                                        <>
-                                            <ButtonClose
-                                                float="right"
-                                                onClick={this.handleEditingToggle}
-                                                label={'Cancel'}
-                                            />
-                                            <ButtonSave
-                                                className={styles.saveStudioContactButton}
-                                                onClick={this.onAssignContactHandler}
-                                                float="right"
-                                                label={this.status === 'error' ? 'Could not save, please try again' : 'Save'}
-                                                labelColor={this.status === 'error' ? 'orange' : 'blue'}
-                                                savingLabel="Saving"
-                                                isSaving={this.status === 'saving'}
-                                            />
-                                        </>
-                                        }
-                                        {!this.isInEditMode &&
-                                        <ButtonEdit
-                                            float="right"
-                                            onClick={this.handleEditingToggle}
-                                            label={'Edit contacts'}
-                                        />
-                                        }
-                                    </>
-                                ),
-                            },
-                        ]}
-                    >
-
-                        {/*{this.clientContacts === null && <Paragraph type="dim">Project is not selected.</Paragraph>}
-
-                        {this.clientContacts &&
-                        this.clientContacts.isLoading && <LoadingIndicator label="Loading studio contacts"/>
-                        }
-
-                        {this.clientContacts &&
-                        this.clientContacts.isLoading === false &&
-                        this.clientContacts.contacts.length <= 0 && (
-                            <Paragraph type="dim">Studio has no contacts.</Paragraph>
-                        )}
-
-                        {this.clientContacts &&
-                        this.clientContacts.isLoading === false && (
-                            <div className={s.studioContactsContainer}>
-                                {this.clientContacts.contacts.map(contact => (
-                                    <Checkmark
-                                        key={contact.id}
-                                        onClick={this.handleSentToContactToggle(contact)}
-                                        label={contact.name || contact.email || contact.id.toString()}
-                                        checked={this.values.studioContacts.indexOf(contact.id) !== -1}
-                                    />
-                                ))}
-                            </div>
-                        )}*/}
-                    </Section>
+                    <ProducerSpotSentFormSentTo
+                        onContactAdd={this.handleSentToAdd}
+                        onContactRemove={this.handleSentToRemove}
+                        assignedCustomers={(SpotSentStore.spotSentDetails && SpotSentStore.spotSentDetails.customer_contact) ? SpotSentStore.spotSentDetails.customer_contact : []}
+                        customerOptionsList={(SpotSentStore.spotSentDetails && SpotSentStore.spotSentDetails.customer_contact_list) ? SpotSentStore.spotSentDetails.customer_contact_list : []}
+                    />
 
                     <Section title="Internal notes">
                         <TextArea
@@ -649,7 +592,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         </pre>
                         <pre>
                             {JSON.stringify(this.spotSentValues, null, 2)}
-                            {/*{JSON.stringify(this.values, null, 2)}*/}
                         </pre>
                     </Section>
                 }
@@ -754,6 +696,16 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             ...(this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).slice(spotIndex + 1)
         ];
 
+    };
+
+    @action
+    private handleSentToAdd = (id: number ) => {
+        debugger;
+    };
+
+    @action
+    private handleSentToRemove = (index: number) => {
+        debugger;
     };
 
     @action
