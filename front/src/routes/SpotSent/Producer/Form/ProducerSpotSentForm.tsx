@@ -226,6 +226,11 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
     }
 
+    @computed
+    private get assignedCustomers(): number[] {
+        return (this.spotSentValues.customer_contact) ? this.spotSentValues.customer_contact : [];
+    }
+
     public componentDidMount() {
 
         // Fetch spot sent options
@@ -320,7 +325,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     <ProducerSpotSentFormSentTo
                         onContactAdd={this.handleSentToAdd}
                         onContactRemove={this.handleSentToRemove}
-                        assignedCustomers={(SpotSentStore.spotSentDetails && SpotSentStore.spotSentDetails.customer_contact) ? SpotSentStore.spotSentDetails.customer_contact : []}
+                        assignedCustomers={this.assignedCustomers}
                         customerOptionsList={(SpotSentStore.spotSentDetails && SpotSentStore.spotSentDetails.customer_contact_list) ? SpotSentStore.spotSentDetails.customer_contact_list : []}
                     />
 
@@ -699,13 +704,17 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     @action
-    private handleSentToAdd = (id: number ) => {
-        debugger;
+    private handleSentToAdd = (id: number ): void => {
+        if (id && this.spotSentValues.customer_contact) {
+            this.spotSentValues.customer_contact.push(id);
+        }
     };
 
     @action
-    private handleSentToRemove = (index: number) => {
-        debugger;
+    private handleSentToRemove = (index: number): void => {
+        if (index > -1 && this.spotSentValues.customer_contact && this.spotSentValues.customer_contact[index]) {
+            this.spotSentValues.customer_contact.splice(index, 1);
+        }
     };
 
     @action

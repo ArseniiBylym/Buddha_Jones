@@ -10,7 +10,6 @@ import { DropdownContainer, OptionsList, OptionsListValuePropType } from '../../
 
 // Styles
 import * as styles from './ProducerSpotSentFormSentTo.scss';
-import { LoadingIndicator } from '../../../../../components/Loaders';
 
 // Props
 interface ProjectBoardCampaignStudioContactsProps {
@@ -31,7 +30,6 @@ export class ProducerSpotSentFormSentTo extends React.Component<ProjectBoardCamp
     @observable private assignedCustomers: ClientContact[] = [];
     @observable private customerOptionsList: ClientContact[] = [];
     @observable private isInEditMode: boolean = false;
-    @observable private isContactListLoading: boolean = false;
     @observable private selectedContact: {id: number | null, name: string | null} = {
         id: null,
         name: null
@@ -44,20 +42,20 @@ export class ProducerSpotSentFormSentTo extends React.Component<ProjectBoardCamp
     }
 
     public componentWillReceiveProps(nextProps: ProjectBoardCampaignStudioContactsPropsTypes) {
-        if (this.props.assignedCustomers.length !== nextProps.assignedCustomers.length) {
-            this.setInitialContactList(nextProps);
-        }
+        this.setInitialContactList(nextProps);
+        /*if (this.props.assignedCustomers.length !== nextProps.assignedCustomers.length) {
+        }*/
     }
 
     public render() {
         return (
             <>
-                <pre>
+                {/*<pre>
                     {JSON.stringify(this.assignedCustomers, null, 2)}
                 </pre>
                 <pre>
                     {JSON.stringify(this.customerOptionsList, null, 2)}
-                </pre>
+                </pre>*/}
                 <div className={classNames(styles.studioContactsContainer, { [styles.editing]: this.isInEditMode })}>
                     <Section
                         title="Sent to"
@@ -80,6 +78,7 @@ export class ProducerSpotSentFormSentTo extends React.Component<ProjectBoardCamp
                                                     float="right"
                                                     label={'Save'}
                                                     labelColor={'blue'}
+                                                    isSaving={false}
                                                 />
                                             </>
                                         }
@@ -95,11 +94,7 @@ export class ProducerSpotSentFormSentTo extends React.Component<ProjectBoardCamp
                             },
                         ]}
                     >
-                        {this.isContactListLoading ? (
-                            <LoadingIndicator label="Loading contacts"/>
-                        ) : (
-                            this.renderSentToList()
-                        )}
+                        {this.renderSentToList()}
                     </Section>
                 </div>
             </>
@@ -181,7 +176,8 @@ export class ProducerSpotSentFormSentTo extends React.Component<ProjectBoardCamp
 
     @action
     private setInitialContactList = (props: ProjectBoardCampaignStudioContactsPropsTypes): void => {
-        this.assignedCustomers = this.getAssignedCustomers(props.assignedCustomers);
+        debugger;
+        this.assignedCustomers = this.getAssignedCustomers(props);
         this.customerOptionsList = props.customerOptionsList;
     };
 
@@ -205,26 +201,9 @@ export class ProducerSpotSentFormSentTo extends React.Component<ProjectBoardCamp
     };
 
     @action
-    private onRemoveContactHandler = (ind: number, event: any) => {
-        event.preventDefault();
-        if (ind > -1 && this.customerOptionsList[ind] && this.customerOptionsList[ind].id) {
-            this.isContactListLoading = true;
-
-            /*this.customerOptionsList.splice(ind, 1);*/
-            this.props.onContactRemove(ind);
-            this.selectedContact = {
-                id: null,
-                name: null
-            };
-        }
-    };
-
-    @action
     private onAssignContactHandler = (event: any) => {
         event.preventDefault();
         if (this.selectedContact && this.selectedContact.id) {
-            this.isContactListLoading = true;
-
             this.props.onContactAdd(this.selectedContact.id);
             this.selectedContact = {
                 id: null,
@@ -233,12 +212,23 @@ export class ProducerSpotSentFormSentTo extends React.Component<ProjectBoardCamp
         }
     };
 
-    private getAssignedCustomers = (assignedCustomers: number[]): ClientContact[] => {
-        return this.props.customerOptionsList
+    @action
+    private onRemoveContactHandler = (ind: number, event: any) => {
+        event.preventDefault();
+        if (ind > -1 && this.customerOptionsList[ind] && this.customerOptionsList[ind].id) {
+            this.props.onContactRemove(ind);
+            this.selectedContact = {
+                id: null,
+                name: null
+            };
+        }
+    };
+
+    private getAssignedCustomers = (props: ProjectBoardCampaignStudioContactsPropsTypes): ClientContact[] => {
+        return props.customerOptionsList
             .filter((option: ClientContact) => {
-                for (let i = 0; i < assignedCustomers.length; i++) {
-                    if (assignedCustomers[i] === option.id) {
-                        debugger;
+                for (let i = 0; i < props.assignedCustomers.length; i++) {
+                    if (props.assignedCustomers[i] === option.id) {
                         return true;
                     }
                 }
