@@ -28,6 +28,7 @@ interface ModalProps {
     closeButton?: boolean;
     closeButtonLabel?: string;
     onClose?: ActionClickEvent | null;
+    preventBackdropClick?: boolean;
     actions?: {
         onClick?: ActionClickEvent;
         closeOnClick: boolean;
@@ -51,6 +52,7 @@ export class Modal extends React.Component<ModalProps, {}> {
             closeButtonLabel: 'Close',
             onClose: null,
             actions: [],
+            preventBackdropClick: false
         };
     }
 
@@ -167,7 +169,7 @@ export class Modal extends React.Component<ModalProps, {}> {
     private referenceModal = (ref: HTMLDivElement) => (this.modal = ref);
 
     private handleModalClick = () => {
-        if (this.props.onClose) {
+        if (this.props.onClose && !this.props.preventBackdropClick) {
             this.props.onClose();
         }
     };
