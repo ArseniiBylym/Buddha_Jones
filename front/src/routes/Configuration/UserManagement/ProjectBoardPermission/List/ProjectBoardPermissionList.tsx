@@ -67,7 +67,7 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
 
         // Set header
         HeaderActions.setMainHeaderTitlesAndElements(
-            'Project Board permissions',
+            'User Management',
             'Configuration',
             null,
             null

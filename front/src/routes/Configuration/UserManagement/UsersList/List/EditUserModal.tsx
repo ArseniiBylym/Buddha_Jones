@@ -63,6 +63,7 @@ export class EditUserModal extends React.PureComponent<Props, State> {
                     closeButton={true}
                     onClose={this.props.onModalClose}
                     size={'content-wide'}
+                    preventBackdropClick={true}
                 >
                     {this.props.currentUser && this.getEditUserForm()}
                     {this.getBottomBar()}
@@ -153,6 +154,7 @@ export class EditUserModal extends React.PureComponent<Props, State> {
                         <Input
                             value={this.props.currentUser!.username}
                             label="User name..."
+                            disabled={true}
                         />
                     </Section>
 
@@ -214,7 +216,7 @@ export class EditUserModal extends React.PureComponent<Props, State> {
                 <div className={styles.bottomBar}>
                     <div className={styles.left}>
                         <Paragraph
-                            className={classNames(styles.errorMessage, {[styles.show]: true})}
+                            className={classNames(styles.errorMessage, { [styles.show]: true })}
                             type="alert"
                         >
                             {
@@ -290,7 +292,7 @@ export class EditUserModal extends React.PureComponent<Props, State> {
                 invalidateFields.push('email');
             }
 
-            this.setState({invalidateFields});
+            this.setState({ invalidateFields });
         } else {
             return false;
         }

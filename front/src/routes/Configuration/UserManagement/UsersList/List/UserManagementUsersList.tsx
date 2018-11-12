@@ -30,12 +30,12 @@ class UserManagementUsersList extends React.Component<Props & AppState, {}> {
 
     private static getTableHeader(): TableHeader[] {
         return [
-            {title: 'Nick name', align: 'center'},
-            {title: 'Full name', align: 'center'},
-            {title: 'User name', align: 'center'},
-            {title: 'Email', align: 'center'},
-            {title: 'Active', align: 'center'},
-            {title: '', align: 'right'}
+            { title: 'Nick name', align: 'center' },
+            { title: 'Full name', align: 'center' },
+            { title: 'User name', align: 'center' },
+            { title: 'Email', align: 'center' },
+            { title: 'Active', align: 'center' },
+            { title: '', align: 'right' }
         ];
     }
 
@@ -104,7 +104,7 @@ class UserManagementUsersList extends React.Component<Props & AppState, {}> {
                         </TableCell>
 
                         <TableCell align="center">
-                            {user.username}
+                            {user.fullName}
                         </TableCell>
 
                         <TableCell align="center">
@@ -163,7 +163,7 @@ class UserManagementUsersList extends React.Component<Props & AppState, {}> {
     };
 
     private onChangePageNumberHandler = (page: number): void => {
-        UsersActions.setUsersRequestParams({page});
+        UsersActions.setUsersRequestParams({ page });
         UsersActions.fetchUsersByTypeId().then();
     };
 
@@ -182,13 +182,13 @@ class UserManagementUsersList extends React.Component<Props & AppState, {}> {
 
     private setHeaderAndInitialData = (): void => {
         UsersActions.cleanPageableUsersList();
-        UsersActions.setUsersRequestParams({type: Number(this.props.match.params.userTypeId)});
+        UsersActions.setUsersRequestParams({ type: Number(this.props.match.params.userTypeId) });
         UsersActions.fetchUsersByTypeId().then();
         UsersActions.fetchUsersTypes().then();
 
         // Set header
         HeaderActions.setMainHeaderTitlesAndElements(
-            'Users management',
+            'User Management',
             'Configuration',
             null,
             null,
