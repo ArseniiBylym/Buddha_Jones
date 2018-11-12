@@ -315,8 +315,46 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         </Section>
                     }
 
-                    <Section title="Sent to">
-                        {this.clientContacts === null && <Paragraph type="dim">Project is not selected.</Paragraph>}
+                    <Section
+                        title="Sent to"
+                        noSeparator={true}
+                        headerElements={[
+                            {
+                                key: 'sent-to-button',
+                                element: (
+                                    <>
+                                        {(this.isInEditMode && !this.isStudioContactFormShow) &&
+                                        <>
+                                            <ButtonClose
+                                                float="right"
+                                                onClick={this.handleEditingToggle}
+                                                label={'Cancel'}
+                                            />
+                                            <ButtonSave
+                                                className={styles.saveStudioContactButton}
+                                                onClick={this.onAssignContactHandler}
+                                                float="right"
+                                                label={this.status === 'error' ? 'Could not save, please try again' : 'Save'}
+                                                labelColor={this.status === 'error' ? 'orange' : 'blue'}
+                                                savingLabel="Saving"
+                                                isSaving={this.status === 'saving'}
+                                            />
+                                        </>
+                                        }
+                                        {!this.isInEditMode &&
+                                        <ButtonEdit
+                                            float="right"
+                                            onClick={this.handleEditingToggle}
+                                            label={'Edit contacts'}
+                                        />
+                                        }
+                                    </>
+                                ),
+                            },
+                        ]}
+                    >
+
+                        {/*{this.clientContacts === null && <Paragraph type="dim">Project is not selected.</Paragraph>}
 
                         {this.clientContacts &&
                         this.clientContacts.isLoading && <LoadingIndicator label="Loading studio contacts"/>
@@ -340,7 +378,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     />
                                 ))}
                             </div>
-                        )}
+                        )}*/}
                     </Section>
 
                     <Section title="Internal notes">
