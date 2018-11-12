@@ -43,163 +43,163 @@ export class TimeEntryCalendarColumns extends React.Component<TimeEntryCalendarC
         return (
             <table ref={this.referenceContainerTable} className={s.days}>
                 <thead>
-                    <tr>
-                        <td>
-                            <hr />
-                        </td>
-                        {timeEntry.viewDays.map((day, index) => {
-                            // Get day of the week
-                            const dateDayOfWeek = dateGetDayOfWeek(day.date);
+                <tr>
+                    <td>
+                        <hr/>
+                    </td>
+                    {timeEntry.viewDays.map((day) => {
+                        // Get day of the week
+                        const dateDayOfWeek = dateGetDayOfWeek(day.date);
 
-                            if (!this.props.store) {
-                                return null;
-                            }
+                        if (!this.props.store) {
+                            return null;
+                        }
 
-                            // Render
-                            return (
-                                <td
-                                    key={'dayOfWeek-' + dateFormat(day.date, 'YYYY-MM-DD')}
-                                    className={classNames({
-                                        [s.today]: dateAreTwoDatesTheSameDay(day.date, this.props.store.time.now),
-                                        [s.weekend]: dateDayOfWeek <= 0 || dateDayOfWeek >= 6,
-                                        [s.creatable]: day.isDayClosed === false,
-                                    })}
-                                >
-                                    <p>{dateFormat(day.date, 'dddd')}</p>
-                                    <span>{padStart(dateGetDayOfTheMonth(day.date).toString(), 2, '0')}</span>
-                                    <hr />
+                        // Render
+                        return (
+                            <td
+                                key={'dayOfWeek-' + dateFormat(day.date, 'YYYY-MM-DD')}
+                                className={classNames({
+                                    [s.today]: dateAreTwoDatesTheSameDay(day.date, this.props.store.time.now),
+                                    [s.weekend]: dateDayOfWeek <= 0 || dateDayOfWeek >= 6,
+                                    [s.creatable]: day.isDayClosed === false,
+                                })}
+                            >
+                                <p>{dateFormat(day.date, 'dddd')}</p>
+                                <span>{padStart(dateGetDayOfTheMonth(day.date).toString(), 2, '0')}</span>
+                                <hr/>
 
-                                    {day.isDayLoading && (
-                                        <LoadingSpinner className={s.dayLoading} color="#FFFFFF" size={16} />
-                                    )}
-                                </td>
-                            );
-                        })}
-                        <td>
-                            <hr />
-                        </td>
-                    </tr>
+                                {day.isDayLoading && (
+                                    <LoadingSpinner className={s.dayLoading} color="#FFFFFF" size={16}/>
+                                )}
+                            </td>
+                        );
+                    })}
+                    <td>
+                        <hr/>
+                    </td>
+                </tr>
                 </thead>
 
                 <tbody>
-                    <tr>
-                        <td />
-                        {timeEntry.viewDays.map((day, dayIndex) => {
-                            if (!this.props.store || !this.props.store.user.data) {
-                                return null;
-                            }
+                <tr>
+                    <td/>
+                    {timeEntry.viewDays.map((day, dayIndex) => {
+                        if (!this.props.store || !this.props.store.user.data) {
+                            return null;
+                        }
 
-                            // Check if day is selected
-                            const isDaySelected =
-                                timeEntry.selectedDay !== null
-                                    ? dateAreTwoDatesTheSameDay(timeEntry.selectedDay.date, day.date)
-                                    : false;
+                        // Check if day is selected
+                        const isDaySelected =
+                            timeEntry.selectedDay !== null
+                                ? dateAreTwoDatesTheSameDay(timeEntry.selectedDay.date, day.date)
+                                : false;
 
-                            // Render
-                            return (
-                                <td
-                                    key={'dayCalendar' + dateFormat(day.date, 'YYYY-MM-DD')}
-                                    className={classNames({
-                                        [s.entering]: isDaySelected,
-                                    })}
-                                >
-                                    {(timeEntry.viewSingleDayOnly && (
-                                        <TimeEntryCalendarReview
-                                            forUser={{
-                                                id: this.props.store.user.data.id,
-                                                typeId: this.props.store.user.data.typeId,
-                                                typeName: this.props.store.user.data.typeName,
-                                            }}
-                                            now={this.props.store.time.now}
-                                            entries={day.timeEntries.map(entry => ({
-                                                entryId: entry.id,
-                                                userId: entry.userId,
-                                                userTypeId: entry.userTypeId,
-                                                userTypeName: entry.userTypeName,
-                                                activityId: entry.activityId,
-                                                activityName: entry.activityName,
-                                                activityTypeId: 0, // TODO
-                                                selectedProject: {
-                                                    project: entry.projectId
-                                                        ? {
-                                                              id: entry.projectId,
-                                                              name: entry.projectName || entry.projectId.toString(),
-                                                          }
-                                                        : null,
-                                                    projectCampaign: entry.projectCampaignId
-                                                        ? {
-                                                              id: entry.projectCampaignId,
-                                                              name:
-                                                                  entry.projectCampaignName ||
-                                                                  entry.projectCampaignId.toString(),
-                                                          }
-                                                        : null,
-                                                    spot: entry.spotId
-                                                        ? {
-                                                              id: entry.spotId,
-                                                              name: entry.spotName || entry.spotId.toString(),
-                                                          }
-                                                        : null,
-                                                    version: entry.versionId
-                                                        ? {
-                                                              id: entry.versionId,
-                                                              name: entry.versionName || entry.versionId.toString(),
-                                                          }
-                                                        : null,
-                                                    customerId: entry.clientId,
-                                                },
-                                                notes: entry.notes,
-                                                files: entry.files,
-                                                startDate: entry.startDate,
-                                                durationInMinutes: DateHandler.convertHoursNumberToTotalMinutes(
-                                                    entry.hours
-                                                ),
-                                            }))}
-                                        />
-                                    )) || <TimeEntryCalendarColumnsEntries day={day} dayIndex={dayIndex} />}
-                                </td>
-                            );
-                        })}
-                        <td />
-                    </tr>
+                        // Render
+                        return (
+                            <td
+                                key={'dayCalendar' + dateFormat(day.date, 'YYYY-MM-DD')}
+                                className={classNames({
+                                    [s.entering]: isDaySelected,
+                                })}
+                            >
+                                {(timeEntry.viewSingleDayOnly && (
+                                    <TimeEntryCalendarReview
+                                        forUser={{
+                                            id: this.props.store.user.data.id,
+                                            typeId: this.props.store.user.data.typeId,
+                                            typeName: this.props.store.user.data.typeName,
+                                        }}
+                                        now={this.props.store.time.now}
+                                        entries={day.timeEntries.map(entry => ({
+                                            entryId: entry.id,
+                                            userId: entry.userId,
+                                            userTypeId: entry.userTypeId,
+                                            userTypeName: entry.userTypeName,
+                                            activityId: entry.activityId,
+                                            activityName: entry.activityName,
+                                            activityTypeId: 0, // TODO
+                                            selectedProject: {
+                                                project: entry.projectId
+                                                    ? {
+                                                        id: entry.projectId,
+                                                        name: entry.projectName || entry.projectId.toString(),
+                                                    }
+                                                    : null,
+                                                projectCampaign: entry.projectCampaignId
+                                                    ? {
+                                                        id: entry.projectCampaignId,
+                                                        name:
+                                                            entry.projectCampaignName ||
+                                                            entry.projectCampaignId.toString(),
+                                                    }
+                                                    : null,
+                                                spot: entry.spotId
+                                                    ? {
+                                                        id: entry.spotId,
+                                                        name: entry.spotName || entry.spotId.toString(),
+                                                    }
+                                                    : null,
+                                                version: entry.versionId
+                                                    ? {
+                                                        id: entry.versionId,
+                                                        name: entry.versionName || entry.versionId.toString(),
+                                                    }
+                                                    : null,
+                                                customerId: entry.clientId,
+                                            },
+                                            notes: entry.notes,
+                                            files: entry.files,
+                                            startDate: entry.startDate,
+                                            durationInMinutes: DateHandler.convertHoursNumberToTotalMinutes(
+                                                entry.hours
+                                            ),
+                                        }))}
+                                    />
+                                )) || <TimeEntryCalendarColumnsEntries day={day} dayIndex={dayIndex}/>}
+                            </td>
+                        );
+                    })}
+                    <td/>
+                </tr>
                 </tbody>
 
                 {timeEntry.viewSingleDayOnly === false && (
                     <tfoot>
-                        <tr>
-                            <td />
-                            {timeEntry.viewDays.map((day, dayIndex) => {
-                                if (!this.props.store) {
-                                    return null;
-                                }
+                    <tr>
+                        <td/>
+                        {timeEntry.viewDays.map((day, dayIndex) => {
+                            if (!this.props.store) {
+                                return null;
+                            }
 
-                                // Check if day is in the future
-                                const isDayInTheFuture = dateIsAfter(day.date, this.props.store.time.now);
+                            // Check if day is in the future
+                            const isDayInTheFuture = dateIsAfter(day.date, this.props.store.time.now);
 
-                                // Render
-                                return (
-                                    <td key={'daySummary' + dateFormat(day.date, 'YYYY-MM-DD')}>
-                                        <p>
+                            // Render
+                            return (
+                                <td key={'daySummary' + dateFormat(day.date, 'YYYY-MM-DD')}>
+                                    <p>
                                             <span
                                                 className={classNames({
                                                     [s.dayApproved]:
-                                                        day.timeEntries.length > 0 &&
-                                                        day.isDayClosed &&
-                                                        day.isDayApproved,
+                                                    day.timeEntries.length > 0 &&
+                                                    day.isDayClosed &&
+                                                    day.isDayApproved,
                                                     [s.dayPending]:
-                                                        day.timeEntries.length > 0 &&
-                                                        day.isDayClosed &&
-                                                        day.isDayApproved === false,
+                                                    day.timeEntries.length > 0 &&
+                                                    day.isDayClosed &&
+                                                    day.isDayApproved === false,
                                                     [s.dayOpen]:
-                                                        day.timeEntries.length > 0 && day.isDayClosed === false,
+                                                    day.timeEntries.length > 0 && day.isDayClosed === false,
                                                     [s.dayNoTimeTracked]: day.timeEntries.length <= 0,
                                                 })}
                                                 onClick={
                                                     day.timeEntries.length > 0 && day.isDayClosed === false
                                                         ? this.handleConfirmationModalForEntriesSubmitForReview(
-                                                              day.date,
-                                                              dayIndex
-                                                          )
+                                                        day.date,
+                                                        dayIndex
+                                                        )
                                                         : undefined
                                                 }
                                             >
@@ -215,12 +215,12 @@ export class TimeEntryCalendarColumns extends React.Component<TimeEntryCalendarC
                                                         ? 'Future date'
                                                         : 'No time tracked'}
                                             </span>
-                                        </p>
-                                    </td>
-                                );
-                            })}
-                            <td />
-                        </tr>
+                                    </p>
+                                </td>
+                            );
+                        })}
+                        <td/>
+                    </tr>
                     </tfoot>
                 )}
             </table>
@@ -233,9 +233,7 @@ export class TimeEntryCalendarColumns extends React.Component<TimeEntryCalendarC
         }
     };
 
-    private handleConfirmationModalForEntriesSubmitForReview = (date: Date, dayIndex: number) => (
-        e: React.MouseEvent<HTMLSpanElement>
-    ) => {
+    private handleConfirmationModalForEntriesSubmitForReview = (_date: Date, dayIndex: number) => () => {
         if (!this.props.store || !this.props.store.user.data) {
             return;
         }

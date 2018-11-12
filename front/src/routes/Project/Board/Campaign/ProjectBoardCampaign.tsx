@@ -271,13 +271,10 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
 
     @computed
     private get isVersionStatusFilterApplied(): boolean {
-        if (ProjectsVersionsStore &&
+        return !!(ProjectsVersionsStore &&
             ProjectsVersionsStore.filterVersionStatus &&
-            ProjectsVersionsStore.filterVersionStatus.id
-        ) {
-            return true;
-        }
-        return false;
+            ProjectsVersionsStore.filterVersionStatus.id);
+
     }
 
     private campaignContainer: HTMLDivElement | null = null;
@@ -288,7 +285,7 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
 
         reaction(
             () => ProjectsVersionsStore.filterVersionStatus.id,
-            clientFilter => {
+            () => {
                 this.campaignIsExpanded = true;
                 this.spotsAreExpanded = true;
             }

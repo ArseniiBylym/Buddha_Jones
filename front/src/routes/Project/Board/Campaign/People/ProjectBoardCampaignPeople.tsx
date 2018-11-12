@@ -288,7 +288,7 @@ export class ProjectBoardCampaignPeople extends React.Component<
         ) : null;
     }
 
-    private handleEditingToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleEditingToggle = () => {
         this.isEditing = !this.isEditing;
     };
 

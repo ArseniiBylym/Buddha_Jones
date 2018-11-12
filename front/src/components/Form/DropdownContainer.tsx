@@ -146,7 +146,7 @@ export class DropdownContainer extends React.Component<DropdownContainerProps, {
 
             // Determine top margin
             let positionMarginTop = 0;
-            if (positionOnTop === true) {
+            if (positionOnTop) {
                 positionMarginTop = -labelHeight - 8;
             } else {
                 positionMarginTop = labelHeight + 8;
@@ -311,11 +311,11 @@ export class DropdownContainer extends React.Component<DropdownContainerProps, {
         }
     };
 
-    private windowResize = (e: React.UIEvent<Window>) => {
+    private windowResize = () => {
         this.positionAndResizeDropdown();
     };
 
-    private windowResizeDebounced = (e: React.UIEvent<Window>) => {
+    private windowResizeDebounced = () => {
         this.positionAndResizeDropdown();
     };
 }

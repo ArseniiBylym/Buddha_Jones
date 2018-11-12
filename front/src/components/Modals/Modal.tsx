@@ -166,7 +166,7 @@ export class Modal extends React.Component<ModalProps, {}> {
 
     private referenceModal = (ref: HTMLDivElement) => (this.modal = ref);
 
-    private handleModalClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    private handleModalClick = () => {
         if (this.props.onClose) {
             this.props.onClose();
         }
@@ -176,9 +176,7 @@ export class Modal extends React.Component<ModalProps, {}> {
         e.stopPropagation();
     };
 
-    private handleClickAction = (action: { closeOnClick: boolean; onClick: ActionClickEvent | null }) => (
-        e: React.MouseEvent<HTMLButtonElement>
-    ) => {
+    private handleClickAction = (action: { closeOnClick: boolean; onClick: ActionClickEvent | null }) => () => {
         if (action.onClick) {
             action.onClick();
         }
@@ -188,7 +186,7 @@ export class Modal extends React.Component<ModalProps, {}> {
         }
     };
 
-    private handleClickClose = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleClickClose = () => {
         if (this.props.onClose) {
             this.props.onClose();
         }

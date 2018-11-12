@@ -229,7 +229,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
     }
 
     @action
-    private onRemoveEditorHandler = (ind: number, e: React.MouseEvent<HTMLButtonElement>): void => {
+    private onRemoveEditorHandler = (ind: number): void => {
         this.props.onEditorRemove(ind);
     };
 

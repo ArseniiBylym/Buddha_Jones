@@ -66,8 +66,8 @@ export class Toggle extends React.Component<ToggleProps, {}> {
         typeof this.props.toggleIsSetToRight !== 'undefined'
             ? this.props.toggleIsSetToRight
             : typeof this.props.toggleDefaultsToRight !== 'undefined'
-                ? this.props.toggleDefaultsToRight
-                : false;
+            ? this.props.toggleDefaultsToRight
+            : false;
 
     public componentWillReceiveProps(nextProps: ToggleProps) {
         if (
@@ -89,11 +89,11 @@ export class Toggle extends React.Component<ToggleProps, {}> {
                         [s.toggleOnRight]: this.isSetToRight,
                         [s.toggleDisabled]: this.props.isDisabled,
                         [s[
-                            'align' +
-                                (typeof this.props.align !== 'undefined'
-                                    ? this.props.align.charAt(0).toUpperCase() + this.props.align.slice(1)
-                                    : 'Right')
-                        ]]: true,
+                        'align' +
+                        (typeof this.props.align !== 'undefined'
+                            ? this.props.align.charAt(0).toUpperCase() + this.props.align.slice(1)
+                            : 'Right')
+                            ]]: true,
                     },
                     this.props.className
                 )}
@@ -105,10 +105,10 @@ export class Toggle extends React.Component<ToggleProps, {}> {
                     icon={
                         this.props.toggleOnLeft && typeof this.props.toggleOnLeft.icon !== 'undefined'
                             ? {
-                                  element: this.props.toggleOnLeft.icon,
-                                  size: 'nopadding',
-                                  background: 'none',
-                              }
+                                element: this.props.toggleOnLeft.icon,
+                                size: 'nopadding',
+                                background: 'none',
+                            }
                             : undefined
                     }
                     label={{
@@ -123,7 +123,7 @@ export class Toggle extends React.Component<ToggleProps, {}> {
                 />
 
                 <button className={s.toggleOutline} onClick={this.handleToggleClick}>
-                    <span className={s.toggleCircle} />
+                    <span className={s.toggleCircle}/>
                 </button>
 
                 <Button
@@ -131,10 +131,10 @@ export class Toggle extends React.Component<ToggleProps, {}> {
                     icon={
                         this.props.toggleOnRight && typeof this.props.toggleOnRight.icon !== 'undefined'
                             ? {
-                                  element: this.props.toggleOnRight.icon,
-                                  size: 'nopadding',
-                                  background: 'none',
-                              }
+                                element: this.props.toggleOnRight.icon,
+                                size: 'nopadding',
+                                background: 'none',
+                            }
                             : undefined
                     }
                     label={{
@@ -154,8 +154,8 @@ export class Toggle extends React.Component<ToggleProps, {}> {
         );
     }
 
-    private handleLeftClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        if (this.props.isDisabled !== true && this.props.toggleOnLeft && this.isSetToRight !== false) {
+    private handleLeftClick = () => {
+        if (this.props.isDisabled !== true && this.props.toggleOnLeft && this.isSetToRight) {
             this.isSetToRight = false;
 
             if (this.props.onChange) {
@@ -164,8 +164,8 @@ export class Toggle extends React.Component<ToggleProps, {}> {
         }
     };
 
-    private handleRightClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        if (this.props.isDisabled !== true && this.props.toggleOnRight && this.isSetToRight !== true) {
+    private handleRightClick = () => {
+        if (this.props.isDisabled !== true && this.props.toggleOnRight && !this.isSetToRight) {
             this.isSetToRight = true;
 
             if (this.props.onChange) {
@@ -174,14 +174,14 @@ export class Toggle extends React.Component<ToggleProps, {}> {
         }
     };
 
-    private handleToggleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleToggleClick = () => {
         if (this.props.isDisabled !== true && this.props.toggleOnLeft && this.props.toggleOnRight) {
             const isTogglingToRight: boolean = !this.isSetToRight;
 
             if (isTogglingToRight) {
-                this.handleRightClick(e);
+                this.handleRightClick();
             } else {
-                this.handleLeftClick(e);
+                this.handleLeftClick();
             }
         }
     };

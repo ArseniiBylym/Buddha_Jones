@@ -147,7 +147,7 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
 
                     <Section title="Email address">
                         <Input
-                            onChange={this.handleProfileInfoChange('email')}
+                            onChange={this.handleProfileInfoChange()}
                             value={this.userFields.email}
                             label="Email address"
                             type="text"
@@ -238,18 +238,18 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
         );
     }
 
-    private handleGoingBack = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleGoingBack = () => {
         history.goBack();
     };
 
     @action
-    private handleProfileInfoChange = (field: 'email') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    private handleProfileInfoChange = () => (e: React.ChangeEvent<HTMLInputElement>) => {
         this.userFields.email = e.target.value;
         this.profileUploadStatus = 'none';
     };
 
     @action
-    private handleProfileInfoChangeSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleProfileInfoChangeSave = async () => {
         try {
             const email = this.userFields.email.trim();
 
@@ -307,7 +307,7 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
     };
 
     @action
-    private handlePasswordChangeSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handlePasswordChangeSave = async () => {
         if (
             this.userFields.oldPassword.trim() === '' ||
             this.userFields.newPassword.trim() === '' ||
@@ -352,7 +352,7 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
         }
     };
 
-    private handleUserLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleUserLogout = () => {
         history.push('/user/logout');
     };
 }

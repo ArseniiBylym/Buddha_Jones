@@ -168,7 +168,7 @@ export class Pagination extends React.Component<PaginationProps, {}> {
         );
     }
 
-    private handlePageClick = (newPage: number) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handlePageClick = (newPage: number) => () => {
         this.switchToPage(newPage);
     };
 

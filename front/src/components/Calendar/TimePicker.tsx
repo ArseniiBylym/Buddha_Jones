@@ -254,7 +254,7 @@ export class TimePicker extends React.Component<TimePickerProps, {}> {
         }
     };
 
-    private handleTimeSelectionConfirmation = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleTimeSelectionConfirmation = () => {
         if (this.dropdownContainer && typeof this.dropdownContainer.closeDropdown === 'function') {
             this.dropdownContainer.closeDropdown();
         }

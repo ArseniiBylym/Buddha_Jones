@@ -25,8 +25,6 @@ export class LoadingSpinner extends React.Component<LoadingSpinnerProps, {}> {
         };
     }
 
-    private svgNode: SVGElement | null = null;
-
     private exists: boolean = true;
     @observable private visible: boolean = false;
 
@@ -93,5 +91,5 @@ export class LoadingSpinner extends React.Component<LoadingSpinnerProps, {}> {
         );
     }
 
-    private referenceSvgNode = (ref: SVGSVGElement) => (this.svgNode = ref);
+    private referenceSvgNode = (ref: SVGSVGElement) => (ref);
 }

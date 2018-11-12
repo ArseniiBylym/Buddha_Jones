@@ -80,7 +80,7 @@ export class TimeEntryCalendarDuration extends React.Component<TimeEntryCalendar
                 <Row removeGutter={true} className={s.timelineRow}>
                     <Col>
                         <Row removeGutter={true}>
-                            {timeEntry.viewTimeline.map((entry, index) => {
+                            {timeEntry.viewTimeline.map((_entry, index) => {
                                 return (
                                     <Col key={index} size={1}>
                                         <hr/>
@@ -159,7 +159,7 @@ export class TimeEntryCalendarDuration extends React.Component<TimeEntryCalendar
         }
     };
 
-    private handleStartTimeChange = (totalMinutes: number, formatted: { value: number; label: string }) => {
+    private handleStartTimeChange = (totalMinutes: number) => {
         TimeEntryActions.setEntryStartTime(totalMinutes);
     };
 
@@ -167,7 +167,7 @@ export class TimeEntryCalendarDuration extends React.Component<TimeEntryCalendar
         TimeEntryActions.setEntryDuration(totalMinutes);
     };
 
-    private handleEndTimeChange = (totalMinutes: number, formatted: { value: number; label: string }) => {
+    private handleEndTimeChange = (totalMinutes: number) => {
         TimeEntryActions.setEntryEndTime(totalMinutes);
     };
 

@@ -28,7 +28,7 @@ export class Projects {
         // React to client filter change
         reaction(
             () => this.filterByStudio,
-            clientFilter => {
+            () => {
                 ProjectsActions.fetchProjects(1);
             }
         );
@@ -36,7 +36,7 @@ export class Projects {
         // React to client filter by search query change
         reaction(
             () => this.filterByQuery,
-            query => {
+            () => {
                 ProjectsActions.fetchProjectsDebounced(1);
             }
         );

@@ -15,7 +15,8 @@ import { TimeEntryActions } from 'actions';
 const s = require('./TimeEntryCalendarHeader.css');
 
 // Props
-interface TimeEntryCalendarHeaderProps {}
+interface TimeEntryCalendarHeaderProps {
+}
 
 // Types
 type TimeEntryCalendarHeaderPropsTypes = TimeEntryCalendarHeaderProps & AppOnlyStoreState;
@@ -76,33 +77,33 @@ export class TimeEntryCalendarHeader extends React.Component<TimeEntryCalendarHe
                         {(this.dayNames.nameOfTheFirstDayInMonth === this.dayNames.nameOfTheLastDayInMonth && (
                             <span key={0}> {this.dayNames.nameOfTheFullYearOfFirstDayInMonth}</span>
                         )) ||
-                            (this.dayNames.nameOfTheFullYearOfFirstDayInMonth ===
-                                this.dayNames.nameOfTheFullYearOfLastDayInMonth && (
+                        (this.dayNames.nameOfTheFullYearOfFirstDayInMonth ===
+                            this.dayNames.nameOfTheFullYearOfLastDayInMonth && (
                                 <>
                                     <i> / </i>
                                     <strong>{this.dayNames.nameOfTheLastDayInMonth}</strong>
                                     <span>{' ' + this.dayNames.nameOfTheFullYearOfLastDayInMonth}</span>
                                 </>
                             )) || (
-                                <>
-                                    <span>{this.dayNames.nameOfTheFullYearOfFirstDayInMonth}</span>
-                                    <i> / </i>
-                                    <strong>{this.dayNames.nameOfTheLastDayInMonth}</strong>
-                                    <span>{' ' + this.dayNames.nameOfTheFullYearOfLastDayInMonth}</span>
-                                </>
-                            )}
+                            <>
+                                <span>{this.dayNames.nameOfTheFullYearOfFirstDayInMonth}</span>
+                                <i> / </i>
+                                <strong>{this.dayNames.nameOfTheLastDayInMonth}</strong>
+                                <span>{' ' + this.dayNames.nameOfTheFullYearOfLastDayInMonth}</span>
+                            </>
+                        )}
                     </p>
                 </Col>
 
                 <Col className={s.arrows} size={6}>
-                    {viewSingleDayOnly === false && (
+                    {!viewSingleDayOnly && (
                         <Button
                             onClick={this.handlePeriodSwitch(true)}
                             float="right"
                             icon={{
                                 background: 'none',
                                 size: 'nopadding',
-                                element: <IconArrowRightYellow width={15} height={11} />,
+                                element: <IconArrowRightYellow width={15} height={11}/>,
                             }}
                             label={{
                                 text: 'NEXT',
@@ -113,14 +114,14 @@ export class TimeEntryCalendarHeader extends React.Component<TimeEntryCalendarHe
                         />
                     )}
 
-                    {viewSingleDayOnly === false && (
+                    {!viewSingleDayOnly && (
                         <Button
                             onClick={this.handlePeriodSwitch(false)}
                             float="right"
                             icon={{
                                 background: 'none',
                                 size: 'nopadding',
-                                element: <IconArrowLeftYellow width={15} height={11} />,
+                                element: <IconArrowLeftYellow width={15} height={11}/>,
                             }}
                             label={{
                                 text: 'PREV',
@@ -138,7 +139,7 @@ export class TimeEntryCalendarHeader extends React.Component<TimeEntryCalendarHe
                             icon={{
                                 background: 'none',
                                 size: 'nopadding',
-                                element: <IconArrowLeftYellow width={15} height={11} />,
+                                element: <IconArrowLeftYellow width={15} height={11}/>,
                             }}
                             label={{
                                 text: 'Back to week view',
@@ -152,39 +153,27 @@ export class TimeEntryCalendarHeader extends React.Component<TimeEntryCalendarHe
         );
     }
 
-    private handleDailyWeeklyViewSwitch = (toDaily: boolean) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleDailyWeeklyViewSwitch = (toDaily: boolean) => () => {
         if (!this.props.store || this.props.store.timeEntry.viewEntriesOfUser === null) {
             return;
         }
 
-        if (toDaily && this.props.store.timeEntry.viewSingleDayOnly === false) {
+        if (toDaily && !this.props.store.timeEntry.viewSingleDayOnly) {
             let day = this.props.store.timeEntry.viewDays[0].date;
 
             const findCurrentlyBeingEdited = this.props.store.timeEntry.viewDays.find(viewDay => {
-                if (
-                    this.props.store &&
+                return !!(this.props.store &&
                     this.props.store.timeEntry.values &&
-                    dateIsSameDay(this.props.store.timeEntry.values.startDate, viewDay.date)
-                ) {
-                    return true;
-                }
-
-                return false;
+                    dateIsSameDay(this.props.store.timeEntry.values.startDate, viewDay.date));
             });
 
             if (findCurrentlyBeingEdited) {
                 day = findCurrentlyBeingEdited.date;
             } else {
-                const findIfWeekIsToday = this.props.store.timeEntry.viewDays.find(viewDay => {
-                    if (
-                        this.props.store &&
+                const findIfWeekIsToday = this.props.store.timeEntry.viewDays.find(() => {
+                    return !!(this.props.store &&
                         this.props.store.timeEntry.values &&
-                        dateIsSameDay(this.props.store.timeEntry.values.startDate, new Date())
-                    ) {
-                        return true;
-                    }
-
-                    return false;
+                        dateIsSameDay(this.props.store.timeEntry.values.startDate, new Date()));
                 });
 
                 if (findIfWeekIsToday) {
@@ -193,7 +182,7 @@ export class TimeEntryCalendarHeader extends React.Component<TimeEntryCalendarHe
             }
 
             TimeEntryActions.setCurrentViewToDay(this.props.store.timeEntry.viewEntriesOfUser, day);
-        } else if (this.props.store.timeEntry.viewSingleDayOnly === true) {
+        } else if (this.props.store.timeEntry.viewSingleDayOnly) {
             TimeEntryActions.setCurrentViewToWeek(
                 this.props.store.timeEntry.viewEntriesOfUser,
                 this.props.store.timeEntry.viewDays[0].date
@@ -201,7 +190,7 @@ export class TimeEntryCalendarHeader extends React.Component<TimeEntryCalendarHe
         }
     };
 
-    private handlePeriodSwitch = (toNext: boolean) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handlePeriodSwitch = (toNext: boolean) => () => {
         if (!this.props.store || this.props.store.timeEntry.viewEntriesOfUser === null) {
             return;
         }

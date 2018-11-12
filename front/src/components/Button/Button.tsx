@@ -166,7 +166,7 @@ export class Button extends React.Component<ButtonProps, {}> {
                 {this.props.label &&
                 typeof this.props.label.text !== 'undefined' &&
                 this.props.label.text &&
-                (typeof this.props.label.onLeft === 'undefined' || this.props.label.onLeft === true) &&
+                (typeof this.props.label.onLeft === 'undefined' || this.props.label.onLeft) &&
                 this.renderLabel()}
 
                 {this.props.icon &&
@@ -193,7 +193,7 @@ export class Button extends React.Component<ButtonProps, {}> {
                 {this.props.label &&
                 typeof this.props.label.text !== 'undefined' &&
                 this.props.label.text &&
-                (typeof this.props.label.onLeft !== 'undefined' && this.props.label.onLeft === false) &&
+                (typeof this.props.label.onLeft !== 'undefined' && !this.props.label.onLeft) &&
                 this.renderLabel()}
 
                 {this.props.tooltip &&
@@ -263,7 +263,7 @@ export class Button extends React.Component<ButtonProps, {}> {
         }
     };
 
-    private handleButtonHover = (enter: boolean) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleButtonHover = (enter: boolean) => () => {
         if (enter) {
             this.showTooltip = true;
             setTimeout(() => {
@@ -274,7 +274,7 @@ export class Button extends React.Component<ButtonProps, {}> {
         } else {
             this.animateTooltip = false;
             setTimeout(() => {
-                if (this.exists && this.showTooltip && this.animateTooltip === false) {
+                if (this.exists && this.showTooltip && !this.animateTooltip) {
                     this.showTooltip = false;
                 }
             }, 500);

@@ -125,7 +125,7 @@ export class CustomerSelector extends React.Component<Props, {}> {
 
     private referenceCustomerSelectorDropdown = (ref: DropdownContainer) => (this.versionStatusDropdown = ref);
 
-    private handleCustomerSelectorEditModeToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleCustomerSelectorEditModeToggle = () => {
         this.toggleEditMode();
     };
 

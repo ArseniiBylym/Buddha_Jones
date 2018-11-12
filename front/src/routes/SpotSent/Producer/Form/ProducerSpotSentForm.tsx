@@ -629,7 +629,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         SpotSentActions.fetchSpotSentOptions();
     };
 
-    private handleBackButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleBackButtonClick = () => {
         history.push('/portal/studio/producer-spot-sent-list');
     };
 
@@ -708,7 +708,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     @action
-    private handleSpotRemove = (spotIndex: number) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleSpotRemove = (spotIndex: number) => () => {
         this.values.spots = [...this.values.spots.slice(0, spotIndex), ...this.values.spots.slice(spotIndex + 1)];
 
         this.spotSentValues.spot_version = [
@@ -719,7 +719,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     @action
-    private handleCreateSpot = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleCreateSpot = () => {
         this.values.spots.push(this.defaultSpot);
 
         (this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).push(this.defaultSpotElement);
@@ -817,7 +817,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     private handleSentToContactToggle = (contact: ClientContact) => (checked: boolean) => {
         if (checked && this.values.studioContacts.indexOf(contact.id) === -1) {
             this.values.studioContacts.push(contact.id);
-        } else if (checked === false) {
+        } else if (!checked) {
             const studioContactIndex = this.values.studioContacts.indexOf(contact.id);
             if (studioContactIndex !== -1) {
                 this.values.studioContacts = [
@@ -833,7 +833,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         this.spotSentValues.status = (checked) ? 2 : 1;
     };
 
-    private handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleSubmit = async () => {
         try {
             let data: SpotSentValueForSubmit = this.spotSentValues;
             (data.spot_version as string) = JSON.stringify((data.spot_version as SpotSentVersionForSubmit[]).map((spot: SpotSentVersionForSubmit) => {
@@ -1071,7 +1071,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     @action
-    private handleTogglingRequest = (isSetToRight: boolean, selectedSideContent: ToggleSideContent) => {
+    private handleTogglingRequest = (_isSetToRight: boolean, selectedSideContent: ToggleSideContent) => {
         this.spotSentValues.finish_option = {
             parent: (selectedSideContent.value as number),
             child: 1

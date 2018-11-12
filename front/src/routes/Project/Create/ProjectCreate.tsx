@@ -114,7 +114,7 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
         );
     }
 
-    private handleBackToBoardNavigation = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleBackToBoardNavigation = () => {
         history.push('/portal/projects/1');
     };
 
@@ -148,7 +148,7 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
         this.notes = e.target.value;
     };
 
-    private handleSubmit = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    private handleSubmit = () => {
         let projectData: ProjectCreateData = {
             id: 0,
             name: this.name.trim(),
@@ -192,7 +192,7 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
                         projectData.name || projectData.codeName
                 );
             })
-            .catch(error => {
+            .catch(() => {
                 if (this.uploadRetries > 5) {
                     this.isUploading = false;
                     this.uploadRetries = 0;

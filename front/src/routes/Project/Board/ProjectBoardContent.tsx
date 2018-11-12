@@ -173,13 +173,13 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
     public constructor(props: ProjectBoardContentPropsType) {
         super(props);
 
-        reaction(() => this.userCanEditProjectName, userCanEditProjectName => this.showEditProjectCoreButton());
+        reaction(() => this.userCanEditProjectName, () => this.showEditProjectCoreButton());
 
-        reaction(() => this.userCanEditProjectCodeName, userCanEditProjectCodeName => this.showEditProjectCoreButton());
+        reaction(() => this.userCanEditProjectCodeName, () => this.showEditProjectCoreButton());
 
         reaction(
             () => this.userCanEditProjectReleaseDate,
-            userCanEditProjectReleaseDate => this.showEditProjectCoreButton()
+            () => this.showEditProjectCoreButton()
         );
     }
 
@@ -402,7 +402,7 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
         );
     };
 
-    private handleCoreEditButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleCoreEditButtonClick = () => {
         this.editingProjectCore = true;
         HeaderActions.setMainHeaderElementsOnLeft([]);
     };

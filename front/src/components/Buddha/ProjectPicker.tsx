@@ -557,7 +557,7 @@ export class ProjectPicker extends React.Component<ComponentProps, {}> {
         ];
     }
 
-    private handleClearingSelectedValues = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleClearingSelectedValues = () => {
         this.clearSelectedValues();
     };
 

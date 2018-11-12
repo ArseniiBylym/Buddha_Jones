@@ -149,7 +149,7 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
     private get spotsFromColumn1(): SpotDetails[] {
         return this.props.spots
             .filter((spot: SpotDetails) => { return !spot.hidden; })
-            .filter((spot, spotIndex) => {
+            .filter((_spot, spotIndex) => {
                 return spotIndex % 2 <= 0;
             }
         );
@@ -159,7 +159,7 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
     private get spotsFromColumn2(): SpotDetails[] {
         return this.props.spots
             .filter((spot: SpotDetails) => { return !spot.hidden; })
-            .filter((spot, spotIndex) => {
+            .filter((_spot, spotIndex) => {
                 return spotIndex % 2 > 0;
             }
         );
@@ -318,13 +318,13 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
 
     private referenceSpotForm = (ref: HTMLDivElement) => (this.spotForm = ref);
 
-    private handleToggleSpotsExpansion = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleToggleSpotsExpansion = () => {
         if (this.props.onExpansionToggle) {
             this.props.onExpansionToggle();
         }
     };
 
-    private handleExpandSpotsFromSpotClick = (spotId: number) => (e: React.MouseEvent<HTMLParagraphElement>) => {
+    private handleExpandSpotsFromSpotClick = (spotId: number) => () => {
         if (this.props.onExpansionToggle) {
             this.props.onExpansionToggle();
         }
@@ -337,13 +337,13 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
         }, 128);
     };
 
-    private handleNewSpotFormToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleNewSpotFormToggle = () => {
         if (this.addingNewSpotFormVisible) {
             this.addingNewSpotFormVisible = false;
         } else {
             this.addingNewSpotFormVisible = true;
 
-            if (this.props.spotsAreExpanded === false) {
+            if (!this.props.spotsAreExpanded) {
                 this.props.onExpansionToggle();
 
                 setTimeout(() => {

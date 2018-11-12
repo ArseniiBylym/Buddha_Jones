@@ -136,16 +136,16 @@ class TimeEntry extends React.Component<AppState, {}> {
         );
     }
 
-    private handleMinimumHoursNotMetModalClose = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    private handleMinimumHoursNotMetModalClose = () => {
         this.props.store!.timeEntry.minimumHoursNotMetModal.show = false;
         this.props.store!.timeEntry.minimumHoursNotMetModal.minHours = 0;
     };
 
-    private handleLunchBreakModalClick = (forceSubmit: boolean) => (e?: React.MouseEvent<HTMLButtonElement>) => {
+    private handleLunchBreakModalClick = (forceSubmit: boolean) => () => {
         TimeEntryActions.closeLunchBreakNotTakenModal(forceSubmit);
     };
 
-    private handleEditsWillGetLostModalClick = (forceChange: boolean) => (e?: React.MouseEvent<HTMLButtonElement>) => {
+    private handleEditsWillGetLostModalClick = (forceChange: boolean) => () => {
         if (!this.props.store) {
             return;
         }

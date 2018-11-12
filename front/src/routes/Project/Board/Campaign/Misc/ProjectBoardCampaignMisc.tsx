@@ -167,8 +167,8 @@ export class ProjectBoardCampaignMisc extends React.Component<ProjectBoardCampai
     }
 
     @action
-    private handleEditingToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
-        if (this.isInEditMode === false) {
+    private handleEditingToggle = () => {
+        if (!this.isInEditMode) {
             this.budget = this.props.campaign.budget;
             this.budgetNotes = this.props.campaign.budgetNotes || '';
             this.dateMaterialsWillBeReceived = this.props.campaign.dateMaterialsWillBeReceived;

@@ -36,13 +36,13 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
     @observable private isStudioContactFormShow: boolean = false;
     @observable private isContactListLoading: boolean = false;
     @observable private status: string | null = null;
-    @observable private selectedContact: {id: number | null, name: string | null} = {
+    @observable private selectedContact: { id: number | null, name: string | null } = {
         id: null,
         name: null
     };
 
     @computed
-    private get studioContactsOptions(): {data: ClientContact[], loading: boolean} {
+    private get studioContactsOptions(): { data: ClientContact[], loading: boolean } {
         let defaultReturn = {
             data: [],
             loading: false
@@ -104,37 +104,37 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                             element: (
                                 <>
                                     {(this.isInEditMode && !this.isStudioContactFormShow) &&
-                                        <>
-                                            <ButtonClose
-                                                float="right"
-                                                onClick={this.handleEditingToggle}
-                                                label={'Cancel'}
-                                            />
-                                            <ButtonSave
-                                                className={styles.saveStudioContactButton}
-                                                onClick={this.onAssignContactHandler}
-                                                float="right"
-                                                label={this.status === 'error' ? 'Could not save, please try again' : 'Save'}
-                                                labelColor={this.status === 'error' ? 'orange' : 'blue'}
-                                                savingLabel="Saving"
-                                                isSaving={this.status === 'saving'}
-                                            />
-                                            <ClearFix/>
-                                            {this.props.userCanEditExecutive &&
-                                                <Button
-                                                    className={styles.newStudioContactButton}
-                                                    onClick={this.onStudioContactFormShowToggleHandler}
-                                                    label={this.getAddNewStudioContactButtonLabel()}
-                                                />
-                                            }
-                                        </>
-                                    }
-                                    {!this.isInEditMode &&
-                                        <ButtonEdit
+                                    <>
+                                        <ButtonClose
                                             float="right"
                                             onClick={this.handleEditingToggle}
-                                            label={'Edit contacts'}
+                                            label={'Cancel'}
                                         />
+                                        <ButtonSave
+                                            className={styles.saveStudioContactButton}
+                                            onClick={this.onAssignContactHandler}
+                                            float="right"
+                                            label={this.status === 'error' ? 'Could not save, please try again' : 'Save'}
+                                            labelColor={this.status === 'error' ? 'orange' : 'blue'}
+                                            savingLabel="Saving"
+                                            isSaving={this.status === 'saving'}
+                                        />
+                                        <ClearFix/>
+                                        {this.props.userCanEditExecutive &&
+                                        <Button
+                                            className={styles.newStudioContactButton}
+                                            onClick={this.onStudioContactFormShowToggleHandler}
+                                            label={this.getAddNewStudioContactButtonLabel()}
+                                        />
+                                        }
+                                    </>
+                                    }
+                                    {!this.isInEditMode &&
+                                    <ButtonEdit
+                                        float="right"
+                                        onClick={this.handleEditingToggle}
+                                        label={'Edit contacts'}
+                                    />
                                     }
                                 </>
                             ),
@@ -171,7 +171,7 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                         ...this.studioContactsOptions.data
                             .filter((contact: ClientContact) => {
                                 let contactMatch: number = this.existingContactsFlatIds().findIndex(id => id === contact.id);
-                                return (contactMatch !== -1) ? false : true;
+                                return (contactMatch === -1);
                             })
                             .map((contact: ClientContact) => {
                                 return {
@@ -194,9 +194,9 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                     <Col>
                         <ul className={styles.contactsList}>
                             {!this.isInEditMode && this.contactList.length === 0 &&
-                                <li>
-                                    <p>Studio has no contacts</p>
-                                </li>
+                            <li>
+                                <p>Studio has no contacts</p>
+                            </li>
                             }
 
                             {this.contactList.length > 0 && this.contactList.map((contact: ClientContact, ind: number) => (
@@ -217,9 +217,9 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                             ))}
 
                             {(this.isInEditMode && !this.isStudioContactFormShow) &&
-                                <li key={`studio-contact-${this.contactList.length + 1}`}>
-                                    {this.renderDropdownList()}
-                                </li>
+                            <li key={`studio-contact-${this.contactList.length + 1}`}>
+                                {this.renderDropdownList()}
+                            </li>
                             }
                         </ul>
                     </Col>
@@ -272,7 +272,7 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
     };
 
     @action
-    private onRemoveContactHandler = async (ind: number, event: any) => {
+    private onRemoveContactHandler = async (ind: number) => {
         if (ind > -1 && this.contactList[ind] && this.contactList[ind].id) {
             try {
                 this.isContactListLoading = true;
@@ -334,7 +334,7 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
         };
     }
 
-    private loadStudioContactsOptions = (force: boolean = false, e: React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLInputElement>) => {
+    private loadStudioContactsOptions = (force: boolean = false) => {
         if (this.props.customerId) {
             ClientsActions.fetchCustomerDetails(this.props.customerId, force);
         }

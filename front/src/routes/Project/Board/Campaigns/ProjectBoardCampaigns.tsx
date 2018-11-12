@@ -102,8 +102,8 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
 
         reaction(
             () => this.props.project.campaigns,
-            campaigns => {
-                if (this.fetchedUsers === false) {
+            () => {
+                if (!this.fetchedUsers) {
                     this.fetchUsersFromCampaignTeams();
                 }
             }

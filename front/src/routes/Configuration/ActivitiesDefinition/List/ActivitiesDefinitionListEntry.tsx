@@ -59,8 +59,8 @@ export class ActivitiesDefinitionListEntry extends React.Component<ActivitiesDef
         return activity.userTypes && activity.userTypes.length > 0
             ? activity.userTypes.length >= usersTypes.length
                 ? activity.userTypes
-                : activity.userTypes.length > userTypesListLimit && this.showAllUsersTypes === false
-                    ? activity.userTypes.filter((type, typeIndex) => typeIndex < userTypesListLimit)
+                : activity.userTypes.length > userTypesListLimit && !this.showAllUsersTypes
+                    ? activity.userTypes.filter((_type, typeIndex) => typeIndex < userTypesListLimit)
                     : activity.userTypes
             : [];
     }
@@ -126,7 +126,7 @@ export class ActivitiesDefinitionListEntry extends React.Component<ActivitiesDef
                                     ? 'Visible to: '
                                     : 'Not visible to any user'}
 
-                            {this.visibleToAllUsersTypes === false &&
+                            {!this.visibleToAllUsersTypes &&
                                 this.visibleUsersTypes.map((userType, userTypeIndex) => (
                                     <span key={activity.id + '-' + userType.id}>
                                         {`${userTypeIndex > 0 ? ', ' : ''}${userType.name}`}
@@ -156,7 +156,7 @@ export class ActivitiesDefinitionListEntry extends React.Component<ActivitiesDef
         );
     }
 
-    private handleAllUserTypesToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleAllUserTypesToggle = () => {
         this.showAllUsersTypes = !this.showAllUsersTypes;
     };
 }

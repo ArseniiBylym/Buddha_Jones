@@ -211,11 +211,11 @@ class ActivitiesDefinitionList extends React.Component<ComponentProps, {}> {
         ActivitiesActions.changeActivitiesFilterBySearch(e.target.value);
     };
 
-    private handleOpenNewActivityPage = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleOpenNewActivityPage = () => {
         history.push('/portal/configuration/activity/new');
     };
 
-    private handleActivityEdit = (activityId: number) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleActivityEdit = (activityId: number) => () => {
         history.push('/portal/configuration/activity/' + activityId);
     };
 }

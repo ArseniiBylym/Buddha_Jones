@@ -67,7 +67,7 @@ export class ProjectBoardDescription extends React.Component<ProjectBoardDescrip
                             value={this.isInEditMode ? this.editedNote : this.props.note || ''}
                             placeholder="Details regarding requested work..."
                             viewOnlyEmptyValueText="Project has no details."
-                            viewOnly={this.isInEditMode === false}
+                            viewOnly={!this.isInEditMode}
                             status={this.saveStatus}
                             label="Save note"
                             labelSaving="Saving note"
@@ -80,7 +80,7 @@ export class ProjectBoardDescription extends React.Component<ProjectBoardDescrip
         ) : null;
     }
 
-    private handleProjectDescriptionEditModeToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleProjectDescriptionEditModeToggle = () => {
         this.toggleEditMode();
     };
 
@@ -89,7 +89,7 @@ export class ProjectBoardDescription extends React.Component<ProjectBoardDescrip
         this.editedNote = value;
     };
 
-    private handleNotesSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleNotesSubmit = () => {
         this.saveNote();
     };
 

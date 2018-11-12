@@ -82,7 +82,7 @@ export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}>
         );
     }
 
-    private handleProjectClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    private handleProjectClick = () => {
         if (this.props.onProjectClick) {
             this.props.onProjectClick(
                 this.props.project.studioId,

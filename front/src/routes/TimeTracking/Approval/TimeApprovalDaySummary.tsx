@@ -84,7 +84,7 @@ export class TimeApprovalDaySummary extends React.Component<TimeApprovalDaySumma
         );
     }
 
-    private handleAddAction = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleAddAction = () => {
         if (this.props.addAction) {
             this.props.addAction.onClick();
         }

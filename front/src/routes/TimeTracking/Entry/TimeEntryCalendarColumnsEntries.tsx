@@ -43,7 +43,7 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
                         [s.hoverable]: day.isDayClosed === false,
                     })}
                 >
-                    {day.timeEntries.map((entry, entryIndex) => {
+                    {day.timeEntries.map((entry) => {
                         // Add hours
                         hoursCount += entry.hours;
 
@@ -152,13 +152,11 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
         }
     }
 
-    private handleExistingEntryEditClick = (entry: TimeEntryCalendarEntry) => (e: React.MouseEvent<HTMLElement>) => {
+    private handleExistingEntryEditClick = (entry: TimeEntryCalendarEntry) => () => {
         TimeEntryActions.editExistingEntry(entry);
     };
 
-    private handleChangingTimeEntryDateFromCalendarView = (date: Date, dayIndex: number) => (
-        e: React.MouseEvent<HTMLElement>
-    ) => {
+    private handleChangingTimeEntryDateFromCalendarView = (date: Date, dayIndex: number) => () => {
         if (!this.props.store || !this.props.store.user.data) {
             return;
         }

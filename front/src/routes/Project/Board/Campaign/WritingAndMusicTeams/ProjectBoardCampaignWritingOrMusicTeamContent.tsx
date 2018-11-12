@@ -6,7 +6,7 @@ import capitalize from 'lodash-es/capitalize';
 import AnimateHeight from 'react-animate-height';
 import { Section } from 'components/Section';
 import { ButtonClose, ButtonEdit, ButtonSave } from 'components/Button';
-import { TextArea, Toggle, ToggleSideContent } from 'components/Form';
+import { TextArea, Toggle } from 'components/Form';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { ProjectsDetailsActions } from 'actions';
 
@@ -28,10 +28,8 @@ interface ProjectBoardCampaignWritingOrMusicTeamContentProps {
 // Component
 @inject('store')
 @observer
-export class ProjectBoardCampaignWritingOrMusicTeamContent extends React.Component<
-    ProjectBoardCampaignWritingOrMusicTeamContentProps & AppOnlyStoreState,
-    {}
-> {
+export class ProjectBoardCampaignWritingOrMusicTeamContent extends React.Component<ProjectBoardCampaignWritingOrMusicTeamContentProps & AppOnlyStoreState,
+    {}> {
     @observable private isEditing: boolean = false;
     @observable
     private form = {
@@ -63,18 +61,18 @@ export class ProjectBoardCampaignWritingOrMusicTeamContent extends React.Compone
             if (typeof campaign !== 'undefined') {
                 return this.props.type === 'music'
                     ? {
-                          toggle: campaign.musicTeam,
-                          notes: campaign.musicTeamNotes,
-                      }
+                        toggle: campaign.musicTeam,
+                        notes: campaign.musicTeamNotes,
+                    }
                     : this.props.type === 'writing'
                         ? {
-                              toggle: campaign.writingTeam,
-                              notes: campaign.writingTeamNotes,
-                          }
+                            toggle: campaign.writingTeam,
+                            notes: campaign.writingTeamNotes,
+                        }
                         : {
-                              toggle: false,
-                              notes: null,
-                          };
+                            toggle: false,
+                            notes: null,
+                        };
             }
         }
 
@@ -105,25 +103,25 @@ export class ProjectBoardCampaignWritingOrMusicTeamContent extends React.Compone
                 headerElements={
                     this.props.userCanEdit
                         ? [
-                              {
-                                  element: (
-                                      <>
-                                          {this.isEditing &&
-                                              <ButtonClose
-                                                  onClick={this.handleEditToggle}
-                                                  label={'Cancel'}
-                                              />
-                                          }
-                                          {!this.isEditing &&
-                                              <ButtonEdit
-                                                  onClick={this.handleEditToggle}
-                                                  label={'Edit request'}
-                                              />
-                                          }
-                                      </>
-                                  ),
-                              },
-                          ]
+                            {
+                                element: (
+                                    <>
+                                        {this.isEditing &&
+                                        <ButtonClose
+                                            onClick={this.handleEditToggle}
+                                            label={'Cancel'}
+                                        />
+                                        }
+                                        {!this.isEditing &&
+                                        <ButtonEdit
+                                            onClick={this.handleEditToggle}
+                                            label={'Edit request'}
+                                        />
+                                        }
+                                    </>
+                                ),
+                            },
+                        ]
                         : []
                 }
             >
@@ -181,21 +179,21 @@ export class ProjectBoardCampaignWritingOrMusicTeamContent extends React.Compone
                             this.status === 'none'
                                 ? 'Save changes'
                                 : this.status === 'saving'
-                                    ? 'Saving changes'
-                                    : this.status === 'error'
-                                        ? 'Could not save, try again'
-                                        : this.status === 'success'
-                                            ? 'Saved changes'
-                                            : null
+                                ? 'Saving changes'
+                                : this.status === 'error'
+                                    ? 'Could not save, try again'
+                                    : this.status === 'success'
+                                        ? 'Saved changes'
+                                        : null
                         }
                         labelColor={
                             this.status === 'none'
                                 ? 'blue'
                                 : this.status === 'success'
-                                    ? 'green'
-                                    : this.status === 'error'
-                                        ? 'orange'
-                                        : 'black'
+                                ? 'green'
+                                : this.status === 'error'
+                                    ? 'orange'
+                                    : 'black'
                         }
                     />
                 </div>
@@ -204,7 +202,7 @@ export class ProjectBoardCampaignWritingOrMusicTeamContent extends React.Compone
     }
 
     private handleEditToggle = () => {
-        const startEditing = this.isEditing === false;
+        const startEditing = !this.isEditing;
 
         this.isEditing = !this.isEditing;
 
@@ -214,7 +212,7 @@ export class ProjectBoardCampaignWritingOrMusicTeamContent extends React.Compone
         }
     };
 
-    private handleTogglingRequest = (isSetToRight: boolean, selectedSideContent: ToggleSideContent) => {
+    private handleTogglingRequest = (isSetToRight: boolean) => {
         this.form.toggle = isSetToRight;
     };
 
@@ -222,7 +220,7 @@ export class ProjectBoardCampaignWritingOrMusicTeamContent extends React.Compone
         this.form.notes = e.target.value;
     };
 
-    private handleSavingChanges = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleSavingChanges = async () => {
         try {
             this.status = 'saving';
 

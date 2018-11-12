@@ -5,7 +5,13 @@ import { unformat } from 'accounting';
 import { Row, Col } from 'components/Section';
 import { LoadingSpinner } from 'components/Loaders';
 import { AppState } from 'store/AllStores';
-import { ProjectsDetailsActions, HeaderActions, ProjectsVersionsActions, ProjectPermissionsActions, StudiosActions } from 'actions';
+import {
+    ProjectsDetailsActions,
+    HeaderActions,
+    ProjectsVersionsActions,
+    ProjectPermissionsActions,
+    StudiosActions
+} from 'actions';
 import { ButtonBack, ButtonSend } from 'components/Button';
 import { ProjectDetails } from 'types/projectDetails';
 import { Paragraph } from 'components/Content';
@@ -61,8 +67,6 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
             ? fetchedProjects[projectMatchId].campaigns.length > 0
                 ? false
                 : fetchedProjects[projectMatchId].loading
-                    ? true
-                    : false
             : true;
     }
 
@@ -307,7 +311,7 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
     };
 
     /** Handle back to projects listing button click */
-    private handleBackToProjectsListNavigation = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleBackToProjectsListNavigation = () => {
         if (!this.props.history) {
             return;
         }
@@ -316,7 +320,7 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
     };
 
     /** Handle attempting to load project which fetch has failed */
-    private handleProjectFetchRetry = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleProjectFetchRetry = () => {
         this.fetchProject();
     };
 

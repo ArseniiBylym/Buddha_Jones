@@ -134,7 +134,7 @@ export class Counter extends React.Component<CounterProps, {}> {
         );
     }
 
-    private handleIncrement = (isIncrease: boolean) => (e?: React.MouseEvent<HTMLButtonElement>) => {
+    private handleIncrement = (isIncrease: boolean) => () => {
         if (typeof this.props.incrementBy === 'undefined') {
             return;
         }
@@ -184,7 +184,7 @@ export class Counter extends React.Component<CounterProps, {}> {
         this.valueText = newValueText;
     };
 
-    private handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    private handleBlur = () => {
         // Parse value
         let newNumber = unformat(this.valueText);
         if (isNaN(newNumber)) {

@@ -68,7 +68,7 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
         return (
             <Row justifyContent="center">
                 <Col width={64}>
-                    <LoadingSpinner size={64} />
+                    <LoadingSpinner size={64}/>
                 </Col>
             </Row>
         );
@@ -140,11 +140,11 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
         }
     }
 
-    private handleCreateSpotSentCreate = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    private handleCreateSpotSentCreate = (): void => {
         history.push('/portal/studio/producer-spot-sent-details/create');
     };
 
-    private handleSpotSentDetails = (id: number, e: React.MouseEvent<HTMLButtonElement>): void => {
+    private handleSpotSentDetails = (id: number): void => {
         history.push('/portal/studio/producer-spot-sent-details/' + id);
     };
 

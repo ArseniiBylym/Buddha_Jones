@@ -92,7 +92,6 @@ export class TimeEntryCalendarReview extends React.Component<TimeEntryCalendarRe
                 // Assign to doubletime minutes
                 if (entryDurationInMinutesLeftToBeAssigned > 0) {
                     minutes.doubleTimeInMinutes += entryDurationInMinutesLeftToBeAssigned;
-                    entryDurationInMinutesLeftToBeAssigned = 0;
                 }
             }
         });
@@ -126,7 +125,7 @@ export class TimeEntryCalendarReview extends React.Component<TimeEntryCalendarRe
                         <ButtonSend
                             onClick={this.handleSubmitDayForReview}
                             label={
-                                this.submitError === false
+                                !this.submitError
                                     ? 'Submit day for review'
                                     : 'Could not submit for review, try again'
                             }
@@ -145,7 +144,7 @@ export class TimeEntryCalendarReview extends React.Component<TimeEntryCalendarRe
         }
     };
 
-    private handleSubmitDayForReview = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleSubmitDayForReview = async () => {
         try {
             this.submitError = false;
             this.submittingForReview = true;
