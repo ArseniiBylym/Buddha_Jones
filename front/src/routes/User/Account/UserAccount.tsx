@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as classNames from 'classnames';
 import { observer, inject } from 'mobx-react';
 import { HeaderActions, UserActions } from 'actions';
 import { AppState } from 'store/AllStores';
@@ -10,11 +9,10 @@ import { Row, Col, Section } from 'components/Section';
 import { observable, computed, action } from 'mobx';
 import { UserAccountName } from '.';
 import { Input } from 'components/Form';
-import { FileHandler } from 'helpers/FileHandler';
+import { UserAvatarUploader } from '../../../components/UserAvatarUploader/UserAvatarUploader';
 
 // Styles
 const s = require('./UserAccount.css');
-const emptyUserProfilePicture = require('./../../../assets/images/account/empty-user-profile-picture.png');
 
 // Props
 interface UserAccountProps {
@@ -27,13 +25,9 @@ type UserAccountPropsTypes = UserAccountProps & AppState;
 @inject('store')
 @observer
 class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
-    private imageFileField: HTMLInputElement | null = null;
-
-    @observable private pictureUploadStatus: 'none' | 'uploading' | 'success' | 'error' = 'none';
-    @observable private pictureUploadErrorMessage: string = '';
-
     @observable
     private profileUploadStatus: 'none' | 'uploading' | 'success' | 'error' | 'error-emailrequired' = 'none';
+
     @observable
     private passwordUploadStatus:
         | 'none'
@@ -68,10 +62,10 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
     @computed
     private get userProfilePicture(): string {
         if (this.props.store && this.props.store.user.isLoggedIn && this.props.store.user.data) {
-            return this.props.store.user.data.image ? this.props.store.user.data.image : emptyUserProfilePicture;
+            return this.props.store.user.data.image ? this.props.store.user.data.image : '';
         }
 
-        return emptyUserProfilePicture;
+        return '';
     }
 
     public componentDidMount() {
@@ -124,37 +118,13 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
         return (
             <Row>
                 <Col size={3}>
-                    <Section noSeparator={true}>
-                        <button
-                            onClick={this.handlePictureEdit}
-                            className={classNames(s.accountImageButton, {
-                                [s.uploading]: this.pictureUploadStatus === 'uploading',
-                            })}
-                        >
-                            <p className={s.accountButton}>
-                                {this.pictureUploadStatus === 'uploading' ? 'Uploading' : 'Edit photo'}
-                            </p>
-                            <p className={s.accountLabel}>Image should be at least 128 x 128 pixels large</p>
-                            <img
-                                src={this.userProfilePicture}
-                                onError={this.handleUserProfilePictureNotLoading}
-                                height="128"
-                                width="128"
-                            />
-                        </button>
-
-                        {this.pictureUploadStatus === 'error' && (
-                            <p className={s.accountImageUploadError}>{this.pictureUploadErrorMessage}</p>
-                        )}
-
-                        <input
-                            ref={this.referenceImageFileField}
-                            className={s.accountImageFileField}
-                            onChange={this.handlePictureFileChange}
-                            accept=".gif,.jpg,.jpeg,.png,.bmp"
-                            type="file"
+                    {
+                        (this.props.store && this.props.store.user.data) &&
+                        <UserAvatarUploader
+                            currentImage={this.userProfilePicture}
+                            userId={this.props.store!.user.data!.id}
                         />
-                    </Section>
+                    }
                 </Col>
 
                 <Col size={9}>
@@ -268,59 +238,8 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
         );
     }
 
-    private referenceImageFileField = (ref: HTMLInputElement) => (this.imageFileField = ref);
-
     private handleGoingBack = (e: React.MouseEvent<HTMLButtonElement>) => {
         history.goBack();
-    };
-
-    private handlePictureEdit = () => {
-        if (this.imageFileField) {
-            this.imageFileField.click();
-        }
-    };
-
-    @action
-    private handlePictureFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        try {
-            if (!this.props.store || this.props.store.user.data === null) {
-                this.pictureUploadStatus = 'error';
-                this.pictureUploadErrorMessage = 'No authorized user logged in';
-                return;
-            }
-
-            const field = e.target;
-            if (field.files === null || field.files.length <= 0) {
-                this.pictureUploadStatus = 'error';
-                this.pictureUploadErrorMessage = 'No file has been selected';
-                return;
-            }
-
-            const file = field.files.item(0);
-            if (file === null || !file.type.match('image.*')) {
-                this.pictureUploadStatus = 'error';
-                this.pictureUploadErrorMessage = 'File is not an image';
-                return;
-            }
-
-            this.pictureUploadStatus = 'uploading';
-            this.pictureUploadErrorMessage = '';
-
-            const base64Image = await FileHandler.readFileAsDataUri(file);
-
-            if (base64Image && base64Image.target && base64Image.target.result) {
-                await UserActions.changeProfilePicture(this.props.store.user.data.id, base64Image.target.result);
-            }
-
-            this.pictureUploadStatus = 'success';
-
-            return true;
-        } catch (error) {
-            if (this.pictureUploadStatus === 'uploading') {
-                this.pictureUploadStatus = 'error';
-            }
-            throw error;
-        }
     };
 
     @action
@@ -336,7 +255,7 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
 
             if (email === '') {
                 this.profileUploadStatus = 'error-emailrequired';
-                return;
+                return null;
             }
 
             if (this.props.store && this.props.store.user.data) {
@@ -435,10 +354,6 @@ class UserAccount extends React.Component<UserAccountPropsTypes, {}> {
 
     private handleUserLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
         history.push('/user/logout');
-    };
-
-    private handleUserProfilePictureNotLoading = (e: React.InvalidEvent<HTMLImageElement>) => {
-        e.target.src = emptyUserProfilePicture;
     };
 }
 

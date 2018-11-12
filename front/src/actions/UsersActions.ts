@@ -10,18 +10,30 @@ import {
     OtherUserDetails,
     OtherUsersFromApi,
     UserTypeFromApi, ProjectPermissionsTypeSingleFromApi,
+    UsersRequestParams, PageableUsers
 } from 'types/users';
 import { UserTypeClassId } from 'types/user';
 import { ProjectPermissionData, ProjectPermissionsTypeFromApi } from '../types/users';
 
 export class UsersActionsClass {
     @action
+    public cleanPageableUsersList() {
+        UsersStore.pageableUsersList.data = [];
+        UsersStore.pageableUsersList.total_count = null;
+        UsersStore.pageableUsersList.totalPages = null;
+    }
+
+    @action
     public fetchUsersProjectRoles = async (forceFetch: boolean = false): Promise<boolean> => {
         try {
             if (
                 forceFetch ||
-                (UsersStore.projectRolesLoading === false &&
-                    DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, UsersStore.projectRolesLastFetchTimestamp))
+                (
+                    !UsersStore.projectRolesLoading &&
+                    DateHandler.checkIfTimeStampIsOlderThanXMinutes(
+                        5,
+                        UsersStore.projectRolesLastFetchTimestamp)
+                )
             ) {
                 UsersStore.projectRolesLoading = true;
 
@@ -203,6 +215,44 @@ export class UsersActionsClass {
             if (userIndex !== -1) {
                 UsersStore.people[userIndex].loading = false;
             }
+            throw error;
+        }
+    };
+
+    @action
+    public setCurrentSelectedUser(user: Partial<OtherUserFromApi>) {
+        UsersStore.currentSelectedUser = {...UsersStore.currentSelectedUser, ...user} as OtherUserFromApi;
+    }
+
+    @action
+    public setUsersRequestParams(requestParams: Partial<UsersRequestParams>) {
+        UsersStore.usersListRequestParams = {...UsersStore.usersListRequestParams, ...requestParams};
+    }
+
+    @action
+    public fetchUsersByTypeId = async (typeId?: number): Promise<boolean> => {
+        try {
+            UsersStore.isPageableUsersListLoading = true;
+
+            if (typeId) {
+                this.setUsersRequestParams({
+                    type: typeId
+                });
+            }
+
+            UsersStore.pageableUsersList = <PageableUsers> (
+                await API.getData(
+                    APIPath.USERS,
+                    UsersStore.usersListRequestParams,
+                    false,
+                    true
+                )
+            );
+
+            UsersStore.isPageableUsersListLoading = false;
+
+            return true;
+        } catch (error) {
             throw error;
         }
     };
@@ -454,7 +504,7 @@ export class UsersActionsClass {
         try {
             if (
                 forceFetch ||
-                (UsersStore.projectPermissionsTypesLoading === false &&
+                (!UsersStore.projectPermissionsTypesLoading &&
                     DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, UsersStore.projectPermissionsTypesLastFetchTimestamp))
             ) {
                 UsersStore.projectPermissionsTypesLoading = true;
@@ -484,6 +534,26 @@ export class UsersActionsClass {
             setTimeout(() => {
                 this.fetchProjectPermissionsTypes(id, true);
             }, 512);
+            throw error;
+        }
+    };
+
+    @action
+    public saveCurrentSelectedUserAndReloadList = async () => {
+        try {
+            if (UsersStore.currentSelectedUser) {
+                UsersStore.isCurrentSelectedUserSaveLoading = true;
+
+                await API.putData(
+                    APIPath.USERS + '/' + UsersStore.currentSelectedUser.id,
+                    UsersStore.currentSelectedUser
+                );
+
+                UsersStore.isCurrentSelectedUserSaveLoading = false;
+
+                await this.fetchUsersByTypeId();
+            }
+        } catch (error) {
             throw error;
         }
     };

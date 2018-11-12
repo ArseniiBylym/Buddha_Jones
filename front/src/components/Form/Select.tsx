@@ -7,7 +7,7 @@ const s = require('./Select.css');
 // Types
 type SelectValuePropType = string | number | undefined;
 
-interface SelectOptionPropType {
+export interface SelectOptionPropType {
     key?: string;
     value: string;
     label: string;

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { action, computed, observable } from 'mobx';
-import { ButtonClose, ButtonSave } from '../../../../../components/Button';
-import { ClientsActions, NewStudioContactFormData } from '../../../../../actions';
-import { Input } from '../../../../../components/Form';
+import { ButtonClose, ButtonSave } from 'components/Button';
+import { ClientsActions, NewStudioContactFormData } from 'actions';
+import { Input } from 'components/Form';
 
 // Styles
 import * as styles from './ProjectBoardCampaignStudioContactsForm.scss';

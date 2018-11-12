@@ -261,7 +261,7 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
     private handleStudioContactsChange = (option: { value: OptionsListValuePropType; label: string }) => {
         if (option.value === null || typeof option.value === 'number') {
             this.selectedContact = {
-                id: option.value,
+                id: Number(option.value),
                 name: option.label
             };
         }

@@ -93,7 +93,7 @@ export class Modal extends React.Component<ModalProps, {}> {
                         <div className={s.flexbox}>
                             <div className={s.wrapper}>
                                 <div onClick={this.handleContainerClick} className={s.container}>
-                                    {this.props.noPadding && <div className={s.topbar} />}
+                                    {this.props.noPadding && <div className={s.topbar}/>}
 
                                     {this.props.title && (
                                         <div className={s.header}>
@@ -111,41 +111,41 @@ export class Modal extends React.Component<ModalProps, {}> {
                                     )}
 
                                     {typeof this.props.actions !== 'undefined' &&
-                                        typeof this.props.actions.length !== 'undefined' &&
-                                        this.props.actions.length > 0 && (
-                                            <div className={s.footer}>
-                                                {this.props.actions.map((action, index) => (
-                                                    <Button
-                                                        key={`action-button-${index}`}
-                                                        className={classNames(s.actionButton)}
-                                                        onClick={this.handleClickAction({
-                                                            closeOnClick:
-                                                                typeof action.closeOnClick &&
-                                                                action.closeOnClick !== null
-                                                                    ? action.closeOnClick
-                                                                    : true,
-                                                            onClick:
-                                                                typeof action.onClick !== 'undefined' && action.onClick
-                                                                    ? action.onClick
-                                                                    : null,
-                                                        })}
-                                                        isInBox={true}
-                                                        label={{
-                                                            text:
-                                                                typeof action.label !== 'undefined' ? action.label : '',
-                                                            color:
-                                                                typeof action.type !== 'undefined' && action.type
-                                                                    ? action.type === 'success'
-                                                                        ? 'green'
-                                                                        : action.type === 'alert'
-                                                                            ? 'orange'
-                                                                            : 'blue'
-                                                                    : 'blue',
-                                                        }}
-                                                    />
-                                                ))}
-                                            </div>
-                                        )}
+                                    typeof this.props.actions.length !== 'undefined' &&
+                                    this.props.actions.length > 0 && (
+                                        <div className={s.footer}>
+                                            {this.props.actions.map((action, index) => (
+                                                <Button
+                                                    key={`action-button-${index}`}
+                                                    className={classNames(s.actionButton)}
+                                                    onClick={this.handleClickAction({
+                                                        closeOnClick:
+                                                            typeof action.closeOnClick &&
+                                                            action.closeOnClick !== null
+                                                                ? action.closeOnClick
+                                                                : true,
+                                                        onClick:
+                                                            typeof action.onClick !== 'undefined' && action.onClick
+                                                                ? action.onClick
+                                                                : null,
+                                                    })}
+                                                    isInBox={true}
+                                                    label={{
+                                                        text:
+                                                            typeof action.label !== 'undefined' ? action.label : '',
+                                                        color:
+                                                            typeof action.type !== 'undefined' && action.type
+                                                                ? action.type === 'success'
+                                                                ? 'green'
+                                                                : action.type === 'alert'
+                                                                    ? 'orange'
+                                                                    : 'blue'
+                                                                : 'blue',
+                                                    }}
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
 
                                     {this.props.closeButton && (
                                         <ButtonClose

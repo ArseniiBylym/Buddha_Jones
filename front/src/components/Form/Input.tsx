@@ -99,8 +99,8 @@ export class Input extends React.Component<InputProps, {}> {
                     }}
                     className={classNames(this.props.fieldClassName)}
                     name={this.props.name ? this.props.name : undefined}
-                    disabled={this.props.disabled === true ? true : false}
-                    readOnly={this.props.readOnly === true ? true : false}
+                    disabled={this.props.disabled === true}
+                    readOnly={this.props.readOnly === true}
                     placeholder={this.props.label}
                     value={this.props.value !== null ? this.props.value : undefined}
                     defaultValue={this.props.value === null ? this.props.defaultValue : undefined}

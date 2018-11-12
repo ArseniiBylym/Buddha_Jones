@@ -19,12 +19,14 @@
         "forceConsistentCasingInFileNames": true,
         "noImplicitReturns": true,
         "noImplicitThis": true,
-        "noImplicitAny": true,
+        "noImplicitAny": false,
         "strictNullChecks": true,
         "suppressImplicitAnyIndexErrors": true,
         "noUnusedLocals": true
     },
-    "paths": {},
+    "paths": {
+        "component": "./src/component"
+    },
     "exclude": [
         "node_modules",
         "build",

@@ -63,13 +63,14 @@ export class TimePicker extends React.Component<TimePickerProps, {}> {
     @computed
     private get minutesList(): OptionsListOptionProp[] {
         // Minutes array
-        let minutes = [];
+        let minutes: any[] = [];
 
         // Get increment
         const { increments = 15 } = this.props;
 
         // Iterate before hour ends
-        let minute = 0;
+        let minute: number = 0;
+
         while (minute < 60) {
             minutes.push({
                 value: minute,
@@ -196,7 +197,7 @@ export class TimePicker extends React.Component<TimePickerProps, {}> {
                         icon={{
                             size: 'small',
                             background: 'green',
-                            element: <IconTickWhite width={12} height={9} />,
+                            element: <IconTickWhite width={12} height={9}/>,
                         }}
                     />
                 </div>
