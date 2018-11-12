@@ -459,9 +459,15 @@ class SpotSentController extends CustomAbstractActionController
                 $data['deliveryToClient'] = $this->commaSeparatedToArray($data['deliveryToClient'], true);
                 $data['audio'] = $this->commaSeparatedToArray($data['audio']);
                 $data['finishOption'] = $this->commaSeparatedToArray($data['finishOption'], true);
-                $data['customerContact'] = $this->commaSeparatedToArray($data['customerContact']);
+                // $data['customerContact'] = $this->commaSeparatedToArray($data['customerContact']);
                 $data['finishingHouseName'] = null;
+                $data['customerContact'] = array();
 
+                if(isset($data['customerContactList'])) {
+                    $data['customerContact'] = $data['customerContactList'];
+
+                    unset($data['customerContactList']);
+                }
 
                 if ((int)$data['finishingHouse']) {
                     $finishingHouse = $this->_finishingHouseRepository->find($data['finishingHouse']);
