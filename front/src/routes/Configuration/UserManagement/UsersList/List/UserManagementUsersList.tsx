@@ -108,7 +108,7 @@ class UserManagementUsersList extends React.Component<Props & AppState, {}> {
                         </TableCell>
 
                         <TableCell align="center">
-                            {user.firstName}
+                            {user.username}
                         </TableCell>
 
                         <TableCell align="center">
