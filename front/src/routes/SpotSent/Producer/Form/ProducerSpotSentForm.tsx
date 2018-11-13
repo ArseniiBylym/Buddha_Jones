@@ -156,33 +156,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     @observable private showJson: boolean = false;
 
     @computed
-    private get clientContacts(): { isLoading: boolean; contacts: ClientContact[] } | null {
-        if (this.values.project === null || this.values.project.clientId === null) {
-            return null;
-        }
-
-        const { clientsDetails, clientsDetailsFlatIds } = this.props.store!.clients;
-
-        const clientDetailsIndex = clientsDetailsFlatIds.indexOf(this.values.project.clientId);
-        if (
-            clientDetailsIndex !== -1 &&
-            clientsDetails[clientDetailsIndex] &&
-            clientsDetails[clientDetailsIndex].contacts !== null
-        ) {
-            const details = clientsDetails[clientDetailsIndex];
-            return {
-                isLoading: details.loading,
-                contacts: details.contacts,
-            };
-        } else {
-            return {
-                isLoading: true,
-                contacts: [],
-            };
-        }
-    }
-
-    @computed
     private get fetchedFinishingOptionsChildren(): SpotSentOptionsChildrenFromApi[] | null {
         if (SpotSentStore.spotSentFinishingOptions && SpotSentStore.spotSentFinishingOptions.length > 0 && this.spotSentValues.finish_option) {
             let children: SpotSentOptionsChildrenFromApi[] | null = null;
@@ -808,21 +781,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     private handleSpotRemovingEditor = (spotIndex: number) => (editorIndex: number) => {
         if (editorIndex > -1 && (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).editors[editorIndex]) {
             (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).editors.splice(editorIndex, 1);
-        }
-    };
-
-    @action
-    private handleSentToContactToggle = (contact: ClientContact) => (checked: boolean) => {
-        if (checked && this.values.studioContacts.indexOf(contact.id) === -1) {
-            this.values.studioContacts.push(contact.id);
-        } else if (!checked) {
-            const studioContactIndex = this.values.studioContacts.indexOf(contact.id);
-            if (studioContactIndex !== -1) {
-                this.values.studioContacts = [
-                    ...this.values.studioContacts.slice(0, studioContactIndex),
-                    ...this.values.studioContacts.slice(studioContactIndex + 1),
-                ];
-            }
         }
     };
 
