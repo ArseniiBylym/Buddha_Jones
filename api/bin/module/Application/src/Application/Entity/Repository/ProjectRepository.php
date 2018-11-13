@@ -688,10 +688,13 @@ class ProjectRepository extends EntityRepository
     public function getSpotByProjectAndCampaign($projectId, $campaignId)
     {
         $dql = "SELECT s.id, s.spotName, s.revisionNotCounted, s.notes, s.revisions, s.graphicsRevisions,
-                    s.billingType, s.billingNote, s.firstRevisionCost, s.internalDeadline, s.clientDeadline
+                    s.billingType, s.billingNote, s.firstRevisionCost, s.internalDeadline, s.clientDeadline,
+                    s.trtId, trt.runtime
                 FROM \Application\Entity\RediSpot s
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
                     WITH ptc.id=s.projectCampaignId
+                LEFT JOIN \Application\Entity\RediTrt trt
+                    WITH trt.id = s.trtId
                 WHERE
                   ptc.projectId=:project_id
                   AND ptc.campaignId=:campaign_id";
@@ -712,8 +715,10 @@ class ProjectRepository extends EntityRepository
     {
         $dql = "SELECT s.id, s.spotName, s.revisionNotCounted, s.notes, s.revisions, s.graphicsRevisions,
                     s.billingType, s.billingNote, s.firstRevisionCost, s.internalDeadline, s.clientDeadline,
-                    s.projectCampaignId
+                    s.projectCampaignId, s.trtId, trt.runtime
                 FROM \Application\Entity\RediSpot s
+                LEFT JOIN \Application\Entity\RediTrt trt
+                    WITH trt.id = s.trtId
                 WHERE
                   s.projectCampaignId=:project_campaign_id";
 
@@ -1031,5 +1036,126 @@ class ProjectRepository extends EntityRepository
         }
 
         return $response;
+    }
+
+    public function getDistinctStudioId($filter = array())
+    {
+        $dql = "SELECT
+                  DISTINCT st.id
+                FROM \Application\Entity\RediProject p
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
+                    WITH p.id=ptc.projectId
+                LEFT JOIN \Application\Entity\RediCampaign ca
+                    WITH ca.id=ptc.campaignId
+                LEFT JOIN \Application\Entity\RediProjectHistory ph
+                  WITH p.id=ph.projectId
+                LEFT JOIN \Application\Entity\RediCustomer c
+                  WITH c.id=ptc.customerId
+                LEFT JOIN \Application\Entity\RediStudio st
+                  WITH st.id = p.studioId
+                LEFT JOIN \Application\Entity\RediProjectToCampaignUser ptcu
+                    WITH ptcu.projectCampaignId = ptc.id
+                LEFT JOIN \Application\Entity\RediUser u
+                    WITH u.id=ptcu.userId 
+                LEFT JOIN \Application\Entity\RediCustomerContact cc 
+                    WITH cc.id=ptc.firstPointOfContactId
+                 ";
+
+        // If user user does not have access to all time entry
+        // (if user does not belong to those selected user type)
+        // then join tables to get only the projects he is assigned to
+        if (empty($filter['all_project_access']) && !empty($filter['project_to_campaign_user_id'])) {
+            $dql .= " LEFT JOIN \Application\Entity\RediProjectToCampaignBilling ptcb
+                        WITH ptcb.projectCampaignId=ptc.id
+                      LEFT JOIN \Application\Entity\RediProjectToCampaignDesigner ptcd
+                        WITH ptcd.projectCampaignId=ptc.id
+                      LEFT JOIN \Application\Entity\RediProjectToCampaignEditor ptce
+                        WITH ptce.projectCampaignId=ptc.id ";
+        }
+
+        $dqlFilter = [];
+
+        if (isset($filter['search']) && $filter['search']) {
+
+            /**
+             * should be searchable by:
+             * 1) creative team user name(and user belongs to role producer or lead producer),
+             * 2) campaign name,
+             * 3) studio/customer name,
+             * 4) client(name of creative executive name, or customer contact), (first point of contact for now)
+             */
+
+            $projectNameView = array();
+
+            if (!empty($filter['project_name_view_access']) && !empty($filter['project_code_name_view_access'])) {
+                $projectNameView[] = ' p.projectName LIKE :search ';
+            }
+
+            if (!empty($filter['project_name_view_access']) || !empty($filter['project_code_name_view_access'])) {
+                $projectNameView[] = ' p.projectCode LIKE :search ';
+            }
+
+            $projectNameView[] = ' ca.campaignName LIKE :search ';
+            $projectNameView[] = ' ((u.firstName LIKE :search OR u.lastName LIKE :search) AND ptcu.roleId IN (1,2)) ';
+            $projectNameView[] = ' c.cardname LIKE :search ';
+            $projectNameView[] = ' cc.name LIKE :search ';
+
+            $dqlFilter[] = " (" . implode(' OR ', $projectNameView) . ") ";
+        }
+
+        if (isset($filter['customer_id']) && $filter['customer_id']) {
+            $dqlFilter[] = " ptc.customerId=:customer_id ";
+        }
+
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $dqlFilter[] = " p.studioId=:studio_id ";
+        }
+
+        if (isset($filter['project_id']) && $filter['project_id']) {
+            $dqlFilter[] = " p.id=:project_id ";
+        }
+
+        if (empty($filter['all_project_access']) && !empty($filter['project_to_campaign_user_id'])) {
+            $dqlFilter[] = " (ptcu.userId = :project_to_campaign_user_id
+                              OR ptcb.userId = :project_to_campaign_user_id
+                              OR ptcd.userId = :project_to_campaign_user_id
+                              OR ptce.userId = :project_to_campaign_user_id
+                              OR p.createdByUserId = :project_to_campaign_user_id
+                              OR ca.createdByUserId = :project_to_campaign_user_id) ";
+        }
+
+        $dql .= " WHERE st.studioName IS NOT NULL ";
+
+        if (count($dqlFilter)) {
+            $dql .= " AND " .implode(" AND ", $dqlFilter);
+        }
+
+        $dql .= ' GROUP BY p.id ';
+
+        $query = $this->getEntityManager()->createQuery($dql);
+
+        if (isset($filter['search']) && $filter['search']) {
+            $query->setParameter('search', '%' . $filter['search'] . '%');
+        }
+
+        if (isset($filter['customer_id']) && $filter['customer_id']) {
+            $query->setParameter('customer_id', $filter['customer_id']);
+        }
+
+        if (isset($filter['studio_id']) && $filter['studio_id']) {
+            $query->setParameter('studio_id', $filter['studio_id']);
+        }
+
+        if (isset($filter['project_id']) && $filter['project_id']) {
+            $query->setParameter('project_id', $filter['project_id']);
+        }
+
+        if (empty($filter['all_project_access']) && !empty($filter['project_to_campaign_user_id'])) {
+            $query->setParameter('project_to_campaign_user_id', $filter['project_to_campaign_user_id']);
+        }
+
+        $result = $query->getArrayResult();
+
+        return array_column($result, 'id');
     }
 }

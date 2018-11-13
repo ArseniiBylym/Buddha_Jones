@@ -15,11 +15,14 @@ use Zend\I18n\Validator\DateTime;
 class CustomerRepository extends EntityRepository
 {
     private $_className = "\Application\Entity\RediCustomer";
+    private $_entityManager;
 
     public function __construct(EntityManager $entityManager)
     {
         $classMetaData = $entityManager->getClassMetadata($this->_className);
         parent::__construct($entityManager, $classMetaData);
+
+        $this->_entityManager = $entityManager;
     }
 
     public function search($offset = 0, $length = 10, $filter=array())
@@ -195,8 +198,10 @@ class CustomerRepository extends EntityRepository
         return $response;
     }
 
-    public function getDistinctStudioFirstLetter()
+    public function getDistinctStudioFirstLetter($studioIds)
     {
+        $studioIds = implode(',', $studioIds?:array(0));
+        
         $dql = "SELECT DISTINCT 
                   cfl 
                 FROM
@@ -209,7 +214,8 @@ class CustomerRepository extends EntityRepository
                       ELSE UPPER(SUBSTRING(studio_name, 1, 1)) 
                     END AS cfl 
                   FROM
-                    redi_studio) AS a 
+                    redi_studio
+                    WHERE id IN (" . $studioIds . ")) AS a 
                 ORDER BY 
                   CASE
                       WHEN cfl='Other' 
@@ -222,11 +228,7 @@ class CustomerRepository extends EntityRepository
 
         $data = $query->fetchAll();
 
-        $response = array();
-
-        foreach($data as $row) {
-            $response[] = $row['cfl'];
-        }
+        $response = array_column($data, 'cfl');
 
         return $response;
     }
@@ -265,10 +267,37 @@ class CustomerRepository extends EntityRepository
 
         $data = $query->getArrayResult();
 
-        foreach($data as &$row) {
-            $row['projectCampaign'] = $this->getProjectCampaignOfCustomerContact($row['id']);
+        if(!empty($filter['get_details'])) {
+            foreach($data as &$row) {
+                $row['projectCampaign'] = $this->getProjectCampaignOfCustomerContact($row['id']);
+            }
         }
 
+        return $data;
+    }
+
+    public function getProjectCampaignCustomerContact($projectId)
+    {
+        $dql = "SELECT  
+                    cc.id,
+                    cc.name,
+                    cc.title
+                FROM redi_customer_contact cc 
+                INNER JOIN redi_project_to_campaign_cc ptcc
+                    ON cc.id = ptcc.customer_contact_id
+                WHERE ptc.id = :project_campaign_id
+                GROUP BY cc.id 
+                ORDER BY cc.name ASC";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('project_campaign_id', $projectId);
+        $query->execute();
+        $data = $query->fetchAll();
+
+        foreach ($data as &$row ) {
+            $row['id'] = (int)$row['id'];
+        }
+        
         return $data;
     }
 

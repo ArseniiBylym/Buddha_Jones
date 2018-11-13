@@ -87,7 +87,7 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **false** | search   | string | null | search string (this will search in first_name, last_name, initials)
 **false** | class    | char or JSON Array   | null | E - Editor section, G - Graphics section, C - Creative section, B- Billing contact selection
-**false** | type_id  | int or JSON Array   | null | Type id
+**false** | type  | int or JSON Array   | null | Type id
 **false** | ids      | int or JSON Array   | null | User id
 **false** | offset   | int    | 0    | offset to start
 **false** | length   | int    | 10   | length/count of data that will be returned
@@ -202,6 +202,7 @@ false | min_hour | int | null | min hour
 false | image | string | null | base64 encode string of the image
 false | nick_name | string | null | nick name
 false | initials | string | null | initials
+false | generate_password | int | send 1 to auto generate password, in that case 'password' param is not required
 
 ## Update User
 
@@ -255,7 +256,6 @@ axios.post('/users/2', {
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | user_id | int | null | user id
-false | username | string | null | user name
 false | password | string | null | password
 false | old_password | string | null | current password of the user (only provide if user wants to change his own password)
 false | first_name | string | null | first name
@@ -270,3 +270,4 @@ false | min_hour | int | null | min hour
 false | image | string | null | base64 encode string of the image
 false | nick_name | string | null | nick name
 false | initials | string | null | initials
+false | generate_password | int | send 1 to auto generate password, in that case 'password' param is not required

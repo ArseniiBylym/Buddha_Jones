@@ -4365,10 +4365,24 @@ Create a new spot.
 
 ```javascript
 axios.post('/spot', {
-    name: 'test spot',
-    project_id: 1,
-    campaign_id: 1,
-    notes: 'some notes for spot'
+    "id": 133,
+    "spotName": "sp111",
+    "projectCampaignId": 149,
+    "revisionNotCounted": null,
+    "notes": null,
+    "revisions": 3,
+    "graphicsRevisions": 0,
+    "firstRevisionCost": "90.50",
+    "internalDeadline": null,
+    "clientDeadline": null,
+    "billingType": "C",
+    "billingNote": "some test ntoe",
+    "trtId": 3,
+    "runtime": ":15",
+    "projectId": 1,
+    "campaignId": 1,
+    "spot_id": 133
+}
 });
 ```
 
@@ -4376,10 +4390,27 @@ axios.post('/spot', {
 
 ```json
 {
+    {
     "status": 1,
     "message": "Request successful.",
     "data": {
-        "spot_id": 18
+        "id": 133,
+        "spotName": "sp111",
+        "projectCampaignId": 149,
+        "revisionNotCounted": null,
+        "notes": null,
+        "revisions": 3,
+        "graphicsRevisions": 0,
+        "firstRevisionCost": "90.50",
+        "internalDeadline": null,
+        "clientDeadline": null,
+        "billingType": "C",
+        "billingNote": "some test ntoe",
+        "trtId": 3,
+        "runtime": ":15",
+        "projectId": 1,
+        "campaignId": 1,
+        "spot_id": 133
     }
 }
 ```
@@ -4402,6 +4433,7 @@ false | internal_deadline | Date string | null | Internal deadline
 false | client_deadline | Date string | null | Client deadline
 false | billing_type | char | null | Billing type. Send B/N/S/R. B = Billable, N = Non-billable, S = Spec unless revised, R = Spec revised billable
 false | billing_note | string | null | billing note
+false | trt_id | int | Total run time (TRT id, got from /trt api call)
 
 
 
@@ -4445,6 +4477,7 @@ false | graphics_revisions | int | 0 | Is it a Graphics Revision or not. Send 0 
 false | first_revision_cost | float | null | Cost of version 1 of the spot
 false | billing_type | char | null | Billing type. Send B/N/S/R. B = Billable, N = Non-billable, S = Spec unless revised, R = Spec revised billable
 false | billing_note | string | null | billing note
+false | trt_id | int | Total run time (TRT id, got from /trt api call)
 
 
 ## Delete spot
