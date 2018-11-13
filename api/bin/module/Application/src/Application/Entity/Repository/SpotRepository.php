@@ -332,6 +332,8 @@ class SpotRepository extends EntityRepository
                                 return in_array($method['id'], $methodIds);
                             }));
                         }
+                    } else {
+                        $spotDataRow['sentViaMethodList'] = array();
                     }
 
                     if (!empty($spotDataRow['editor'])) {
@@ -342,6 +344,8 @@ class SpotRepository extends EntityRepository
                             $userRepo = new UsersRepository($this->_entityManager);
                             $spotDataRow['editorList'] = $userRepo->getUserssById($editorIds);
                         }
+                    } else {
+                        $spotDataRow['editorList'] = array();
                     }
                 }
 

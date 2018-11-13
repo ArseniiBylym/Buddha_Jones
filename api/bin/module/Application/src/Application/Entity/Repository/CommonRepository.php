@@ -136,7 +136,7 @@ class CommonRepository extends EntityRepository
         return false;
     }
 
-    public function filterPostData($data, $key, $type = 'string', $defaultVal = null)
+    public function filterPostData($data, $key, $type = 'string', $defaultVal = null, $allowNull = false)
     {
         $type = strtolower($type);
         // $value = $defaultVal;
@@ -182,7 +182,11 @@ class CommonRepository extends EntityRepository
         }
 
         if (empty($value)) {
-            $value = $defaultVal;
+            if ($allowNull && isset($data[$key])) {
+                $value = $data[$key];
+            } else {
+                $value = $defaultVal;
+            }
         }
 
         return $value;
