@@ -37,7 +37,8 @@ class StudioController extends CustomAbstractActionController
         $response = array();
 
         if ($id == 'first-letters') {
-            $response = $this->getStudioFirstLetter();
+            $ids = $this->getStudioIds();
+            $response = $this->_customerRepo->getDistinctStudioFirstLetter($ids);
         } else if ($id) {
             $data = $this->_studioRepository->find($id);
 
@@ -59,7 +60,7 @@ class StudioController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    private function getStudioFirstLetter()
+    private function getStudioIds()
     {
         $allProjectAccess = $this->_usersRepo->extractPermission($this->_user_permission, 200, 'view_or_edit');
         $projectNameViewAccess = $this->_usersRepo->extractPermission($this->_user_permission, 2, 'view_or_edit');
@@ -72,9 +73,6 @@ class StudioController extends CustomAbstractActionController
 
         $ids = $this->_projectRepo->getDistinctStudioId($filter);
 
-        // var_dump($ids); exit;
-        $data = $this->_customerRepo->getDistinctStudioFirstLetter($ids);
-
-        return $data;
+        return $ids;
     }
 }

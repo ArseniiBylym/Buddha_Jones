@@ -507,6 +507,10 @@ class SpotSentController extends CustomAbstractActionController
             }
         }
 
+        $arr = array_filter($arr, function($item) {
+            return !is_array($item);
+        });
+
         return ((is_array($arr) && count($arr)) ? implode(',', $arr) : null);
     }
 
