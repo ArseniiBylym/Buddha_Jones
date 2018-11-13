@@ -117,8 +117,7 @@ export interface SpotSentDetailsFromApi {
     audioList: SpotSentAudioOptionsFromApi[];
     deliveryToClientList: SpotSentOptionsStdSectionFromApi;
     projectName: string;
-    customerContact: number[];
-    customerContactList: ClientDetailsApiResponse[];
+    customerContact: ClientDetailsApiResponse[];
 }
 
 export interface SpotSentDetailsSpotDataFromApi {

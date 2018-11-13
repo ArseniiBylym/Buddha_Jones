@@ -3,101 +3,109 @@ import * as classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 import { AppOnlyStoreState } from '../../../../../store/AllStores';
 import { ClientContact } from '../../../../../types/clients';
-import { action, observable } from 'mobx';
+import { action, computed, observable, reaction } from 'mobx';
 import { Col, Row, Section } from '../../../../../components/Section';
 import { ButtonClose, ButtonEdit, ButtonSave } from '../../../../../components/Button';
 import { DropdownContainer, OptionsList, OptionsListValuePropType } from '../../../../../components/Form';
 
 // Styles
 import * as styles from './ProducerSpotSentFormSentTo.scss';
+import { ClientsActions } from '../../../../../actions';
 
 // Props
-interface ProjectBoardCampaignStudioContactsProps {
-    onContactAdd: (id: number) => void;
+interface Props {
+    onContactAdd: (customer: ClientContact) => void;
     onContactRemove: (index: number) => void;
-    assignedCustomers: number[];
-    customerOptionsList: ClientContact[];
+    projectCampaignId: number | null;
+    assignedCustomers: ClientContact[];
 }
 
 // Types
-type ProjectBoardCampaignStudioContactsPropsTypes = ProjectBoardCampaignStudioContactsProps & AppOnlyStoreState;
+type PropsTypes = Props & AppOnlyStoreState;
 
 // Component
 @inject('store')
 @observer
-export class ProducerSpotSentFormSentTo extends React.Component<ProjectBoardCampaignStudioContactsPropsTypes, {}> {
+export class ProducerSpotSentFormSentTo extends React.Component<PropsTypes, {}> {
 
-    @observable private assignedCustomers: ClientContact[] = [];
     @observable private customerOptionsList: ClientContact[] = [];
+    @observable private customerOptionsListLoading: boolean = false;
     @observable private isInEditMode: boolean = false;
     @observable private selectedContact: {id: number | null, name: string | null} = {
         id: null,
         name: null
     };
 
-    private sentToOptionsDropdown: DropdownContainer | null = null;
-
-    public componentDidMount() {
-        this.setInitialContactList(this.props);
+    @computed
+    private get savedContact(): ClientContact | null {
+        if (this.selectedContact && this.selectedContact.id && this.customerOptionsList) {
+            for (let i = 0; i < this.customerOptionsList.length; i++) {
+                if (this.customerOptionsList[i].id === this.selectedContact.id) {
+                    return this.customerOptionsList[i];
+                }
+            }
+        }
+        return null;
     }
 
-    public componentWillReceiveProps(nextProps: ProjectBoardCampaignStudioContactsPropsTypes) {
-        this.setInitialContactList(nextProps);
-        /*if (this.props.assignedCustomers.length !== nextProps.assignedCustomers.length) {
-        }*/
+    private sentToOptionsDropdown: DropdownContainer | null = null;
+
+    public constructor(props: PropsTypes) {
+        super(props);
+
+        reaction(
+            () => this.isInEditMode,
+            isInEditMode => {
+                if (isInEditMode) {
+                    this.loadCustomerOptionsList();
+                }
+            }
+        );
     }
 
     public render() {
         return (
-            <>
-                {/*<pre>
-                    {JSON.stringify(this.assignedCustomers, null, 2)}
-                </pre>
-                <pre>
-                    {JSON.stringify(this.customerOptionsList, null, 2)}
-                </pre>*/}
-                <div className={classNames(styles.studioContactsContainer, { [styles.editing]: this.isInEditMode })}>
-                    <Section
-                        title="Sent to"
-                        noSeparator={true}
-                        headerElements={[
-                            {
-                                key: 'sent-to-edit-button',
-                                element: (
-                                    <>
-                                        {this.isInEditMode &&
-                                            <>
-                                                <ButtonClose
-                                                    float="right"
-                                                    onClick={this.handleEditingToggle}
-                                                    label={'Cancel'}
-                                                />
-                                                <ButtonSave
-                                                    className={styles.saveStudioContactButton}
-                                                    onClick={this.onAssignContactHandler}
-                                                    float="right"
-                                                    label={'Save'}
-                                                    labelColor={'blue'}
-                                                    isSaving={false}
-                                                />
-                                            </>
-                                        }
-                                        {!this.isInEditMode &&
-                                            <ButtonEdit
+            <div className={classNames(styles.studioContactsContainer, { [styles.editing]: this.isInEditMode })}>
+                <Section
+                    title="Sent to"
+                    noSeparator={true}
+                    headerElements={[
+                        {
+                            key: 'sent-to-edit-button',
+                            element: (
+                                <>
+                                    {this.isInEditMode &&
+                                        <>
+                                            <ButtonClose
                                                 float="right"
                                                 onClick={this.handleEditingToggle}
-                                                label={'Edit contacts'}
+                                                label={'Cancel'}
                                             />
-                                        }
-                                    </>
-                                ),
-                            },
-                        ]}
-                    >
-                        {this.renderSentToList()}
-                    </Section>
-                </div>
-            </>
+                                            <ButtonSave
+                                                className={styles.saveStudioContactButton}
+                                                onClick={this.onAssignContactHandler}
+                                                float="right"
+                                                label={'Save'}
+                                                labelColor={'blue'}
+                                                isSaving={false}
+                                            />
+                                        </>
+                                    }
+                                    {!this.isInEditMode &&
+                                        <ButtonEdit
+                                            float="right"
+                                            onClick={this.handleEditingToggle}
+                                            label={'Edit contacts'}
+                                        />
+                                    }
+                                </>
+                            ),
+                        },
+                    ]}
+                >
+                    {this.renderSentToList()}
+                </Section>
+            </div>
         );
     }
 
@@ -130,6 +138,8 @@ export class ProducerSpotSentFormSentTo extends React.Component<ProjectBoardCamp
                                 };
                             })
                     ]}
+                    loadingOptions={this.customerOptionsListLoading}
+                    loadingOptionsLabel={'Loading contacts...'}
                 />
             </DropdownContainer>
         );
@@ -140,13 +150,13 @@ export class ProducerSpotSentFormSentTo extends React.Component<ProjectBoardCamp
             <Row>
                 <Col>
                     <ul className={styles.contactsList}>
-                        {!this.isInEditMode && this.assignedCustomers.length === 0 &&
+                        {!this.isInEditMode && this.props.assignedCustomers.length === 0 &&
                             <li>
-                                <p>Studio has no contacts</p>
+                                <p>No contacts selected</p>
                             </li>
                         }
 
-                        {this.assignedCustomers.length > 0 && this.assignedCustomers.map((contact: ClientContact, ind: number) => (
+                        {this.props.assignedCustomers.length > 0 && this.props.assignedCustomers.map((contact: ClientContact, ind: number) => (
                             <li key={`sent-to-contact-${ind}`}>
                                 <span className={styles.container}>
                                     <p className={styles.name}>{contact.name}</p>
@@ -175,15 +185,21 @@ export class ProducerSpotSentFormSentTo extends React.Component<ProjectBoardCamp
     }
 
     @action
-    private setInitialContactList = (props: ProjectBoardCampaignStudioContactsPropsTypes): void => {
-        debugger;
-        this.assignedCustomers = this.getAssignedCustomers(props);
-        this.customerOptionsList = props.customerOptionsList;
+    private handleEditingToggle = (): void => {
+        this.isInEditMode = !this.isInEditMode;
     };
 
     @action
-    private handleEditingToggle = (): void => {
-        this.isInEditMode = !this.isInEditMode;
+    private loadCustomerOptionsList = async () => {
+        try {
+            if (this.props.projectCampaignId) {
+                this.customerOptionsListLoading = true;
+                this.customerOptionsList = await ClientsActions.fetchCustomerContactsForProjectCampaign(this.props.projectCampaignId);
+                this.customerOptionsListLoading = false;
+            }
+        } catch (e) {
+            throw e;
+        }
     };
 
     @action
@@ -201,10 +217,11 @@ export class ProducerSpotSentFormSentTo extends React.Component<ProjectBoardCamp
     };
 
     @action
-    private onAssignContactHandler = (event: any) => {
-        event.preventDefault();
+    private onAssignContactHandler = () => {
         if (this.selectedContact && this.selectedContact.id) {
-            this.props.onContactAdd(this.selectedContact.id);
+            if (this.savedContact) {
+                this.props.onContactAdd(this.savedContact);
+            }
             this.selectedContact = {
                 id: null,
                 name: null
@@ -213,8 +230,7 @@ export class ProducerSpotSentFormSentTo extends React.Component<ProjectBoardCamp
     };
 
     @action
-    private onRemoveContactHandler = (ind: number, event: any) => {
-        event.preventDefault();
+    private onRemoveContactHandler = (ind: number) => {
         if (ind > -1 && this.customerOptionsList[ind] && this.customerOptionsList[ind].id) {
             this.props.onContactRemove(ind);
             this.selectedContact = {
@@ -224,21 +240,9 @@ export class ProducerSpotSentFormSentTo extends React.Component<ProjectBoardCamp
         }
     };
 
-    private getAssignedCustomers = (props: ProjectBoardCampaignStudioContactsPropsTypes): ClientContact[] => {
-        return props.customerOptionsList
-            .filter((option: ClientContact) => {
-                for (let i = 0; i < props.assignedCustomers.length; i++) {
-                    if (props.assignedCustomers[i] === option.id) {
-                        return true;
-                    }
-                }
-                return false;
-            });
-    };
-
     private existingContactsFlatIds(): number[] {
-        if (this.props.customerOptionsList) {
-            return this.props.customerOptionsList.map((contact: ClientContact) => {
+        if (this.props.assignedCustomers) {
+            return this.props.assignedCustomers.map((contact: ClientContact) => {
                 return contact.id;
             });
         }

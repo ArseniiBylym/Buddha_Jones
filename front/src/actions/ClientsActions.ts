@@ -3,6 +3,7 @@ import { ClientsStore } from 'store/AllStores';
 import { API, APIPath } from 'fetch';
 import { ClientApiResponse, ClientDetailsApiResponse, ClientForStudio } from 'types/clients';
 import { DateHandler } from 'helpers/DateHandler';
+import { ClientContact } from '../types/clients';
 
 enum CustomersFetchType {
     None,
@@ -257,6 +258,21 @@ export class ClientsActionsClass {
                     id: client.id,
                     name: client.customerName
                 };
+            });
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    @action
+    public fetchCustomerContactsForProjectCampaign = async (projectCampaignId: number): Promise<ClientContact[]> => {
+        try {
+
+            const response = (await API.getData(APIPath.PROJECT_CAMPAIGN_CUSTOMER_CONTACT + '/' + projectCampaignId)) as ClientDetailsApiResponse[];
+
+            return response.map((contact: ClientDetailsApiResponse) => {
+                delete contact.mobilePhone;
+                return contact;
             });
         } catch (error) {
             throw error;

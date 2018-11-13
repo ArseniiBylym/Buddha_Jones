@@ -68,8 +68,7 @@ export interface SpotSentValueForSubmit {
     audio_note?: string;
     graphics_finish?: 0 | 1;
     gfx_finish?: 0 | 1;
-    customer_contact?: number[];
-    customer_contact_list?: ClientDetailsApiResponse[];
+    customer_contact?: ClientContact[];
 }
 
 export interface SpotSentValueParentChildForSubmit {
@@ -152,7 +151,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         graphics_finish: 0,
         gfx_finish: 0,
         customer_contact: [],
-        customer_contact_list: []
     };
 
     @observable private isFinishingTypeSectionOpen: boolean = false;
@@ -227,7 +225,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     }
 
     @computed
-    private get assignedCustomers(): number[] {
+    private get assignedCustomers(): ClientContact[] {
         return (this.spotSentValues.customer_contact) ? this.spotSentValues.customer_contact : [];
     }
 
@@ -322,12 +320,14 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         </Section>
                     }
 
-                    <ProducerSpotSentFormSentTo
-                        onContactAdd={this.handleSentToAdd}
-                        onContactRemove={this.handleSentToRemove}
-                        assignedCustomers={this.assignedCustomers}
-                        customerOptionsList={(SpotSentStore.spotSentDetails && SpotSentStore.spotSentDetails.customer_contact_list) ? SpotSentStore.spotSentDetails.customer_contact_list : []}
-                    />
+                    {this.spotSentValues.spot_version && this.spotSentValues.spot_version[0] && (this.spotSentValues.spot_version[0] as SpotSentVersionForSubmit).project_campaign_id &&
+                        <ProducerSpotSentFormSentTo
+                            onContactAdd={this.handleSentToAdd}
+                            onContactRemove={this.handleSentToRemove}
+                            projectCampaignId={(this.spotSentValues.spot_version[0] as SpotSentVersionForSubmit).project_campaign_id}
+                            assignedCustomers={this.assignedCustomers}
+                        />
+                    }
 
                     <Section title="Internal notes">
                         <TextArea
@@ -704,9 +704,9 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     @action
-    private handleSentToAdd = (id: number ): void => {
-        if (id && this.spotSentValues.customer_contact) {
-            this.spotSentValues.customer_contact.push(id);
+    private handleSentToAdd = (customer: ClientContact): void => {
+        if (customer && customer.id && this.spotSentValues.customer_contact) {
+            this.spotSentValues.customer_contact.push(customer);
         }
     };
 
