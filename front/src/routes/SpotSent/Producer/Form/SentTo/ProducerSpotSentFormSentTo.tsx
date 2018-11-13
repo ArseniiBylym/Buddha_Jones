@@ -231,7 +231,7 @@ export class ProducerSpotSentFormSentTo extends React.Component<PropsTypes, {}> 
 
     @action
     private onRemoveContactHandler = (ind: number) => {
-        if (ind > -1 && this.customerOptionsList[ind] && this.customerOptionsList[ind].id) {
+        if (ind > -1 && this.props.assignedCustomers && this.props.assignedCustomers[ind] && this.props.assignedCustomers[ind].id) {
             this.props.onContactRemove(ind);
             this.selectedContact = {
                 id: null,

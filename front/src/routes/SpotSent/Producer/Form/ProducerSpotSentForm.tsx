@@ -292,7 +292,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         </Section>
                     }
 
-                    {this.spotSentValues.spot_version && this.spotSentValues.spot_version[0] && (this.spotSentValues.spot_version[0] as SpotSentVersionForSubmit).project_campaign_id &&
+                    {this.spotSentValues.spot_version && this.spotSentValues.spot_version.length > 0 && (this.spotSentValues.spot_version[0] as SpotSentVersionForSubmit).project_campaign_id &&
                         <ProducerSpotSentFormSentTo
                             onContactAdd={this.handleSentToAdd}
                             onContactRemove={this.handleSentToRemove}
