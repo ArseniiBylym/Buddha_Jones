@@ -800,7 +800,9 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             }));
             (data.finish_option as string) = JSON.stringify(data.finish_option);
             (data.delivery_to_client as string) = JSON.stringify(data.delivery_to_client);
-            (data.customer_contact as string) = JSON.stringify(data.customer_contact);
+            (data.customer_contact as string) = JSON.stringify((data.customer_contact as ClientContact[]).map(contact => {
+                return contact.id;
+            }));
             delete data.finishing_house_name;
             data.deadline = (data.deadline) ? dateFormat(data.deadline, 'YYYY-MM-DD') : null;
             if (this.isEditMode) {
