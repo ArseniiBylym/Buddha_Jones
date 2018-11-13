@@ -2,7 +2,6 @@
 namespace Application\Controller;
 
 use Application\Entity\RediActivity;
-use Application\Entity\RediActivityToType;
 use Application\Entity\RediActivityToUserType;
 use Application\Entity\RediActivityTypeToActivity;
 use Zend\View\Model\JsonModel;
@@ -60,6 +59,7 @@ class ActivityController extends CustomAbstractActionController
             if (!$checkActivity) {
                 $activity = new RediActivity();
                 $activity->setName($name);
+                $activity->setTypeId($type[0]);
                 $activity->setStatus($status);
                 $activity->setBillable($billable);
                 $activity->setDescriptionRequired($descriptionRequired);
@@ -79,14 +79,6 @@ class ActivityController extends CustomAbstractActionController
                     $activityUserType->setUserTypeId($userType);
 
                     $this->_em->persist($activityUserType);
-                }
-
-                foreach($typeId as $type) {
-                    $activityType = new RediActivityToType();
-                    $activityType->setActivityId($activityId);
-                    $activityType->setTypeId($type);
-
-                    $this->_em->persist($activityType);
                 }
 
                 $this->_em->flush();
@@ -162,13 +154,7 @@ class ActivityController extends CustomAbstractActionController
                 }
 
                 if(count($typeId)) {
-                    $existingActivityType = $typeId;
-                } else {
-                    $existingActivityTypeData = $this->_activityToTypeRepository->findBy(array('activityId' => $activity->getId()));
-
-                    foreach($existingActivityTypeData as $row) {
-                        $existingActivityType[] = $row->getTypeId();
-                    }
+                    $activity->setTypeId($typeId[0]);
                 }
 
                 if ($descriptionRequired !== null) {
@@ -182,26 +168,6 @@ class ActivityController extends CustomAbstractActionController
 
                 $this->_em->persist($activity);
                 $this->_em->flush();
-
-                if(count($typeId)) {
-                    $existingActivityType = $this->_activityToTypeRepository->findBy(array('activityId' => $activity->getId()));
-
-                    foreach ($existingActivityType as $type) {
-                        $this->_em->remove($type);
-                    }
-
-                    $this->_em->flush();
-
-                    foreach ($typeId as $type) {
-                        $activityType = new RediActivityToType();
-                        $activityType->setActivityId($activity->getId());
-                        $activityType->setTypeId($type);
-
-                        $this->_em->persist($activityType);
-                    }
-
-                    $this->_em->flush();
-                }
 
                 if(count($userTypeId)) {
                     $existingUserType = $this->_activityToUserTypeRepository->findBy(array('activityId' => $activity->getId()));

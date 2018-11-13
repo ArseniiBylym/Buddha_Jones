@@ -122,6 +122,10 @@ return array(
                 $entityManager = $serviceManager->get('Doctrine\ORM\EntityManager');
                 return new \Application\Entity\Repository\VersionRepository($entityManager);
             },
+            'Application\Entity\Repository\NotificationRepository' => function ($serviceManager) {
+                $entityManager = $serviceManager->get('Doctrine\ORM\EntityManager');
+                return new \Application\Entity\Repository\NotificationRepository($entityManager);
+            },
         ),
     ),
 //    'translator' => array(
@@ -171,6 +175,7 @@ return array(
             'Application\Controller\Login'                                          => 'Application\Controller\LoginController',
             'Application\Controller\LoginRefresh'                                   => 'Application\Controller\LoginRefreshController',
             'Application\Controller\Logout'                                         => 'Application\Controller\LogoutController',
+            'Application\Controller\Notification'                                   => 'Application\Controller\NotificationController',
             'Application\Controller\OutsideCost'                                    => 'Application\Controller\OutsideCostController',
             'Application\Controller\PasswordReset'                                  => 'Application\Controller\PasswordResetController',
             'Application\Controller\Project'                                        => 'Application\Controller\ProjectController',
