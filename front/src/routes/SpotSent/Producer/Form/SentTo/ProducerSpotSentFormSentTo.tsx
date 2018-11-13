@@ -48,6 +48,15 @@ export class ProducerSpotSentFormSentTo extends React.Component<PropsTypes, {}> 
         return null;
     }
 
+    @computed
+    private get activeCustomerOptionsList(): ClientContact[] {
+        return this.customerOptionsList
+            .filter((contact: ClientContact) => {
+                let contactMatch: number = this.existingContactsFlatIds().findIndex(id => id === contact.id);
+                return (contactMatch !== -1) ? false : true;
+            });
+    }
+
     private sentToOptionsDropdown: DropdownContainer | null = null;
 
     public constructor(props: PropsTypes) {
@@ -173,7 +182,7 @@ export class ProducerSpotSentFormSentTo extends React.Component<PropsTypes, {}> 
                             </li>
                         ))}
 
-                        {this.isInEditMode &&
+                        {this.isInEditMode && this.activeCustomerOptionsList.length > 0 &&
                             <li key={`sent-to-contact-${this.customerOptionsList.length + 1}`}>
                                 {this.renderDropdownList()}
                             </li>
