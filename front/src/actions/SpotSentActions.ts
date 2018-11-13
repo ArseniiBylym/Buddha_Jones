@@ -149,7 +149,6 @@ export class SpotSentActionsClass {
                     graphics_finish: response.graphicsFinish,
                     gfx_finish: response.gfxFinish,
                     customer_contact: response.customerContact,
-                    customer_contact_list: response.customerContactList,
                 };
 
                 SpotSentStore.spotSentDetailsLastFetchTimestamp = Date.now();

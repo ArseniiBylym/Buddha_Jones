@@ -45,5 +45,6 @@ export enum APIPath {
     STUDIO                                  = '/studio',
     STUDIO_FIRST_LETTERS                    = '/studio/first-letters',
     CHANNEL                                 = '/channel',
-    CUSTOMER_NEW                            = '/customer-new'
+    CUSTOMER_NEW                            = '/customer-new',
+    PROJECT_CAMPAIGN_CUSTOMER_CONTACT       = '/project-campaign-customer-contact'
 }

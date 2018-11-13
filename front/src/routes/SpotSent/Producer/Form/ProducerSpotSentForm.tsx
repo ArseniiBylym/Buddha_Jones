@@ -13,7 +13,7 @@ import { Paragraph } from 'components/Content';
 import { ProducerSpotSentFormSpotCard } from '.';
 import { Checkmark, Input, TextArea, Toggle } from 'components/Form';
 import { ClientContact } from 'types/clients';
-import { LoadingIndicator, LoadingSpinner } from 'components/Loaders';
+import { LoadingSpinner } from 'components/Loaders';
 import { ToggleSideContent } from '../../../../components/Form';
 import { SpotSentAudioOptionsFromApi, SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
 import { ProjectPickerGroupValues } from '../../../../components/Buddha';
@@ -22,7 +22,7 @@ import { DatePicker } from '../../../../components/Calendar';
 import { FinishingHousesPicker } from '../../../../components/Buddha/FinishingHousesPicker';
 import { match } from 'react-router';
 import * as dateFormat from 'date-fns/format';
-import { ClientDetailsApiResponse } from '../../../../types/clients';
+import { ProducerSpotSentFormSentTo } from './SentTo/ProducerSpotSentFormSentTo';
 
 export interface ProducerSpotSentValue {
     date: Date;
@@ -67,8 +67,7 @@ export interface SpotSentValueForSubmit {
     audio_note?: string;
     graphics_finish?: 0 | 1;
     gfx_finish?: 0 | 1;
-    customer_contact?: number[];
-    customer_contact_list?: ClientDetailsApiResponse[];
+    customer_contact?: ClientContact[] | string;
 }
 
 export interface SpotSentValueParentChildForSubmit {
@@ -150,7 +149,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         audio_note: '',
         graphics_finish: 0,
         gfx_finish: 0,
-        customer_contact: []
+        customer_contact: [],
     };
 
     @observable private isFinishingTypeSectionOpen: boolean = false;
@@ -222,6 +221,11 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         } else {
             return false;
         }
+    }
+
+    @computed
+    private get assignedCustomers(): ClientContact[] {
+        return (this.spotSentValues.customer_contact) ? this.spotSentValues.customer_contact as ClientContact[] : [];
     }
 
     public componentDidMount() {
@@ -315,33 +319,14 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         </Section>
                     }
 
-                    <Section title="Sent to">
-                        {this.clientContacts === null && <Paragraph type="dim">Project is not selected.</Paragraph>}
-
-                        {this.clientContacts &&
-                        this.clientContacts.isLoading && <LoadingIndicator label="Loading studio contacts"/>
-                        }
-
-                        {this.clientContacts &&
-                        this.clientContacts.isLoading === false &&
-                        this.clientContacts.contacts.length <= 0 && (
-                            <Paragraph type="dim">Studio has no contacts.</Paragraph>
-                        )}
-
-                        {this.clientContacts &&
-                        this.clientContacts.isLoading === false && (
-                            <div className={s.studioContactsContainer}>
-                                {this.clientContacts.contacts.map(contact => (
-                                    <Checkmark
-                                        key={contact.id}
-                                        onClick={this.handleSentToContactToggle(contact)}
-                                        label={contact.name || contact.email || contact.id.toString()}
-                                        checked={this.values.studioContacts.indexOf(contact.id) !== -1}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </Section>
+                    {this.spotSentValues.spot_version && this.spotSentValues.spot_version[0] && (this.spotSentValues.spot_version[0] as SpotSentVersionForSubmit).project_campaign_id &&
+                        <ProducerSpotSentFormSentTo
+                            onContactAdd={this.handleSentToAdd}
+                            onContactRemove={this.handleSentToRemove}
+                            projectCampaignId={(this.spotSentValues.spot_version[0] as SpotSentVersionForSubmit).project_campaign_id}
+                            assignedCustomers={this.assignedCustomers}
+                        />
+                    }
 
                     <Section title="Internal notes">
                         <TextArea
@@ -611,7 +596,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         </pre>
                         <pre>
                             {JSON.stringify(this.spotSentValues, null, 2)}
-                            {/*{JSON.stringify(this.values, null, 2)}*/}
                         </pre>
                     </Section>
                 }
@@ -705,6 +689,20 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
         (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).finish_request = checked ? 1 : 0;
         this.isFinishingTypeSectionOpen = (this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).some(spot => spot.finish_request === 1);
+    };
+
+    @action
+    private handleSentToAdd = (customer: ClientContact): void => {
+        if (customer && customer.id && this.spotSentValues.customer_contact) {
+            (this.spotSentValues.customer_contact as ClientContact[]).push(customer);
+        }
+    };
+
+    @action
+    private handleSentToRemove = (index: number): void => {
+        if (index > -1 && this.spotSentValues.customer_contact && this.spotSentValues.customer_contact[index]) {
+            (this.spotSentValues.customer_contact as ClientContact[]).splice(index, 1);
+        }
     };
 
     @action
@@ -844,6 +842,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             }));
             (data.finish_option as string) = JSON.stringify(data.finish_option);
             (data.delivery_to_client as string) = JSON.stringify(data.delivery_to_client);
+            (data.customer_contact as string) = JSON.stringify(data.customer_contact);
             delete data.finishing_house_name;
             data.deadline = (data.deadline) ? dateFormat(data.deadline, 'YYYY-MM-DD') : null;
             if (this.isEditMode) {
