@@ -97,11 +97,12 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
                                 this.isEditMode &&
                                 <CustomerSelector
                                     onChange={this.props.onClientChange}
-                                    options={this.customerSelectorOptions as Array<{id: number; name: string}>}
+                                    options={this.customerSelectorOptions as Array<{ id: number; name: string }>}
                                     optionsLoading={this.customerSelectorOptionsLoading}
                                     value={this.props.campaign.clientSelected}
                                     projectCampaignId={this.props.campaign.projectCampaignId}
                                     onToggleEditModeButton={this.onCustomerSelectorEditModeToggleHandler}
+                                    isCustomerFormShow={this.isCustomerFormShow}
                                 />
                             }
                         </Col>
