@@ -554,12 +554,15 @@ class CustomerRepository extends EntityRepository
             $dqlFilter[] = " cn.completed = :completed ";
         }
 
+        if (!empty($filter['created_by'])) {
+            $dqlFilter[] = " cn.createdBy = :created_by ";
+        }
+
         if(count($dqlFilter)) {
             $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
         }
 
         $dql .= " ORDER BY cn.id ASC";
-
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setFirstResult($offset);
@@ -567,6 +570,10 @@ class CustomerRepository extends EntityRepository
 
         if (isset($filter['completed']) && $filter['completed'] !== null) {
             $query->setParameter('completed', $filter['completed']);
+        }
+
+        if (!empty($filter['created_by'])) {
+            $query->setParameter('created_by', $filter['created_by']);
         }
 
         $data = $query->getArrayResult();
@@ -586,6 +593,10 @@ class CustomerRepository extends EntityRepository
             $dqlFilter[] = " cn.completed = :completed ";
         }
 
+        if (!empty($filter['created_by'])) {
+            $dqlFilter[] = " cn.createdBy = :created_by ";
+        }
+
         if(count($dqlFilter)) {
             $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
         }
@@ -594,6 +605,10 @@ class CustomerRepository extends EntityRepository
 
         if (isset($filter['completed']) && $filter['completed'] !== null) {
             $query->setParameter('completed', $filter['completed']);
+        }
+
+        if (!empty($filter['created_by'])) {
+            $query->setParameter('created_by', $filter['created_by']);
         }
 
         $result =  $query->getArrayResult();

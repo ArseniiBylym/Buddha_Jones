@@ -59,7 +59,7 @@ class ActivityController extends CustomAbstractActionController
             if (!$checkActivity) {
                 $activity = new RediActivity();
                 $activity->setName($name);
-                $activity->setTypeId($type[0]);
+                $activity->setTypeId($typeId[0]);
                 $activity->setStatus($status);
                 $activity->setBillable($billable);
                 $activity->setDescriptionRequired($descriptionRequired);

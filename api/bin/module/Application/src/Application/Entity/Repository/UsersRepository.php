@@ -505,7 +505,15 @@ class UsersRepository extends EntityRepository
             'project-board-permission' => $this->getProjectBoardPermissionAccess($userTypeId),
             'producer-spot-sent-list' => true,
             'producer-spot-sent-form' => true,
+            'new-customer-approval' => $this->getNewCustomerApproval($userTypeId),
         );
+    }
+
+    public function getNewCustomerApproval($userTypeId) {
+        $userPermission = $this->getUserPermission($userTypeId, true);
+        $canEditCustomerNew = $this->extractPermission($userPermission, 33, 'can_view_edit');
+        
+        return (bool)$canEditCustomerNew;
     }
 
     public function getUserTimeCardAccess($userTypeId)
@@ -590,6 +598,12 @@ class UsersRepository extends EntityRepository
         return $response;
     }
 
+    /**
+     * Get list of all permission of a user type
+     *
+     * @param int $userTypeId User type id
+     * @return array
+     */
     public function getUserAccessPermission($userTypeId)
     {
         $dql = "SELECT
