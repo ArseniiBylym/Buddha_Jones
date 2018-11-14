@@ -51,6 +51,7 @@ export class TimeEntryModal extends React.Component<Props & AppOnlyStoreState, {
                     forceLongContent={true}
                     noPadding={true}
                     closeButton={true}
+                    preventBackdropClick={true}
                 >
                     <TimeEntryCalendarDuration/>
 

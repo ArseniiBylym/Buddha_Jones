@@ -28,6 +28,14 @@ export interface FieldDetails {
 }
 
 export class TimeEntryActionsClass {
+
+    @action
+    public cleanTimeEntryValueActivityId = () => {
+        if (TimeEntryStore.values && TimeEntryStore.values.activityId) {
+            TimeEntryStore.values.activityId = null;
+        }
+    };
+
     @action
     public resetTimeEntry = () => {
         TimeEntryStore.values = null;
