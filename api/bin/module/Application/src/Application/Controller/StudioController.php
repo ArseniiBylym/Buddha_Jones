@@ -32,22 +32,24 @@ class StudioController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    public function get($id) {
+    public function get($id)
+    {
         $response = array();
 
-        if($id=='first-letters') {
-            $response = $this->_customerRepo->getDistinctStudioFirstLetter();
-        } else if($id) {
+        if ($id == 'first-letters') {
+            $ids = $this->getStudioIds();
+            $response = $this->_customerRepo->getDistinctStudioFirstLetter($ids);
+        } else if ($id) {
             $data = $this->_studioRepository->find($id);
 
-            if($data) {
+            if ($data) {
                 $response = array(
                     'id' => $data->getId(),
                     'cardcode' => $data->getCardcode(),
                     'studioName' => trim($data->getStudioName()),
                 );
             }
-        } 
+        }
 
         $response = array(
             'status' => 1,
@@ -56,5 +58,21 @@ class StudioController extends CustomAbstractActionController
         );
 
         return new JsonModel($response);
+    }
+
+    private function getStudioIds()
+    {
+        $allProjectAccess = $this->_usersRepo->extractPermission($this->_user_permission, 200, 'view_or_edit');
+        $projectNameViewAccess = $this->_usersRepo->extractPermission($this->_user_permission, 2, 'view_or_edit');
+        $projectCodeNameViewAccess = $this->_usersRepo->extractPermission($this->_user_permission, 31, 'view_or_edit');
+
+        $filter['all_project_access'] = $allProjectAccess;
+        $filter['project_name_view_access'] = $projectNameViewAccess;
+        $filter['project_code_name_view_access'] = $projectCodeNameViewAccess;
+        $filter['project_to_campaign_user_id'] = $this->_user_id;
+
+        $ids = $this->_projectRepo->getDistinctStudioId($filter);
+
+        return $ids;
     }
 }

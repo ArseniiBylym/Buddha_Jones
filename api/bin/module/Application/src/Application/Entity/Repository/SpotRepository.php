@@ -40,10 +40,14 @@ class SpotRepository extends EntityRepository
                     a.billingType,
                     a.billingNote, 
                     ptc.projectId, 
-                    ptc.campaignId
+                    ptc.campaignId,
+                    a.trtId,
+                    trt.runtime
                 FROM \Application\Entity\RediSpot a 
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc 
-                    WITH a.projectCampaignId=ptc.id";
+                    WITH a.projectCampaignId=ptc.id
+                LEFT JOIN \Application\Entity\RediTrt trt
+                    WITH trt.id = a.trtId";
 
         $dqlFilter = [];
 
@@ -120,8 +124,24 @@ class SpotRepository extends EntityRepository
 
     public function getById($spotId)
     {
-        $dql = "SELECT a 
+        $dql = "SELECT
+                a.id,
+                a.spotName,
+                a.projectCampaignId,
+                a.revisionNotCounted,
+                a.notes,
+                a.revisions,
+                a.graphicsRevisions,
+                a.firstRevisionCost,
+                a.internalDeadline,
+                a.clientDeadline,
+                a.billingType,
+                a.billingNote,
+                a.trtId,
+                trt.runtime
                 FROM \Application\Entity\RediSpot a 
+                LEFT JOIN \Application\Entity\RediTrt trt
+                    WITH trt.id = a.trtId
                 WHERE a.id=:spot_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -312,6 +332,8 @@ class SpotRepository extends EntityRepository
                                 return in_array($method['id'], $methodIds);
                             }));
                         }
+                    } else {
+                        $spotDataRow['sentViaMethodList'] = array();
                     }
 
                     if (!empty($spotDataRow['editor'])) {
@@ -322,6 +344,8 @@ class SpotRepository extends EntityRepository
                             $userRepo = new UsersRepository($this->_entityManager);
                             $spotDataRow['editorList'] = $userRepo->getUserssById($editorIds);
                         }
+                    } else {
+                        $spotDataRow['editorList'] = array();
                     }
                 }
 

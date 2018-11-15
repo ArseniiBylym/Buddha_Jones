@@ -154,44 +154,44 @@ class SpotSentController extends CustomAbstractActionController
         $specSheetDir = $this->_config['directory_path']['spot_sent_spec_sheet'];
 
         $projectId = $this->_commonRepo->filterPostData($data, 'project_id', 'int', $this->_commonRepo->filterPostData($existingData, 'projectId', 'int', null));
-        $fullLock = $this->_commonRepo->filterPostData($data, 'full_lock', 'boolean', $this->_commonRepo->filterPostData($existingData, 'fullLock', 'boolean', 0));
-        $notes = $this->_commonRepo->filterPostData($data, 'notes', 'string', $this->_commonRepo->filterPostData($existingData, 'notes', 'string', null));
-        $internalNote = $this->_commonRepo->filterPostData($data, 'internal_note', 'string', $this->_commonRepo->filterPostData($existingData, 'internalNote', 'string', null));
-        $studioNote = $this->_commonRepo->filterPostData($data, 'studio_note', 'string', $this->_commonRepo->filterPostData($existingData, 'studioNote', 'string', null));
+        $fullLock = $this->_commonRepo->filterPostData($data, 'full_lock', 'boolean', $this->_commonRepo->filterPostData($existingData, 'fullLock', 'boolean', 0), true);
+        $notes = $this->_commonRepo->filterPostData($data, 'notes', 'string', $this->_commonRepo->filterPostData($existingData, 'notes', 'string', null), true);
+        $internalNote = $this->_commonRepo->filterPostData($data, 'internal_note', 'string', $this->_commonRepo->filterPostData($existingData, 'internalNote', 'string', null), true);
+        $studioNote = $this->_commonRepo->filterPostData($data, 'studio_note', 'string', $this->_commonRepo->filterPostData($existingData, 'studioNote', 'string', null), true);
         $deadline = $this->_commonRepo->filterPostData($data, 'deadline', 'datetime', $this->_commonRepo->filterPostData($existingData, 'deadline', 'datetimeObj', null));
         $spotSentDate = $this->_commonRepo->filterPostData($data, 'spot_sent_date', 'datetime', $this->_commonRepo->filterPostData($existingData, 'spotSentDate', 'datetimeObj', null));
         $finishingHouse = $this->_commonRepo->filterPostData($data, 'finishing_house', 'int', $this->_commonRepo->filterPostData($existingData, 'finishingHouse', 'int', null));
-        $framerate = $this->_commonRepo->filterPostData($data, 'framerate', 'string', $this->_commonRepo->filterPostData($existingData, 'framerate', 'string', null));
-        $framerateNote = $this->_commonRepo->filterPostData($data, 'framerate_note', 'string', $this->_commonRepo->filterPostData($existingData, 'framerateNote', 'string', null));
-        $rasterSize = $this->_commonRepo->filterPostData($data, 'raster_size', 'string', $this->_commonRepo->filterPostData($existingData, 'rasterSize', 'string', null));
-        $rasterSizeNote = $this->_commonRepo->filterPostData($data, 'raster_size_note', 'string', $this->_commonRepo->filterPostData($existingData, 'rasterSizeNote', 'string', null));
-        $musicCueSheet = $this->_commonRepo->filterPostData($data, 'music_cue_sheet', 'boolean', $this->_commonRepo->filterPostData($existingData, 'musicCueSheet', 'boolean', 0));
-        $audioPrep = $this->_commonRepo->filterPostData($data, 'audio_prep', 'boolean', $this->_commonRepo->filterPostData($existingData, 'audioPrep', 'boolean', 0));
-        $graphicsFinish = $this->_commonRepo->filterPostData($data, 'graphics_finish', 'boolean', $this->_commonRepo->filterPostData($existingData, 'graphicsFinish', 'boolean', 0));
+        $framerate = $this->_commonRepo->filterPostData($data, 'framerate', 'string', $this->_commonRepo->filterPostData($existingData, 'framerate', 'string', null), true);
+        $framerateNote = $this->_commonRepo->filterPostData($data, 'framerate_note', 'string', $this->_commonRepo->filterPostData($existingData, 'framerateNote', 'string', null), true);
+        $rasterSize = $this->_commonRepo->filterPostData($data, 'raster_size', 'string', $this->_commonRepo->filterPostData($existingData, 'rasterSize', 'string', null), true);
+        $rasterSizeNote = $this->_commonRepo->filterPostData($data, 'raster_size_note', 'string', $this->_commonRepo->filterPostData($existingData, 'rasterSizeNote', 'string', null), true);
+        $musicCueSheet = $this->_commonRepo->filterPostData($data, 'music_cue_sheet', 'boolean', $this->_commonRepo->filterPostData($existingData, 'musicCueSheet', 'boolean', 0), true);
+        $audioPrep = $this->_commonRepo->filterPostData($data, 'audio_prep', 'boolean', $this->_commonRepo->filterPostData($existingData, 'audioPrep', 'boolean', 0), true);
+        $graphicsFinish = $this->_commonRepo->filterPostData($data, 'graphics_finish', 'boolean', $this->_commonRepo->filterPostData($existingData, 'graphicsFinish', 'boolean', 0), true);
         // $prodAccept = $this->_commonRepo->filterPostData($data, 'prod_accept', 'boolean', $this->_commonRepo->filterPostData($existingData, 'prodAccept', 'boolean', 0));
         // $finishAccept = $this->_commonRepo->filterPostData($data, 'finish_accept', 'boolean', $this->_commonRepo->filterPostData($existingData, 'finishAccept', 'boolean', 0));
-        $gfxFinish = $this->_commonRepo->filterPostData($data, 'gfx_finish', 'boolean', $this->_commonRepo->filterPostData($existingData, 'gfxFinish', 'boolean', 0));
-        $videoPrep = $this->_commonRepo->filterPostData($data, 'video_prep', 'boolean', $this->_commonRepo->filterPostData($existingData, 'videoPrep', 'boolean', 0));
-        $specNote = $this->_commonRepo->filterPostData($data, 'spec_note', 'string', $this->_commonRepo->filterPostData($existingData, 'specNote', 'string', null));
+        $gfxFinish = $this->_commonRepo->filterPostData($data, 'gfx_finish', 'boolean', $this->_commonRepo->filterPostData($existingData, 'gfxFinish', 'boolean', 0), true);
+        $videoPrep = $this->_commonRepo->filterPostData($data, 'video_prep', 'boolean', $this->_commonRepo->filterPostData($existingData, 'videoPrep', 'boolean', 0), true);
+        $specNote = $this->_commonRepo->filterPostData($data, 'spec_note', 'string', $this->_commonRepo->filterPostData($existingData, 'specNote', 'string', null), true);
         // $specSheetFile = $this->_commonRepo->filterPostData($data, 'spec_sheet_file');
-        $deliveryNote = $this->_commonRepo->filterPostData($data, 'delivery_note', 'string', $this->_commonRepo->filterPostData($existingData, 'deliveryNote', 'string', null));
-        $statusId = $this->_commonRepo->filterPostData($data, 'status_id', 'int', $this->_commonRepo->filterPostData($existingData, 'statusId', 'int', null));
-        $audioNote = $this->_commonRepo->filterPostData($data, 'audio_note', 'string', $this->_commonRepo->filterPostData($existingData, 'audioNote', 'string', null));
+        $deliveryNote = $this->_commonRepo->filterPostData($data, 'delivery_note', 'string', $this->_commonRepo->filterPostData($existingData, 'deliveryNote', 'string', null), true);
+        $statusId = $this->_commonRepo->filterPostData($data, 'status_id', 'int', $this->_commonRepo->filterPostData($existingData, 'statusId', 'int', null), true);
+        $audioNote = $this->_commonRepo->filterPostData($data, 'audio_note', 'string', $this->_commonRepo->filterPostData($existingData, 'audioNote', 'string', null), true);
 
-        $deliveryToClient = $this->_commonRepo->filterPostData($data, 'delivery_to_client', 'json', $this->_commonRepo->filterPostData($existingData, 'deliveryToClient', null, null));
-        $audio = $this->_commonRepo->filterPostData($data, 'audio', 'json', $this->_commonRepo->filterPostData($existingData, 'audio', null, null));
+        $deliveryToClient = $this->_commonRepo->filterPostData($data, 'delivery_to_client', 'json', $this->_commonRepo->filterPostData($existingData, 'deliveryToClient', null, null), true);
+        $audio = $this->_commonRepo->filterPostData($data, 'audio', 'json', $this->_commonRepo->filterPostData($existingData, 'audio', null, null), true);
         // $sentViaMethod = $this->_commonRepo->filterPostData($data, 'sent_via_method', 'json');
-        $finishOption = $this->_commonRepo->filterPostData($data, 'finish_option', 'json', $this->_commonRepo->filterPostData($existingData, 'finishOption', null, null));
+        $finishOption = $this->_commonRepo->filterPostData($data, 'finish_option', 'json', $this->_commonRepo->filterPostData($existingData, 'finishOption', null, null), true);
         $spotVersionData = $this->_commonRepo->filterPostData($data, 'spot_version', 'json', null);
-        $customerContact = $this->_commonRepo->filterPostData($data, 'customer_contact', 'json', $this->_commonRepo->filterPostData($existingData, 'customerContact', null, null));
+        $customerContact = $this->_commonRepo->filterPostData($data, 'customer_contact', 'json', $this->_commonRepo->filterPostData($existingData, 'customerContact', null, null), true);
         $specSheetFile = $this->_commonRepo->filterPostData($data, 'spec_sheet_file', 'json', null);
 
         // array to commaseparated string
-        // $sentViaMethod = $this->arrayToCommanSeparated($sentViaMethod);
-        $finishOption = is_array($finishOption)?$this->arrayToCommanSeparated($finishOption, true) : $finishOption;
-        $audio = is_array($audio) ? $this->arrayToCommanSeparated($audio) : $audio;
-        $deliveryToClient = is_array($deliveryToClient) ? $this->arrayToCommanSeparated($deliveryToClient, true) : $deliveryToClient;
-        $customerContact = is_array($customerContact) ? $this->arrayToCommanSeparated($customerContact) : $customerContact;
+        // $sentViaMethod = $this->arrayToCommaSeparated($sentViaMethod);
+        $finishOption = is_array($finishOption)?$this->arrayToCommaSeparated($finishOption, true) : $finishOption;
+        $audio = is_array($audio) ? $this->arrayToCommaSeparated($audio) : $audio;
+        $deliveryToClient = is_array($deliveryToClient) ? $this->arrayToCommaSeparated($deliveryToClient, true) : $deliveryToClient;
+        $customerContact = is_array($customerContact) ? $this->arrayToCommaSeparated($customerContact) : $customerContact;
 
         if($isUpdate && !$spotVersionData) {
             $spotVersionData = $this->_spotRepo->getRawSpotVersionDataByRequestId($requestId);
@@ -212,12 +212,11 @@ class SpotSentController extends CustomAbstractActionController
                     }
                 }
             } else if($isUpdate){
-                $existingSpecSheetFile = $this->_commonRepo->filterPostData($existingData, 'specSheetFile', 'json', null);
+                $existingSpecSheetFile = $this->_commonRepo->filterPostData($existingData, 'specSheetFile', 'json', null, true);
             }
         } catch (\Exception $e) {
             // throw some exception
         }
-
 
         if (is_array($spotVersionData)) {
             if ($isUpdate) {
@@ -271,14 +270,14 @@ class SpotSentController extends CustomAbstractActionController
                     }
 
                     if (!empty($sv['editors']) && is_array($sv['editors'])) {
-                        $sv['editors_string'] = $this->arrayToCommanSeparated($sv['editors']);
+                        $sv['editors_string'] = $this->arrayToCommaSeparated($sv['editors']);
                     }
                 }
 
                 $sv['spot_id'] = (!empty($sv['spot_id'])) ? $sv['spot_id'] : null;
                 $sv['version_id'] = (!empty($sv['version_id'])) ? $sv['version_id'] : null;
                 $sv['spot_version_id'] = (!empty($sv['spot_version_id'])) ? $sv['spot_version_id'] : null;
-                $sv['project_id'] = (!empty($sv['project_id'])) ? $sv['project_id'] : null;
+                $sv['project_id'] = (!empty($sv['project_id'])) ? $sv['project_id'] : $projectId;
                 $sv['campaign_id'] = (!empty($sv['campaign_id'])) ? $sv['campaign_id'] : null;
                 $sv['project_campaign_id'] = (!empty($sv['project_campaign_id'])) ? $sv['project_campaign_id'] : null;
                 $sv['editors_string'] = (!empty($sv['editors_string'])) ? $sv['editors_string'] : null;
@@ -293,7 +292,7 @@ class SpotSentController extends CustomAbstractActionController
                     $sentViaMethod = $this->_commonRepo->filterPostData($sv, 'sent_via_method');
                 }
 
-                $sv['sent_via_method'] = is_array($sentViaMethod) ? $this->arrayToCommanSeparated($sentViaMethod) : $sentViaMethod;
+                $sv['sent_via_method'] = is_array($sentViaMethod) ? $this->arrayToCommaSeparated($sentViaMethod) : $sentViaMethod;
             }
         }
 
@@ -459,9 +458,15 @@ class SpotSentController extends CustomAbstractActionController
                 $data['deliveryToClient'] = $this->commaSeparatedToArray($data['deliveryToClient'], true);
                 $data['audio'] = $this->commaSeparatedToArray($data['audio']);
                 $data['finishOption'] = $this->commaSeparatedToArray($data['finishOption'], true);
-                $data['customerContact'] = $this->commaSeparatedToArray($data['customerContact']);
+                // $data['customerContact'] = $this->commaSeparatedToArray($data['customerContact']);
                 $data['finishingHouseName'] = null;
+                $data['customerContact'] = array();
 
+                if(isset($data['customerContactList'])) {
+                    $data['customerContact'] = $data['customerContactList'];
+
+                    unset($data['customerContactList']);
+                }
 
                 if ((int)$data['finishingHouse']) {
                     $finishingHouse = $this->_finishingHouseRepository->find($data['finishingHouse']);
@@ -490,7 +495,7 @@ class SpotSentController extends CustomAbstractActionController
         return $data;
     }
 
-    private function arrayToCommanSeparated($arr, $isParentChild = false)
+    private function arrayToCommaSeparated($arr, $isParentChild = false)
     {
         if ($isParentChild) {
             if (is_array($arr) && count($arr) === 2 && !empty($arr['parent']) && !empty($arr['child'])) {
@@ -500,6 +505,10 @@ class SpotSentController extends CustomAbstractActionController
                 );
             }
         }
+
+        $arr = array_filter($arr, function($item) {
+            return !is_array($item);
+        });
 
         return ((is_array($arr) && count($arr)) ? implode(',', $arr) : null);
     }
@@ -585,7 +594,7 @@ class SpotSentController extends CustomAbstractActionController
             }
 
             if (!empty($sv['editors']) && is_array($sv['editors'])) {
-                $sv['editors_string'] = $this->arrayToCommanSeparated($sv['editors']);
+                $sv['editors_string'] = $this->arrayToCommaSeparated($sv['editors']);
             } else {
                 $sv['editors_string'] = null;
             }

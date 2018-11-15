@@ -4,6 +4,9 @@ namespace Application\Entity\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManager;
 use Zend\Config\Config;
+use Zend\View\Model\ViewModel;
+
+
 
 // before called Table now Repository Table Data Gateway
 // In Bug Entity add  @Entity(repositoryClass="BugRepository")
@@ -133,7 +136,7 @@ class CommonRepository extends EntityRepository
         return false;
     }
 
-    public function filterPostData($data, $key, $type = 'string', $defaultVal = null)
+    public function filterPostData($data, $key, $type = 'string', $defaultVal = null, $allowNull = false)
     {
         $type = strtolower($type);
         // $value = $defaultVal;
@@ -179,17 +182,77 @@ class CommonRepository extends EntityRepository
         }
 
         if (empty($value)) {
-            $value = $defaultVal;
+            if ($allowNull && isset($data[$key])) {
+                $value = $data[$key];
+            } else {
+                $value = $defaultVal;
+            }
         }
 
         return $value;
     }
 
-    public function convertArrayKey($data, $convertTo) {
+    public function convertArrayKey($data, $convertTo)
+    {
         $result = array();
 
-        foreach($data as $key => $row) {
+        foreach ($data as $key => $row) {
 
+        }
+    }
+
+    /**
+     * Send email using an email template
+     *
+     * @param array $data Email related info (from , to, subject etc.)
+     * @param string $templateName Email template name
+     * @param array $templateData Data from email template
+     * @return void
+     */
+    public function sendEmail($data, $templateName, $templateData)
+    {
+        try {
+
+            // $smtpOptions = new \Zend\Mail\Transport\SmtpOptions();
+            // $smtpOptions->setHost('smtp.gmail.com')
+            //     ->setConnectionClass('login')
+            //     ->setName('smtp.gmail.com')
+            //     ->setConnectionConfig(array(
+            //         'username' => 'YOUR GMAIL ADDRESS',
+            //         'password' => 'YOUR PASSWORD',
+            //         'ssl' => 'tls',
+            //     ));
+
+
+            $view       = new \Zend\View\Renderer\PhpRenderer();
+            $resolver   = new \Zend\View\Resolver\TemplateMapResolver();
+            $templateFile = __DIR__ . '/../../../../view/email/' . $templateName . '.phtml';
+
+            $view       = new \Zend\View\Renderer\PhpRenderer();
+            $resolver   = new \Zend\View\Resolver\TemplateMapResolver();
+            $resolver->setMap(array(
+                'mailTemplate' => $templateFile
+            ));
+            $view->setResolver($resolver);
+
+            $viewModel  = new ViewModel();
+            $viewModel->setTemplate('mailTemplate')->setVariables($templateData);
+
+            $bodyPart = new \Zend\Mime\Message();
+            $bodyMessage    = new \Zend\Mime\Part($view->render($viewModel));
+            $bodyMessage->type = 'text/html';
+            $bodyPart->setParts(array($bodyMessage));
+
+            $message        = new \Zend\Mail\Message();
+            $message->addFrom('noreply@buddhajones.com', 'Buddha Jones')
+                    ->addTo($data['to'])
+                    ->setSubject($data['subject'])
+                    ->setBody($bodyPart)
+                    ->setEncoding('UTF-8');
+            $transport  = new \Zend\Mail\Transport\Sendmail();
+            $transport->send($message);
+        } catch (\Exception $e) {
+            echo $e->getMessage(); exit;
         }
     }
 }

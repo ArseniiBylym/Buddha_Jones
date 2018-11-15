@@ -15,11 +15,14 @@ use Zend\I18n\Validator\DateTime;
 class CustomerRepository extends EntityRepository
 {
     private $_className = "\Application\Entity\RediCustomer";
+    private $_entityManager;
 
     public function __construct(EntityManager $entityManager)
     {
         $classMetaData = $entityManager->getClassMetadata($this->_className);
         parent::__construct($entityManager, $classMetaData);
+
+        $this->_entityManager = $entityManager;
     }
 
     public function search($offset = 0, $length = 10, $filter=array())
@@ -195,8 +198,10 @@ class CustomerRepository extends EntityRepository
         return $response;
     }
 
-    public function getDistinctStudioFirstLetter()
+    public function getDistinctStudioFirstLetter($studioIds)
     {
+        $studioIds = implode(',', $studioIds?:array(0));
+        
         $dql = "SELECT DISTINCT 
                   cfl 
                 FROM
@@ -209,7 +214,8 @@ class CustomerRepository extends EntityRepository
                       ELSE UPPER(SUBSTRING(studio_name, 1, 1)) 
                     END AS cfl 
                   FROM
-                    redi_studio) AS a 
+                    redi_studio
+                    WHERE id IN (" . $studioIds . ")) AS a 
                 ORDER BY 
                   CASE
                       WHEN cfl='Other' 
@@ -222,11 +228,7 @@ class CustomerRepository extends EntityRepository
 
         $data = $query->fetchAll();
 
-        $response = array();
-
-        foreach($data as $row) {
-            $response[] = $row['cfl'];
-        }
+        $response = array_column($data, 'cfl');
 
         return $response;
     }
@@ -274,39 +276,26 @@ class CustomerRepository extends EntityRepository
         return $data;
     }
 
-    public function getProjectCustomerContact($projectId)
+    public function getProjectCampaignCustomerContact($projectId)
     {
         $dql = "SELECT  
                     cc.id,
-                    cc.customer_id AS customerId,
                     cc.name,
-                    cc.title,
-                    cc.email,
-                    cc.mobile_phone AS mobilePhone,
-                    ptc.project_id AS projectId,
-                    GROUP_CONCAT(ptc.id) AS projectCampaignIds
+                    cc.title
                 FROM redi_customer_contact cc 
                 INNER JOIN redi_project_to_campaign_cc ptcc
                     ON cc.id = ptcc.customer_contact_id
-                INNER JOIN redi_project_to_campaign ptc
-                    ON ptc.id = ptcc.project_campaign_id
-                WHERE ptc.project_id = :project_id
+                WHERE ptc.id = :project_campaign_id
                 GROUP BY cc.id 
                 ORDER BY cc.name ASC";
 
         $query = $this->getEntityManager()->getConnection()->prepare($dql);
-        $query->bindParam('project_id', $projectId);
+        $query->bindParam('project_campaign_id', $projectId);
         $query->execute();
         $data = $query->fetchAll();
 
         foreach ($data as &$row ) {
             $row['id'] = (int)$row['id'];
-            $row['customerId'] = (int)$row['customerId'];
-            $row['projectId'] = (int)$row['projectId'];
-            $row['projectCampaignIds'] = explode(',', $row['projectCampaignIds']);
-            $row['projectCampaignIds'] = array_map(function($id) {
-                return (int)$id;
-            }, $row['projectCampaignIds']);
         }
         
         return $data;
@@ -397,18 +386,16 @@ class CustomerRepository extends EntityRepository
         $dql = "SELECT  
                   a.id AS activityId,
                   a.name AS activityName,
-                  att.typeId AS activityTypeId,
+                  a.typeId AS activityTypeId,
                   aty.activityType,
                   cp.customerId, 
                   cp.price
                 FROM \Application\Entity\RediActivity a
                 LEFT JOIN \Application\Entity\RediCustomerPrice cp
                   WITH a.id=cp.activityId 
-                LEFT JOIN \Application\Entity\RediActivityToType att 
-                  WITH att.activityId=a.id
                 INNER JOIN \Application\Entity\RediActivityType aty
-                  WITH aty.id=att.typeId
-                WHERE att.typeId IN (1,4)
+                  WITH aty.id=a.typeId
+                WHERE a.typeId IN (1,4)
                 AND (cp.customerId=:customer_id OR cp.customerId IS NULL)
                 GROUP BY a.id
                 ORDER BY a.name ASC";
@@ -567,12 +554,15 @@ class CustomerRepository extends EntityRepository
             $dqlFilter[] = " cn.completed = :completed ";
         }
 
+        if (!empty($filter['created_by'])) {
+            $dqlFilter[] = " cn.createdBy = :created_by ";
+        }
+
         if(count($dqlFilter)) {
             $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
         }
 
         $dql .= " ORDER BY cn.id ASC";
-
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setFirstResult($offset);
@@ -580,6 +570,10 @@ class CustomerRepository extends EntityRepository
 
         if (isset($filter['completed']) && $filter['completed'] !== null) {
             $query->setParameter('completed', $filter['completed']);
+        }
+
+        if (!empty($filter['created_by'])) {
+            $query->setParameter('created_by', $filter['created_by']);
         }
 
         $data = $query->getArrayResult();
@@ -599,6 +593,10 @@ class CustomerRepository extends EntityRepository
             $dqlFilter[] = " cn.completed = :completed ";
         }
 
+        if (!empty($filter['created_by'])) {
+            $dqlFilter[] = " cn.createdBy = :created_by ";
+        }
+
         if(count($dqlFilter)) {
             $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
         }
@@ -607,6 +605,10 @@ class CustomerRepository extends EntityRepository
 
         if (isset($filter['completed']) && $filter['completed'] !== null) {
             $query->setParameter('completed', $filter['completed']);
+        }
+
+        if (!empty($filter['created_by'])) {
+            $query->setParameter('created_by', $filter['created_by']);
         }
 
         $result =  $query->getArrayResult();

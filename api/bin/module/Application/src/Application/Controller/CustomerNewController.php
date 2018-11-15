@@ -21,9 +21,15 @@ class CustomerNewController extends CustomAbstractActionController
 {
   public function getList()
   {
+    $canViewCustomerNew = $this->_usersRepo->extractPermission($this->_user_permission, 33, 'view_or_edit');
+
     $filter['completed'] = $this->getRequest()->getQuery('completed', 0);
     $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
     $length = (int)trim($this->getRequest()->getQuery('length', 10));
+
+    if (!$canViewCustomerNew) {
+      $filter['created_by'] = $this->_user_id;
+    }
 
     $data = $this->_customerRepo->searchNewCustomer($filter, $offset, $length);
     $dataCount = $this->_customerRepo->searchNewCustomerCount($filter);
@@ -36,26 +42,24 @@ class CustomerNewController extends CustomAbstractActionController
       'data' => $data
     );
 
-    if ($response['status'] == 0) {
-      $this->getResponse()->setStatusCode(400);
-    }
-
     return new JsonModel($response);
   }
 
   public function get($id)
   {
+    $canViewCustomerNew = $this->_usersRepo->extractPermission($this->_user_permission, 33, 'view_or_edit');
+
     $data = $this->getSingle($id);
+
+    if (!$canViewCustomerNew && $data['created_by'] != $this->_user_id) {
+      $data = array();
+    }
 
     $response = array(
       'status' => 1,
       'message' => 'Request successful',
       'data' => $data
     );
-
-    if ($response['status'] == 0) {
-      $this->getResponse()->setStatusCode(400);
-    }
 
     return new JsonModel($response);
   }
@@ -130,6 +134,8 @@ class CustomerNewController extends CustomAbstractActionController
 
   public function update($id, $data)
   {
+    $canEditCustomerNew = $this->_usersRepo->extractPermission($this->_user_permission, 33, 'edit');
+
     $studioId = $this->_commonRepo->filterPostData($data, 'studio_id', 'int');
     $name = $this->_commonRepo->filterPostData($data, 'name', 'string');
     $street = $this->_commonRepo->filterPostData($data, 'street', 'string');
@@ -146,74 +152,81 @@ class CustomerNewController extends CustomAbstractActionController
     $customerNew = $this->_customerNewRepository->find($id);
 
     if ($customerNew) {
-      $now = new \DateTime('now');
+      if ($canEditCustomerNew || $customerNew->getCreatedBy() == $this->_user_id) {
+        $now = new \DateTime('now');
 
-      if ($studioId !== null) {
-        $studio = $this->_studioRepository->find($studioId);
+        if ($studioId !== null) {
+          $studio = $this->_studioRepository->find($studioId);
 
-        if ($studio) {
-          $customerNew->setStudioId($studioId);
-          $customerNew->setStudioName($studio->getStudioName());
+          if ($studio) {
+            $customerNew->setStudioId($studioId);
+            $customerNew->setStudioName($studio->getStudioName());
+          }
         }
+
+        if ($name !== null) {
+          $customerNew->setName($name);
+        }
+
+        if ($street !== null) {
+          $customerNew->setStreet($street);
+        }
+
+        if ($street !== null) {
+          $customerNew->setCity($city);
+        }
+
+        if ($street !== null) {
+          $customerNew->setState($state);
+        }
+
+        if ($street !== null) {
+          $customerNew->setZip($zip);
+        }
+
+        if ($street !== null) {
+          $customerNew->setEmail($email);
+        }
+
+        if ($street !== null) {
+          $customerNew->setPhone($phone);
+        }
+
+        if ($street !== null) {
+          $customerNew->setBillingContact($billingContact);
+        }
+
+        if ($street !== null) {
+          $customerNew->setBillingEmail($billingEmail);
+        }
+
+        if ($street !== null) {
+          $customerNew->setBillingPhone($billingPhone);
+        }
+
+        if ($completed !== null && $canEditCustomerNew) {
+          $customerNew->setCompleted($completed);
+        }
+
+        $customerNew->setUpdatedBy($this->_user_id);
+        $customerNew->setUpdatedAt($now);
+
+        $this->_em->persist($customerNew);
+        $this->_em->flush();
+
+        $data = $this->getSingle($customerNew->getId());
+
+        $response = array(
+          'status' => 1,
+          'message' => 'Request successful.',
+          'data' => $data,
+        );
+      } else {
+        $response = array(
+          'status' => 0,
+          'message' => 'Access denied.'
+        );
       }
-
-      if ($name !== null) {
-        $customerNew->setName($name);
-      }
-
-      if ($street !== null) {
-        $customerNew->setStreet($street);
-      }
-
-      if ($street !== null) {
-        $customerNew->setCity($city);
-      }
-
-      if ($street !== null) {
-        $customerNew->setState($state);
-      }
-
-      if ($street !== null) {
-        $customerNew->setZip($zip);
-      }
-
-      if ($street !== null) {
-        $customerNew->setEmail($email);
-      }
-
-      if ($street !== null) {
-        $customerNew->setPhone($phone);
-      }
-
-      if ($street !== null) {
-        $customerNew->setBillingContact($billingContact);
-      }
-
-      if ($street !== null) {
-        $customerNew->setBillingEmail($billingEmail);
-      }
-
-      if ($street !== null) {
-        $customerNew->setBillingPhone($billingPhone);
-      }
-
-      if ($completed !== null) {
-        $customerNew->setCompleted($completed);
-      }
-
-      $customerNew->setUpdatedBy($this->_user_id);
-      $customerNew->setUpdatedAt($now);
-
-      $this->_em->persist($customerNew);
-      $this->_em->flush();
-
-      $data = $this->getSingle($customerNew->getId());
-
-      $response = array(
-        'status' => 1,
-        'message' => 'Request successful.',
-        'data' => $data,
-      );
     } else {
       $response = array(
         'status' => 0,
@@ -230,11 +243,14 @@ class CustomerNewController extends CustomAbstractActionController
 
   public function delete($id)
   {
+    $canEditCustomerNew = $this->_usersRepo->extractPermission($this->_user_permission, 33, 'edit');
     $customerNew = $this->_customerNewRepository->find($id);
 
     if ($customerNew) {
-      $this->_em->remove($customerNew);
-      $this->_em->flush();
+      if ($canEditCustomerNew || $customerNew->getCreatedBy() == $this->_user_id) {
+        $this->_em->remove($customerNew);
+        $this->_em->flush();
+      }
 
       $response = array(
         'status' => 1,

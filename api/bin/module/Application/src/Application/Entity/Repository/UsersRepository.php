@@ -15,11 +15,14 @@ use Zend\Form\Annotation\Type;
 class UsersRepository extends EntityRepository
 {
     private $_className = "\Application\Entity\RediUser";
-    private $_billingUserIds = array(5, 24, 100);
+    private $_billingUserTypeIds = array(5, 24, 100);
+    private $_musicUserTypeIds = array(18, 19);
+    private $_writerUserTypeIds = array(26);
     private $_config;
 
-    public function __construct(EntityManager $entityManager) {
-        $this->_config = $config = new \Zend\Config\Config( include getcwd() . '/config/autoload/global.php' ); 
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->_config = $config = new \Zend\Config\Config(include getcwd() . '/config/autoload/global.php');
 
         $classMetaData = $entityManager->getClassMetadata($this->_className);
         parent::__construct($entityManager, $classMetaData);
@@ -31,11 +34,11 @@ class UsersRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         return $query->getArrayResult();
     }
-    public function search($search='', $ids=[], $class=[], $type=[], $offset = 0, $length = 10, $userAccess = array())
+    public function search($search = '', $ids = [], $class = [], $type = [], $offset = 0, $length = 10, $userAccess = array())
     {
         $selectColumn = ' a.id ';
 
-        if($userAccess['can_access_basic_data']) {
+        if ($userAccess['can_access_basic_data']) {
             $selectColumn = " a.id, a.username, a.firstName as first_name, a.lastName as last_name,
                             a.nickName as nick_name,
                             a.image, a.email,
@@ -44,7 +47,7 @@ class UsersRepository extends EntityRepository
                             a.status ";
         }
 
-        if($userAccess['can_access_extra_data']) {
+        if ($userAccess['can_access_extra_data']) {
             $selectColumn = " a.id, a.username, a.firstName as first_name, a.lastName as last_name,
                             a.nickName as nick_name,
                             a.image, a.email,
@@ -80,8 +83,8 @@ class UsersRepository extends EntityRepository
             $dqlFilter[] = " a.typeId IN (:type) ";
         }
 
-        if(count($dqlFilter)) {
-            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $dql .= " GROUP BY a.id
@@ -91,21 +94,21 @@ class UsersRepository extends EntityRepository
         $query->setFirstResult($offset);
         $query->setMaxResults($length);
 
-        if(count($class)) {
+        if (count($class)) {
             $query->setParameter('class', $class, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
         }
 
-        if(count($type)) {
+        if (count($type)) {
             $query->setParameter('type', $type, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
         }
 
-        if(count($ids)) {
+        if (count($ids)) {
             $query->setParameter('ids', $ids, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
         }
 
         $data = $query->getArrayResult();
 
-        foreach($data as &$row) {
+        foreach ($data as &$row) {
             $row['full_name'] = trim(implode(' ', array($row['first_name'], $row['last_name'])));
         }
 
@@ -113,11 +116,11 @@ class UsersRepository extends EntityRepository
     }
 
     // new search function. remove previous one if not required
-    public function searchUser($search='', $ids=[], $class=[], $type=[], $offset = 0, $length = 10, $userAccess = array())
+    public function searchUser($search = '', $ids = [], $class = [], $type = [], $offset = 0, $length = 10, $userAccess = array())
     {
         $selectColumn = ' a.id ';
 
-        if($userAccess['can_access_basic_data']) {
+        if ($userAccess['can_access_basic_data']) {
             $selectColumn = " a.id, a.username, a.firstName, a.lastName,
                             a.nickName,
                             a.image, a.email,
@@ -126,7 +129,7 @@ class UsersRepository extends EntityRepository
                             a.status ";
         }
 
-        if($userAccess['can_access_extra_data']) {
+        if ($userAccess['can_access_extra_data']) {
             $selectColumn = " a.id, a.username, 
                             a.firstName, a.lastName, a.nickName,
                             a.image, a.email,
@@ -162,8 +165,8 @@ class UsersRepository extends EntityRepository
             $dqlFilter[] = " a.typeId IN (:type) ";
         }
 
-        if(count($dqlFilter)) {
-            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $dql .= " GROUP BY a.id
@@ -173,21 +176,21 @@ class UsersRepository extends EntityRepository
         $query->setFirstResult($offset);
         $query->setMaxResults($length);
 
-        if(count($class)) {
+        if (count($class)) {
             $query->setParameter('class', $class, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
         }
 
-        if(count($type)) {
+        if (count($type)) {
             $query->setParameter('type', $type, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
         }
 
-        if(count($ids)) {
+        if (count($ids)) {
             $query->setParameter('ids', $ids, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
         }
 
         $data = $query->getArrayResult();
 
-        foreach($data as &$row) {
+        foreach ($data as &$row) {
             $row['fullName'] = trim(implode(' ', array($row['firstName'], $row['lastName'])));
         }
 
@@ -205,7 +208,7 @@ class UsersRepository extends EntityRepository
                         a.lastLoginDate, a.createdDate,
                         a.status ";
 
-        if(!empty($userAccess['can_access_extra_data'])) {
+        if (!empty($userAccess['can_access_extra_data'])) {
             $selectColumn .= " , a.salaryType, a.salaryAmount, 
                             a.minHour, a.hourlyRate ";
         }
@@ -219,14 +222,14 @@ class UsersRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('user_id', $userId);
         $query->setMaxResults(1);
-        $user =  $query->getArrayResult();
+        $user = $query->getArrayResult();
 
-        if(isset($user[0])) {
+        if (isset($user[0])) {
             $response = $user[0];
 
             $response['fullName'] = trim(implode(' ', array($response['firstName'], $response['lastName'])));
 
-            if(!empty($response['image'])) {
+            if (!empty($response['image'])) {
                 $response['image'] = $imageUrl . $response['image'];
             }
         } else {
@@ -242,7 +245,7 @@ class UsersRepository extends EntityRepository
 
         $selectColumn = ' a.id ';
 
-        if($userAccess['can_access_basic_data']) {
+        if ($userAccess['can_access_basic_data']) {
             $selectColumn = " a.id, a.username, 
                             a.firstName, a.lastName, a.nickName,
                             a.image, a.email,
@@ -251,7 +254,7 @@ class UsersRepository extends EntityRepository
                             a.status ";
         }
 
-        if($userAccess['can_access_extra_data']) {
+        if ($userAccess['can_access_extra_data']) {
             $selectColumn = " a.id, a.username, 
                             a.firstName, a.lastName, a.nickName,
                             a.image, a.email,
@@ -272,9 +275,9 @@ class UsersRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('user_id', $userId);
         $query->setMaxResults(1);
-        $user =  $query->getArrayResult();
+        $user = $query->getArrayResult();
 
-        if(isset($user[0])) {
+        if (isset($user[0])) {
             $response = $user[0];
 
             $response['fullName'] = trim(implode(' ', array($response['firstName'], $response['lastName'])));
@@ -296,7 +299,7 @@ class UsersRepository extends EntityRepository
         $query->setParameter('id', $ids, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
         $result = $query->getArrayResult();
 
-        foreach($result as &$row) {
+        foreach ($result as &$row) {
             $row['name'] = trim($row['firstName'] . " " . $row['lastName']);
 
             unset($row['firstName']);
@@ -306,7 +309,7 @@ class UsersRepository extends EntityRepository
         return $result;
     }
 
-    public function searchCount($search='', $ids=[], $class=[], $type=[])
+    public function searchCount($search = '', $ids = [], $class = [], $type = [])
     {
         $dql = "SELECT COUNT(DISTINCT a.id) AS total_count
                 FROM \Application\Entity\RediUser a
@@ -331,21 +334,21 @@ class UsersRepository extends EntityRepository
             $dqlFilter[] = " a.id IN (:ids) ";
         }
 
-        if(count($dqlFilter)) {
-            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $query = $this->getEntityManager()->createQuery($dql);
 
-        if(count($class)) {
+        if (count($class)) {
             $query->setParameter('class', $class, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
         }
 
-        if(count($type)) {
+        if (count($type)) {
             $query->setParameter('type', $type, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
         }
 
-        if(count($ids)) {
+        if (count($ids)) {
             $query->setParameter('ids', $ids, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
         }
 
@@ -355,7 +358,7 @@ class UsersRepository extends EntityRepository
     }
 
 
-    public function searchStaff($search='', $offset = 0, $length = 10)
+    public function searchStaff($search = '', $offset = 0, $length = 10)
     {
         $dql = "SELECT a
                 FROM \Application\Entity\RediStaff a";
@@ -366,8 +369,8 @@ class UsersRepository extends EntityRepository
             $dqlFilter[] = " (a.name LIKE '%" . $search . "%') ";
         }
 
-        if(count($dqlFilter)) {
-            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $dql .= " ORDER BY a.name ASC";
@@ -377,7 +380,7 @@ class UsersRepository extends EntityRepository
         $query->setMaxResults($length);
         $data = $query->getArrayResult();
 
-        foreach($data as &$row) {
+        foreach ($data as &$row) {
             $row['rate'] = (float)$row['rate'];
             $row['minHour'] = (int)$row['minHour'];
         }
@@ -393,9 +396,9 @@ class UsersRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('staff_id', $staffId);
         $query->setMaxResults(1);
-        $staff =  $query->getArrayResult();
+        $staff = $query->getArrayResult();
 
-        if(isset($staff[0])) {
+        if (isset($staff[0])) {
             $response = $staff[0];
             $response['rate'] = (float)$response['rate'];
             $response['minHour'] = (int)$response['minHour'];
@@ -406,7 +409,7 @@ class UsersRepository extends EntityRepository
         return $response;
     }
 
-    public function searchStaffCount($search='')
+    public function searchStaffCount($search = '')
     {
         $dql = "SELECT COUNT(a.id) AS total_count
                 FROM \Application\Entity\RediStaff a";
@@ -417,8 +420,8 @@ class UsersRepository extends EntityRepository
             $dqlFilter[] = " (a.name LIKE '%" . $search . "%') ";
         }
 
-        if(count($dqlFilter)) {
-            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -428,7 +431,8 @@ class UsersRepository extends EntityRepository
         return (int)$result[0]['total_count'];
     }
 
-    public function getUserPermission($userTypeId, $setKey = false) {
+    public function getUserPermission($userTypeId, $setKey = false)
+    {
         $dql = "select
                     pp.id,
                     pp.key,
@@ -451,10 +455,10 @@ class UsersRepository extends EntityRepository
             $row['canEdit'] = (!empty($row['canEdit'])) ? true : false;
         }
 
-        if($setKey) {
+        if ($setKey) {
             $data = array();
 
-            foreach($result as $row2) {
+            foreach ($result as $row2) {
                 $data[$row2['id']] = $row2;
             }
 
@@ -464,24 +468,34 @@ class UsersRepository extends EntityRepository
         return $result;
     }
 
-    public function extractPermission($permissionArray, $permissionId, $options) {
-        $selectedPermission = !empty($permissionArray[$permissionId])?$permissionArray[$permissionId]:null;
+    public function extractPermission($permissionArray, $permissionId, $options)
+    {
+        $selectedPermission = !empty($permissionArray[$permissionId]) ? $permissionArray[$permissionId] : null;
 
-        if(!$selectedPermission) {
+        if (!$selectedPermission) {
             return false;
         }
 
         switch ($options) {
-            case 'view': return (bool)($selectedPermission['canView']); break;
-            case 'edit': return (bool)($selectedPermission['canEdit']); break;
-            case 'view_or_edit': return (bool)($selectedPermission['canView'] || $selectedPermission['canEdit']); break;
-            case 'view_and_edit': return (bool)($selectedPermission['canView'] && $selectedPermission['canEdit']); break;
+            case 'view':
+                return (bool)($selectedPermission['canView']);
+                break;
+            case 'edit':
+                return (bool)($selectedPermission['canEdit']);
+                break;
+            case 'view_or_edit':
+                return (bool)($selectedPermission['canView'] || $selectedPermission['canEdit']);
+                break;
+            case 'view_and_edit':
+                return (bool)($selectedPermission['canView'] && $selectedPermission['canEdit']);
+                break;
         }
 
         return false;
     }
 
-    public function getPageAccessOfUser($userTypeId) {
+    public function getPageAccessOfUser($userTypeId)
+    {
         return array(
             'project-board' => $this->getUserProjectBoardAccess($userTypeId),
             'project-create' => $this->getUserProjectCreateAccess($userTypeId),
@@ -491,22 +505,33 @@ class UsersRepository extends EntityRepository
             'project-board-permission' => $this->getProjectBoardPermissionAccess($userTypeId),
             'producer-spot-sent-list' => true,
             'producer-spot-sent-form' => true,
+            'new-customer-approval' => $this->getNewCustomerApproval($userTypeId),
         );
     }
 
-    public function getUserTimeCardAccess($userTypeId) {
-        $response = (bool) ($userTypeId == 100);
+    public function getNewCustomerApproval($userTypeId) {
+        $userPermission = $this->getUserPermission($userTypeId, true);
+        $canEditCustomerNew = $this->extractPermission($userPermission, 33, 'view_or_edit');
+        
+        return (bool)$canEditCustomerNew;
+    }
+
+    public function getUserTimeCardAccess($userTypeId)
+    {
+        $response = (bool)($userTypeId == 100);
 
         return $response;
     }
 
-    public function getProjectBoardPermissionAccess($userTypeId) {
-        $response = (bool) ($userTypeId == 100);
+    public function getProjectBoardPermissionAccess($userTypeId)
+    {
+        $response = (bool)($userTypeId == 100);
 
         return $response;
     }
 
-    public function getUserProjectBoardAccess($userTypeId) {
+    public function getUserProjectBoardAccess($userTypeId)
+    {
         $dql = "SELECT
                     COUNT(utpp.userTypeId) AS totalCount
                 FROM
@@ -520,14 +545,15 @@ class UsersRepository extends EntityRepository
 
         $response = false;
 
-        if(!empty($result[0]['totalCount']) && $result[0]['totalCount']>0) {
+        if (!empty($result[0]['totalCount']) && $result[0]['totalCount'] > 0) {
             $response = true;
         }
 
         return $response;
     }
 
-    public function getUserProjectCreateAccess($userTypeId) {
+    public function getUserProjectCreateAccess($userTypeId)
+    {
         $dql = "SELECT
                     COUNT(utpp.userTypeId) AS totalCount
                 FROM
@@ -543,14 +569,15 @@ class UsersRepository extends EntityRepository
 
         $response = false;
 
-        if(!empty($result[0]['totalCount']) && $result[0]['totalCount']>0) {
+        if (!empty($result[0]['totalCount']) && $result[0]['totalCount'] > 0) {
             $response = true;
         }
 
         return $response;
     }
 
-    public function getUserTimeEntryAccess($userTypeId) {
+    public function getUserTimeEntryAccess($userTypeId)
+    {
         $dql = "SELECT
                     COUNT(uttep.id) AS totalCount
                 FROM
@@ -564,14 +591,21 @@ class UsersRepository extends EntityRepository
 
         $response = true;
 
-        if(!empty($result[0]['totalCount']) && $result[0]['totalCount']>0) {
+        if (!empty($result[0]['totalCount']) && $result[0]['totalCount'] > 0) {
             $response = false;
         }
 
         return $response;
     }
 
-    public function getUserAccessPermission($userTypeId) {
+    /**
+     * Get list of all permission of a user type
+     *
+     * @param int $userTypeId User type id
+     * @return array
+     */
+    public function getUserAccessPermission($userTypeId)
+    {
         $dql = "SELECT
                     ua
                 FROM
@@ -585,15 +619,16 @@ class UsersRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         $response = array(
-            'can_access_basic_data' => (bool) (isset($result[0]['canAccessBasicData'])?$result[0]['canAccessBasicData']:false),
-            'can_access_extra_data' => (bool) (isset($result[0]['canAccessExtraData'])?$result[0]['canAccessExtraData']:false),
-            'can_edit' => (bool) (isset($result[0]['canAccessExtraData'])?$result[0]['canAccessExtraData']:false),
+            'can_access_basic_data' => (bool)(isset($result[0]['canAccessBasicData']) ? $result[0]['canAccessBasicData'] : false),
+            'can_access_extra_data' => (bool)(isset($result[0]['canAccessExtraData']) ? $result[0]['canAccessExtraData'] : false),
+            'can_edit' => (bool)(isset($result[0]['canAccessExtraData']) ? $result[0]['canAccessExtraData'] : false),
         );
 
         return $response;
     }
 
-    public function getUserToApproveTimeEntry($approverUserTypeId) {
+    public function getUserToApproveTimeEntry($approverUserTypeId)
+    {
         $dql = "SELECT
                     uttap.submittingUserTypeId
                 FROM
@@ -610,7 +645,8 @@ class UsersRepository extends EntityRepository
         return $response;
     }
 
-    public function searchProjectPermission() {
+    public function searchProjectPermission()
+    {
         $dql = "SELECT
                     pp
                 FROM
@@ -622,7 +658,8 @@ class UsersRepository extends EntityRepository
         return $result;
     }
 
-    public function getUserTypeProjectPermission($userTypeId) {
+    public function getUserTypeProjectPermission($userTypeId)
+    {
         $dql = "select
                     " . $userTypeId . " AS userTypeId,
                     pp.id AS projectPermissionId,
@@ -652,7 +689,8 @@ class UsersRepository extends EntityRepository
         return $result;
     }
 
-    public function isBillingUser($userId) {
+    public function isBillingUser($userId)
+    {
         $dql = "SELECT 
                 u.typeId
                 FROM \Application\Entity\RediUser u
@@ -662,13 +700,42 @@ class UsersRepository extends EntityRepository
         $query->setMaxResults(1);
         $result = $query->getArrayResult();
 
-        if(empty($result[0]['typeId'])) {
+        if (empty($result[0]['typeId'])) {
             return false;
         }
 
         $userTypeId = (int)$result[0]['typeId'];
 
-        return in_array($userTypeId, $this->_billingUserIds);
+        return in_array($userTypeId, $this->_billingUserTypeIds);
+    }
+
+    public function getUserByTypeName($typeName)
+    {
+        switch ($typeName) {
+            case 'music':
+                $typeIds = $this->_musicUserTypeIds;
+                break;
+            case 'writer':
+                $typeIds = $this->_writerUserTypeIds;
+                break;
+            default:
+                $typeIds = null;
+        }
+
+        if ($typeIds) {
+            $dql = "SELECT 
+                u
+                FROM \Application\Entity\RediUser u
+                WHERE u.typeId IN (:type_id)";
+
+            $query = $this->getEntityManager()->createQuery($dql);
+            $query->setParameter('type_id', $typeIds, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+            $result = $query->getArrayResult();
+
+            return $result;
+        }
+
+        return array();
     }
 
 }

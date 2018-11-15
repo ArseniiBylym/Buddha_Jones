@@ -122,6 +122,10 @@ return array(
                 $entityManager = $serviceManager->get('Doctrine\ORM\EntityManager');
                 return new \Application\Entity\Repository\VersionRepository($entityManager);
             },
+            'Application\Entity\Repository\NotificationRepository' => function ($serviceManager) {
+                $entityManager = $serviceManager->get('Doctrine\ORM\EntityManager');
+                return new \Application\Entity\Repository\NotificationRepository($entityManager);
+            },
         ),
     ),
 //    'translator' => array(
@@ -171,6 +175,7 @@ return array(
             'Application\Controller\Login'                                          => 'Application\Controller\LoginController',
             'Application\Controller\LoginRefresh'                                   => 'Application\Controller\LoginRefreshController',
             'Application\Controller\Logout'                                         => 'Application\Controller\LogoutController',
+            'Application\Controller\Notification'                                   => 'Application\Controller\NotificationController',
             'Application\Controller\OutsideCost'                                    => 'Application\Controller\OutsideCostController',
             'Application\Controller\PasswordReset'                                  => 'Application\Controller\PasswordResetController',
             'Application\Controller\Project'                                        => 'Application\Controller\ProjectController',
@@ -180,7 +185,7 @@ return array(
             'Application\Controller\ProjectCampaignBillingUser'                     => 'Application\Controller\ProjectCampaignBillingUserController',
             'Application\Controller\ProjectCampaignEditor'                          => 'Application\Controller\ProjectCampaignEditorController',
             'Application\Controller\ProjectCampaignDesigner'                        => 'Application\Controller\ProjectCampaignDesignerController',
-            'Application\Controller\ProjectCustomerContact'                         => 'Application\Controller\ProjectCustomerContactController',
+            'Application\Controller\ProjectCampaignCustomerContact'                 => 'Application\Controller\ProjectCampaignCustomerContactController',
             'Application\Controller\ProjectPermission'                              => 'Application\Controller\ProjectPermissionController',
             'Application\Controller\Search'                                         => 'Application\Controller\SearchController',
             'Application\Controller\Spot'                                           => 'Application\Controller\SpotController',
@@ -197,6 +202,7 @@ return array(
             'Application\Controller\TimeEntryApprove'                               => 'Application\Controller\TimeEntryApproveController',
             'Application\Controller\TimeApprovalPermission'                         => 'Application\Controller\TimeApprovalPermissionController',
             'Application\Controller\TimeEntryPermission'                            => 'Application\Controller\TimeEntryPermissionController',
+            'Application\Controller\Trt'                                            => 'Application\Controller\TrtController',
             'Application\Controller\User'                                           => 'Application\Controller\UserController',
             'Application\Controller\Users'                                          => 'Application\Controller\UsersController',
             'Application\Controller\UserProjectPermissions'                         => 'Application\Controller\UserProjectPermissionsController',

@@ -90,7 +90,6 @@ class AssignCustomerContactToProjectCampaignController extends CustomAbstractAct
             if ($existingProjectCampaign) {
                 $checkCustomerContactToProjectCampaign = $this->_projectToCamapignCC->findOneBy(array('customerContactId' => $contactId, 'projectCampaignId' => $existingProjectCampaign->getId()));
 
-
                 if ($checkCustomerContactToProjectCampaign) {
                     $this->_em->remove($checkCustomerContactToProjectCampaign);
                     $this->_em->flush();

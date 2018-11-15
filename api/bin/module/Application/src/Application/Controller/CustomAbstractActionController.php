@@ -34,7 +34,6 @@ class CustomAbstractActionController extends AbstractRestfulController
 
     protected $_userRepository;
     protected $_activityRepository;
-    protected $_activityToTypeRepository;
     protected $_activityToUserTypeRepository;
     protected $_billingRepository;
     protected $_billingApprovalRepository;
@@ -98,6 +97,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_customerRepo;
     protected $_estimateRepo;
     protected $_graphicsRequestRepo;
+    protected $_notificationRepo;
     protected $_projectRepo;
     protected $_projectCampaignRepo;
     protected $_spotRepo;
@@ -123,7 +123,6 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_billingRepository = $this->_em->getRepository('Application\Entity\RediBilling');
         $this->_billingApprovalRepository = $this->_em->getRepository('Application\Entity\RediBillingApproval');
         $this->_activityRepository = $this->_em->getRepository('Application\Entity\RediActivity');
-        $this->_activityToTypeRepository = $this->_em->getRepository('Application\Entity\RediActivityToType');
         $this->_activityToUserTypeRepository = $this->_em->getRepository('Application\Entity\RediActivityToUserType');
         $this->_campaignRepository = $this->_em->getRepository('Application\Entity\RediCampaign');
         $this->_commentRepository = $this->_em->getRepository('Application\Entity\RediComment');
@@ -186,6 +185,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_customerRepo = $this->getServiceLocator()->get('Application\Entity\Repository\CustomerRepository');
         $this->_estimateRepo = $this->getServiceLocator()->get('Application\Entity\Repository\EstimateRepository');
         $this->_graphicsRequestRepo = $this->getServiceLocator()->get('Application\Entity\Repository\GraphicsRequestRepository');
+        $this->_notificationRepo = $this->getServiceLocator()->get('Application\Entity\Repository\NotificationRepository');
         $this->_projectRepo = $this->getServiceLocator()->get('Application\Entity\Repository\ProjectRepository');
         $this->_projectCampaignRepo = $this->getServiceLocator()->get('Application\Entity\Repository\ProjectCampaignRepository');
         $this->_spotRepo = $this->getServiceLocator()->get('Application\Entity\Repository\SpotRepository');
