@@ -511,7 +511,7 @@ class UsersRepository extends EntityRepository
 
     public function getNewCustomerApproval($userTypeId) {
         $userPermission = $this->getUserPermission($userTypeId, true);
-        $canEditCustomerNew = $this->extractPermission($userPermission, 33, 'can_view_edit');
+        $canEditCustomerNew = $this->extractPermission($userPermission, 33, 'view_or_edit');
         
         return (bool)$canEditCustomerNew;
     }
