@@ -69,6 +69,7 @@ interface Props {
         minWidth?: number;
         maxWidth?: number;
     }>;
+    obClearButtonClick?: () => void;
 }
 
 declare type ComponentProps = Props & AppOnlyStoreState;
@@ -91,6 +92,7 @@ export class ProjectPicker extends React.Component<ComponentProps, {}> {
             readOnly: false,
             value: null,
             headerElements: [],
+            obClearButtonClick: () => undefined
         };
     }
 
@@ -559,6 +561,10 @@ export class ProjectPicker extends React.Component<ComponentProps, {}> {
 
     private handleClearingSelectedValues = () => {
         this.clearSelectedValues();
+
+        if (this.props.obClearButtonClick) {
+            this.props.obClearButtonClick();
+        }
     };
 
     @action

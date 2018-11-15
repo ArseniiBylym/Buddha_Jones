@@ -44,10 +44,17 @@ type ComponentProps = Props & AppOnlyStoreState;
 @inject('store')
 @observer
 export class TimeEntryContent extends React.Component<ComponentProps, {}> {
+    private realTimeValidation: boolean = false;
     private activityDropdown: DropdownContainer | null = null;
 
     @observable
     private submittingStatus: SubmittingStatus;
+
+    public componentDidUpdate() {
+        if (this.realTimeValidation) {
+            this.isFormInvalid();
+        }
+    }
 
     @computed
     private get submitLabel(): string {
@@ -123,6 +130,7 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                     forUserId={this.props.forUser ? this.props.forUser.id : 0}
                     requiredSelection={this.getProjectPickerRequiredSelection()}
                     value={this.props.store.timeEntry.values ? this.props.store.timeEntry.values.projectPicked : null}
+                    obClearButtonClick={this.onClearFormHandler}
                 />
 
                 {this.getActivitySection()}
@@ -143,6 +151,11 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
             </div>
         );
     }
+
+    private onClearFormHandler = (): void => {
+        TimeEntryActions.cleanTimeEntryValueActivityId();
+        this.realTimeValidation = false;
+    };
 
     private getFilesWorkOnSection(): JSX.Element | null {
         if (!this.props.store) {
@@ -365,7 +378,7 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                             {user.data && (
                                 <>
                                     <br/>
-                                    
+
                                     {'Please consult administrator to get access to activities for your user type:'}
                                     <strong>
                                         {'#' + this.props.forUser.typeId + ' - ' + this.props.forUser.typeName}
@@ -454,97 +467,116 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
     };
 
     @action
+    private isFormInvalid(): boolean {
+        if (!this.props.store) {
+            this.submittingStatus = SubmittingStatus.error;
+            return true;
+        }
+
+        const { timeEntry } = this.props.store;
+
+        // Date and time are required
+        if (timeEntry.values === null) {
+            this.submittingStatus = SubmittingStatus.errorDateTimeRequired;
+            return true;
+        }
+
+        // Minimum duration is required
+        if (timeEntry.durationInMinutes < timeEntry.durationIncrements) {
+            this.submittingStatus = SubmittingStatus.errorMinimumDurationRequired;
+            return true;
+        }
+
+        // Activity type is required
+        if (timeEntry.selectedActivity === null) {
+            this.submittingStatus = SubmittingStatus.errorActivityRequired;
+            return true;
+        }
+
+        // For some activities description is required
+        if (
+            timeEntry.selectedActivity.isDescriptionRequired &&
+            (timeEntry.values.description === null || timeEntry.values.description.trim().length <= 0)
+        ) {
+            this.submittingStatus = SubmittingStatus.errorDescriptionRequired;
+            return true;
+        }
+
+        // For some activities project is required
+        if (
+            timeEntry.selectedActivity.isProjectCampaignRequired &&
+            (timeEntry.values.projectPicked === null ||
+                timeEntry.values.projectPicked.project === null ||
+                timeEntry.values.projectPicked.projectCampaign === null)
+        ) {
+            this.submittingStatus = SubmittingStatus.errorProjectRequired;
+            return true;
+        }
+
+        // For some activities version is required
+        if (
+            timeEntry.selectedActivity.isSpotVersionRequired &&
+            (timeEntry.values.projectPicked === null ||
+                timeEntry.values.projectPicked.project === null ||
+                timeEntry.values.projectPicked.projectCampaign === null ||
+                timeEntry.values.projectPicked.spot === null ||
+                timeEntry.values.projectPicked.version === null)
+        ) {
+            this.submittingStatus = SubmittingStatus.errorVersionRequired;
+            return true;
+        }
+
+        // For some activities files are required
+        if (timeEntry.selectedActivity.areFilesRequired && timeEntry.values.files.length <= 0) {
+            this.submittingStatus = SubmittingStatus.errorFilesRequired;
+            return true;
+        }
+
+        // Check if included files' work time is the same as time entry time
+        if (timeEntry.values.files.length > 0) {
+            const minutesSum = timeEntry.values.files.reduce((sum: number, file) => {
+                if (file.durationInMinutes) {
+                    sum += file.durationInMinutes;
+                }
+
+                return sum;
+            }, 0);
+
+            if (minutesSum !== timeEntry.durationInMinutes) {
+                this.submittingStatus = SubmittingStatus.errorFilesDurationWrong;
+                return true;
+            }
+
+            const fileNameMissing = timeEntry.values.files.find(file => file.filename.trim() === '');
+            if (fileNameMissing) {
+                this.submittingStatus = SubmittingStatus.errorFilesNamesRequired;
+                return true;
+            }
+        }
+
+        this.realTimeValidation = false;
+        this.submittingStatus = SubmittingStatus.none;
+
+        return false;
+    }
+
+    @action
     private handleTimeEntrySubmit = async () => {
         try {
             if (!this.props.store) {
                 this.submittingStatus = SubmittingStatus.error;
                 return;
             }
-
-            const { timeEntry } = this.props.store;
-
-            this.submittingStatus = SubmittingStatus.saving;
-
-            // Date and time are required
-            if (timeEntry.values === null) {
-                this.submittingStatus = SubmittingStatus.errorDateTimeRequired;
+            
+            if (this.isFormInvalid()) {
+                this.realTimeValidation = true;
                 return;
             }
 
-            // Minimum duration is required
-            if (timeEntry.durationInMinutes < timeEntry.durationIncrements) {
-                this.submittingStatus = SubmittingStatus.errorMinimumDurationRequired;
-                return;
-            }
-
-            // Activity type is required
-            if (timeEntry.selectedActivity === null) {
-                this.submittingStatus = SubmittingStatus.errorActivityRequired;
-                return;
-            }
-
-            // For some activities description is required
-            if (
-                timeEntry.selectedActivity.isDescriptionRequired &&
-                (timeEntry.values.description === null || timeEntry.values.description.trim().length <= 0)
-            ) {
-                this.submittingStatus = SubmittingStatus.errorDescriptionRequired;
-                return;
-            }
-
-            // For some activities project is required
-            if (
-                timeEntry.selectedActivity.isProjectCampaignRequired &&
-                (timeEntry.values.projectPicked === null ||
-                    timeEntry.values.projectPicked.project === null ||
-                    timeEntry.values.projectPicked.projectCampaign === null)
-            ) {
-                this.submittingStatus = SubmittingStatus.errorProjectRequired;
-                return;
-            }
-
-            // For some activities version is required
-            if (
-                timeEntry.selectedActivity.isSpotVersionRequired &&
-                (timeEntry.values.projectPicked === null ||
-                    timeEntry.values.projectPicked.project === null ||
-                    timeEntry.values.projectPicked.projectCampaign === null ||
-                    timeEntry.values.projectPicked.spot === null ||
-                    timeEntry.values.projectPicked.version === null)
-            ) {
-                this.submittingStatus = SubmittingStatus.errorVersionRequired;
-                return;
-            }
-
-            // For some activities files are required
-            if (timeEntry.selectedActivity.areFilesRequired && timeEntry.values.files.length <= 0) {
-                this.submittingStatus = SubmittingStatus.errorFilesRequired;
-                return;
-            }
-
-            // Check if included files' work time is the same as time entry time
-            if (timeEntry.values.files.length > 0) {
-                const minutesSum = timeEntry.values.files.reduce((sum: number, file) => {
-                    if (file.durationInMinutes) {
-                        sum += file.durationInMinutes;
-                    }
-
-                    return sum;
-                }, 0);
-
-                if (minutesSum !== timeEntry.durationInMinutes) {
-                    this.submittingStatus = SubmittingStatus.errorFilesDurationWrong;
-                    return;
-                }
-
-                const fileNameMissing = timeEntry.values.files.find(file => file.filename.trim() === '');
-                if (fileNameMissing) {
-                    this.submittingStatus = SubmittingStatus.errorFilesNamesRequired;
-                    return;
-                }
-            }
+            this.realTimeValidation = false;
 
             // Submit
+            this.submittingStatus = SubmittingStatus.saving;
             await TimeEntryActions.submitActivity();
             this.submittingStatus = SubmittingStatus.success;
 
