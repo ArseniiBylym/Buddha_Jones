@@ -4,7 +4,7 @@ import AnimateHeight from 'react-animate-height';
 import debounce from 'lodash-es/debounce';
 import { observer } from 'mobx-react';
 import { ProjectPickerSections, ProjectPickerValues } from '.';
-import { computed, observable, reaction } from 'mobx';
+import { action, computed, observable, reaction } from 'mobx';
 import { Col, Row } from '../Section';
 import { ProjectsCampaignsSpotsActions } from 'actions';
 import { LoadingShade, LoadingSpinner } from '../Loaders';
@@ -113,6 +113,7 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
 
     public componentWillReceiveProps(nextProps: Props) {
         if (nextProps.sectionOpen && this.props.value !== nextProps.value) {
+            this.dropPaginator();
             this.fetchResults(
                 nextProps.forUserId,
                 nextProps.sectionOpen,
@@ -123,6 +124,7 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
                 false
             );
         } else if (nextProps.sectionOpen && this.props.sectionOpen !== nextProps.sectionOpen) {
+            this.dropPaginator();
             this.fetchResults(
                 nextProps.forUserId,
                 nextProps.sectionOpen,
@@ -133,6 +135,7 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
                 false
             );
         } else if (nextProps.sectionOpen && this.props.searchQuery !== nextProps.searchQuery) {
+            this.dropPaginator();
             this.fetchResultsDebounced(
                 nextProps.forUserId,
                 nextProps.sectionOpen,
@@ -256,6 +259,11 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
             </AnimateHeight>
         );
     }
+
+    @action
+    private dropPaginator = (): void => {
+        this.resultsPage = 1;
+    };
 
     private renderEntries(
         currentResults: ProjectsResult | CampaignsResult | SpotsResult | VersionsResult | null
