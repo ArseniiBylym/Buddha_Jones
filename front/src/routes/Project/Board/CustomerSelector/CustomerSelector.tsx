@@ -17,6 +17,7 @@ interface Props {
     onChange?: ((option: { id: number; name: string } | null) => void) | null;
     projectCampaignId: number | null;
     onToggleEditModeButton: () => void | null;
+    isCustomerFormShow: boolean;
 }
 
 interface ProjectBoardCampaignCustomerSelectorOption {
@@ -29,9 +30,16 @@ interface ProjectBoardCampaignCustomerSelectorOptionSelected {
     label: string;
 }
 
+enum Status {
+    default,
+    saving,
+    success,
+    error
+}
+
 @observer
 export class CustomerSelector extends React.Component<Props, {}> {
-    @observable private status: 'default' | 'saving' | 'success' | 'error' = 'default';
+    @observable private status: Status = Status.default;
 
     @observable private valueSelected: ClientForStudio = {
         id: null,
@@ -67,7 +75,6 @@ export class CustomerSelector extends React.Component<Props, {}> {
     public render() {
         return (
             <div className={styles.customerSelector}>
-
                 <DropdownContainer
                     className={styles.dropDownSelector}
                     ref={this.referenceCustomerSelectorDropdown}
@@ -90,24 +97,29 @@ export class CustomerSelector extends React.Component<Props, {}> {
                     />
                 </DropdownContainer>
 
-                <div className={styles.inlineBlock}>
-                    <ButtonClose
-                        float="right"
-                        onClick={this.handleCustomerSelectorEditModeToggle}
-                        label={'Cancel'}
-                    />
-                </div>
+                {
+                    !this.props.isCustomerFormShow &&
+                    <>
+                        <div className={styles.inlineBlock}>
+                            <ButtonClose
+                                float="right"
+                                onClick={this.handleCustomerSelectorEditModeToggle}
+                                label={'Cancel'}
+                            />
+                        </div>
 
-                <ButtonSave
-                    onClick={this.handleSaveChanges}
-                    float="left"
-                    label={
-                        this.status === 'error' ? 'Could not save, please try again' : 'Save details'
-                    }
-                    labelColor={this.status === 'error' ? 'orange' : 'blue'}
-                    savingLabel="Saving"
-                    isSaving={this.status === 'saving'}
-                />
+                        < ButtonSave
+                            onClick={this.handleSaveChanges}
+                            float='left'
+                            label={
+                                this.status === Status.error ? 'Could not save, please try again' : 'Save details'
+                            }
+                            labelColor={this.status === Status.error ? 'orange' : 'blue'}
+                            savingLabel='Saving'
+                            isSaving={this.status === Status.saving}
+                        />
+                    </>
+                }
             </div>
         );
     }
@@ -147,7 +159,7 @@ export class CustomerSelector extends React.Component<Props, {}> {
     private handleSaveChanges = async () => {
         try {
             if (this.props.projectCampaignId && this.valueSelected && this.valueSelected.id) {
-                this.status = 'saving';
+                this.status = Status.saving;
                 await ProjectsDetailsActions.changeProjectCampaignCustomer(
                     this.props.projectCampaignId,
                     this.valueSelected.id
@@ -155,14 +167,13 @@ export class CustomerSelector extends React.Component<Props, {}> {
                 if (this.props.onChange) {
                     this.props.onChange(this.valueSelected as { id: number; name: string });
                 }
-                this.status = 'success';
+                this.status = Status.saving;
                 this.props.onToggleEditModeButton();
             }
         } catch (error) {
             this.setInitialCustomerIdSelected(this.props.value);
-            this.status = 'error';
+            this.status = Status.error;
             throw error;
         }
     };
-
 }
