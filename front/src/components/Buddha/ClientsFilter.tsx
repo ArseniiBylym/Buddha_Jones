@@ -11,7 +11,7 @@ import {
     DropdownContainerAlignProp,
 } from '../Form';
 import { Button } from '../Button';
-import { ClientsActions } from 'actions';
+import { ClientsActions, StudiosActions } from 'actions';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { Client } from 'types/clients';
 
@@ -30,6 +30,7 @@ interface ClientsFilterProps {
     allAreAllowed?: boolean;
     align?: DropdownContainerAlignProp;
     type?: DropdownContainerTypeProp;
+    src?: 'clients' | 'studios';
 }
 
 // Component
@@ -48,6 +49,7 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
             allAreAllowed: true,
             align: 'right',
             type: 'oneline',
+            src: 'clients'
         };
     }
 
@@ -58,7 +60,13 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
     private debouncedClientSearch = _debounce((query: string) => {
         this.search = query;
         this.selectedLetter = '';
-        ClientsActions.fetchCustomers(query, '');
+        switch (this.props.src) {
+            case 'studios' :
+                StudiosActions.fetchCustomers(query, '');
+                break;
+            default:
+                ClientsActions.fetchCustomers(query, '');
+        }
     }, 300);
 
     @observable private search: string = '';
@@ -80,16 +88,17 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
             return [];
         }
 
-        const { clients } = this.props.store;
-
+        let src = this.getSrc;
         let clientsList: Client[] = [];
 
-        if (this.searchFormatted !== '') {
-            const queryMatch = clients.clientsBySearchQueryFlat.indexOf(this.searchFormatted);
-            clientsList = queryMatch !== -1 ? clients.clientsBySearchQuery[queryMatch].clients : [];
-        } else if (this.selectedLetterFormatted !== '') {
-            const letterMatch = clients.clientsByLetterFlat.indexOf(this.selectedLetterFormatted);
-            clientsList = letterMatch !== -1 ? clients.clientsByLetter[letterMatch].clients : [];
+        if (src) {
+            if (this.searchFormatted !== '') {
+                const queryMatch = src.clientsBySearchQueryFlat.indexOf(this.searchFormatted);
+                clientsList = queryMatch !== -1 ? src.clientsBySearchQuery[queryMatch].clients : [];
+            } else if (this.selectedLetterFormatted !== '') {
+                const letterMatch = src.clientsByLetterFlat.indexOf(this.selectedLetterFormatted);
+                clientsList = letterMatch !== -1 ? src.clientsByLetter[letterMatch].clients : [];
+            }
         }
 
         return clientsList.length > 0
@@ -106,23 +115,50 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
             return false;
         }
 
-        const { clients } = this.props.store;
-
         let loading: boolean = false;
+        let src = this.getSrc;
 
-        if (this.searchFormatted !== '') {
-            const searchMatch = clients.clientsBySearchQueryFlat.indexOf(this.searchFormatted);
-            loading = searchMatch !== -1 ? clients.clientsBySearchQuery[searchMatch].loading : false;
-        } else if (this.selectedLetterFormatted !== '') {
-            const letterMatch = clients.clientsByLetterFlat.indexOf(this.selectedLetterFormatted);
-            loading = letterMatch !== -1 ? clients.clientsByLetter[letterMatch].loading : false;
+        if (src) {
+            if (this.searchFormatted !== '') {
+                const searchMatch: number = src.clientsBySearchQueryFlat.indexOf(this.searchFormatted);
+                loading = searchMatch !== -1 ? src.clientsBySearchQuery[searchMatch].loading : false;
+            } else if (this.selectedLetterFormatted !== '') {
+                const letterMatch = src.clientsByLetterFlat.indexOf(this.selectedLetterFormatted);
+                loading = letterMatch !== -1 ? src.clientsByLetter[letterMatch].loading : false;
+            }
         }
 
         return loading;
     }
 
+    @computed
+    private get getSrc() {
+        if (!this.props.store) {
+            return null;
+        }
+
+        const { clients, studios } = this.props.store;
+        let src;
+
+        switch (this.props.src) {
+            case 'studios' :
+                src = studios;
+                break;
+            default:
+                src = clients;
+        }
+
+        return src;
+    }
+
     public componentDidMount() {
-        ClientsActions.fetchClientsInitialsLetters();
+        switch (this.props.src) {
+            case 'studios' :
+                StudiosActions.fetchStudiosInitialsLetters();
+                break;
+            default:
+                ClientsActions.fetchClientsInitialsLetters();
+        }
     }
 
     public render() {
@@ -130,7 +166,7 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
             return null;
         }
 
-        const { clients } = this.props.store;
+        let src = this.getSrc;
 
         return (
             <DropdownContainer
@@ -171,8 +207,8 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
                     noOptionsLabel="No studio matching criteria"
                     options={this.clientsList}
                     loadingOptions={this.clientsListLoading}
-                    letters={clients.existingClientsInitials.letters}
-                    loadingLetters={clients.existingClientsInitials.loading}
+                    letters={src ? src.existingClientsInitials.letters : []}
+                    loadingLetters={src ? src.existingClientsInitials.loading : true}
                 />
 
                 {typeof this.props.clientId !== 'undefined' &&
@@ -210,7 +246,13 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
     private handleLetterChange = (letter: string) => {
         this.selectedLetter = letter;
         this.search = '';
-        ClientsActions.fetchCustomers('', letter);
+        switch (this.props.src) {
+            case 'studios' :
+                StudiosActions.fetchCustomers('', letter);
+                break;
+            default:
+                ClientsActions.fetchCustomers('', letter);
+        }
     };
 
     @action
@@ -235,4 +277,5 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
         // Pass value further
         this.handleClientChange(null);
     };
+
 }

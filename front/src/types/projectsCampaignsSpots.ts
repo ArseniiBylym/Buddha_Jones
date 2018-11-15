@@ -162,6 +162,7 @@ export interface ProjectsResultsEntry {
 
 export interface CampaignsResultsEntry {
     id: number;
+    campaignId: number;
     campaignName: string | null;
     note: string | null;
 }

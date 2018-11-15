@@ -28,6 +28,7 @@ interface ModalProps {
     closeButton?: boolean;
     closeButtonLabel?: string;
     onClose?: ActionClickEvent | null;
+    preventBackdropClick?: boolean;
     actions?: {
         onClick?: ActionClickEvent;
         closeOnClick: boolean;
@@ -51,6 +52,7 @@ export class Modal extends React.Component<ModalProps, {}> {
             closeButtonLabel: 'Close',
             onClose: null,
             actions: [],
+            preventBackdropClick: false
         };
     }
 
@@ -93,7 +95,7 @@ export class Modal extends React.Component<ModalProps, {}> {
                         <div className={s.flexbox}>
                             <div className={s.wrapper}>
                                 <div onClick={this.handleContainerClick} className={s.container}>
-                                    {this.props.noPadding && <div className={s.topbar} />}
+                                    {this.props.noPadding && <div className={s.topbar}/>}
 
                                     {this.props.title && (
                                         <div className={s.header}>
@@ -111,41 +113,41 @@ export class Modal extends React.Component<ModalProps, {}> {
                                     )}
 
                                     {typeof this.props.actions !== 'undefined' &&
-                                        typeof this.props.actions.length !== 'undefined' &&
-                                        this.props.actions.length > 0 && (
-                                            <div className={s.footer}>
-                                                {this.props.actions.map((action, index) => (
-                                                    <Button
-                                                        key={`action-button-${index}`}
-                                                        className={classNames(s.actionButton)}
-                                                        onClick={this.handleClickAction({
-                                                            closeOnClick:
-                                                                typeof action.closeOnClick &&
-                                                                action.closeOnClick !== null
-                                                                    ? action.closeOnClick
-                                                                    : true,
-                                                            onClick:
-                                                                typeof action.onClick !== 'undefined' && action.onClick
-                                                                    ? action.onClick
-                                                                    : null,
-                                                        })}
-                                                        isInBox={true}
-                                                        label={{
-                                                            text:
-                                                                typeof action.label !== 'undefined' ? action.label : '',
-                                                            color:
-                                                                typeof action.type !== 'undefined' && action.type
-                                                                    ? action.type === 'success'
-                                                                        ? 'green'
-                                                                        : action.type === 'alert'
-                                                                            ? 'orange'
-                                                                            : 'blue'
-                                                                    : 'blue',
-                                                        }}
-                                                    />
-                                                ))}
-                                            </div>
-                                        )}
+                                    typeof this.props.actions.length !== 'undefined' &&
+                                    this.props.actions.length > 0 && (
+                                        <div className={s.footer}>
+                                            {this.props.actions.map((action, index) => (
+                                                <Button
+                                                    key={`action-button-${index}`}
+                                                    className={classNames(s.actionButton)}
+                                                    onClick={this.handleClickAction({
+                                                        closeOnClick:
+                                                            typeof action.closeOnClick &&
+                                                            action.closeOnClick !== null
+                                                                ? action.closeOnClick
+                                                                : true,
+                                                        onClick:
+                                                            typeof action.onClick !== 'undefined' && action.onClick
+                                                                ? action.onClick
+                                                                : null,
+                                                    })}
+                                                    isInBox={true}
+                                                    label={{
+                                                        text:
+                                                            typeof action.label !== 'undefined' ? action.label : '',
+                                                        color:
+                                                            typeof action.type !== 'undefined' && action.type
+                                                                ? action.type === 'success'
+                                                                ? 'green'
+                                                                : action.type === 'alert'
+                                                                    ? 'orange'
+                                                                    : 'blue'
+                                                                : 'blue',
+                                                    }}
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
 
                                     {this.props.closeButton && (
                                         <ButtonClose
@@ -166,8 +168,8 @@ export class Modal extends React.Component<ModalProps, {}> {
 
     private referenceModal = (ref: HTMLDivElement) => (this.modal = ref);
 
-    private handleModalClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (this.props.onClose) {
+    private handleModalClick = () => {
+        if (this.props.onClose && !this.props.preventBackdropClick) {
             this.props.onClose();
         }
     };
@@ -176,9 +178,7 @@ export class Modal extends React.Component<ModalProps, {}> {
         e.stopPropagation();
     };
 
-    private handleClickAction = (action: { closeOnClick: boolean; onClick: ActionClickEvent | null }) => (
-        e: React.MouseEvent<HTMLButtonElement>
-    ) => {
+    private handleClickAction = (action: { closeOnClick: boolean; onClick: ActionClickEvent | null }) => () => {
         if (action.onClick) {
             action.onClick();
         }
@@ -188,7 +188,7 @@ export class Modal extends React.Component<ModalProps, {}> {
         }
     };
 
-    private handleClickClose = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleClickClose = () => {
         if (this.props.onClose) {
             this.props.onClose();
         }

@@ -22,14 +22,22 @@ export class API {
     };
 
     /** Fetch GET */
-    static getData = async (endpoint: string, data: object = {}, returnOnlyData: boolean = true): Promise<object> => {
+    static getData = async <T = object>(
+        endpoint: string,
+        data: object = {},
+        returnOnlyData: boolean = true,
+        fullData: boolean = false
+    ): Promise<T> => {
         try {
             let config: ApiRequestConfig = API.REQUEST_CONFIG;
             config = API.setAuthenticationHeaders(config);
 
             const urlQuery = API.prepareUrlQuery(data);
-
             const response = await axios.get(API.URL + endpoint + urlQuery, config);
+
+            if (!returnOnlyData && fullData) {
+                return response.data;
+            }
 
             return returnOnlyData
                 ? typeof response.data.data !== 'undefined'

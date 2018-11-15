@@ -57,7 +57,6 @@ export class AlphabeticalOptionsList extends React.Component<AlphabeticalOptions
 
     private container: HTMLDivElement | null = null;
     private searchContainer: HTMLDivElement | null = null;
-    private searchField: Input | null = null;
     private labelContainer: HTMLDivElement | null = null;
 
     @observable private containerHeight: number = 0;
@@ -106,28 +105,28 @@ export class AlphabeticalOptionsList extends React.Component<AlphabeticalOptions
                 style={this.containerHeight > 0 ? { height: this.containerHeight + 'px' } : { height: 'auto' }}
             >
                 {typeof this.props.search !== 'undefined' &&
-                    this.props.search !== null && (
-                        <div ref={this.referenceSearchContainer} className="optionsListSearch">
-                            <Input
-                                ref={this.referenceSearchField}
-                                onChange={this.handleOptionsSearch}
-                                value={this.searchValue}
-                                label={
-                                    typeof this.props.search !== 'undefined' &&
-                                    typeof this.props.search.label !== 'undefined'
-                                        ? this.props.search.label
-                                        : 'Search...'
-                                }
-                                autoFocus={
-                                    typeof this.props.search !== 'undefined' &&
-                                    typeof this.props.search.autoFocus !== 'undefined' &&
-                                    this.props.search.autoFocus
-                                        ? this.props.search.autoFocus
-                                        : false
-                                }
-                            />
-                        </div>
-                    )}
+                this.props.search !== null && (
+                    <div ref={this.referenceSearchContainer} className="optionsListSearch">
+                        <Input
+                            ref={this.referenceSearchField}
+                            onChange={this.handleOptionsSearch}
+                            value={this.searchValue}
+                            label={
+                                typeof this.props.search !== 'undefined' &&
+                                typeof this.props.search.label !== 'undefined'
+                                    ? this.props.search.label
+                                    : 'Search...'
+                            }
+                            autoFocus={
+                                typeof this.props.search !== 'undefined' &&
+                                typeof this.props.search.autoFocus !== 'undefined' &&
+                                this.props.search.autoFocus
+                                    ? this.props.search.autoFocus
+                                    : false
+                            }
+                        />
+                    </div>
+                )}
 
                 {this.props.label !== null && (
                     <div ref={this.referenceLabelContainer} className="optionsListLabel">
@@ -185,7 +184,7 @@ export class AlphabeticalOptionsList extends React.Component<AlphabeticalOptions
 
                 {this.props.loadingLetters && (
                     <LoadingShade>
-                        <LoadingSpinner size={48} />
+                        <LoadingSpinner size={48}/>
                     </LoadingShade>
                 )}
             </div>
@@ -223,14 +222,14 @@ export class AlphabeticalOptionsList extends React.Component<AlphabeticalOptions
                                 this.props.noOptionsLabel === null ||
                                 this.props.noOptionsLabel === '')
                                 ? [
-                                      {
-                                          value: 'goBackToLettersAlt',
-                                          label:
-                                              typeof this.props.noOptionsLabel !== 'undefined'
-                                                  ? this.props.noOptionsLabel
-                                                  : '',
-                                      },
-                                  ]
+                                    {
+                                        value: 'goBackToLettersAlt',
+                                        label:
+                                            typeof this.props.noOptionsLabel !== 'undefined'
+                                                ? this.props.noOptionsLabel
+                                                : '',
+                                    },
+                                ]
                                 : []),
                         ]}
                     />
@@ -238,7 +237,7 @@ export class AlphabeticalOptionsList extends React.Component<AlphabeticalOptions
 
                 {this.props.loadingOptions && (
                     <LoadingShade>
-                        <LoadingSpinner size={48} />
+                        <LoadingSpinner size={48}/>
                     </LoadingShade>
                 )}
             </div>
@@ -264,8 +263,8 @@ export class AlphabeticalOptionsList extends React.Component<AlphabeticalOptions
 
     private referenceContainer = (ref: HTMLDivElement) => (this.container = ref);
     private referenceSearchContainer = (ref: HTMLDivElement) => (this.searchContainer = ref);
-    private referenceSearchField = (ref: Input) => (this.searchField = ref);
     private referenceLabelContainer = (ref: HTMLDivElement) => (this.labelContainer = ref);
+    private referenceSearchField = (ref: Input) => (ref);
 
     private handleOptionsSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const query: string = e.currentTarget.value;
@@ -286,7 +285,7 @@ export class AlphabeticalOptionsList extends React.Component<AlphabeticalOptions
         }
     };
 
-    private handleLetterClick = (character: string | null) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleLetterClick = (character: string | null) => () => {
         if (character !== null) {
             // Hide letters grid
             this.showLetters = false;

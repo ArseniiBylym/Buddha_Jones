@@ -16,6 +16,9 @@ export enum APIPath {
     USER_PROJECT_TYPE_PERMISSIONS           = '/user-type-project-permissions',
     CAMPAIGN                                = '/campaign',
     SPOT                                    = '/spot',
+    SPOT_SENT                               = '/spot-sent',
+    SPOT_SENT_OPTIONS                       = '/spot-sent-options',
+    FINISHING_HOUSE                         = '/finishing-house',
     VERSION                                 = '/version',
     VERSION_STATUS                          = '/version-status',
     TIME_ENTRY                              = '/time-entry',
@@ -39,4 +42,9 @@ export enum APIPath {
     OUTSIDE_COST                            = '/outside-cost',
     STAFF                                   = '/staff',
     GRAPHICS_REQUEST                        = '/graphics-request',
+    STUDIO                                  = '/studio',
+    STUDIO_FIRST_LETTERS                    = '/studio/first-letters',
+    CHANNEL                                 = '/channel',
+    CUSTOMER_NEW                            = '/customer-new',
+    PROJECT_CAMPAIGN_CUSTOMER_CONTACT       = '/project-campaign-customer-contact'
 }

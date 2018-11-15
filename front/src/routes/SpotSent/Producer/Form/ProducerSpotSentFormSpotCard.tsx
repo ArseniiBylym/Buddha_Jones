@@ -8,8 +8,10 @@ import { ProjectPicker, ProjectPickerGroupValues, ProjectPickerValues, PersonWit
 import { Paragraph } from 'components/Content';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { ProjectCampaignUserFromApi } from 'types/projectDetails';
-import { computed } from 'mobx';
+import { action, computed } from 'mobx';
 import { LoadingIndicator } from 'components/Loaders';
+import { SpotSentStore } from '../../../../store/AllStores';
+import { SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
 
 // Styles
 const s = require('./ProducerSpotSentForm.css');
@@ -19,7 +21,10 @@ interface ProducerSpotSentFormSpotCardProps {
     onSpotResendToggle: (checked: boolean) => void;
     onSpotRemove: (e: React.MouseEvent<HTMLButtonElement>) => void;
     onSpotChange: (values: ProjectPickerValues | null) => void;
+    onFinishingRequestToggle: (checked: boolean) => void;
+    onSentViaMethodChange: (method: number) => void;
     onEditorAdd: (id: number) => void;
+    onEditorRemove: (editorIndex: number) => void;
     project: ProjectPickerGroupValues | null;
     clientId: number | null;
     spot: SpotSentSpot;
@@ -34,6 +39,7 @@ type ProducerSpotSentFormSpotCardPropsTypes = ProducerSpotSentFormSpotCardProps 
 @inject('store')
 @observer
 export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSentFormSpotCardPropsTypes, {}> {
+
     @computed
     private get campaignEditorialUsers(): { isLoading: boolean; users: ProjectCampaignUserFromApi[] } {
         if (!this.props.store) {
@@ -88,11 +94,22 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                 isExpandable={false}
                 headerElements={[
                     <Checkmark
+                        key="finishing-request-checkmark"
+                        onClick={this.props.onFinishingRequestToggle}
+                        checked={this.props.spot.isFinishingRequest}
+                        label="Finish Request"
+                        labelOnLeft={true}
+                        readOnly={(!this.props.spot.spot) ? true : false}
+                        type={'no-icon'}
+                    />,
+                    <Checkmark
                         key="spot-resend-checkmark"
                         onClick={this.props.onSpotResendToggle}
                         checked={this.props.spot.isResend}
                         label="Spot resend"
                         labelOnLeft={true}
+                        readOnly={(!this.props.spot.spot) ? true : false}
+                        type={'no-icon'}
                     />,
                     <ButtonClose key="remove-spot" onClick={this.props.onSpotRemove} label="Remove spot" />,
                 ]}
@@ -111,6 +128,18 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                         customerId: this.props.clientId,
                     }}
                 />
+
+                <Section title={'Sent via'}>
+                    <div className={s.sentViaMethodsContainer}>
+                        {this.getSentViaMethods()}
+                    </div>
+                </Section>
+
+                {/*<section>
+                    <pre>
+                        {JSON.stringify(this.campaignEditorialUsers, null, 2)}
+                    </pre>
+                </section>*/}
 
                 <Section
                     title={`Spot #${this.props.spotIndex + 1} editors`}
@@ -172,24 +201,37 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                         this.campaignEditorialUsers.users.length > 0 &&
                         this.selectedEditors.length <= 0 && <Paragraph type="dim">Add editors</Paragraph>}
 
-                    {this.selectedEditors.map(selectedEditor => (
-                        <PersonWithRole
-                            key={selectedEditor.userId}
-                            className={s.spotEditor}
-                            userId={selectedEditor.userId}
-                            userFullName={selectedEditor.fullName}
-                            userImage={selectedEditor.image}
-                            roleId={null}
-                            roleName={null}
-                            hideRole={true}
-                            selected={true}
-                            editing={false}
-                        />
+                    {this.selectedEditors.map((selectedEditor: ProjectCampaignUserFromApi, ind: number) => (
+                        <div className={s.editorBlock} key={`spot-sent-editor-${selectedEditor.userId}`}>
+                            <PersonWithRole
+                                className={s.spotEditor}
+                                userId={selectedEditor.userId}
+                                userFullName={selectedEditor.fullName}
+                                userImage={selectedEditor.image}
+                                roleId={null}
+                                roleName={null}
+                                hideRole={true}
+                                selected={true}
+                                editing={false}
+                            />
+                            <span
+                                onClick={this.onRemoveEditorHandler.bind(this, ind)}
+                                className={s.editorRemoveButton}
+                            >
+                                &#x2716;
+                            </span>
+                        </div>
                     ))}
+
                 </Section>
             </Card>
         );
     }
+
+    @action
+    private onRemoveEditorHandler = (ind: number): void => {
+        this.props.onEditorRemove(ind);
+    };
 
     private referenceEditorDropdown = (ref: DropdownContainer) => (this.editorDropdown = ref);
 
@@ -200,4 +242,24 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
             this.editorDropdown.closeDropdown();
         }
     };
+
+    private getSentViaMethods(): JSX.Element[] {
+        if (SpotSentStore.spotSentSentViaMethodOptions && SpotSentStore.spotSentSentViaMethodOptions.length > 0) {
+            return SpotSentStore.spotSentSentViaMethodOptions.map((method: SpotSentOptionsChildrenFromApi, index: number) => {
+                return (
+                    <Checkmark
+                        key={'sent-via-method-' + index}
+                        onClick={() => {
+                            this.props.onSentViaMethodChange(method.id);
+                        }}
+                        checked={this.props.spot.sentViaMethod.includes(method.id)}
+                        label={method.name}
+                        type={'no-icon'}
+                    />
+                );
+            });
+        } else {
+            return [];
+        }
+    }
 }

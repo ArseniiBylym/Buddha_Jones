@@ -6,7 +6,7 @@ export class Notifications {
 
     @computed
     public get allNotificationsSortedByDate(): NotificationContent[] {
-        return this.allNotifications.sort((noticeA, noticeB) => {
+        return this.allNotifications.sort(() => {
             return 1;
         });
     }

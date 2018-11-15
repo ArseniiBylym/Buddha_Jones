@@ -1,19 +1,27 @@
 import { observable, computed } from 'mobx';
-import { UserProjectRole, UserType, OtherUserDetails, ProjectPermissionsType } from 'types/users';
+import {
+    UserProjectRole,
+    UsersRequestParams,
+    UserType,
+    OtherUserDetails,
+    ProjectPermissionsType, PageableUsers, OtherUserFromApi,
+} from 'types/users';
 import { UserTypeClassId } from 'types/user';
 
 export class Users {
     @observable public projectRolesLastFetchTimestamp: number = 0;
     @observable public projectRoles: UserProjectRole[] = [];
     @observable public projectRolesLoading: boolean = false;
-
     @observable public typesLastFetchTimestamp: number = 0;
     @observable public types: UserType[] = [];
     @observable public typesLoading: boolean = false;
-
+    @observable public isPageableUsersListLoading: boolean = false;
+    @observable public isCurrentSelectedUserSaveLoading: boolean = false;
     @observable public projectPermissionsTypesLastFetchTimestamp: number = 0;
     @observable public projectPermissionsTypes: ProjectPermissionsType[] = [];
     @observable public projectPermissionsTypesLoading: boolean = false;
+    @observable public currentSelectedUser: OtherUserFromApi | null = null;
+    @observable public people: OtherUserDetails[] = [];
 
     @observable
     public peopleFetchesByClass: Array<{
@@ -31,7 +39,25 @@ export class Users {
         lastFetchTimestamp: number;
     }> = [];
 
-    @observable public people: OtherUserDetails[] = [];
+    @observable
+    public usersListRequestParams: Partial<UsersRequestParams> = {
+        search: '',
+        length: 10,
+        page: 1,
+    };
+
+    @observable
+    public pageableUsersList: PageableUsers = {
+        data: [],
+        length: null,
+        message: '',
+        object_count: null,
+        offset: null,
+        page: null,
+        status: null,
+        total_count: null,
+        totalPages: null
+    };
 
     @computed
     public get loadingUsersProjectRoles(): boolean {

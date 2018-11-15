@@ -1,7 +1,15 @@
 import { observable, computed } from 'mobx';
-import { Client, ClientDetails, ClientContact } from 'types/clients';
+import { Client, ClientContact } from 'types/clients';
 
 export class Clients {
+
+    @observable public allClientsForStudio: Array<
+        {
+            id: number;
+            name: string;
+        }
+    >;
+
     @observable
     public existingClientsInitials: {
         loading: boolean;
@@ -51,7 +59,7 @@ export class Clients {
         id: number;
         loading: boolean;
         lastFetchTimeStamp: number;
-        customer: ClientDetails | null;
+        contacts: ClientContact[];
     }> = [];
 
     @computed
@@ -59,7 +67,7 @@ export class Clients {
         return this.clientsDetails.map(client => client.id);
     }
 
-    @computed
+/*    @computed
     public get allClientsCreativeExecutives(): ClientContact[] {
         return this.clientsDetails.reduce((contacts: ClientContact[], clientDetails) => {
             if (clientDetails.customer !== null) {
@@ -70,10 +78,10 @@ export class Clients {
 
             return contacts;
         }, []);
-    }
+    }*/
 
-    @computed
+/*    @computed
     public get allClientsCreativeExecutivesFlatIds(): number[] {
         return this.allClientsCreativeExecutives.map(creativeExecutive => creativeExecutive.id);
-    }
+    }*/
 }

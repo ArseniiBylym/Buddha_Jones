@@ -1,6 +1,6 @@
 import * as React from 'react';
 import throttle from 'lodash-es/throttle';
-import { computed, observable, reaction } from 'mobx';
+import { action, computed, observable, reaction } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { Section, Row, Col } from 'components/Section';
 import { LoadingIndicator } from 'components/Loaders';
@@ -14,6 +14,7 @@ import { UsersActions } from 'actions';
 import { CampaignDetails } from '../../../../types/projectDetails';
 import { ProjectsVersionsActions } from '../../../../actions';
 import { ProjectVersionStatus } from '../../../../types/projectVersions';
+import { ProjectsDetailsStore } from '../../../../store/AllStores';
 
 // Styles
 const s = require('./ProjectBoardCampaigns.css');
@@ -22,6 +23,7 @@ const s = require('./ProjectBoardCampaigns.css');
 interface ProjectBoardCampaignsProps extends AppOnlyStoreState {
     project: ProjectDetails;
     projectIsUpdating: boolean;
+    projectMatchId: number | null;
 }
 
 // Types
@@ -43,6 +45,7 @@ interface CampaignContainers {
 export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaignsPropsTypes, {}> {
     @observable private fetchedUsers: boolean = false;
     @observable private campaignsWithFixedHeader: number[] = [];
+    /*@observable private clientSelected: { id: number | null; name: string; } = {id: null, name: ''};*/
 
     @computed
     private get projectsCampaignsFlatIds(): number[] {
@@ -99,8 +102,8 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
 
         reaction(
             () => this.props.project.campaigns,
-            campaigns => {
-                if (this.fetchedUsers === false) {
+            () => {
+                if (!this.fetchedUsers) {
                     this.fetchUsersFromCampaignTeams();
                 }
             }
@@ -279,13 +282,15 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
             .filter((campaign: CampaignDetails) => {
                 return !campaign.hidden;
             })
-            .map((campaign: CampaignDetails) => {
+            .map((campaign: CampaignDetails, ind: number) => {
                 return (
                     <ProjectBoardCampaign
                         key={'campaign-' + campaign.projectCampaignId}
                         innerRef={this.referenceCampaignContainer(campaign.projectCampaignId)}
                         innerHeaderRef={this.referenceCampaignHeader(campaign.projectCampaignId)}
-                        clientId={this.props.project.clientId}
+                        clientId={campaign.clientSelected.id as number}
+                        studioId={this.props.project.studioId}
+                        onClientChange={this.handleCustomerSelectorChange.bind(this, ind)}
                         projectId={this.props.project.projectId}
                         campaign={campaign}
                         isHeaderFixed={this.campaignsWithFixedHeader.indexOf(campaign.projectCampaignId) !== -1}
@@ -298,5 +303,12 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
     private handleDropVersionStatusFilter = (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault();
         ProjectsVersionsActions.changeFilterVersionStatus({id: null, name: 'No status'});
+    };
+
+    @action
+    private handleCustomerSelectorChange = (ind: number, option: { id: number; name: string } | null) => {
+        if (this.props.projectMatchId !== null && this.props.projectMatchId !== -1 && option !== null) {
+            ProjectsDetailsStore.fetchedProjects[this.props.projectMatchId].campaigns[ind].clientSelected = option;
+        }
     };
 }

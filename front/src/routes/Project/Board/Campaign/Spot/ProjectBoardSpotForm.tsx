@@ -13,7 +13,6 @@ import {
     Toggle,
     Counter,
     OptionsListValuePropType,
-    ToggleSideContent,
     OptionsListOptionProp,
 } from 'components/Form';
 import { DatePicker } from 'components/Calendar';
@@ -418,7 +417,7 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
     };
 
     @action
-    private handleGraphicsIncludeToggle = (isSetToRight: boolean, selectedSideContent: ToggleSideContent) => {
+    private handleGraphicsIncludeToggle = (isSetToRight: boolean) => {
         this.form.graphicsIncluded = isSetToRight;
     };
 

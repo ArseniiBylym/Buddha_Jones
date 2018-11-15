@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { formatMoney } from 'accounting';
 import { CampaignDetails } from 'types/projectDetails';
 import { Section, Row, Col, ClearFix } from 'components/Section';
-import { ButtonEdit, ButtonSave } from 'components/Button';
+import { ButtonClose, ButtonEdit, ButtonSave } from 'components/Button';
 import { observable, action } from 'mobx';
 import { Paragraph } from 'components/Content';
 import { DatePicker } from 'components/Calendar';
@@ -48,11 +48,22 @@ export class ProjectBoardCampaignMisc extends React.Component<ProjectBoardCampai
                                   {
                                       key: 'edit-note-button',
                                       element: (
-                                          <ButtonEdit
-                                              float="right"
-                                              onClick={this.handleEditingToggle}
-                                              label={this.isInEditMode ? 'Cancel edit' : 'Edit details'}
-                                          />
+                                          <>
+                                              {this.isInEditMode &&
+                                                  <ButtonClose
+                                                      float="right"
+                                                      onClick={this.handleEditingToggle}
+                                                      label={'Cancel'}
+                                                  />
+                                              }
+                                              {!this.isInEditMode &&
+                                                  <ButtonEdit
+                                                      float="right"
+                                                      onClick={this.handleEditingToggle}
+                                                      label={'Edit details'}
+                                                  />
+                                              }
+                                          </>
                                       ),
                                   },
                               ]
@@ -156,8 +167,8 @@ export class ProjectBoardCampaignMisc extends React.Component<ProjectBoardCampai
     }
 
     @action
-    private handleEditingToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
-        if (this.isInEditMode === false) {
+    private handleEditingToggle = () => {
+        if (!this.isInEditMode) {
             this.budget = this.props.campaign.budget;
             this.budgetNotes = this.props.campaign.budgetNotes || '';
             this.dateMaterialsWillBeReceived = this.props.campaign.dateMaterialsWillBeReceived;

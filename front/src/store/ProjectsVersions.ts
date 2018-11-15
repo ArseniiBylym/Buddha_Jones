@@ -42,7 +42,7 @@ export class ProjectVersions {
         // React to version status change
         reaction(
             () => this.filterVersionStatus,
-            clientFilter => {
+            () => {
                 ProjectsDetailsActions.applyFilterByVersionStatus(this.filterVersionStatus);
             }
         );

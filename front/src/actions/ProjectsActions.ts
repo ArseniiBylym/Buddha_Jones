@@ -12,8 +12,8 @@ export class ProjectsActionsClass {
     }, 300);
 
     @action
-    public changeProjectsFilterByClient = (client: { id: number; name: string } | null = null) => {
-        ProjectsStore.filterByClient = client;
+    public changeProjectsFilterByStudio = (studio: { id: number; name: string } | null = null) => {
+        ProjectsStore.filterByStudio = studio;
     };
 
     @action
@@ -27,7 +27,7 @@ export class ProjectsActionsClass {
             const response = (await API.postData(APIPath.PROJECT, {
                 name: project.name.trim(),
                 project_code: project.codeName.trim(),
-                customer_id: project.clientId !== null ? project.clientId : '',
+                studio_id: project.studioId !== null ? project.studioId : '',
                 project_release: project.releaseDate !== null ? project.releaseDate : '',
                 notes:
                     typeof project.notes !== 'undefined' && project.notes !== null && project.notes.trim() !== ''
@@ -77,8 +77,8 @@ export class ProjectsActionsClass {
                 APIPath.PROJECT,
                 {
                     sort: 'last_update_date',
-                    ...(ProjectsStore.filterByClient !== null && {
-                        customer_id: ProjectsStore.filterByClient.id,
+                    ...(ProjectsStore.filterByStudio !== null && {
+                        studio_id: ProjectsStore.filterByStudio.id,
                     }),
                     ...(ProjectsStore.filterByQuery && {
                         search: ProjectsStore.filterByQuery,
@@ -104,11 +104,13 @@ export class ProjectsActionsClass {
                                 : '',
                 clientId: project.customerId,
                 clientName: project.customerName,
+                studioId: project.studioId,
+                studioName: project.studioName,
                 notes: project.notes,
                 commentsCount: project.comment.count,
                 commentsUnread: project.comment.unread,
                 campaigns: project.campaign,
-                lastUpdatedAt: dateParse(project.lastUpdatedAt.date),
+                lastUpdatedAt: (project.lastUpdatedAt && project.lastUpdatedAt.date) ? dateParse(project.lastUpdatedAt.date) : null,
                 lastUpdatedByUserId: project.lastUpdateUser.userId,
                 lastUpdatedByUserName: project.lastUpdateUser.name,
                 lastUpdatedByUserImage: project.lastUpdateUser.image,

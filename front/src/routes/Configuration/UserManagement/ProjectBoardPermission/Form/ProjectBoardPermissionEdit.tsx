@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { parse } from 'query-string';
-import { AppState } from '../../../../store/AllStores';
-import { HeaderActions, UsersActions } from '../../../../actions';
+import { AppState } from '../../../../../store/AllStores';
+import { HeaderActions, UsersActions } from 'actions/index';
 import { inject, observer } from 'mobx-react';
-import { ProjectPermissionData, ProjectPermissionsType } from '../../../../types/users';
-import { ButtonBack, ButtonSave } from '../../../../components/Button';
-import { Col, Row } from '../../../../components/Section';
-import { LoadingSpinner } from '../../../../components/Loaders';
+import { ProjectPermissionData, ProjectPermissionsType } from 'types/users';
+import { ButtonBack, ButtonSave } from 'components/Button/index';
+import { Col, Row } from 'components/Section/index';
+import { LoadingSpinner } from 'components/Loaders/index';
 import { action, computed, observable } from 'mobx';
-import { Table, TableCell, TableRow } from '../../../../components/Table';
-import { Checkmark } from '../../../../components/Form';
-import { BottomBar } from '../../../../components/Layout';
-import { history } from '../../../../App';
-import { Modal } from '../../../../components/Modals';
+import { Table, TableCell, TableRow } from 'components/Table/index';
+import { Checkmark } from 'components/Form/index';
+import { BottomBar } from 'components/Layout/index';
+import { history } from 'App';
+import { Modal } from 'components/Modals/index';
 
 export enum uploadStatus {
     none = 'none',
@@ -22,10 +22,11 @@ export enum uploadStatus {
 }
 
 // Styles
-const s = require('./../../ActivitiesDefinition/Form/ActivityDefinitionForm.css');
+const s = require('../../../ActivitiesDefinition/Form/ActivityDefinitionForm.css');
 
 // Props
-interface ProjectBoardPermissionEditProps {}
+interface ProjectBoardPermissionEditProps {
+}
 
 // Props types
 type ProjectBoardPermissionEditPropsTypes = ProjectBoardPermissionEditProps & AppState;
@@ -42,7 +43,7 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
     @computed
     private get essentialDataIsLoading(): boolean {
         if (this.props.store) {
-            return this.props.store.users.projectPermissionsTypesLoading ? true : false;
+            return this.props.store.users.projectPermissionsTypesLoading;
         }
         return true;
     }
@@ -61,7 +62,7 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
         if (!this.props.store) {
             return null;
         }
-        return this.essentialDataIsLoading === false ? (
+        return !this.essentialDataIsLoading ? (
             <>
                 {this.getTableWithData()}
                 {this.getBottomBar()}
@@ -101,8 +102,8 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
         );
     };
 
-    private handleGoBackToProjectBoardPermissionList = (e?: React.MouseEvent<HTMLButtonElement>): void => {
-        if (this.isProjectBoardPermissionsModified && this.showCancelModal === false) {
+    private handleGoBackToProjectBoardPermissionList = (): void => {
+        if (this.isProjectBoardPermissionsModified && !this.showCancelModal) {
             this.showCancelModal = true;
             return;
         }
@@ -111,16 +112,16 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
         this.showCancelModal = false;
     };
 
-    private handleClosingModal = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    private handleClosingModal = () => {
         this.showCancelModal = false;
     };
 
     private goBackToProjectBoardPermissionList = () => {
-        history.push('/portal/configuration/project-board-permission');
+        history.push('/portal/configuration/user-management/project-board-permission');
     };
 
     @action
-    private handleProjectBoardPermissionToggle (ind: number, val: 1 | 0, projectPermissionId: number, type: 'canView' | 'canEdit'): void {
+    private handleProjectBoardPermissionToggle(ind: number, val: 1 | 0, _projectPermissionId: number, type: 'canView' | 'canEdit'): void {
         if (!this.props.match || !this.props.store) {
             return;
         }
@@ -158,15 +159,15 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
                         </TableCell>
                         <TableCell align="center">
                             <Checkmark
-                                onClick={e => this.handleProjectBoardPermissionToggle(ind, permissionType.canView, permissionType.projectPermissionId, 'canView')}
-                                checked={(permissionType.canView === 1) ? true : false}
+                                onClick={() => this.handleProjectBoardPermissionToggle(ind, permissionType.canView, permissionType.projectPermissionId, 'canView')}
+                                checked={permissionType.canView === 1}
                                 type={'no-icon'}
                             />
                         </TableCell>
                         <TableCell align="center">
                             <Checkmark
-                                onClick={e => this.handleProjectBoardPermissionToggle(ind, permissionType.canEdit, permissionType.projectPermissionId, 'canEdit')}
-                                checked={(permissionType.canEdit === 1) ? true : false}
+                                onClick={() => this.handleProjectBoardPermissionToggle(ind, permissionType.canEdit, permissionType.projectPermissionId, 'canEdit')}
+                                checked={permissionType.canEdit === 1}
                                 type={'no-icon'}
                             />
                         </TableCell>
@@ -249,14 +250,14 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
         return (
             <Row justifyContent="center">
                 <Col width={64}>
-                    <LoadingSpinner size={64} />
+                    <LoadingSpinner size={64}/>
                 </Col>
             </Row>
         );
     }
 
     @action
-    private handleSaveChanges = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleSaveChanges = async () => {
         if (!this.props.match || !this.props.store) {
             return;
         }

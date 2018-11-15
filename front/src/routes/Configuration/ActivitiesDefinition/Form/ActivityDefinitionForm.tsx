@@ -24,10 +24,12 @@ export enum ActivityTypeId {
     NonBillableTimesheet = 2,
     Internal = 3,
 }
+
 type ActivityDefinitionFormPropsTypes = ActivityDefinitionFormProps & AppState;
 
 // Props
-interface ActivityDefinitionFormProps {}
+interface ActivityDefinitionFormProps {
+}
 
 // Component
 @inject('store')
@@ -57,9 +59,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
                 ? true
                 : this.props.store.activities.activitiesTypesLoading
                     ? true
-                    : this.props.store.users.typesLoading
-                        ? true
-                        : false;
+                    : this.props.store.users.typesLoading;
         }
 
         return true;
@@ -80,7 +80,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
 
     @computed
     private get isAnyActivityVisibleToAnyUser(): boolean {
-        return this.userTypesList.findIndex(u => u.isSelected) !== -1 ? true : false;
+        return this.userTypesList.findIndex(u => u.isSelected) !== -1;
     }
 
     public constructor(props: ActivityDefinitionFormPropsTypes) {
@@ -93,7 +93,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
             ActivitiesActions.fetchActivityList(),
             ActivitiesActions.fetchActivitiesTypes(),
             UsersActions.fetchUsersTypes(),
-        ]).then(fetched => {
+        ]).then(() => {
             // Set header and initial data
             this.setHeaderAndInitialData();
         });
@@ -106,7 +106,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
     }
 
     public render() {
-        return this.essentialDataIsLoading === false && this.props.store ? (
+        return !this.essentialDataIsLoading && this.props.store ? (
             <>
                 <Row>
                     <Col size={4}>
@@ -218,7 +218,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
                                     <Checkmark
                                         className={s.toggleAllUserTypesVisibility}
                                         onClick={this.handleAllUserTypesToggle}
-                                        checked={this.isAnyActivityVisibleToAnyUser ? true : false}
+                                        checked={this.isAnyActivityVisibleToAnyUser}
                                         labelOnLeft={true}
                                         label={
                                             this.isAnyActivityVisibleToAnyUser
@@ -259,7 +259,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
                     </Section>
                 )}
 
-                <BottomBar show={this.activity.isModified && this.activity.name ? true : false}>
+                <BottomBar show={!!(this.activity.isModified && this.activity.name)}>
                     <div className={s.summary}>
                         <ButtonSave
                             onClick={this.handleSaveChanges}
@@ -267,10 +267,10 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
                                 this.activity.uploadStatus === 'none'
                                     ? 'blue'
                                     : this.activity.uploadStatus === 'success'
-                                        ? 'green'
-                                        : this.activity.uploadStatus === 'saving'
-                                            ? 'black'
-                                            : 'orange'
+                                    ? 'green'
+                                    : this.activity.uploadStatus === 'saving'
+                                        ? 'black'
+                                        : 'orange'
                             }
                             isSaving={this.activity.uploadStatus === 'saving'}
                             savingLabel="Saving"
@@ -278,10 +278,10 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
                                 this.activity.uploadStatus === 'success'
                                     ? 'Saved successfully'
                                     : this.activity.uploadStatus === 'error'
-                                        ? 'Could not save, try again'
-                                        : this.activity.uploadStatus === 'error-nameisrequired'
-                                            ? 'Could not save, name is required'
-                                            : 'Save changes'
+                                    ? 'Could not save, try again'
+                                    : this.activity.uploadStatus === 'error-nameisrequired'
+                                        ? 'Could not save, name is required'
+                                        : 'Save changes'
                             }
                         />
                     </div>
@@ -312,7 +312,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
         ) : (
             <Row justifyContent="center">
                 <Col width={64}>
-                    <LoadingSpinner size={64} />
+                    <LoadingSpinner size={64}/>
                 </Col>
             </Row>
         );
@@ -330,7 +330,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
 
     @action
     private handleStatusChange = (value: string) => {
-        this.activity.isActive = value === '1' ? true : false;
+        this.activity.isActive = value === '1';
         this.activity.isModified = true;
     };
 
@@ -343,19 +343,19 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
 
     @action
     private handleNotesRequirementChange = (selected: ToggleButtonsValueProp) => {
-        this.activity.isDescriptionRequired = selected ? true : false;
+        this.activity.isDescriptionRequired = !!selected;
         this.activity.isModified = true;
     };
 
     @action
     private handleFilesRequirementChange = (selected: ToggleButtonsValueProp) => {
-        this.activity.areFilesRequired = selected ? true : false;
+        this.activity.areFilesRequired = !!selected;
         this.activity.isModified = true;
     };
 
     @action
     private handleProjectCampaignRequirementChange = (selected: ToggleButtonsValueProp) => {
-        this.activity.isProjectCampaignRequired = selected ? true : false;
+        this.activity.isProjectCampaignRequired = !!selected;
         this.activity.isModified = true;
 
         if (selected === false) {
@@ -365,7 +365,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
 
     @action
     private handleSpotVersionRequirementsChange = (selected: ToggleButtonsValueProp) => {
-        this.activity.isSpotVersionRequired = selected ? true : false;
+        this.activity.isSpotVersionRequired = !!selected;
         this.activity.isModified = true;
 
         if (selected) {
@@ -374,7 +374,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
     };
 
     @action
-    private handleAllUserTypesToggle = (checked: boolean) => {
+    private handleAllUserTypesToggle = () => {
         this.activity.isModified = true;
         if (this.isAnyActivityVisibleToAnyUser) {
             this.activity.selectedUserTypesIds = [];
@@ -400,7 +400,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
         }
     };
 
-    private handleSaveChanges = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleSaveChanges = async () => {
         try {
             if (this.activity.isModified) {
                 if (this.activity.name.trim() === '') {
@@ -425,8 +425,8 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
         }
     };
 
-    private handleGoingBackToActivitiesList = (e?: React.MouseEvent<HTMLButtonElement>) => {
-        if (this.activity.isModified && this.showCancelModal === false) {
+    private handleGoingBackToActivitiesList = () => {
+        if (this.activity.isModified && !this.showCancelModal) {
             this.showCancelModal = true;
             return;
         }
@@ -435,7 +435,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
         this.showCancelModal = false;
     };
 
-    private handleClosingModal = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    private handleClosingModal = () => {
         this.showCancelModal = false;
     };
 
@@ -444,13 +444,13 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
         history.push('/portal/configuration/activities' + id);
     };
 
-    private setHeaderAndInitialData = (withSaveButton: boolean = false) => {
+    private setHeaderAndInitialData = () => {
         // Get location param for the activity ID
         const id: number | null =
             this.props.match && this.props.match.params && this.props.match.params['id']
                 ? !isNaN(unformat(this.props.match.params['id']))
-                    ? unformat(this.props.match.params['id'])
-                    : null
+                ? unformat(this.props.match.params['id'])
+                : null
                 : null;
 
         // Get existing activity details

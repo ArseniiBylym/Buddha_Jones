@@ -85,7 +85,7 @@ export class DurationPicker extends React.Component<DurationPickerProps, {}> {
         );
     }
 
-    private handleDurationChange = (increase: boolean) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleDurationChange = (increase: boolean) => () => {
         if (typeof this.props.increments === 'undefined') {
             return;
         }

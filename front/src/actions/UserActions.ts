@@ -4,11 +4,11 @@ import { API, APIPath } from 'fetch';
 import { LoginRefreshResponse } from 'types/login';
 import { LoginStore, UserStore } from 'store/AllStores';
 import { LoginStatus } from 'types/statuses';
-import { UserDataApiResponse, RawUserApiResponse } from 'types/user';
+import { UserData, RawUserApiResponse } from 'types/user';
 
 export class UserActionsClass {
     @action
-    public login = async (username: string, password: string): Promise<UserDataApiResponse> => {
+    public login = async (username: string, password: string): Promise<UserData> => {
         try {
             if (username.trim() === '' && password.trim() === '') {
                 LoginStore.status = LoginStatus.ErrorBothFieldsRequired;
@@ -84,18 +84,18 @@ export class UserActionsClass {
         }
     };
 
-    public verifyLoggedInUserData = async (): Promise<UserDataApiResponse> => {
+    public verifyLoggedInUserData = async (): Promise<UserData> => {
         try {
-            const response = (await this.fetchLoggedInUserData()) as UserDataApiResponse;
+            const response = (await this.fetchLoggedInUserData()) as UserData;
             return response;
         } catch (error) {
             throw error;
         }
     };
 
-    public fetchLoggedInUserData = async (): Promise<UserDataApiResponse> => {
+    public fetchLoggedInUserData = async (): Promise<UserData> => {
         try {
-            const response = (await API.getData(APIPath.LOGIN)) as UserDataApiResponse;
+            const response = (await API.getData(APIPath.LOGIN)) as UserData;
 
             if (typeof response === 'undefined' || response === null) {
                 throw 'No data returned';
@@ -184,39 +184,20 @@ export class UserActionsClass {
         }
     };
 
-    public setUserData = (userData: UserDataApiResponse) => {
-        UserStore.data = {
-            id: userData.user_id,
-            username: userData.username,
-            email: userData.email,
-            name: {
-                first: userData.first_name,
-                last: userData.last_name,
-                full: userData.full_name,
-            },
-            initials: userData.initials ? userData.initials : '',
-            image: userData.image,
-            allowedRouteKeys: Object.keys(userData.page_access).reduce((allowedRoutes: string[], routeAccessKey) => {
-                const isAllowed: boolean | null =
-                    typeof userData.page_access[routeAccessKey] !== 'undefined'
-                        ? userData.page_access[routeAccessKey]
-                        : false;
-                if (isAllowed) {
-                    allowedRoutes.push(routeAccessKey);
-                }
-                return allowedRoutes;
-            }, []),
-            rates: {
-                minHour: userData.min_hour,
-                hourlyRate: userData.hourly_rate,
-                salaryAmount: userData.salary_amount,
-                salaryType: userData.salary_type,
-            },
-            type: {
-                id: userData.type_id,
-                name: userData.type_name,
-            },
-            isActive: userData.status ? true : false,
-        };
+    public setUserData = (userData: UserData) => {
+        userData.allowedRouteKeys = this.getAllowedKeysArray(userData.pageAccess);
+        UserStore.data = userData;
     };
+
+    private getAllowedKeysArray(pageAccess: { [id: string]: boolean }) {
+        return Object.keys(pageAccess).reduce((allowedRoutes: string[], routeAccessKey) => {
+            const isAllowed: boolean | null = typeof pageAccess[routeAccessKey] !== 'undefined' ? pageAccess[routeAccessKey] : false;
+
+            if (isAllowed) {
+                allowedRoutes.push(routeAccessKey);
+            }
+
+            return allowedRoutes;
+        }, []);
+    }
 }

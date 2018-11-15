@@ -8,7 +8,7 @@ export class Projects {
     @observable public countTotal: number = 0;
 
     @observable public filterByQuery: string = '';
-    @observable public filterByClient: { id: number; name: string } | null = null;
+    @observable public filterByStudio: { id: number; name: string } | null = null;
 
     @observable public loadingProjects: boolean = false;
     @observable public updatingProjects: boolean = false;
@@ -16,10 +16,19 @@ export class Projects {
     @observable public projectsList: Project[] = [];
 
     constructor() {
+
+        // React to current page change
+        reaction(
+            () => this.currentPage,
+            currentPage => {
+                ProjectsActions.fetchProjects(currentPage);
+            }
+        );
+
         // React to client filter change
         reaction(
-            () => this.filterByClient,
-            clientFilter => {
+            () => this.filterByStudio,
+            () => {
                 ProjectsActions.fetchProjects(1);
             }
         );
@@ -27,7 +36,7 @@ export class Projects {
         // React to client filter by search query change
         reaction(
             () => this.filterByQuery,
-            query => {
+            () => {
                 ProjectsActions.fetchProjectsDebounced(1);
             }
         );

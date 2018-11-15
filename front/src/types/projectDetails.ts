@@ -1,13 +1,14 @@
 import { DateObjectFromApi } from './api';
 import { SpotBillingType } from './projectDetailsEnums';
+import { ClientContact } from './clients';
 
 export interface ProjectCreateData {
     id: number;
     name: string;
     codeName: string;
     releaseDate: string | null;
-    clientId: number | null;
-    clientName: string | null;
+    studioId: number | null;
+    studioName: string | null;
     notes: string;
 }
 
@@ -18,6 +19,8 @@ export interface ProjectDetails {
     projectCodeName: string | null;
     clientId: number;
     clientName: string;
+    studioId: number;
+    studioName: string;
     projectReleaseDate: Date | null;
     projectDoesNotExist: boolean;
     projectCouldNotBeFetched: boolean;
@@ -86,7 +89,15 @@ export interface CampaignDetails {
     billingTeam: ProjectCampaignBillingUser[];
     designTeam: ProjectCampaignUser[];
     editorialTeam: ProjectCampaignUser[];
+    clientSelected: {
+        id: number | null;
+        name: string | null;
+    };
     hidden?: boolean;
+    approvedByBilling: boolean;
+    channelId: number | null;
+    channelName: string | null;
+    customerContact: ClientContact[];
 }
 
 export interface SpotDetails {
@@ -136,30 +147,35 @@ export interface ProjectHistory {
 
 export interface ProjectDetailsFromApi {
     id: number;
-    projectName: string | null;
-    projectCode: string | null;
     customerId: number;
     customerName: string;
-    projectRelease: DateObjectFromApi | null;
+    studioId: number;
+    studioName: string;
+    cardcode: string;
     notes: string | null;
+    projectRelease: DateObjectFromApi | null;
     lastUpdatedAt: DateObjectFromApi;
     lastUpdateUser: {
         userId: number;
         name: string;
         image: string | null;
     };
+    campaign: ProjectDetailsCampaignFromApi[];
     comment: {
         count: number;
         unread: number;
     };
-    campaign: ProjectDetailsCampaignFromApi[];
     history: ProjectDetailsHistoryFromApi[];
+    projectName: string | null;
+    projectCode: string | null;
 }
 
 interface ProjectDetailsCampaignFromApi {
     projectCampaignId: number;
     campaignId: number;
     campaignName: string;
+    customerId: number | null;
+    customerName: string | null;
     note: string | null;
     budget: number | null;
     budgetNote: string | null;
@@ -170,13 +186,26 @@ interface ProjectDetailsCampaignFromApi {
     writingTeamNotes: string | null;
     spot: ProjectDetailsSpotFromApi[];
     user: ProjectCampaignCreativeUserFromApi[];
-    billingUser: ProjectCampaignBillingUserFromApi[];
     designer: ProjectCampaignUserFromApi[];
     editor: ProjectCampaignUserFromApi[];
+    billingUser: ProjectCampaignBillingUserFromApi[];
+    approvedByBilling: boolean;
+    channelId: number | null;
+    channelName: string | null;
+    customerContact: ProjectDetailsCustomerContactFromApi[];
 }
 
 export interface ProjectSpotCreateFromApi {
     spot_id: string;
+}
+
+export interface ProjectDetailsCustomerContactFromApi {
+    id: number;
+    customerId: number;
+    name: string;
+    title: string | null;
+    email: string | null;
+    mobilePhone: string | null;
 }
 
 export interface ProjectDetailsSpotFromApi {
@@ -201,7 +230,7 @@ interface ProjectDetailsVersionFromApi {
     versionStatusId: number | null;
     versionStatusName: string | null;
     custom: 1 | 0 | null;
-    editors: ProjectDetailsVersionEditorsFromApi[];
+    editor: ProjectDetailsVersionEditorsFromApi[];
 }
 
 interface ProjectDetailsVersionEditorsFromApi {

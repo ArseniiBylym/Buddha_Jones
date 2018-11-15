@@ -3,7 +3,7 @@ import * as classNames from 'classnames';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
 import { Section, Row, Col } from 'components/Section';
-import { ButtonEdit } from 'components/Button';
+import { ButtonClose, ButtonEdit } from 'components/Button';
 import { CommentForm } from 'components/Buddha';
 import { ProjectsDetailsActions } from 'actions';
 
@@ -43,11 +43,22 @@ export class ProjectBoardCampaignDescription extends React.Component<ProjectBoar
                                   {
                                       key: 'edit-note-button',
                                       element: (
-                                          <ButtonEdit
-                                              float="right"
-                                              onClick={this.handleCampaignDescriptionToggle}
-                                              label={this.isInEditMode ? 'Cancel edit' : 'Edit campaign description'}
-                                          />
+                                          <>
+                                              {this.isInEditMode &&
+                                                  <ButtonClose
+                                                      float="right"
+                                                      onClick={this.handleCampaignDescriptionToggle}
+                                                      label={'Cancel'}
+                                                  />
+                                              }
+                                              {!this.isInEditMode &&
+                                                  <ButtonEdit
+                                                      float="right"
+                                                      onClick={this.handleCampaignDescriptionToggle}
+                                                      label={'Edit campaign description'}
+                                                  />
+                                              }
+                                          </>
                                       ),
                                   },
                               ]

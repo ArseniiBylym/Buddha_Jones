@@ -39,8 +39,8 @@ export class TimeApprovalDayCard extends React.Component<TimeApprovalDayCardProp
                         <h5>
                             {this.props.day.users.length > 0
                                 ? this.props.day.users.length +
-                                  ' pending user' +
-                                  (this.props.day.users.length > 1 ? 's' : '')
+                                ' pending user' +
+                                (this.props.day.users.length > 1 ? 's' : '')
                                 : ''}
                         </h5>
                     </div>
@@ -111,7 +111,7 @@ export class TimeApprovalDayCard extends React.Component<TimeApprovalDayCardProp
                                             now={this.props.now}
                                         />
 
-                                        <TimeApprovalDaySummary summary={user.summary} />
+                                        <TimeApprovalDaySummary summary={user.summary}/>
 
                                         <div className={s.actions}>
                                             <div>
@@ -149,7 +149,7 @@ export class TimeApprovalDayCard extends React.Component<TimeApprovalDayCardProp
         );
     }
 
-    private handleToggleUserDayEntriesExpansion = (userId: number) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleToggleUserDayEntriesExpansion = (userId: number) => () => {
         const userIdFound = this.expandedUserIds.indexOf(userId);
 
         if (userIdFound !== -1) {
@@ -162,7 +162,7 @@ export class TimeApprovalDayCard extends React.Component<TimeApprovalDayCardProp
         }
     };
 
-    private handleEntriesEdit = (userId: number) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleEntriesEdit = (userId: number) => () => {
         const userEditIndex = this.editingUserIds.indexOf(userId);
         if (userEditIndex === -1) {
             this.editingUserIds.push(userId);
@@ -174,9 +174,7 @@ export class TimeApprovalDayCard extends React.Component<TimeApprovalDayCardProp
         }
     };
 
-    private handleEntriesApprove = (userId: number, entries: TimeApprovalEntry[]) => async (
-        e: React.MouseEvent<HTMLButtonElement>
-    ) => {
+    private handleEntriesApprove = (userId: number, entries: TimeApprovalEntry[]) => async () => {
         try {
             const errorIndex = this.errorsApprovingUserIds.indexOf(userId);
             if (errorIndex !== -1) {

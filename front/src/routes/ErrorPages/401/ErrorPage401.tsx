@@ -30,7 +30,7 @@ export class ErrorPage401 extends React.Component<ErrorPage401Props, {}> {
         );
     }
 
-    private handleBackButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleBackButtonClick = () => {
         if (!this.props.history) {
             return;
         }

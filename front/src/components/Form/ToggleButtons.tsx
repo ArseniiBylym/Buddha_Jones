@@ -91,13 +91,13 @@ export class ToggleButtons extends React.Component<ToggleButtonsProps, {}> {
         );
     }
 
-    private handleLeftClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleLeftClick = () => {
         if (this.props.onChange) {
             this.props.onChange(this.props.toggleOnLeft!.value);
         }
     };
 
-    private handleRightClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleRightClick = () => {
         if (this.props.onChange) {
             this.props.onChange(this.props.toggleOnRight!.value);
         }

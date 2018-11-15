@@ -68,7 +68,7 @@ export class Pagination extends React.Component<PaginationProps, {}> {
             const totalPages = MathHandler.calculateMultiplicationInside(nextProps.countTotal, nextProps.countPerPage);
             this.setPagesToDisplay(nextProps.currentPage, totalPages, nextProps.countTotal);
         } else if (this.props.currentPage !== nextProps.currentPage) {
-            this.switchToPage(nextProps.currentPage);
+            this.switchToPage(nextProps.currentPage, false);
         }
     }
 
@@ -168,12 +168,12 @@ export class Pagination extends React.Component<PaginationProps, {}> {
         );
     }
 
-    private handlePageClick = (newPage: number) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handlePageClick = (newPage: number) => () => {
         this.switchToPage(newPage);
     };
 
     @action
-    private switchToPage = (newPage: number) => {
+    private switchToPage = (newPage: number, updateOnPageChange: boolean = true) => {
         // Check if new page is smaller than first page or larger than last page
         newPage = newPage < 0 ? this.totalPages : newPage > this.totalPages ? 1 : newPage;
 
@@ -181,7 +181,7 @@ export class Pagination extends React.Component<PaginationProps, {}> {
         this.setPagesToDisplay(newPage);
 
         // Pass event further
-        if (this.props.onPageChange) {
+        if (this.props.onPageChange && updateOnPageChange) {
             this.props.onPageChange(newPage);
         }
     };

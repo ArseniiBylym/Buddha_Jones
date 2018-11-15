@@ -4,43 +4,42 @@ import AnimateHeight from 'react-animate-height';
 import debounce from 'lodash-es/debounce';
 import { observer } from 'mobx-react';
 import { ProjectPickerSections, ProjectPickerValues } from '.';
-import { observable, reaction, computed } from 'mobx';
-import { Row, Col } from '../Section';
+import { computed, observable, reaction } from 'mobx';
+import { Col, Row } from '../Section';
 import { ProjectsCampaignsSpotsActions } from 'actions';
 import { LoadingShade, LoadingSpinner } from '../Loaders';
 import {
-    SpotsResult,
-    ProjectsResult,
-    CampaignsResult,
-    VersionsResult,
-    ProjectsResultsEntry,
-    CampaignsResultsEntry,
-    SpotsResultsEntry,
-    VersionsResultsEntry,
-    ProjectResult,
     CampaignResult,
+    CampaignsResult,
+    CampaignsResultsEntry,
+    ProjectResult,
+    ProjectsResult,
+    ProjectsResultsEntry,
     SpotResult,
+    SpotsResult,
+    SpotsResultsEntry,
     VersionResult,
+    VersionsResult,
+    VersionsResultsEntry,
 } from 'types/projectsCampaignsSpots';
 import { Pagination } from '../Pagination';
 import { InputSearch } from '../Form';
-import { ButtonClose, Button } from '../Button';
+import { Button, ButtonClose } from '../Button';
 import { truncate } from 'lodash-es';
 
 // Styles
 const s = require('./ProjectPicker.css');
 
-// Types
 export interface ProjectPickerResult {
     section: ProjectPickerSections;
     id: number;
+    campaignId: number | null;
     name: string;
     clientId: number | null;
     clientName: string | null;
 }
 
-// Props
-interface ProjectPickerContentProps {
+interface Props {
     onResultPicked: (result: ProjectPickerResult | null) => void;
     onSearchQueryChange: (query: string) => void;
     onSectionClose: () => void;
@@ -60,9 +59,8 @@ interface ProjectPickerContentProps {
     userCanViewProjectCodeName: boolean;
 }
 
-// Component
 @observer
-export class ProjectPickerContent extends React.Component<ProjectPickerContentProps, {}> {
+export class ProjectPickerContent extends React.Component<Props, {}> {
     @observable private resultsPage: number = 1;
 
     @computed
@@ -76,7 +74,7 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         return ProjectsCampaignsSpotsActions.prepareSearchQuery(this.props.searchQuery);
     }
 
-    constructor(props: ProjectPickerContentProps) {
+    constructor(props: Props) {
         super(props);
 
         this.fetchResultsDebounced = debounce(this.fetchResultsDebounced, 300);
@@ -113,7 +111,7 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         }
     }
 
-    public componentWillReceiveProps(nextProps: ProjectPickerContentProps) {
+    public componentWillReceiveProps(nextProps: Props) {
         if (nextProps.sectionOpen && this.props.value !== nextProps.value) {
             this.fetchResults(
                 nextProps.forUserId,
@@ -151,46 +149,48 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         const { value, forUserId } = this.props;
 
         const currentResults =
-            this.props.sectionOpen === 'project'
+            this.props.sectionOpen === ProjectPickerSections.project
                 ? ProjectsCampaignsSpotsActions.getProjectResult(forUserId, this.search, this.resultsPage)
-                : this.props.sectionOpen === 'projectCampaign'
-                    ? ProjectsCampaignsSpotsActions.getCampaignResult(
-                          forUserId,
-                          value && value.project ? value.project.id : null,
-                          this.search,
-                          this.resultsPage
-                      )
-                    : this.props.sectionOpen === 'spot'
-                        ? ProjectsCampaignsSpotsActions.getSpotResult(
-                              forUserId,
-                              value && (value.project || value.projectCampaign)
-                                  ? {
-                                        projectId: value.project ? value.project.id : null,
-                                        projectCampaignId: value.projectCampaign ? value.projectCampaign.id : null,
-                                    }
-                                  : null,
-                              this.search,
-                              this.resultsPage
-                          )
-                        : this.props.sectionOpen === 'version'
-                            ? ProjectsCampaignsSpotsActions.getVersionResult(
-                                  forUserId,
-                                  value && (value.project || value.projectCampaign || value.spot)
-                                      ? {
-                                            projectId: value.project ? value.project.id : null,
-                                            projectCampaignId: value.projectCampaign ? value.projectCampaign.id : null,
-                                            spotId: value.spot ? value.spot.id : null,
-                                        }
-                                      : null,
-                                  this.search,
-                                  this.resultsPage
-                              )
-                            : null;
+                : this.props.sectionOpen === ProjectPickerSections.projectCampaign
+                ? ProjectsCampaignsSpotsActions.getCampaignResult(
+                    forUserId,
+                    value && value.project ? value.project.id : null,
+                    this.search,
+                    this.resultsPage
+                )
+                : this.props.sectionOpen === ProjectPickerSections.spot
+                    ? ProjectsCampaignsSpotsActions.getSpotResult(
+                        forUserId,
+                        value && (value.project || value.projectCampaign)
+                            ? {
+                                projectId: value.project ? value.project.id : null,
+                                projectCampaignId: value.projectCampaign && value.projectCampaign.campaignId ?
+                                    value.projectCampaign.campaignId :
+                                    null,
+                            }
+                            : null,
+                        this.search,
+                        this.resultsPage
+                    )
+                    : this.props.sectionOpen === ProjectPickerSections.version
+                        ? ProjectsCampaignsSpotsActions.getVersionResult(
+                            forUserId,
+                            value && (value.project || value.projectCampaign || value.spot)
+                                ? {
+                                    projectId: value.project ? value.project.id : null,
+                                    projectCampaignId: value.projectCampaign ? value.projectCampaign.id : null,
+                                    spotId: value.spot ? value.spot.id : null,
+                                }
+                                : null,
+                            this.search,
+                            this.resultsPage
+                        )
+                        : null;
 
-        const areCurrentResultsLoading = currentResults && currentResults.isLoading ? true : false;
+        const areCurrentResultsLoading = currentResults && currentResults.isLoading;
 
         return (
-            <AnimateHeight height={this.props.sectionOpen !== null && this.props.readOnly === false ? 'auto' : 0}>
+            <AnimateHeight height={this.props.sectionOpen !== null && !this.props.readOnly ? 'auto' : 0}>
                 <Row removeGutter={true}>
                     <Col className={s.searchResults}>
                         <Row className={s.searchCreateCloseRow} removeMargins={true}>
@@ -202,148 +202,6 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
                                     autoFocus={this.props.openWithAutoFocus}
                                 />
                             </Col>
-
-                            {/*
-                <Col size={4}>
-                    {
-                        if (this.props.userCanCreateNew) {
-                            createPicker = (
-                                <div className={s.createPicker}>
-                                    {this.state.current==='project' && (
-                                        <CreateProjectPicker
-                                            label='Create new project'
-                                            reloadProject={(
-                                                    value,
-                                                    selectedId,
-                                                    customerId,
-                                                    customerName
-                                                )=>{
-                                                    this.setState({
-                                                        current: 'campaign',
-                                                        project: Object.assign(
-                                                            {},
-                                                            this.state.project, {
-                                                                value: value,
-                                                                selectedId: selectedId,
-                                                                customerId: customerId,
-                                                                customerName: customerName
-                                                            }
-                                                        ),
-                                                        campaign: Object.assign(
-                                                            {},
-                                                            this.state.campaign, {
-                                                                value: '',
-                                                                selectedId: null
-                                                            }
-                                                        ),
-                                                        spot: Object.assign({}, this.state.spot, {
-                                                            value: '',
-                                                            selectedId: null
-                                                        }),
-                                                        version: Object.assign(
-                                                            {},
-                                                            this.state.version, {
-                                                                value: '',
-                                                                selectedId: null
-                                                            }
-                                                        )
-                                                    }, ()=>{
-                                                        this.loadResultsFromServer('campaign', 1);
-                                                    });
-                                                }
-                                            }
-                                        />
-                                    )}
-
-                                    {this.state.current==='campaign' && (
-                                        <CreateCampaignPicker
-                                            label='Create new campaign'
-                                            projectId = {this.state.project.selectedId}
-                                            excludeCampaginIds={this.state.results.entries}
-                                            reloadCampaign={(campaignName, campaignId)=>{
-                                                    this.setState({
-                                                        current: 'spot',
-                                                        campaign: Object.assign(
-                                                            {},
-                                                            this.state.campaign, {
-                                                                value: campaignName,
-                                                                selectedId: campaignId
-                                                            }
-                                                        ),
-                                                        spot: Object.assign(
-                                                            {},
-                                                            this.state.spot, {
-                                                                value: '',
-                                                                selectedId: null
-                                                            }
-                                                        ),
-                                                        version: Object.assign(
-                                                            {},
-                                                            this.state.version, {
-                                                                value: '',
-                                                                selectedId: null
-                                                            }
-                                                        )
-                                                    }, ()=>{
-                                                        this.loadResultsFromServer('spot', 1);
-                                                    });
-                                                }
-                                            }
-                                        />
-                                    )}
-
-                                    {this.state.current==='spot' && (
-                                        <CreateSpotPicker
-                                            label='Create new spot'
-                                            projectId = {this.state.project.selectedId}
-                                            campaignId = {this.state.campaign.selectedId}
-                                            projectName = {this.state.project.value}
-                                            campaignName = {this.state.campaign.value}
-                                            reloadSpot={(spotName, spotId)=>{
-                                                    this.setState({
-                                                        current: 'version',
-                                                        spot: Object.assign({}, this.state.spot, {
-                                                            value: spotName,
-                                                            selectedId: spotId
-                                                        }),
-                                                        version: Object.assign(
-                                                            {},
-                                                            this.state.version, {
-                                                                value: '',
-                                                                selectedId: null
-                                                            }
-                                                        )
-                                                    }, ()=>{
-                                                        this.loadResultsFromServer('version', 1);
-                                                    });
-                                                }
-                                            }
-                                        />
-                                    )}
-
-                                    {(
-                                        this.state.current==='version' &&
-                                        this.state.results.type==='version'
-                                    ) && (
-                                        <CreateVersionPicker
-                                            label='Create new version'
-                                            projectId = {this.state.project.selectedId}
-                                            campaignId = {this.state.campaign.selectedId}
-                                            spotId = {this.state.spot.selectedId}
-                                            spotName = {this.state.spot.value}
-                                            excludeVersionIds = {this.state.results.entries}
-                                            reloadVersion={()=>{
-                                                    this.loadResultsFromServer('version', 1);
-                                                }
-                                            }
-                                        />
-                                    )}
-                                </div>
-                            );
-                        }
-                    }
-                </Col>
-            */}
 
                             <Col size={4}>
                                 <ButtonClose
@@ -390,7 +248,7 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
                                 }
                                 border="4px solid rgba(248, 248, 248, 0.9)"
                             >
-                                <LoadingSpinner size={48} color="#5A4D3F" />
+                                <LoadingSpinner size={48} color="#5A4D3F"/>
                             </LoadingShade>
                         )}
                     </Col>
@@ -399,20 +257,24 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         );
     }
 
-    private renderEntries(currentResults: ProjectsResult | CampaignsResult | SpotsResult | VersionsResult | null) {
+    private renderEntries(
+        currentResults: ProjectsResult | CampaignsResult | SpotsResult | VersionsResult | null
+    ): JSX.Element[] {
         let entries: Array<{
             section: ProjectPickerSections;
             id: number;
+            campaignId?: number;
             name: string;
             clientId: number | null;
             clientName: string | null;
         }> = [];
 
         if (currentResults) {
-            if (this.props.sectionOpen === 'project') {
+            if (this.props.sectionOpen === ProjectPickerSections.project) {
                 const results = currentResults.results as ProjectsResultsEntry[];
                 entries = results.map(result => {
                     let name = '';
+
                     if (this.props.userCanViewProjectCodeName && this.props.userCanViewProjectName) {
                         name = result.projectCode
                             ? `(${result.projectCode})` + (result.projectName ? ' - ' + result.projectName : '')
@@ -424,19 +286,21 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
                     }
 
                     return {
-                        section: 'project' as ProjectPickerSections,
+                        section: ProjectPickerSections.project,
                         id: result.id,
                         name: name,
                         clientId: result.customerId,
                         clientName: result.customerName,
                     };
                 });
-            } else if (this.props.sectionOpen === 'projectCampaign') {
+            } else if (this.props.sectionOpen === ProjectPickerSections.projectCampaign) {
                 const results = currentResults.results as CampaignsResultsEntry[];
+
                 entries = results.map(result => {
                     return {
-                        section: 'projectCampaign' as ProjectPickerSections,
+                        section: ProjectPickerSections.projectCampaign,
                         id: result.id,
+                        campaignId: result.campaignId,
                         name:
                             (result.campaignName || '') +
                             (result.note && result.note !== result.campaignName
@@ -446,22 +310,24 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
                         clientName: null,
                     };
                 });
-            } else if (this.props.sectionOpen === 'spot') {
+            } else if (this.props.sectionOpen === ProjectPickerSections.spot) {
                 const results = currentResults.results as SpotsResultsEntry[];
+
                 entries = results.map(result => {
                     return {
-                        section: 'spot' as ProjectPickerSections,
+                        section: ProjectPickerSections.spot,
                         id: result.id,
                         name: result.spotName,
                         clientId: null,
                         clientName: null,
                     };
                 });
-            } else if (this.props.sectionOpen === 'version') {
+            } else if (this.props.sectionOpen === ProjectPickerSections.version) {
                 const results = currentResults.results as VersionsResultsEntry[];
+
                 entries = results.map(result => {
                     return {
-                        section: 'version' as ProjectPickerSections,
+                        section: ProjectPickerSections.version,
                         id: result.id,
                         name: result.versionName,
                         clientId: null,
@@ -471,15 +337,16 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
             }
         }
 
-        return entries.map(result => (
-            <li key={result.id}>
+        return entries.map((result, ind: number) => (
+            <li key={`li-${result.id}-${ind}`}>
                 <Button
                     onClick={this.handleResultPick(
                         result.section,
                         result.id,
                         result.name,
                         result.clientId,
-                        result.clientName
+                        result.clientName,
+                        result.campaignId ? result.campaignId : null
                     )}
                     label={{
                         text: result.name,
@@ -496,7 +363,7 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         this.props.onSearchQueryChange(e.target.value);
     };
 
-    private handlePickerCollapse = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handlePickerCollapse = () => {
         this.props.onSectionClose();
     };
 
@@ -505,14 +372,16 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
         id: number,
         name: string,
         clientId: number | null,
-        clientName: string | null
-    ) => (e: React.MouseEvent<HTMLButtonElement>) => {
+        clientName: string | null,
+        campaignId: number | null
+    ) => () => {
         this.props.onResultPicked({
-            section: section,
-            id: id,
-            name: name,
-            clientId: clientId,
-            clientName: clientName,
+            section,
+            id,
+            campaignId,
+            name,
+            clientId,
+            clientName,
         });
     };
 
@@ -565,9 +434,9 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
                         forUserId,
                         value
                             ? {
-                                  projectId: value.project ? value.project.id : null,
-                                  projectCampaignId: value.projectCampaign ? value.projectCampaign.id : null,
-                              }
+                                projectId: value.project ? value.project.id : null,
+                                projectCampaignId: value.projectCampaign && value.projectCampaign.campaignId ? value.projectCampaign.campaignId : null,
+                            }
                             : null,
                         search,
                         page,
@@ -579,10 +448,10 @@ export class ProjectPickerContent extends React.Component<ProjectPickerContentPr
                         forUserId,
                         value
                             ? {
-                                  projectId: value.project ? value.project.id : null,
-                                  projectCampaignId: value.projectCampaign ? value.projectCampaign.id : null,
-                                  spotId: value.spot ? value.spot.id : null,
-                              }
+                                projectId: value.project ? value.project.id : null,
+                                projectCampaignId: value.projectCampaign ? value.projectCampaign.id : null,
+                                spotId: value.spot ? value.spot.id : null,
+                            }
                             : null,
                         search,
                         page,

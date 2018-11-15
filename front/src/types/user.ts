@@ -1,58 +1,39 @@
 import { ApiResponse, RawApiResponse } from './api';
-
-export interface UserData {
-    id: number;
-    username: string;
-    email: string | null;
-    name: {
-        first: string | null;
-        last: string | null;
-        full: string | null;
-    };
-    initials: string;
-    image: string | null;
-    rates: {
-        minHour: number | null;
-        hourlyRate: number | null;
-        salaryAmount: number | null;
-        salaryType: 'S' | 'H';
-    };
-    type: {
-        id: number;
-        name: string;
-    };
-    allowedRouteKeys: string[];
-    isActive: boolean;
-}
+import { UserPermissionFromApi } from './projectPermissions';
 
 export interface RawUserApiResponse extends RawApiResponse {
     data: UserApiResponse;
 }
 
 export interface UserApiResponse extends ApiResponse {
-    data: UserDataApiResponse;
+    data: UserData;
 }
 
-export interface UserDataApiResponse {
-    user_id: number;
+export interface UserData {
+    createdDate: any;
+    lastLoginDate: any;
+    nickName: any;
+    id: number;
     username: string;
-    email: string | null;
-    first_name: string | null;
-    last_name: string | null;
-    full_name: string | null;
-    image: string | null;
-    initials: string | null;
-    page_access: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    fullName: string;
+    image: string;
+    initials: string;
+    pageAccess: {
         [routeKey: string]: boolean;
     };
-    min_hour: number | null;
-    hourly_rate: number | null;
-    salary_amount: number | null;
-    salary_type: 'S' | 'H';
-    type_id: number;
-    type_name: string;
+    minHour: number;
+    projectPermissions: UserPermissionFromApi;
+    hourlyRate: number;
+    salaryAmount: number;
+    salaryType: 'S' | 'H';
+    typeId: number;
+    typeName: string;
     token: string;
     status: 1 | 0;
+    allowedRouteKeys: string[];
 }
 
 export enum UserLoginStatus {

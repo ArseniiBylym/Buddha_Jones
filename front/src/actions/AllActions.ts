@@ -11,11 +11,14 @@ import {
     CampaignsActionsClass,
     CampaignPeopleActionsClass,
     ClientsActionsClass,
+    StudiosActionsClass,
     UsersActionsClass,
     ProjectPermissionsActionsClass,
     ActivitiesActionsClass,
     TimeEntryActionsClass,
     TimeApprovalActionsClass,
+    SpotSentActionsClass,
+    ChannelsActionsClass
 } from './index';
 
 export const WindowActions = new WindowActionsClass();
@@ -30,8 +33,11 @@ export const ProjectsVersionsActions = new ProjectsVersionsActionsClass();
 export const CampaignsActions = new CampaignsActionsClass();
 export const CampaignPeopleActions = new CampaignPeopleActionsClass();
 export const ClientsActions = new ClientsActionsClass();
+export const StudiosActions = new StudiosActionsClass();
 export const UsersActions = new UsersActionsClass();
 export const ProjectPermissionsActions = new ProjectPermissionsActionsClass();
 export const ActivitiesActions = new ActivitiesActionsClass();
 export const TimeEntryActions = new TimeEntryActionsClass();
 export const TimeApprovalActions = new TimeApprovalActionsClass();
+export const SpotSentActions = new SpotSentActionsClass();
+export const ChannelsActions = new ChannelsActionsClass();

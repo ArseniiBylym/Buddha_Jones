@@ -15,12 +15,15 @@ import {
     Campaigns,
     CampaignPeople,
     Clients,
+    Studios,
     Users,
     ProjectPermissions,
     Activities,
     TimeEntry,
     TimeApproval,
     Time,
+    SpotSent,
+    Channels
 } from './index';
 
 // Construct individual stores
@@ -36,12 +39,15 @@ export const ProjectsVersionsStore = new ProjectVersions();
 export const CampaignsStore = new Campaigns();
 export const CampaignPeopleStore = new CampaignPeople();
 export const ClientsStore = new Clients();
+export const StudiosStore = new Studios();
 export const UsersStore = new Users();
 export const ProjectPermissionsStore = new ProjectPermissions();
 export const ActivitiesStore = new Activities();
 export const TimeEntryStore = new TimeEntry();
 export const TimeApprovalStore = new TimeApproval();
 export const TimeStore = new Time();
+export const SpotSentStore = new SpotSent();
+export const ChannelsStore = new Channels();
 
 // Define combined store's interface
 export interface AppStoreState {
@@ -57,12 +63,15 @@ export interface AppStoreState {
     campaigns: Campaigns;
     campaignPeople: CampaignPeople;
     clients: Clients;
+    studios: Studios;
     users: Users;
     projectPermissions: ProjectPermissions;
     activities: Activities;
     timeEntry: TimeEntry;
     timeApproval: TimeApproval;
     time: Time;
+    spotSent: SpotSent;
+    channels: Channels;
 }
 
 // Initialize combined stores
@@ -79,12 +88,15 @@ export const store: AppStoreState = {
     campaigns: CampaignsStore,
     campaignPeople: CampaignPeopleStore,
     clients: ClientsStore,
+    studios: StudiosStore,
     users: UsersStore,
     projectPermissions: ProjectPermissionsStore,
     activities: ActivitiesStore,
     timeEntry: TimeEntryStore,
     timeApproval: TimeApprovalStore,
     time: TimeStore,
+    spotSent: SpotSentStore,
+    channels: ChannelsStore
 };
 
 // App interface
