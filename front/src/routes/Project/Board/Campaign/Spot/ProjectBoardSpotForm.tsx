@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as styles from './ProjectBoardSpotForm.scss';
 import { observer, inject } from 'mobx-react';
 import { observable, computed, action } from 'mobx';
 import { AppOnlyStoreState } from 'store/AllStores';
@@ -16,15 +17,12 @@ import {
     OptionsListOptionProp,
 } from 'components/Form';
 import { DatePicker } from 'components/Calendar';
-import { ProjectsDetailsActions } from 'actions';
+import { ProjectsCampaignsSpotsActions, ProjectsDetailsActions } from 'actions';
 import { SpotBillingType, SpotBillingTypeName } from 'types/projectDetailsEnums';
 import { SpotDetails } from 'types/projectDetails';
+import { TRTItem } from '../../../../../types/projectsCampaignsSpots';
 
-// Styles
-const s = require('./ProjectBoardSpotForm.css');
-
-// Props
-interface ProjectBoardSpotFormProps {
+interface Props {
     innerRef?: (ref: HTMLDivElement) => void;
     userCanEditSpot: boolean;
     userCanEditFirstStateCost: boolean;
@@ -44,8 +42,8 @@ interface ProjectBoardSpotFormProps {
 // Component
 @inject('store')
 @observer
-export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormProps & AppOnlyStoreState, {}> {
-    static get defaultProps(): ProjectBoardSpotFormProps {
+export class ProjectBoardSpotForm extends React.Component<Props & AppOnlyStoreState, {}> {
+    static get defaultProps(): Props {
         return {
             userCanEditSpot: false,
             userCanEditFirstStateCost: false,
@@ -64,6 +62,7 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
     }
 
     @observable private spotStatus: 'none' | 'saving' | 'success' | 'error' | 'error-nameisrequired' = 'none';
+
     @observable
     private form: SpotDetails = {
         id: this.spot ? this.spot.id : 0,
@@ -78,6 +77,7 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
         v1ClientDeadline: this.spot ? this.spot.v1ClientDeadline : null,
         versions: this.spot ? this.spot.versions : [],
         justAdded: false,
+        trtId: this.spot ? this.spot.trtId : null
     };
 
     @computed
@@ -122,22 +122,43 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
     }
 
     private revisionsDropdown: DropdownContainer | null = null;
+    private TRTDropdown: DropdownContainer | null = null;
     private spotBillingDropdown: DropdownContainer | null = null;
+
+    public componentDidMount() {
+        if (this.getTrtListOptions().length === 0) {
+            ProjectsCampaignsSpotsActions.fetchTRT();
+        }
+    }
 
     public render() {
         return this.props.spotId || this.props.userCanEditSpot ? (
             <Row
                 key={'new-spot-fields-' + this.props.campaignId}
                 innerRef={this.referenceFormContainer}
-                className={s.newSpotFields}
+                className={styles.newSpotFields}
                 removeMargins={true}
             >
                 <Col removeGutter={this.props.removeGutter}>
-                    {this.props.showTopSeparator && <hr />}
+                    {this.props.showTopSeparator && <hr/>}
 
                     {(typeof this.props.spotId === 'undefined' || this.props.spotId === null) && (
                         <p>Creating new spot:</p>
                     )}
+
+                    <div className={styles.trtBlock}>
+                        <DropdownContainer
+                            ref={this.referenceTRTDropdown}
+                            label="TRT"
+                            value={this.getTrtValue()}
+                        >
+                            <OptionsList
+                                onChange={this.handleTRTChange}
+                                value={this.form.trtId}
+                                options={this.getTrtListOptions()}
+                            />
+                        </DropdownContainer>
+                    </div>
 
                     {this.props.userCanEditSpot && (
                         <Input
@@ -150,7 +171,7 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
 
                     {this.props.userCanEditSpot && (
                         <TextArea
-                            className={s.spotNotes}
+                            className={styles.spotNotes}
                             onChange={this.handleSpotNotesChange}
                             value={this.form.notes || ''}
                             label="Spot notes..."
@@ -160,7 +181,7 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
                     )}
 
                     {(this.props.userCanEditV1ClientDueDate || this.props.userCanEditV1InternalDueDate) && (
-                        <Row className={s.spotDates}>
+                        <Row className={styles.spotDates}>
                             <Col>
                                 {this.props.userCanEditV1InternalDueDate && (
                                     <DatePicker
@@ -192,7 +213,7 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
                     )}
 
                     {(this.props.userCanEditRevisionsAndVersions || this.props.userCanEditGraphicsRevisions) && (
-                        <div className={s.revisionsContainer}>
+                        <div className={styles.revisionsContainer}>
                             <div>
                                 {this.props.userCanEditRevisionsAndVersions && (
                                     <DropdownContainer
@@ -202,8 +223,8 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
                                             this.form.numberOfRevisions === null
                                                 ? 'unlimited'
                                                 : this.form.numberOfRevisions === 0
-                                                    ? 'none'
-                                                    : this.form.numberOfRevisions.toString()
+                                                ? 'none'
+                                                : this.form.numberOfRevisions.toString()
                                         }
                                     >
                                         <OptionsList
@@ -216,29 +237,29 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
                             </div>
                             <div>
                                 {this.props.userCanEditGraphicsRevisions &&
-                                    this.form.numberOfRevisions !== 0 && (
-                                        <Toggle
-                                            align="right"
-                                            label="Graphics included:"
-                                            labelIsOnLeft={true}
-                                            onChange={this.handleGraphicsIncludeToggle}
-                                            toggleIsSetToRight={this.form.graphicsIncluded}
-                                            toggleOnLeft={{
-                                                value: false,
-                                                label: 'No',
-                                            }}
-                                            toggleOnRight={{
-                                                value: true,
-                                                label: 'Yes',
-                                            }}
-                                        />
-                                    )}
+                                this.form.numberOfRevisions !== 0 && (
+                                    <Toggle
+                                        align="right"
+                                        label="Graphics included:"
+                                        labelIsOnLeft={true}
+                                        onChange={this.handleGraphicsIncludeToggle}
+                                        toggleIsSetToRight={this.form.graphicsIncluded}
+                                        toggleOnLeft={{
+                                            value: false,
+                                            label: 'No',
+                                        }}
+                                        toggleOnRight={{
+                                            value: true,
+                                            label: 'Yes',
+                                        }}
+                                    />
+                                )}
                             </div>
                         </div>
                     )}
 
                     {this.props.userCanEditFirstStateCost && (
-                        <div className={s.firstRevisionCostContainer}>
+                        <div className={styles.firstRevisionCostContainer}>
                             <DropdownContainer
                                 ref={this.referenceSpotBillingDropdown}
                                 label="Spot billing"
@@ -287,7 +308,7 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
                             )}
 
                             <TextArea
-                                className={s.spotNotes}
+                                className={styles.spotNotes}
                                 onChange={this.handleBillingNotesChange}
                                 value={this.form.billingNotes || ''}
                                 label="Billing notes..."
@@ -297,10 +318,10 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
                         </div>
                     )}
 
-                    <Row className={s.summary}>
+                    <Row className={styles.summary}>
                         <Col>
                             <Button
-                                className={s.cancelSpotFormButton}
+                                className={styles.cancelSpotFormButton}
                                 onClick={this.handleSpotFormCancel}
                                 label={{
                                     text: 'Cancel',
@@ -317,34 +338,34 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
                                     text:
                                         this.spotStatus === 'none'
                                             ? typeof this.props.spotId !== 'undefined' && this.props.spotId
-                                                ? 'Save changes'
-                                                : 'Create spot'
+                                            ? 'Save changes'
+                                            : 'Create spot'
                                             : this.spotStatus === 'saving'
+                                            ? typeof this.props.spotId !== 'undefined' && this.props.spotId
+                                                ? 'Saving changes...'
+                                                : 'Creating spot...'
+                                            : this.spotStatus === 'error'
                                                 ? typeof this.props.spotId !== 'undefined' && this.props.spotId
-                                                    ? 'Saving changes...'
-                                                    : 'Creating spot...'
-                                                : this.spotStatus === 'error'
-                                                    ? typeof this.props.spotId !== 'undefined' && this.props.spotId
-                                                        ? 'Could not save, try again'
-                                                        : 'Could not create, try again'
-                                                    : this.spotStatus === 'error-nameisrequired'
-                                                        ? 'Spot name is required'
-                                                        : this.spot !== null
-                                                            ? 'Saved changes'
-                                                            : 'Created spot',
+                                                    ? 'Could not save, try again'
+                                                    : 'Could not create, try again'
+                                                : this.spotStatus === 'error-nameisrequired'
+                                                    ? 'Spot name is required'
+                                                    : this.spot !== null
+                                                        ? 'Saved changes'
+                                                        : 'Created spot',
                                     color:
                                         this.spotStatus === 'none'
                                             ? 'blue'
                                             : this.spotStatus === 'saving'
-                                                ? 'black'
-                                                : this.spotStatus === 'success'
-                                                    ? 'green'
-                                                    : 'orange',
+                                            ? 'black'
+                                            : this.spotStatus === 'success'
+                                                ? 'green'
+                                                : 'orange',
                                     size: 'small',
                                     onLeft: true,
                                 }}
                                 icon={{
-                                    element: <IconCheckmarkGreen width={24} height={24} />,
+                                    element: <IconCheckmarkGreen width={24} height={24}/>,
                                     size: 'small',
                                     background: 'none',
                                 }}
@@ -354,12 +375,12 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
                 </Col>
             </Row>
         ) : (
-            <Row key={'new-spot-fields-' + this.props.campaignId} className={s.newSpotFields} removeMargins={true}>
+            <Row key={'new-spot-fields-' + this.props.campaignId} className={styles.newSpotFields} removeMargins={true}>
                 <Col removeGutter={this.props.removeGutter}>
-                    <Row className={s.summary}>
+                    <Row className={styles.summary}>
                         <Col>
                             <Button
-                                className={s.cancelSpotFormButton}
+                                className={styles.cancelSpotFormButton}
                                 onClick={this.handleSpotFormCancel}
                                 label={{
                                     text: 'You have no permissions to create new spots - cancel',
@@ -374,12 +395,53 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
         );
     }
 
+    private getTrtValue(): string {
+        const rttOption: OptionsListOptionProp[] = this.getTrtListOptions();
+
+        if (rttOption.length === 0) {
+            return 'Loading...';
+        }
+
+        if (!this.form.trtId) {
+            return 'not selected';
+        }
+
+        const foundOption: OptionsListOptionProp | undefined = rttOption.find(
+            (item: OptionsListOptionProp) => {
+                return item.value === this.form.trtId;
+            }
+        );
+
+        if (foundOption) {
+            return foundOption.label;
+        }
+
+        return 'TRT list error';
+    }
+
+    private getTrtListOptions(): OptionsListOptionProp[] {
+        if (this.props.store && this.props.store.projectsCampaignsSpots) {
+            return this.props.store.projectsCampaignsSpots.trtList.map((item: TRTItem) => {
+                return {
+                    value: item.id,
+                    label: item.runtime
+                };
+            });
+        }
+
+        return [];
+    }
+
     private referenceFormContainer = (ref: HTMLDivElement) => {
         if (this.props.innerRef) {
             this.props.innerRef(ref);
         }
     };
+
     private referenceRevisionsDropdown = (ref: DropdownContainer) => (this.revisionsDropdown = ref);
+
+    private referenceTRTDropdown = (ref: DropdownContainer) => (this.TRTDropdown = ref);
+
     private referenceSpotBillingDropdown = (ref: DropdownContainer) => (this.spotBillingDropdown = ref);
 
     @action
@@ -413,6 +475,15 @@ export class ProjectBoardSpotForm extends React.Component<ProjectBoardSpotFormPr
 
         if (this.revisionsDropdown) {
             this.revisionsDropdown.closeDropdown();
+        }
+    };
+
+    @action
+    private handleTRTChange = (option: { value: OptionsListValuePropType; label: string }) => {
+        this.form.trtId = Number(option.value);
+
+        if (this.TRTDropdown) {
+            this.TRTDropdown.closeDropdown();
         }
     };
 

@@ -129,40 +129,41 @@ export class ProjectDetailsActionsClass {
                     spots:
                         typeof c.spot !== 'undefined' && c.spot
                             ? c.spot.map(s => ({
-                                  id: unformat(s.id),
-                                  name: s.spotName,
-                                  notes: s.notes,
-                                  billingNotes: s.billingNote,
-                                  billingType: s.billingType ? s.billingType : SpotBillingType.Billable,
-                                  numberOfRevisions: s.revisions,
-                                  firstRevisionCost:
-                                      typeof s.firstRevisionCost !== 'undefined' && s.firstRevisionCost !== null
-                                          ? unformat(s.firstRevisionCost)
-                                          : null,
-                                  graphicsIncluded: s.graphicsRevisions ? true : false,
-                                  v1InternalDeadline: s.internalDeadline ? dateParse(s.internalDeadline.date) : null,
-                                  v1ClientDeadline: s.clientDeadline ? dateParse(s.clientDeadline.date) : null,
-                                  versions:
-                                      typeof s.version !== 'undefined' && s.version
-                                          ? s.version.map(v => ({
-                                                value: v.id,
-                                                label: v.versionName,
-                                                note: v.versionNote,
-                                                status:
-                                                    v.versionStatusId !== null
-                                                        ? {
-                                                              id: v.versionStatusId,
-                                                              name: v.versionStatusName || '',
-                                                          }
-                                                        : null,
-                                                isCustom: v.custom ? true : false,
-                                                editors: (v.editor) ? v.editor : [],
-                                                hidden: false,
-                                            }))
-                                          : [],
-                                  justAdded: false,
-                                  hidden: false,
-                              }))
+                                id: unformat(s.id),
+                                name: s.spotName,
+                                notes: s.notes,
+                                billingNotes: s.billingNote,
+                                billingType: s.billingType ? s.billingType : SpotBillingType.Billable,
+                                numberOfRevisions: s.revisions,
+                                trtId: s.trtId,
+                                firstRevisionCost:
+                                    typeof s.firstRevisionCost !== 'undefined' && s.firstRevisionCost !== null
+                                        ? unformat(s.firstRevisionCost)
+                                        : null,
+                                graphicsIncluded: Boolean(s.graphicsRevisions),
+                                v1InternalDeadline: s.internalDeadline ? dateParse(s.internalDeadline.date) : null,
+                                v1ClientDeadline: s.clientDeadline ? dateParse(s.clientDeadline.date) : null,
+                                versions:
+                                    typeof s.version !== 'undefined' && s.version
+                                        ? s.version.map(v => ({
+                                            value: v.id,
+                                            label: v.versionName,
+                                            note: v.versionNote,
+                                            status:
+                                                v.versionStatusId !== null
+                                                    ? {
+                                                        id: v.versionStatusId,
+                                                        name: v.versionStatusName || '',
+                                                    }
+                                                    : null,
+                                            isCustom: v.custom ? true : false,
+                                            editors: (v.editor) ? v.editor : [],
+                                            hidden: false,
+                                        }))
+                                        : [],
+                                justAdded: false,
+                                hidden: false,
+                            }))
                             : [],
                     clientSelected: {
                         id: c.customerId,
@@ -224,15 +225,15 @@ export class ProjectDetailsActionsClass {
                 await API.putData(APIPath.PROJECT + '/' + id, {
                     ...(values.name
                         ? {
-                              name: values.name.trim(),
-                          }
+                            name: values.name.trim(),
+                        }
                         : {}),
                     ...(values.codeName ? { project_code: values.codeName.trim() } : {}),
                     ...(values.releaseDate
                         ? {
-                              project_release:
-                                  values.releaseDate !== null ? dateFormat(values.releaseDate, 'YYYY-MM-DD') : '',
-                          }
+                            project_release:
+                                values.releaseDate !== null ? dateFormat(values.releaseDate, 'YYYY-MM-DD') : '',
+                        }
                         : {}),
                 });
 
@@ -389,6 +390,7 @@ export class ProjectDetailsActionsClass {
                 first_revision_cost: spotData.firstRevisionCost,
                 billing_type: spotData.billingType,
                 billing_note: spotData.billingNotes,
+                trt_id: spotData.trtId,
                 graphics_revisions: spotData.graphicsIncluded ? 1 : 0,
                 internal_deadline:
                     spotData.v1InternalDeadline !== null ? dateFormat(spotData.v1InternalDeadline, 'YYYY-MM-DD') : null,
@@ -414,6 +416,7 @@ export class ProjectDetailsActionsClass {
                     spot.v1InternalDeadline = spotData.v1InternalDeadline;
                     spot.v1ClientDeadline = spotData.v1ClientDeadline;
                     spot.justAdded = false;
+                    spot.trtId = spotData.trtId;
                 }
             } else {
                 const spot = (await API.postData(APIPath.SPOT, spotDataObject)) as ProjectSpotCreateFromApi;
@@ -523,11 +526,11 @@ export class ProjectDetailsActionsClass {
                                 : {}),
                             ...(userCanEditNote
                                 ? {
-                                      version_note:
-                                          versionData.versionNote && versionData.versionNote.trim().length > 0
-                                              ? versionData.versionNote.trim()
-                                              : null,
-                                  }
+                                    version_note:
+                                        versionData.versionNote && versionData.versionNote.trim().length > 0
+                                            ? versionData.versionNote.trim()
+                                            : null,
+                                }
                                 : {}),
                         });
 
