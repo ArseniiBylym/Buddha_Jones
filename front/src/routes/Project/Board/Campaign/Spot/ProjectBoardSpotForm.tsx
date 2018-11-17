@@ -17,7 +17,7 @@ import {
     OptionsListOptionProp,
 } from 'components/Form';
 import { DatePicker } from 'components/Calendar';
-import { ProjectsCampaignsSpotsActions, ProjectsDetailsActions } from 'actions';
+import { ProjectsDetailsActions } from 'actions';
 import { SpotBillingType, SpotBillingTypeName } from 'types/projectDetailsEnums';
 import { SpotDetails } from 'types/projectDetails';
 import { TRTItem } from '../../../../../types/projectsCampaignsSpots';
@@ -124,12 +124,6 @@ export class ProjectBoardSpotForm extends React.Component<Props & AppOnlyStoreSt
     private revisionsDropdown: DropdownContainer | null = null;
     private TRTDropdown: DropdownContainer | null = null;
     private spotBillingDropdown: DropdownContainer | null = null;
-
-    public componentDidMount() {
-        if (this.getTrtListOptions().length === 0) {
-            ProjectsCampaignsSpotsActions.fetchTRT();
-        }
-    }
 
     public render() {
         return this.props.spotId || this.props.userCanEditSpot ? (

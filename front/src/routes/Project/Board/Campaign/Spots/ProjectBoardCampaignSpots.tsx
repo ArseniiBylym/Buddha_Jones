@@ -10,6 +10,7 @@ import { ProjectBoardSpotForm } from '../Spot/ProjectBoardSpotForm';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { UserPermissionKey, UserPermission } from 'types/projectPermissions';
 import { Tag } from 'components/Content';
+import { ProjectsCampaignsSpotsActions } from '../../../../../actions';
 
 const zenscroll = require('zenscroll');
 

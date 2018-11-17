@@ -15,6 +15,7 @@ import { UserPermission, UserPermissionKey } from 'types/projectPermissions';
 import { ProjectsVersionsStore } from '../../../../store/AllStores';
 import { ProjectBoardCampaignChannel } from './Channel';
 import { ProjectBoardCampaignStudioContacts } from './StudioContacts/ProjectBoardCampaignStudioContacts';
+import { ProjectsCampaignsSpotsActions } from '../../../../actions';
 
 const zenscroll = require('zenscroll');
 
@@ -488,6 +489,10 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
             }
         } else {
             this.campaignIsExpanded = true;
+
+            if (this.props.store && this.props.store.projectsCampaignsSpots.trtList.length === 0) {
+                ProjectsCampaignsSpotsActions.fetchTRT();
+            }
         }
     };
 
