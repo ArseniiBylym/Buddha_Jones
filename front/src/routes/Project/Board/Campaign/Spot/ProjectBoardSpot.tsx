@@ -118,7 +118,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
             onLeft: false,
         };
     }
-    
+
     public render() {
         const { spot } = this.props;
 
@@ -182,6 +182,13 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                         <Col>
                             {!this.isEditFormVisible && (
                                 <div className={s.spotDetails}>
+                                    {spot.trtId &&
+                                    <Paragraph className={s.noMargin}>
+                                        <span>TRT: </span>
+                                        {this.getSpotTRTNameById(spot.trtId)}
+                                    </Paragraph>
+                                    }
+
                                     {spot.notes &&
                                     spot.notes.trim() && (
                                         <Paragraph className={s.noMargin}>
@@ -408,6 +415,17 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                 </Col>
             </Row>
         );
+    }
+
+    private getSpotTRTNameById(trtId: number): string {
+        if (this.props.store && this.props.store.projectsCampaignsSpots.trtList.length > 0) {
+            const trtItem = this.props.store.projectsCampaignsSpots.trtList.find((item) => item.id === trtId);
+
+            return trtItem ? trtItem.runtime : 'no trt selected';
+
+        }
+
+        return 'loading...';
     }
 
     @action
