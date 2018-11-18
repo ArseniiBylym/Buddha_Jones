@@ -235,7 +235,7 @@ export class TimeEntryActionsClass {
                                 projectCampaignId: entry.projectCampaignId,
                                 projectCampaignName: entry.campaignName,
                                 spotId: entry.spotId,
-                                spotName: entry.spotName,
+                                spotName: entry.spotName + (entry.runtime ? ` (${entry.runtime})` : ''),
                                 versionId: entry.versionId,
                                 versionName: entry.versionName,
                                 hours: this.splitEntryDurationAndCalculateHoursFloat(entry.duration),

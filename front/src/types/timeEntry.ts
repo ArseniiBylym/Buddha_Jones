@@ -81,6 +81,8 @@ export interface TimeEntryFromApi {
     statusName: string;
     approvedBy: number | null;
     approvedAt: DateObjectFromApi | null;
+    trtId?: number;
+    runtime?: string;
 }
 
 export interface TimeEntryUser {
