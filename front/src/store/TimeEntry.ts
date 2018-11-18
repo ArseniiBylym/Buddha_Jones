@@ -23,10 +23,10 @@ export class TimeEntry {
     @observable
     public minimumHoursNotMetModal: {
         show: boolean;
-        minminumHours: number;
+        minHours: number;
     } = {
         show: false,
-        minminumHours: 0,
+        minHours: 0,
     };
 
     @observable
@@ -204,10 +204,10 @@ export class TimeEntry {
 
     @computed
     public get viewTimeline(): Array<{ totalMinutes: number; hour: string; minutes: string }> {
-        const timeline = [];
+        const timeline: any = [];
 
         for (let t = 0; t < 24; t++) {
-            let hour = {
+            let hour: any = {
                 totalMinutes: t * 60,
                 hour: padStart(t.toString(), 2, '0'),
                 minutes: '00',

@@ -7,8 +7,9 @@ import { TimeEntryAsync } from './TimeTracking';
 import { UserAccountAsync } from './User';
 import { TimeApprovalAsync } from './TimeTracking/Approval';
 import { ProducerSpotSentListAsync, ProducerSpotSentFormAsync } from './SpotSent';
-import { ProjectBoardPermissionListAsync } from './Configuration/ProjectBoardPermission/List/ProjectBoardPermissionListAsync';
-import { ProjectBoardPermissionEditAsync } from './Configuration/ProjectBoardPermission/Form/ProjectBoardPermissionEditAsync';
+import { ProjectBoardPermissionListAsync } from './Configuration/UserManagement/ProjectBoardPermission/List';
+import { ProjectBoardPermissionEditAsync } from './Configuration/UserManagement/ProjectBoardPermission/Form';
+import { UserManagementUsersListAsync } from './Configuration/UserManagement/UsersList/List';
 
 // Icons
 const dashboardIcon = require('../assets/images/navigation/navigation-icon-dashboard.png');
@@ -59,7 +60,7 @@ export const routes: Route[] = [
         key: 'project-board',
         accessKey: RouteAccessKey.ProjectBoard,
         name: 'Project board',
-        path: '/portal/project/:clientId/:clientName/:projectId/:projectName/:fromPage?',
+        path: '/portal/project/:studioId/:studioName/:projectId/:projectName/:fromPage?',
         exact: false,
         allowAllUsers: false,
     },
@@ -91,8 +92,8 @@ export const routes: Route[] = [
         accessKey: RouteAccessKey.SpotSentByProducer,
         group: studioGroup,
         name: 'Spot sent',
-        path: '/portal/studio/producer-spot-sent',
-        entry: '/portal/studio/producer-spot-sent',
+        path: '/portal/studio/producer-spot-sent-list',
+        entry: '/portal/studio/producer-spot-sent-list',
         exact: true,
         allowAllUsers: true,
     },
@@ -101,7 +102,7 @@ export const routes: Route[] = [
         key: 'producer-spot-sent-form',
         accessKey: RouteAccessKey.SpotSentByProducer,
         name: 'Spot sent',
-        path: '/portal/studio/producer-spot-sent/:id',
+        path: '/portal/studio/producer-spot-sent-details/:id',
         exact: false,
         allowAllUsers: true,
     },
@@ -130,7 +131,7 @@ export const routes: Route[] = [
         key: 'project-board-permission',
         accessKey: RouteAccessKey.ProjectBoardPermission,
         name: 'Define project board permission',
-        path: '/portal/configuration/project-board-permission/:id',
+        path: '/portal/configuration/user-management/project-board-permission/:id',
         exact: false,
         allowAllUsers: false,
     },
@@ -139,9 +140,19 @@ export const routes: Route[] = [
         key: 'project-board-permission',
         accessKey: RouteAccessKey.ProjectBoardPermission,
         group: configurationGroup,
-        name: 'Project board permission',
-        path: '/portal/configuration/project-board-permission',
-        entry: '/portal/configuration/project-board-permission',
+        name: 'User management',
+        path: '/portal/configuration/user-management/project-board-permission',
+        entry: '/portal/configuration/user-management/project-board-permission',
+        exact: false,
+        allowAllUsers: false,
+    },
+    {
+        component: UserManagementUsersListAsync,
+        key: 'user-management-users-list',
+        accessKey: RouteAccessKey.ProjectBoardPermission,
+        group: configurationGroup,
+        name: 'User management users list',
+        path: '/portal/configuration/user-management/users-list/:userTypeId',
         exact: false,
         allowAllUsers: false,
     },

@@ -14,8 +14,8 @@ const s = require('./ProjectsList.css');
 interface ProjectsListCardProps {
     onProjectClick:
         | ((
-              clientId: number,
-              clientName: string,
+              studioId: number,
+              studioName: string,
               projectId: number,
               projectName: string,
               projectCampaignId?: number
@@ -37,7 +37,7 @@ export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}>
                             {this.props.project.name}
                             <IconArrowRight width={15} height={11} marginTop={-5} marginLeft={-7} />
                         </h3>
-                        <h4 className={s.client}>{this.props.project.clientName}</h4>
+                        <h4 className={s.client}>{this.props.project.studioName}</h4>
                     </Col>
                 </Row>
 
@@ -64,7 +64,7 @@ export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}>
                     <Col className={s.dateCol}>
                         <Paragraph>
                             <span>Last update</span>
-                            {dateFormat(this.props.project.lastUpdatedAt, 'MM/DD/YYYY hh:mm A')}
+                            {this.props.project.lastUpdatedAt && dateFormat(this.props.project.lastUpdatedAt, 'MM/DD/YYYY hh:mm A')}
                         </Paragraph>
                     </Col>
                     <Col className={s.nameCol}>
@@ -82,11 +82,11 @@ export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}>
         );
     }
 
-    private handleProjectClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    private handleProjectClick = () => {
         if (this.props.onProjectClick) {
             this.props.onProjectClick(
-                this.props.project.clientId,
-                this.props.project.clientName,
+                this.props.project.studioId,
+                this.props.project.studioName,
                 this.props.project.id,
                 this.props.project.name
             );
@@ -99,8 +99,8 @@ export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}>
 
         if (this.props.onProjectClick) {
             this.props.onProjectClick(
-                this.props.project.clientId,
-                this.props.project.clientName,
+                this.props.project.studioId,
+                this.props.project.studioName,
                 this.props.project.id,
                 this.props.project.name,
                 projectCampaignId

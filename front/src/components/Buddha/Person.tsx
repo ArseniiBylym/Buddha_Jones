@@ -60,8 +60,8 @@ export class Person extends React.Component<PersonProps, {}> {
                 justifyContent={
                     this.props.align !== null
                         ? this.props.align === 'center'
-                            ? 'center'
-                            : this.props.align === 'right' ? 'flex-end' : 'flex-start'
+                        ? 'center'
+                        : this.props.align === 'right' ? 'flex-end' : 'flex-start'
                         : undefined
                 }
                 alignContent="center"
@@ -126,7 +126,7 @@ export class Person extends React.Component<PersonProps, {}> {
                     {this.props.personName}
                     {this.props.showRemoveIcon && (
                         <span className="personCloseIcon">
-                            <IconClose width={8} height={8} />
+                            <IconClose width={8} height={8}/>
                         </span>
                     )}
                 </p>
@@ -134,13 +134,13 @@ export class Person extends React.Component<PersonProps, {}> {
         }
     }
 
-    private handlePersonClick = (e: React.MouseEvent<HTMLParagraphElement>) => {
+    private handlePersonClick = () => {
         if (this.props.onClick) {
             this.props.onClick();
         }
     };
 
-    private handleCheckmarkClick = (checked: boolean) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleCheckmarkClick = (checked: boolean) => () => {
         if (this.props.onClick) {
             this.props.onClick(checked);
         }

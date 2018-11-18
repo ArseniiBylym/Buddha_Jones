@@ -1,0 +1,27 @@
+.channelContainer {
+  padding: 24px;
+  background: #efebe6;
+  border-top: 1px solid #e2dbd5;
+  box-shadow: 0px 8px 8px rgba(126, 117, 109, 0);
+  transition: 300ms background 0ms cubic-bezier(0.645, 0.045, 0.355, 1),
+    300ms box-shadow 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
+
+  & :global(.row.sectionHeader) {
+    margin-bottom: 0;
+  }
+
+  &.editing {
+    background: #ffffff;
+    box-shadow: 0px 4px 16px rgba(126, 117, 109, 0.1);
+  }
+
+  & .channel {
+  margin-top: 10px;
+    }
+
+   & .channel > .channelItem {
+      display: inline-block;
+      width: 270px;
+      padding-right: 10px;
+   }
+}

@@ -10,19 +10,19 @@ export class User {
 
     @computed
     public get isLoggedIn(): boolean {
-        return this.token !== null && this.token !== '' && this.data !== null && this.data.isActive;
+        return this.token !== null && this.token !== '' && this.data !== null && Boolean(this.data.status);
     }
 
     @computed
     public get routes(): Route[] {
         return this.isLoggedIn
             ? routes.filter(
-                  route =>
+                route =>
                     route.allowAllUsers ||
                     (this.data !== null
                         ? this.data.allowedRouteKeys.indexOf(route.accessKey) !== -1
                         : false)
-              )
+            )
             : [];
     }
 

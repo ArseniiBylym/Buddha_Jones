@@ -2,7 +2,7 @@ import * as React from 'react';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { Section, Row, Col } from 'components/Section';
-import { ButtonEdit } from 'components/Button';
+import { ButtonClose, ButtonEdit } from 'components/Button';
 import { CommentForm } from 'components/Buddha';
 import { ProjectsActions } from 'actions';
 
@@ -36,11 +36,22 @@ export class ProjectBoardDescription extends React.Component<ProjectBoardDescrip
                             {
                                 key: 'edit-note-button',
                                 element: (
-                                    <ButtonEdit
-                                        float="right"
-                                        onClick={this.handleProjectDescriptionEditModeToggle}
-                                        label={this.isInEditMode ? 'Cancel edit' : 'Edit project description'}
-                                    />
+                                    <>
+                                        {this.isInEditMode &&
+                                            <ButtonClose
+                                                float="right"
+                                                onClick={this.handleProjectDescriptionEditModeToggle}
+                                                label={'Cancel'}
+                                            />
+                                        }
+                                        {!this.isInEditMode &&
+                                            <ButtonEdit
+                                                float="right"
+                                                onClick={this.handleProjectDescriptionEditModeToggle}
+                                                label={'Edit project description'}
+                                            />
+                                        }
+                                    </>
                                 ),
                             },
                         ]
@@ -56,7 +67,7 @@ export class ProjectBoardDescription extends React.Component<ProjectBoardDescrip
                             value={this.isInEditMode ? this.editedNote : this.props.note || ''}
                             placeholder="Details regarding requested work..."
                             viewOnlyEmptyValueText="Project has no details."
-                            viewOnly={this.isInEditMode === false}
+                            viewOnly={!this.isInEditMode}
                             status={this.saveStatus}
                             label="Save note"
                             labelSaving="Saving note"
@@ -69,7 +80,7 @@ export class ProjectBoardDescription extends React.Component<ProjectBoardDescrip
         ) : null;
     }
 
-    private handleProjectDescriptionEditModeToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleProjectDescriptionEditModeToggle = () => {
         this.toggleEditMode();
     };
 
@@ -78,7 +89,7 @@ export class ProjectBoardDescription extends React.Component<ProjectBoardDescrip
         this.editedNote = value;
     };
 
-    private handleNotesSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleNotesSubmit = () => {
         this.saveNote();
     };
 

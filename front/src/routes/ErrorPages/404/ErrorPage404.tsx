@@ -32,7 +32,7 @@ export class ErrorPage404 extends React.Component<ErrorPage404Props, {}> {
         );
     }
 
-    private handleBackButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleBackButtonClick = () => {
         if (!this.props.history) {
             return;
         }

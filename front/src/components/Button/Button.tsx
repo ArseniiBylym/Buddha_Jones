@@ -16,6 +16,24 @@ export type ButtonLabelSizePropType = 'small' | 'large';
 export type ButtonLabelColorPropType = 'black' | 'white' | 'white' | 'yellow' | 'blue' | 'orange' | 'green';
 export type ButtonTooltipPositionOnPropType = 'left' | 'top' | 'right' | 'bottom';
 
+export interface ButtonLabel {
+    text: string;
+    size?: ButtonLabelSizePropType;
+    color?: ButtonLabelColorPropType;
+    onLeft?: boolean;
+}
+
+export interface ButtonIcon {
+    element: JSX.Element;
+    size?: ButtonIconSizePropType;
+    background?: ButtonIconColorPropType;
+}
+
+export interface ButtonTooltip {
+    text: string;
+    on?: ButtonTooltipPositionOnPropType;
+}
+
 // Props
 export interface ButtonProps {
     onClick?: ButtonOnClickPropType;
@@ -24,21 +42,9 @@ export interface ButtonProps {
     labelClassName?: string | null;
     float?: ButtonFloatPropType;
     isInBox?: boolean;
-    icon?: {
-        element: JSX.Element;
-        size?: ButtonIconSizePropType;
-        background?: ButtonIconColorPropType;
-    } | null;
-    label?: {
-        text: string;
-        size?: ButtonLabelSizePropType;
-        color?: ButtonLabelColorPropType;
-        onLeft?: boolean;
-    } | null;
-    tooltip?: {
-        text: string;
-        on?: ButtonTooltipPositionOnPropType;
-    } | null;
+    icon?: ButtonIcon | null;
+    label?: ButtonLabel | null;
+    tooltip?: ButtonTooltip | null;
     disabled?: boolean;
 }
 
@@ -95,19 +101,19 @@ export class Button extends React.Component<ButtonProps, {}> {
                         tooltipOn === 'top'
                             ? 'buttonTooltipOntopIn'
                             : tooltipOn === 'bottom'
-                                ? 'buttonTooltipOnbottomIn'
-                                : tooltipOn === 'right'
-                                    ? 'buttonTooltipOnrightIn'
-                                    : 'buttonTooltipOnleftIn';
+                            ? 'buttonTooltipOnbottomIn'
+                            : tooltipOn === 'right'
+                                ? 'buttonTooltipOnrightIn'
+                                : 'buttonTooltipOnleftIn';
                 } else {
                     this.tooltipClassName =
                         tooltipOn === 'top'
                             ? 'buttonTooltipOntopOut'
                             : tooltipOn === 'bottom'
-                                ? 'buttonTooltipOnbottomOut'
-                                : tooltipOn === 'right'
-                                    ? 'buttonTooltipOnrightOut'
-                                    : 'buttonTooltipOnleftOut';
+                            ? 'buttonTooltipOnbottomOut'
+                            : tooltipOn === 'right'
+                                ? 'buttonTooltipOnrightOut'
+                                : 'buttonTooltipOnleftOut';
                 }
 
                 this.tooltipStyle = {
@@ -147,7 +153,7 @@ export class Button extends React.Component<ButtonProps, {}> {
                                 ? this.props.label.color
                                 : ''
                         )]:
-                            this.props.isInBox && this.props.label && typeof this.props.label.color !== 'undefined',
+                        this.props.isInBox && this.props.label && typeof this.props.label.color !== 'undefined',
                     },
                     this.props.className
                 )}
@@ -158,60 +164,60 @@ export class Button extends React.Component<ButtonProps, {}> {
                 onMouseLeave={this.handleButtonHover(false)}
             >
                 {this.props.label &&
-                    typeof this.props.label.text !== 'undefined' &&
-                    this.props.label.text &&
-                    (typeof this.props.label.onLeft === 'undefined' || this.props.label.onLeft === true) &&
-                    this.renderLabel()}
+                typeof this.props.label.text !== 'undefined' &&
+                this.props.label.text &&
+                (typeof this.props.label.onLeft === 'undefined' || this.props.label.onLeft) &&
+                this.renderLabel()}
 
                 {this.props.icon &&
-                    typeof this.props.icon.element !== 'undefined' &&
-                    this.props.icon.element && (
-                        <span
-                            className={classNames('buttonIcon', {
-                                ['buttonIcon' +
-                                _capitalize(
-                                    typeof this.props.icon.size !== 'undefined' ? this.props.icon.size : 'Large'
-                                )]: true,
-                                ['buttonIconBackground' +
-                                _capitalize(
-                                    typeof this.props.icon.background !== 'undefined'
-                                        ? this.props.icon.background
-                                        : 'Orange'
-                                )]: true,
-                            })}
-                        >
-                            {this.props.icon.element}
-                        </span>
-                    )}
+                typeof this.props.icon.element !== 'undefined' &&
+                this.props.icon.element && (
+                    <span
+                        className={classNames('buttonIcon', {
+                            ['buttonIcon' +
+                            _capitalize(
+                                typeof this.props.icon.size !== 'undefined' ? this.props.icon.size : 'Large'
+                            )]: true,
+                            ['buttonIconBackground' +
+                            _capitalize(
+                                typeof this.props.icon.background !== 'undefined'
+                                    ? this.props.icon.background
+                                    : 'Orange'
+                            )]: true,
+                        })}
+                    >
+                        {this.props.icon.element}
+                    </span>
+                )}
 
                 {this.props.label &&
-                    typeof this.props.label.text !== 'undefined' &&
-                    this.props.label.text &&
-                    (typeof this.props.label.onLeft !== 'undefined' && this.props.label.onLeft === false) &&
-                    this.renderLabel()}
+                typeof this.props.label.text !== 'undefined' &&
+                this.props.label.text &&
+                (typeof this.props.label.onLeft !== 'undefined' && !this.props.label.onLeft) &&
+                this.renderLabel()}
 
                 {this.props.tooltip &&
-                    typeof this.props.tooltip.text !== 'undefined' && (
-                        <span
-                            ref={this.referenceTooltip}
-                            style={{
-                                ...this.tooltipStyle,
-                                ...{ display: this.showTooltip ? 'block' : 'none' },
-                            }}
-                            className={classNames(
-                                'buttonTooltip',
-                                {
-                                    ['buttonTooltipOn' +
-                                    _capitalize(
-                                        typeof this.props.tooltip.on !== 'undefined' ? this.props.tooltip.on : 'Left'
-                                    )]: true,
-                                },
-                                this.tooltipClassName
-                            )}
-                        >
-                            {this.props.tooltip.text}
-                        </span>
-                    )}
+                typeof this.props.tooltip.text !== 'undefined' && (
+                    <span
+                        ref={this.referenceTooltip}
+                        style={{
+                            ...this.tooltipStyle,
+                            ...{ display: this.showTooltip ? 'block' : 'none' },
+                        }}
+                        className={classNames(
+                            'buttonTooltip',
+                            {
+                                ['buttonTooltipOn' +
+                                _capitalize(
+                                    typeof this.props.tooltip.on !== 'undefined' ? this.props.tooltip.on : 'Left'
+                                )]: true,
+                            },
+                            this.tooltipClassName
+                        )}
+                    >
+                        {this.props.tooltip.text}
+                    </span>
+                )}
             </button>
         );
     }
@@ -231,10 +237,10 @@ export class Button extends React.Component<ButtonProps, {}> {
                             : 'Right')]: true,
                         ['buttonLabel' +
                         _capitalize(typeof this.props.label.color !== 'undefined' ? this.props.label.color : '')]:
-                            typeof this.props.label.color !== 'undefined',
+                        typeof this.props.label.color !== 'undefined',
                         ['buttonLabel' +
                         _capitalize(typeof this.props.label.size !== 'undefined' ? this.props.label.size : '')]:
-                            typeof this.props.label.size !== 'undefined',
+                        typeof this.props.label.size !== 'undefined',
                     })}
                 >
                     {this.props.label.text}
@@ -257,7 +263,7 @@ export class Button extends React.Component<ButtonProps, {}> {
         }
     };
 
-    private handleButtonHover = (enter: boolean) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleButtonHover = (enter: boolean) => () => {
         if (enter) {
             this.showTooltip = true;
             setTimeout(() => {
@@ -268,7 +274,7 @@ export class Button extends React.Component<ButtonProps, {}> {
         } else {
             this.animateTooltip = false;
             setTimeout(() => {
-                if (this.exists && this.showTooltip && this.animateTooltip === false) {
+                if (this.exists && this.showTooltip && !this.animateTooltip) {
                     this.showTooltip = false;
                 }
             }, 500);

@@ -96,7 +96,7 @@ class TooltipBox extends React.Component<TooltipBoxProps, {}> {
         this.props.onMouseOver();
     };
 
-    private handleMouseOut = (e: React.MouseEvent<HTMLDivElement>) => {
+    private handleMouseOut = () => {
         this.props.onMouseOut();
     };
 

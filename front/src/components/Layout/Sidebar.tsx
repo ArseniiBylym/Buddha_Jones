@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
 import { observer, inject } from 'mobx-react';
-// import { has as _has } from 'lodash';
 import { NavigationActions } from '../../actions';
 import { AppOnlyStoreState } from '../../store/AllStores';
 import { Link } from 'react-router-dom';
@@ -15,7 +14,8 @@ const buddhaJonesLogoLarge = require('../../assets/images/logos/buddha-jones-log
 const emptyUserProfileImage = require('../../assets/images/account/empty-user-profile-picture.png');
 
 // Props
-interface SidebarProps {}
+interface SidebarProps {
+}
 
 // Types
 type SidebarPropsTypes = SidebarProps & AppOnlyStoreState;
@@ -66,7 +66,7 @@ export class Sidebar extends React.Component<SidebarPropsTypes, {}> {
 
         reaction(
             () => this.hoveredGroupCenterPosition,
-            groupCenterPosition => {
+            () => {
                 this.repositionSubNavigation();
             }
         );
@@ -95,9 +95,9 @@ export class Sidebar extends React.Component<SidebarPropsTypes, {}> {
                 className={classNames(s.sidebarNavigation, {
                     [s.sidebarNavigationActive]: navigation.sidebarExpanded,
                     [s.sidebarNavigationActiveWithSubNav]:
-                        navigation.sidebarExpanded &&
-                        navigation.hoveredGroup &&
-                        navigation.hoveredGroup.links.length > 1,
+                    navigation.sidebarExpanded &&
+                    navigation.hoveredGroup &&
+                    navigation.hoveredGroup.links.length > 1,
                 })}
             >
                 <nav
@@ -106,11 +106,11 @@ export class Sidebar extends React.Component<SidebarPropsTypes, {}> {
                     })}
                 >
                     <div>
-                        <img className={classNames(s.sidebarLogo, s.sidebarLogoSmall)} src={buddhaJonesLogoSmall} />
-                        <img className={classNames(s.sidebarLogo, s.sidebarLogoLarge)} src={buddhaJonesLogoLarge} />
+                        <img className={classNames(s.sidebarLogo, s.sidebarLogoSmall)} src={buddhaJonesLogoSmall}/>
+                        <img className={classNames(s.sidebarLogo, s.sidebarLogoLarge)} src={buddhaJonesLogoLarge}/>
                     </div>
 
-                    <hr className={s.sidebarSeparator} />
+                    <hr className={s.sidebarSeparator}/>
 
                     <ul ref={this.referenceGroupsList} className={s.sidebarLinksList}>
                         {Object.keys(navigation.navigationGroups).map(groupKey => {
@@ -120,7 +120,7 @@ export class Sidebar extends React.Component<SidebarPropsTypes, {}> {
                                     key={group.key}
                                     className={classNames({
                                         [s.sidebarLinksListEntryActive]:
-                                            group.isActive || (group.links.length === 0 && group.links[0].isActive),
+                                        group.isActive || (group.links.length === 0 && group.links[0].isActive),
                                         [s.sidebarLinksListEntryExpanded]: group.isActive && group.links.length > 1,
                                         [s.sidebarLinksListEntryHovered]: group.key === navigation.hoveredGroupKey,
                                     })}
@@ -130,7 +130,7 @@ export class Sidebar extends React.Component<SidebarPropsTypes, {}> {
                                         onClick={this.handleSidebarGroupClick(group)}
                                         onMouseEnter={this.handleSidebarGroupHover(group)}
                                     >
-                                        <img width="24" src={group.icon} />
+                                        <img width="24" src={group.icon}/>
                                         <span>{group.links.length === 1 ? group.links[0].name : group.name}</span>
                                     </a>
                                 </li>
@@ -150,8 +150,8 @@ export class Sidebar extends React.Component<SidebarPropsTypes, {}> {
                                 />
                                 <span>
                                     {user.data
-                                        ? user.data.name.full
-                                            ? user.data.name.full
+                                        ? user.data.fullName
+                                            ? user.data.fullName
                                             : user.data.username
                                         : 'My Account'}
                                 </span>
@@ -175,24 +175,24 @@ export class Sidebar extends React.Component<SidebarPropsTypes, {}> {
                         }}
                     >
                         {this.isSubNavigationActive &&
-                            navigation.hoveredGroup &&
-                            navigation.hoveredGroup.links.map((link, linkIndex) => (
-                                <li
-                                    key={link.key}
-                                    className={classNames({
-                                        [s.subNavigationLinkActive]: link.isActive,
-                                    })}
+                        navigation.hoveredGroup &&
+                        navigation.hoveredGroup.links.map((link, linkIndex) => (
+                            <li
+                                key={link.key}
+                                className={classNames({
+                                    [s.subNavigationLinkActive]: link.isActive,
+                                })}
+                            >
+                                <Link
+                                    to={link.entry}
+                                    title={link.name}
+                                    onClick={this.handleSidebarLinkClick(navigation.hoveredGroup, link)}
                                 >
-                                    <Link
-                                        to={link.entry}
-                                        title={link.name}
-                                        onClick={this.handleSidebarLinkClick(navigation.hoveredGroup, link)}
-                                    >
-                                        <span>{linkIndex + 1}.</span>
-                                        {link.name}
-                                    </Link>
-                                </li>
-                            ))}
+                                    <span>{linkIndex + 1}.</span>
+                                    {link.name}
+                                </Link>
+                            </li>
+                        ))}
                     </ol>
                 </nav>
             </div>
@@ -202,7 +202,7 @@ export class Sidebar extends React.Component<SidebarPropsTypes, {}> {
     private referenceGroupsList = (ref: HTMLUListElement) => (this.groupsList = ref);
     private referenceSubLinksList = (ref: HTMLOListElement) => (this.subLinksList = ref);
 
-    private handleSidebarHover = (enter: boolean) => (e: React.MouseEvent<HTMLDivElement>) => {
+    private handleSidebarHover = (enter: boolean) => () => {
         if (enter) {
             NavigationActions.toggleSidebarExpansion(true);
         } else {
@@ -224,19 +224,17 @@ export class Sidebar extends React.Component<SidebarPropsTypes, {}> {
         NavigationActions.changeActiveGroup(group);
     };
 
-    private handleSidebarGroupHover = (group: NavigationGroupDetails) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    private handleSidebarGroupHover = (group: NavigationGroupDetails) => () => {
         NavigationActions.changeHoveredGroup(group);
     };
 
-    private handleSidebarLinkClick = (group: NavigationGroupDetails | null, link: NavigationLinkDetails) => (
-        e: React.MouseEvent<HTMLAnchorElement>
-    ) => {
+    private handleSidebarLinkClick = (group: NavigationGroupDetails | null, link: NavigationLinkDetails) => () => {
         NavigationActions.changeActiveGroup(group);
         NavigationActions.changeActiveLink(link);
         NavigationActions.collapseSidebar();
     };
 
-    private handleMyAccountClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    private handleMyAccountClick = () => {
         NavigationActions.changeActiveGroup(null);
         NavigationActions.changeActiveLink(null);
         NavigationActions.collapseSidebar();

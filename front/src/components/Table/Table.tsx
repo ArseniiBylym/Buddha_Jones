@@ -6,16 +6,18 @@ import capitalize from 'lodash-es/capitalize';
 // Styles
 const s = require('./Table.css');
 
+export interface TableHeader {
+    title: string;
+    align?: 'left' | 'center' | 'right';
+    colSpan?: number;
+}
+
 // Props
 interface TableProps {
     className?: string | null;
     type?: 'default' | 'compact';
     title?: string | null;
-    header?: Array<{
-        title: string;
-        align?: 'left' | 'center' | 'right';
-        colSpan?: number;
-    }> | null;
+    header?: TableHeader[] | null;
     columnsWidths?: string[] | null;
     footerRows?: JSX.Element[];
     removeFirstRowTopPadding?: boolean;
@@ -54,45 +56,45 @@ export class Table extends React.Component<TableProps, {}> {
                     )}
                 >
                     {this.props.columnsWidths &&
-                        this.props.columnsWidths.length > 0 && (
-                            <colgroup>
-                                {this.props.columnsWidths.map((colWidth, colIndex) => {
-                                    return <col key={colIndex} width={colWidth} />;
-                                })}
-                            </colgroup>
-                        )}
+                    this.props.columnsWidths.length > 0 && (
+                        <colgroup>
+                            {this.props.columnsWidths.map((colWidth, colIndex) => {
+                                return <col key={colIndex} width={colWidth}/>;
+                            })}
+                        </colgroup>
+                    )}
 
                     {this.props.header &&
-                        this.props.header.length > 0 && (
-                            <thead>
-                                <tr>
-                                    {this.props.header.map((theadCol, index) => {
-                                        // Prepare thead column class
-                                        let theadColClassName = '';
-                                        if (typeof theadCol.align !== 'undefined') {
-                                            theadColClassName += ' ' + s['align' + capitalize(theadCol.align)];
-                                        }
+                    this.props.header.length > 0 && (
+                        <thead>
+                        <tr>
+                            {this.props.header.map((theadCol, index) => {
+                                // Prepare thead column class
+                                let theadColClassName = '';
+                                if (typeof theadCol.align !== 'undefined') {
+                                    theadColClassName += ' ' + s['align' + capitalize(theadCol.align)];
+                                }
 
-                                        // Return thead column
-                                        return (
-                                            <th
-                                                key={index}
-                                                colSpan={theadCol.colSpan != null ? theadCol.colSpan : undefined}
-                                                className={theadColClassName}
-                                            >
-                                                {theadCol.title}
-                                            </th>
-                                        );
-                                    })}
-                                </tr>
-                            </thead>
-                        )}
+                                // Return thead column
+                                return (
+                                    <th
+                                        key={index}
+                                        colSpan={theadCol.colSpan != null ? theadCol.colSpan : undefined}
+                                        className={theadColClassName}
+                                    >
+                                        {theadCol.title}
+                                    </th>
+                                );
+                            })}
+                        </tr>
+                        </thead>
+                    )}
 
                     {typeof this.props.children !== 'undefined' &&
-                        this.props.children !== null && <tbody>{this.props.children}</tbody>}
+                    this.props.children !== null && <tbody>{this.props.children}</tbody>}
 
                     {this.props.footerRows &&
-                        this.props.footerRows.length > 0 && <tfoot>{this.props.footerRows}</tfoot>}
+                    this.props.footerRows.length > 0 && <tfoot>{this.props.footerRows}</tfoot>}
                 </table>
             </div>
         );

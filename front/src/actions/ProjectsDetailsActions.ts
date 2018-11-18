@@ -26,7 +26,9 @@ export class ProjectDetailsActionsClass {
     @action
     fetchProjectDetails = async (
         projectId: number,
-        projectData: { projectName?: string; projectCodeName?: string; clientId?: number; clientName?: string } = {}
+        projectData: {
+            projectName?: string; projectCodeName?: string; clientId?: number; clientName?: string; studioId?: number; studioName?: string
+        } = {}
     ): Promise<boolean> => {
         try {
             // Indicate project is being loaded, initialize project object if it doesn't exist yet
@@ -52,6 +54,12 @@ export class ProjectDetailsActionsClass {
                     clientName:
                         typeof projectData.clientName !== 'undefined' && projectData.clientName
                             ? projectData.clientName
+                            : '',
+                    studioId:
+                        typeof projectData.studioId !== 'undefined' && projectData.studioId ? projectData.studioId : 0,
+                    studioName:
+                        typeof projectData.studioName !== 'undefined' && projectData.studioName
+                            ? projectData.studioName
                             : '',
                     projectReleaseDate: null,
                     notes: null,
@@ -79,6 +87,8 @@ export class ProjectDetailsActionsClass {
                     typeof project.projectCode !== 'undefined' && project.projectCode ? project.projectCode : null;
                 ProjectsDetailsStore.fetchedProjects[projectIdMatch].clientId = project.customerId;
                 ProjectsDetailsStore.fetchedProjects[projectIdMatch].clientName = project.customerName;
+                ProjectsDetailsStore.fetchedProjects[projectIdMatch].studioId = project.studioId;
+                ProjectsDetailsStore.fetchedProjects[projectIdMatch].studioName = project.studioName;
                 ProjectsDetailsStore.fetchedProjects[projectIdMatch].projectReleaseDate =
                     project.projectRelease !== null && project.projectRelease.date
                         ? dateParse(project.projectRelease.date)
@@ -146,7 +156,7 @@ export class ProjectDetailsActionsClass {
                                                           }
                                                         : null,
                                                 isCustom: v.custom ? true : false,
-                                                editors: (v.editors) ? v.editors : [],
+                                                editors: (v.editor) ? v.editor : [],
                                                 hidden: false,
                                             }))
                                           : [],
@@ -154,6 +164,22 @@ export class ProjectDetailsActionsClass {
                                   hidden: false,
                               }))
                             : [],
+                    clientSelected: {
+                        id: c.customerId,
+                        name: c.customerName
+                    },
+                    approvedByBilling: c.approvedByBilling,
+                    channelId: c.channelId,
+                    channelName: c.channelName,
+                    customerContact: c.customerContact.map(contact => {
+                        return {
+                            id: contact.id,
+                            customerId: contact.customerId,
+                            name: contact.name,
+                            title: contact.title,
+                            email: contact.email
+                        };
+                    })
                 }));
             }
 
@@ -719,21 +745,20 @@ export class ProjectDetailsActionsClass {
     };
 
     @action
-    public changeProjectCampaignCreativeExecutive = async (
-        projectId: number,
+    public changeProjectCampaignAssignCustomerContact = async (
         projectCampaignId: number,
-        executiveId: number | null
+        contactId: number,
+        mode: 'add' | 'remove'
     ): Promise<boolean> => {
         try {
-            await API.postData(APIPath.ASSIGN_CONTACT_TO_PROJECT_CAMPAIGN, {
-                project_id: projectId,
-                project_campaign_id: projectCampaignId,
-                first_point_of_contact_id: executiveId,
-            });
 
-            const campaign = this.findCampaign(projectId, projectCampaignId);
-            if (campaign) {
-                campaign.firstPointOfContactId = executiveId;
+            if (mode === 'add') {
+                await API.postData(APIPath.ASSIGN_CONTACT_TO_PROJECT_CAMPAIGN, {
+                    project_campaign_id: projectCampaignId,
+                    customer_contact_id: contactId
+                });
+            } else if (mode === 'remove') {
+                await API.deleteData(APIPath.ASSIGN_CONTACT_TO_PROJECT_CAMPAIGN + '/' + contactId + '/' + projectCampaignId);
             }
 
             return true;
@@ -857,6 +882,22 @@ export class ProjectDetailsActionsClass {
             });
         } else {
             this.dropFilterByVersionStatus(false);
+        }
+    };
+
+    @action
+    public changeProjectCampaignCustomer = async (
+        projectCampaignId: number,
+        customerId: number
+    ): Promise<boolean> => {
+        try {
+            await API.putData(APIPath.PROJECT_CAMPAIGN + '/' + projectCampaignId, {
+                customer_id: customerId
+            });
+
+            return true;
+        } catch (error) {
+            throw error;
         }
     };
 

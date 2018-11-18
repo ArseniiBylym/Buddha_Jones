@@ -167,16 +167,10 @@ export class DayPickerCalendar extends React.Component<DayPickerCalendarProps, {
     }
 
     public shouldComponentUpdate(nextProps: DayPickerCalendarProps) {
-        if (
-            this.props.value !== nextProps.value ||
+        return this.props.value !== nextProps.value ||
             this.props.className !== nextProps.className ||
             this.props.minDate !== nextProps.minDate ||
-            this.props.maxDate !== nextProps.maxDate
-        ) {
-            return true;
-        } else {
-            return false;
-        }
+            this.props.maxDate !== nextProps.maxDate;
     }
 
     public componentDidMount() {
@@ -323,7 +317,7 @@ export class DayPickerCalendar extends React.Component<DayPickerCalendarProps, {
         }
     };
 
-    private handlePeriodArrowClick = (direction: 'left' | 'right') => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handlePeriodArrowClick = (direction: 'left' | 'right') => () => {
         // Calculate next date
         let nextDisplayedDate = dateSetDayOfTheMonth(this.displayedDate, 15);
         if (this.showDays) {
@@ -338,11 +332,11 @@ export class DayPickerCalendar extends React.Component<DayPickerCalendarProps, {
         this.displayedDate = nextDisplayedDate;
     };
 
-    private handleDaysMonthsToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleDaysMonthsToggle = () => {
         this.showDays = !this.showDays;
     };
 
-    private handleDateChange = (dateString: string) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleDateChange = (dateString: string) => () => {
         const date = dateParse(dateString);
         if (dateIsValidDate(date)) {
             this.showDays = true;
@@ -352,7 +346,7 @@ export class DayPickerCalendar extends React.Component<DayPickerCalendarProps, {
     };
 
     @action
-    private handleDisplayedMonthChange = (dateString: string) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleDisplayedMonthChange = (dateString: string) => () => {
         const date = dateParse(dateString + '-15');
         if (dateIsValidDate(date)) {
             this.showDays = true;

@@ -11,7 +11,8 @@
 }
 
 .sentViaMethodsContainer,
-.studioContactsContainer {
+.studioContactsContainer,
+.typeFinishingOptions {
   display: flex;
   flex-wrap: wrap;
   margin-top: -6px;
@@ -22,10 +23,54 @@
   }
 }
 
+.typeFinishingOptions {
+    float: right;
+}
+
 .summary {
   display: flex;
   justify-content: flex-end;
   &>* {
     margin-left: 48px;
   }
+}
+
+.finishRequestSection {
+    margin: 15px 0;
+    text-align: left;
+    &>h3 {
+        margin: 0 0 5px 0;
+        font-size: 0.95em;
+        font-weight: 600;
+        color: #a59e97;
+    }
+    &>label {
+         margin: 6px 24px 6px 0;
+     }
+    &>.sentViaMethodsContainer {
+        margin-top: 5px;
+     }
+}
+
+.loadingSpinner {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    margin-left: -32px;
+}
+
+.editorBlock {
+    display: inline-flex;
+}
+
+.editorRemoveButton {
+    width: 25px;
+    height: 38px;
+    color: red !important;
+    font-weight: bolder;
+    cursor: pointer;
+    line-height: 38px;
+    display: inline-flex;
+    vertical-align: top;
+    margin-right: 12px;
 }

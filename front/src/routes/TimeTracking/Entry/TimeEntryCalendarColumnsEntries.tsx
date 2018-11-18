@@ -43,7 +43,7 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
                         [s.hoverable]: day.isDayClosed === false,
                     })}
                 >
-                    {day.timeEntries.map((entry, entryIndex) => {
+                    {day.timeEntries.map((entry) => {
                         // Add hours
                         hoursCount += entry.hours;
 
@@ -71,7 +71,7 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
                                 text={
                                     projectSelectionTitle
                                         ? entry.activityName +
-                                          (projectSelectionTitle ? ' - ' + projectSelectionTitle : '')
+                                        (projectSelectionTitle ? ' - ' + projectSelectionTitle : '')
                                         : ''
                                 }
                             >
@@ -87,7 +87,7 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
                                     })}
                                 >
                                     <div>
-                                        <i />
+                                        <i/>
                                         {projectSelectionTitle && (
                                             <p>
                                                 <strong>{projectSelectionTitle}</strong>
@@ -100,8 +100,8 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
                                     <p>
                                         <strong>
                                             {dateFormat(entry.startDate, 'h:mm a') +
-                                                ' - ' +
-                                                DateHandler.convertHoursNumberToHM(entry.hours)}
+                                            ' - ' +
+                                            DateHandler.convertHoursNumberToHM(entry.hours)}
                                         </strong>
                                     </p>
                                 </dt>
@@ -114,7 +114,7 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
                             className={s.creatable}
                             onClick={this.handleChangingTimeEntryDateFromCalendarView(day.date, dayIndex)}
                         >
-                            <i />
+                            <i/>
                             <p>Create new entry</p>
                         </dt>
                     )}
@@ -144,7 +144,7 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
                             [s.creatable]: day.isDayClosed === false,
                         })}
                     >
-                        <i />
+                        <i/>
                         {day.isDayClosed === false && <p>Create new entry</p>}
                     </dt>
                 </dl>
@@ -152,21 +152,19 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
         }
     }
 
-    private handleExistingEntryEditClick = (entry: TimeEntryCalendarEntry) => (e: React.MouseEvent<HTMLElement>) => {
+    private handleExistingEntryEditClick = (entry: TimeEntryCalendarEntry) => () => {
         TimeEntryActions.editExistingEntry(entry);
     };
 
-    private handleChangingTimeEntryDateFromCalendarView = (date: Date, dayIndex: number) => (
-        e: React.MouseEvent<HTMLElement>
-    ) => {
+    private handleChangingTimeEntryDateFromCalendarView = (date: Date, dayIndex: number) => () => {
         if (!this.props.store || !this.props.store.user.data) {
             return;
         }
 
         const forUser: TimeEntryUserWithType = {
             id: this.props.store.user.data.id,
-            typeId: this.props.store.user.data.type.id,
-            typeName: this.props.store.user.data.type.name,
+            typeId: this.props.store.user.data.typeId,
+            typeName: this.props.store.user.data.typeName,
         };
 
         if (

@@ -50,7 +50,7 @@ export class TimeApprovalActionsClass {
                 TimeApprovalStore.allTimeEntriesLoading = false;
                 TimeApprovalStore.allTimeEntriesLastFetchTimestamp = Date.now();
 
-                if (TimeApprovalStore.isUsingFilters === false) {
+                if (!TimeApprovalStore.isUsingFilters) {
                     this.setUsersFromAllTimeEntries(response);
                     this.setProjectsFromAllTimeEntries(response);
                 }

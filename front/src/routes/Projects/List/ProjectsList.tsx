@@ -12,7 +12,7 @@ import { ProjectsListCard } from '.';
 import { history } from 'App';
 import { InputSearch } from 'components/Form';
 import { UserPermissionKey } from 'types/projectPermissions';
-import { reaction, computed } from 'mobx';
+import { reaction, computed, action, observable } from 'mobx';
 
 // Styles
 const s = require('./ProjectsList.css');
@@ -24,12 +24,15 @@ interface ProjectsListProps {}
 @inject('store')
 @observer
 class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
+
+    @observable private currentPage: number = 1;
+
     private isComponentMounted: boolean = false;
 
     @computed
     private get userCanViewCampaignDescription(): boolean {
         if (this.props.store) {
-            const { loggedInUserPermissions } = this.props.store.projectPermissions;
+            const {loggedInUserPermissions} = this.props.store.projectPermissions;
 
             if (loggedInUserPermissions[UserPermissionKey.CampaignDescription]) {
                 return loggedInUserPermissions[UserPermissionKey.CampaignDescription].canView ? true : false;
@@ -46,10 +49,16 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
         if (this.props.store && this.props.store.user.data) {
             ProjectPermissionsActions.fetchLoggedInUserPermissions();
         }
-        ProjectsActions.fetchProjects(1);
+
+        if (this.props.match && this.props.match.params['pageId']) {
+            let currentPage: number = parseInt(this.props.match.params['pageId'], 0);
+            this.setInitialPaginator(currentPage);
+        } else {
+            ProjectsActions.fetchProjects(1);
+        }
 
         if (this.props.store) {
-            const { loggedInUserPermissions } = this.props.store.projectPermissions;
+            const {loggedInUserPermissions} = this.props.store.projectPermissions;
 
             this.setMainHeaderElements(
                 typeof loggedInUserPermissions[UserPermissionKey.ProjectCreate] !== 'undefined' &&
@@ -96,7 +105,7 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
             () => this.props.store!.projectPermissions.loadingCount,
             loadingCount => {
                 if (loadingCount <= 0 && this.isComponentMounted) {
-                    const { loggedInUserPermissions } = this.props.store!!.projectPermissions;
+                    const {loggedInUserPermissions} = this.props.store!!.projectPermissions;
 
                     this.setMainHeaderElements(
                         typeof loggedInUserPermissions[UserPermissionKey.ProjectCreate] !== 'undefined' &&
@@ -123,6 +132,7 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                 }
             }
         );
+
     }
 
     public render() {
@@ -130,7 +140,7 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
             return null;
         }
 
-        const { projects, projectPermissions } = this.props.store;
+        const {projects, projectPermissions} = this.props.store;
 
         return (
             <div>
@@ -140,23 +150,24 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                     headerElements={[
                         ...(projects.updatingProjects
                             ? [
-                                  {
-                                      key: 'updating-indicator',
-                                      element: <LoadingIndicator label="Refreshing" />,
-                                  },
-                              ]
+                                {
+                                    key: 'updating-indicator',
+                                    element: <LoadingIndicator label="Refreshing"/>,
+                                },
+                            ]
                             : []),
                         ...[
                             {
                                 key: 'clients-filter',
                                 element: (
                                     <ClientsFilter
-                                        onChange={this.handleClientFilterChange}
+                                        onChange={this.handleStudioFilterChange}
                                         truncuateLabelTo={64}
-                                        clientId={projects.filterByClient !== null ? projects.filterByClient.id : null}
+                                        clientId={projects.filterByStudio !== null ? projects.filterByStudio.id : null}
                                         clientName={
-                                            projects.filterByClient !== null ? projects.filterByClient.name : null
+                                            projects.filterByStudio !== null ? projects.filterByStudio.name : null
                                         }
+                                        src={'studios'}
                                     />
                                 ),
                             },
@@ -174,6 +185,16 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                         ],
                     ]}
                 >
+                    {projectPermissions.loadingCount <= 0 && (
+                        <Pagination
+                            className={s.paginationTop}
+                            currentPage={this.currentPage}
+                            countPerPage={projects.countPerPage}
+                            countTotal={projects.countTotal}
+                            onPageChange={this.handleProjectsPageChange}
+                        />
+                    )}
+
                     {projectPermissions.loadingCount <= 0 && (
                         <div className={s.board}>
                             <Row justifyContent={projects.projectsList.length === 1 ? 'center' : undefined}>
@@ -199,20 +220,20 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                     {projectPermissions.loadingCount <= 0 && (
                         <Pagination
                             className={s.pagination}
-                            onPageChange={this.handleProjectsPageChange}
-                            currentPage={projects.currentPage}
+                            currentPage={this.currentPage}
                             countPerPage={projects.countPerPage}
                             countTotal={projects.countTotal}
+                            onPageChange={this.handleProjectsPageChange}
                         />
                     )}
 
-                    {(projects.loadingProjects || projectPermissions.loadingCount > 0) && (
+                    {(projects.loadingProjects || projects.updatingProjects  || projectPermissions.loadingCount > 0) && (
                         <LoadingShade
                             background="rgba(247, 247, 247, 0.9)"
                             contentCentered={true}
                             contentCenteredToTop={true}
                         >
-                            <LoadingSpinner size={64} />
+                            <LoadingSpinner size={64}/>
                         </LoadingShade>
                     )}
                 </Section>
@@ -228,22 +249,22 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
         ProjectsActions.changeProjectsFilterBySearchQuery(e.target.value);
     };
 
-    private handleClientFilterChange = (client: { id: number; name: string } | null) => {
-        ProjectsActions.changeProjectsFilterByClient(client);
+    private handleStudioFilterChange = (studio: { id: number; name: string } | null) => {
+        ProjectsActions.changeProjectsFilterByStudio(studio);
     };
 
     private handleProjectClick = (
-        clientId: number,
-        clientName: string,
+        studioId: number,
+        studioName: string,
         projectId: number,
         projectName: string,
         projectCampaignId?: number
     ) => {
         let path =
             '/portal/project/' +
-            clientId +
+            studioId +
             '/' +
-            clientName +
+            studioName +
             '/' +
             projectId +
             '/' +
@@ -258,23 +279,39 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
         history.push(path);
     };
 
-    private handleProjectsPageChange = (newPage: number) => {
-        history.push('/portal/projects/' + newPage);
-    };
-
     private setMainHeaderElements = (userCanCreateNewProjects: boolean = false) => {
         HeaderActions.setMainHeaderElements(
             userCanCreateNewProjects
                 ? [
-                      <ButtonAdd
-                          key="create"
-                          label="Define new project"
-                          onClick={this.handleCreateNewProject}
-                          isWhite={true}
-                      />,
-                  ]
+                    <ButtonAdd
+                        key="create"
+                        label="Define new project"
+                        onClick={this.handleCreateNewProject}
+                        isWhite={true}
+                    />,
+                ]
                 : []
         );
+    };
+
+    @action
+    private handleProjectsPageChange = (newPage: number) => {
+        if (!this.props.store) {
+            return;
+        }
+        this.currentPage = newPage;
+        this.props.store.projects.currentPage = newPage;
+        history.push('/portal/projects/' + newPage);
+    };
+
+    @action
+    private setInitialPaginator = (currentPage: number) => {
+        if (!this.props.store) {
+            return;
+        }
+        this.currentPage = currentPage;
+        this.props.store.projects.currentPage = currentPage;
+        ProjectsActions.fetchProjects(currentPage);
     };
 }
 

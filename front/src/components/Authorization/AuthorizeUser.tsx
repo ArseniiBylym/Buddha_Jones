@@ -39,7 +39,7 @@ export class AuthorizeUser extends React.Component<AuthorizeUserProps, {}> {
 
     public componentDidMount() {
         this.authorizeUser()
-            .then(isAuthorized => {
+            .then(() => {
                 if (
                     typeof this.props.store !== 'undefined' &&
                     this.props.store !== null &&
@@ -66,11 +66,11 @@ export class AuthorizeUser extends React.Component<AuthorizeUserProps, {}> {
 
     public render() {
         return this.authorizingUser ? (
-            <LoadingPage />
+            <LoadingPage/>
         ) : this.isUserLoggedIn && this.isRouteAllowed ? (
             this.props.children
         ) : this.isUserLoggedIn && this.isRouteAllowed === false ? (
-            <Redirect to="/" />
+            <Redirect to="/"/>
         ) : this.isUserLoggedIn === false && this.authorizingUser === false ? (
             <Redirect
                 to={{

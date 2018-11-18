@@ -7,7 +7,7 @@ import { observer, inject } from 'mobx-react';
 import { formatMoney } from 'accounting';
 import { SpotDetails } from 'types/projectDetails';
 import { Row, Col } from 'components/Section';
-import { Button, ButtonEdit } from 'components/Button';
+import { Button, ButtonClose, ButtonEdit } from 'components/Button';
 import { DropdownContainer, OptionsList, OptionsListValuePropType, OptionsListOptionProp } from 'components/Form';
 import { Paragraph, Tag } from 'components/Content';
 import { ProjectBoardSpotVersion } from '.';
@@ -83,18 +83,18 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
     private get filteredAvailableToAddVersions(): OptionsListOptionProp[] {
         return this.versionDropdownSearchTrimmedLowerCase.length > 0
             ? this.availableToAddVersions
-                  .filter(
-                      v =>
-                          v.label
-                              .toLowerCase()
-                              .trim()
-                              .indexOf(this.versionDropdownSearchTrimmedLowerCase) !== -1
-                  )
-                  .sort((resultA, resultB) => {
-                      const matchA = resultA.label.toLowerCase().trim() === this.versionDropdownSearchTrimmedLowerCase;
-                      const matchB = resultB.label.toLowerCase().trim() === this.versionDropdownSearchTrimmedLowerCase;
-                      return matchA !== matchB ? (matchA === true && matchB === false ? -1 : 1) : 0;
-                  })
+                .filter(
+                    v =>
+                        v.label
+                            .toLowerCase()
+                            .trim()
+                            .indexOf(this.versionDropdownSearchTrimmedLowerCase) !== -1
+                )
+                .sort((resultA, resultB) => {
+                    const matchA = resultA.label.toLowerCase().trim() === this.versionDropdownSearchTrimmedLowerCase;
+                    const matchB = resultB.label.toLowerCase().trim() === this.versionDropdownSearchTrimmedLowerCase;
+                    return matchA !== matchB ? (matchA && !matchB ? -1 : 1) : 0;
+                })
             : this.availableToAddVersions;
     }
 
@@ -135,38 +135,171 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                                             this.removingSpotStatus === 'none'
                                                 ? '(Remove)'
                                                 : this.removingSpotStatus === 'error'
-                                                    ? '(Issue removing, try again)'
-                                                    : this.removingSpotStatus === 'removing'
-                                                        ? '(Removing...)'
-                                                        : '(Removed)',
+                                                ? '(Issue removing, try again)'
+                                                : this.removingSpotStatus === 'removing'
+                                                    ? '(Removing...)'
+                                                    : '(Removed)',
                                     }}
                                 />
                             )}
 
                             {this.props.userCanEditSpotCore && (
-                                <ButtonEdit
-                                    className={s.editSpotButton}
-                                    onClick={this.handleSpotEdit}
-                                    float="right"
-                                    label={this.isEditFormVisible ? 'Stop editing' : 'Edit spot'}
+                                <>
+                                    {this.isEditFormVisible &&
+                                    <ButtonClose
+                                        className={s.editSpotButton}
+                                        float="right"
+                                        onClick={this.handleSpotEdit}
+                                        label={'Cancel'}
+                                    />
+                                    }
+                                    {!this.isEditFormVisible &&
+                                    <ButtonEdit
+                                        className={s.editSpotButton}
+                                        float="right"
+                                        onClick={this.handleSpotEdit}
+                                        label={'Edit spot'}
+                                    />
+                                    }
+                                </>
+                            )}
+                        </Col>
+                    </Row>
+
+                    <Row className={s.spotDetailsContainer}>
+                        <Col>
+                            {!this.isEditFormVisible && (
+                                <div className={s.spotDetails}>
+                                    {spot.notes &&
+                                    spot.notes.trim() && (
+                                        <Paragraph className={s.noMargin}>
+                                            <span>Notes: </span>
+                                            {spot.notes}
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewV1InternalDeadline &&
+                                    spot.v1InternalDeadline && (
+                                        <Paragraph>
+                                            <span>V.1 internal deadline: </span>
+                                            <strong>{dateFormat(spot.v1InternalDeadline, 'MM/DD/YYYY')}</strong>
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewV1ClientDeadline &&
+                                    spot.v1ClientDeadline && (
+                                        <Paragraph className={s.noMargin}>
+                                            <span>V.1 studio deadline: </span>
+                                            <strong>{dateFormat(spot.v1ClientDeadline, 'MM/DD/YYYY')}</strong>
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewNumberOfRevisionsAndVersions &&
+                                    spot.numberOfRevisions !== 0 && (
+                                        <Paragraph>
+                                            <span>Number of revisions: </span>
+                                            <strong>
+                                                {(spot.numberOfRevisions === null
+                                                    ? 'Unlimited'
+                                                    : spot.numberOfRevisions) +
+                                                ', ' +
+                                                (!this.props.userCanViewGraphicsRevisions
+                                                    ? ''
+                                                    : spot.graphicsIncluded
+                                                        ? 'graphics included'
+                                                        : 'graphics not included')}
+                                            </strong>
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewGraphicsRevisions &&
+                                    !this.props.userCanViewNumberOfRevisionsAndVersions && (
+                                        <Paragraph>
+                                            <strong>
+                                                {spot.graphicsIncluded
+                                                    ? 'Graphics included'
+                                                    : 'Graphics not included'}
+                                            </strong>
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewFirstRevisionRate &&
+                                    spot.billingType && (
+                                        <Paragraph className={s.noMargin}>
+                                            <span>Spot billing: </span>
+                                            <strong>{SpotBillingTypeName[spot.billingType]}</strong>
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewFirstRevisionRate &&
+                                    spot.numberOfRevisions !== 0 && (
+                                        <Paragraph className={s.noMargin}>
+                                            <span>First stage rate: </span>
+                                            <strong>
+                                                {spot.firstRevisionCost === null
+                                                    ? 'not specified'
+                                                    : formatMoney(spot.firstRevisionCost)}
+                                            </strong>
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewFirstRevisionRate &&
+                                    spot.billingNotes && (
+                                        <Paragraph className={s.noMargin}>
+                                            <span>Spot billing notes: </span>
+                                            <strong>{spot.billingNotes}</strong>
+                                        </Paragraph>
+                                    )}
+
+                                    {this.props.userCanViewNumberOfRevisionsAndVersions &&
+                                    (spot.numberOfRevisions === null || spot.numberOfRevisions <= 0) && (
+                                        <Paragraph>
+                                            <span>No revisions included</span>
+                                        </Paragraph>
+                                    )}
+                                </div>
+                            )}
+
+                            {this.isEditFormVisible && (
+                                <ProjectBoardSpotForm
+                                    onFormHide={this.handleEditHide}
+                                    projectId={this.props.projectId}
+                                    projectCampaignId={this.props.projectCampaignId}
+                                    campaignId={this.props.campaignId}
+                                    spotId={this.props.spot.id}
+                                    removeGutter={true}
+                                    userCanEditSpot={this.props.userCanEditSpotCore}
+                                    userCanEditFirstStateCost={this.props.userCanEditFirstRevisionRate}
+                                    userCanEditV1ClientDueDate={this.props.userCanEditV1ClientDeadline}
+                                    userCanEditV1InternalDueDate={this.props.userCanEditV1InternalDeadline}
+                                    userCanEditRevisionsAndVersions={this.props.userCanEditNumberOfRevisionsAndVersions}
+                                    userCanEditGraphicsRevisions={this.props.userCanEditGraphicsRevisions}
                                 />
                             )}
+
+                            {this.props.showSeparator && <hr className={s.endSeparator}/>}
                         </Col>
                     </Row>
 
                     <Row className={s.campaignSpotVersions}>
                         {this.props.userCanViewNumberOfRevisionsAndVersions &&
-                            spot.versions.length > 0 && (
-                                <React.Fragment>
-                                    <Tag className={s.versionName} title="Versions:" isTitleDim={true} isBig={true} />
-                                    <hr className={s.separator}/>
-                                </React.Fragment>
-                            )}
+                        spot.versions.length > 0 && (
+                            <React.Fragment>
+                                <Tag className={s.versionName} title="Versions:" isTitleDim={true} isBig={true}/>
+                                <hr className={s.separator}/>
+                            </React.Fragment>
+                        )}
                     </Row>
 
                     {this.props.userCanViewNumberOfRevisionsAndVersions &&
-                    spot.versions.filter((version: VersionDetails) => {return !version.hidden; }).map((version: VersionDetails, versionIndex: number) => (
-                        <Row key={`version-${version.value}-from-spot-${spot.id}`} className={s.campaignSpotVersions} justifyContent="flex-start">
+                    spot.versions.filter((version: VersionDetails) => {
+                        return !version.hidden;
+                    }).map((version: VersionDetails) => (
+                        <Row
+                            key={`version-${version.value}-from-spot-${spot.id}`}
+                            className={s.campaignSpotVersions}
+                            justifyContent="flex-start"
+                        >
 
                             <ProjectBoardSpotVersion
                                 key={`version-${version.value}-from-spot-${spot.id}`}
@@ -181,15 +314,15 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                             />
 
                             {version.editors && version.editors.length > 0 &&
-                                <Tooltip text={this.spotVersionsEditors(version.editors)}>
-                                    <Tag
-                                        className={s.versionName}
-                                        title="Editors:"
-                                        isTitleDim={true}
-                                        isBig={true}
-                                        otherLabels={[{text: version.editors[0].name.substring(0, 8) + '...'}]}
-                                    />
-                                </Tooltip>
+                            <Tooltip text={this.spotVersionsEditors(version.editors)}>
+                                <Tag
+                                    className={s.versionName}
+                                    title="Editors:"
+                                    isTitleDim={true}
+                                    isBig={true}
+                                    otherLabels={[{ text: version.editors[0].name.substring(0, 8) + '...' }]}
+                                />
+                            </Tooltip>
                             }
 
                             <hr className={s.separator}/>
@@ -200,26 +333,26 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                     <Row className={s.campaignSpotVersions} justifyContent="flex-start">
 
                         {this.props.userCanViewNumberOfRevisionsAndVersions &&
-                            spot.numberOfRevisions !== 0 &&
-                            (spot.versions === null || spot.versions.length <= 0) && (
-                                <Tag className={s.versionName} title="No spot versions added" isTitleDim={true} />
-                            )}
+                        spot.numberOfRevisions !== 0 &&
+                        (spot.versions === null || spot.versions.length <= 0) && (
+                            <Tag className={s.versionName} title="No spot versions added" isTitleDim={true}/>
+                        )}
 
                         {this.isEditFormVisible &&
-                            this.addingNewVersionStatus !== 'none' && (
-                                <Tag
-                                    className={s.versionName}
-                                    isTitleBold={true}
-                                    isBig={true}
-                                    title={
-                                        this.addingNewVersionStatus === 'adding'
-                                            ? 'Adding...'
-                                            : this.addingNewVersionStatus === 'error'
-                                                ? 'Error, try again'
-                                                : 'Added'
-                                    }
-                                />
-                            )}
+                        this.addingNewVersionStatus !== 'none' && (
+                            <Tag
+                                className={s.versionName}
+                                isTitleBold={true}
+                                isBig={true}
+                                title={
+                                    this.addingNewVersionStatus === 'adding'
+                                        ? 'Adding...'
+                                        : this.addingNewVersionStatus === 'error'
+                                        ? 'Error, try again'
+                                        : 'Added'
+                                }
+                            />
+                        )}
 
                         {this.isEditFormVisible && (
                             <div className={s.addVersion}>
@@ -241,12 +374,11 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                                         }}
                                         label="Select version"
                                         directHint={
-                                            this.filteredAvailableToAddVersions.length <= 0 &&
                                             this.versionDropdownSearchTrimmedLowerCase.length > 0
                                                 ? {
-                                                      value: 'createCustomVersion',
-                                                      label: 'Create version: ' + this.versionDropdownSearch.trim(),
-                                                  }
+                                                    value: 'createCustomVersion',
+                                                    label: 'Create version: ' + this.versionDropdownSearch.trim(),
+                                                }
                                                 : null
                                         }
                                         options={this.filteredAvailableToAddVersions}
@@ -257,120 +389,6 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
 
                     </Row>
 
-                    <Row className={s.spotDetailsContainer}>
-                        <Col>
-                            {this.isEditFormVisible === false && (
-                                <div className={s.spotDetails}>
-                                    {spot.notes &&
-                                        spot.notes.trim() && (
-                                            <Paragraph className={s.noMargin}>
-                                                <span>Notes: </span>
-                                                {spot.notes}
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewV1InternalDeadline &&
-                                        spot.v1InternalDeadline && (
-                                            <Paragraph>
-                                                <span>V.1 internal deadline: </span>
-                                                <strong>{dateFormat(spot.v1InternalDeadline, 'MM/DD/YYYY')}</strong>
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewV1ClientDeadline &&
-                                        spot.v1ClientDeadline && (
-                                            <Paragraph className={s.noMargin}>
-                                                <span>V.1 studio deadline: </span>
-                                                <strong>{dateFormat(spot.v1ClientDeadline, 'MM/DD/YYYY')}</strong>
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewNumberOfRevisionsAndVersions &&
-                                        spot.numberOfRevisions !== 0 && (
-                                            <Paragraph>
-                                                <span>Number of revisions: </span>
-                                                <strong>
-                                                    {(spot.numberOfRevisions === null
-                                                        ? 'Unlimited'
-                                                        : spot.numberOfRevisions) +
-                                                        ', ' +
-                                                        (this.props.userCanViewGraphicsRevisions === false
-                                                            ? ''
-                                                            : spot.graphicsIncluded
-                                                                ? 'graphics included'
-                                                                : 'graphics not included')}
-                                                </strong>
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewGraphicsRevisions &&
-                                        this.props.userCanViewNumberOfRevisionsAndVersions === false && (
-                                            <Paragraph>
-                                                <strong>
-                                                    {spot.graphicsIncluded
-                                                        ? 'Graphics included'
-                                                        : 'Graphics not included'}
-                                                </strong>
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewFirstRevisionRate &&
-                                        spot.billingType && (
-                                            <Paragraph className={s.noMargin}>
-                                                <span>Spot billing: </span>
-                                                <strong>{SpotBillingTypeName[spot.billingType]}</strong>
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewFirstRevisionRate &&
-                                        spot.numberOfRevisions !== 0 && (
-                                            <Paragraph className={s.noMargin}>
-                                                <span>First stage rate: </span>
-                                                <strong>
-                                                    {spot.firstRevisionCost === null
-                                                        ? 'not specified'
-                                                        : formatMoney(spot.firstRevisionCost)}
-                                                </strong>
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewFirstRevisionRate &&
-                                        spot.billingNotes && (
-                                            <Paragraph className={s.noMargin}>
-                                                <span>Spot billing notes: </span>
-                                                <strong>{spot.billingNotes}</strong>
-                                            </Paragraph>
-                                        )}
-
-                                    {this.props.userCanViewNumberOfRevisionsAndVersions &&
-                                        (spot.numberOfRevisions === null || spot.numberOfRevisions <= 0) && (
-                                            <Paragraph>
-                                                <span>No revisions included</span>
-                                            </Paragraph>
-                                        )}
-                                </div>
-                            )}
-
-                            {this.isEditFormVisible && (
-                                <ProjectBoardSpotForm
-                                    onFormHide={this.handleEditHide}
-                                    projectId={this.props.projectId}
-                                    projectCampaignId={this.props.projectCampaignId}
-                                    campaignId={this.props.campaignId}
-                                    spotId={this.props.spot.id}
-                                    removeGutter={true}
-                                    userCanEditSpot={this.props.userCanEditSpotCore}
-                                    userCanEditFirstStateCost={this.props.userCanEditFirstRevisionRate}
-                                    userCanEditV1ClientDueDate={this.props.userCanEditV1ClientDeadline}
-                                    userCanEditV1InternalDueDate={this.props.userCanEditV1InternalDeadline}
-                                    userCanEditRevisionsAndVersions={this.props.userCanEditNumberOfRevisionsAndVersions}
-                                    userCanEditGraphicsRevisions={this.props.userCanEditGraphicsRevisions}
-                                />
-                            )}
-
-                            {this.props.showSeparator && <hr className={s.endSeparator} />}
-                        </Col>
-                    </Row>
                 </Col>
             </Row>
         );
@@ -378,7 +396,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
 
     private referenceVersionDropdown = (ref: DropdownContainer) => (this.versionDropdown = ref);
 
-    private handleSpotRemoval = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleSpotRemoval = async () => {
         try {
             this.removingSpotStatus = 'removing';
 
@@ -434,7 +452,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
         }
     };
 
-    private handleSpotEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleSpotEdit = () => {
         this.isEditFormVisible = !this.isEditFormVisible;
     };
 

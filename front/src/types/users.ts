@@ -1,4 +1,15 @@
 import { DateObjectFromApi } from './api';
+import { UsersClass } from './usersEnums';
+
+export interface UsersRequestParams {
+    search?: string;
+    class?: UsersClass | null;
+    type?: number | null;
+    ids?: number[];
+    offset?: number;
+    length?: number;
+    page?: number;
+}
 
 export interface UserProjectRole {
     id: number;
@@ -54,19 +65,20 @@ export interface OtherUserFromApi {
     username: string;
     email: string | null;
     image: string | null;
-    first_name: string | null;
-    last_name: string | null;
-    full_name: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    fullName: string | null;
     initials: string | null;
-    type_id: number;
-    type_name: string;
-    salary_type?: string;
-    salary_amount?: string;
-    min_hour?: string | null;
-    hourly_rate?: string | null;
+    typeId: number;
+    typeName: string;
+    salaryType?: string;
+    salaryAmount?: string;
+    minHour?: string | null;
+    hourlyRate?: string | null;
     status: 1 | 0;
-    last_login_date: DateObjectFromApi | null;
-    created_date: DateObjectFromApi;
+    lastLoginDate: DateObjectFromApi | null;
+    createdDate: DateObjectFromApi;
+    nickName: string | null;
 }
 
 export interface UsersListFromApi {
@@ -101,4 +113,16 @@ export interface ProjectPermissionDataSingle {
     project_permission_id: number;
     can_view: 1 | 0;
     can_edit: 1 | 0;
+}
+
+export interface PageableUsers {
+    data: OtherUserFromApi[];
+    length: number | null;
+    message: string | null;
+    object_count: number | null;
+    offset: number | null;
+    page: number | null;
+    status: number | null;
+    totalPages: number | null;
+    total_count: number | null;
 }

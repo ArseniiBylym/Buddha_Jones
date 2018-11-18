@@ -15,16 +15,9 @@ interface TimeEntryUserWithType {
     typeName: string;
 }
 
-// Props
-interface TimeEntryProps {}
-
-// Types
-type TimeEntryPropsTypes = TimeEntryProps & AppState;
-
-// Component
 @inject('store')
 @observer
-class TimeEntry extends React.Component<TimeEntryPropsTypes, {}> {
+class TimeEntry extends React.Component<AppState, {}> {
     @computed
     private get essentialDataIsLoading(): boolean {
         if (this.props.store) {
@@ -39,8 +32,8 @@ class TimeEntry extends React.Component<TimeEntryPropsTypes, {}> {
         if (this.props.store && this.props.store.user.data) {
             return {
                 id: this.props.store.user.data.id,
-                typeId: this.props.store.user.data.type.id,
-                typeName: this.props.store.user.data.type.name,
+                typeId: this.props.store.user.data.typeId,
+                typeName: this.props.store.user.data.typeName,
             };
         }
 
@@ -68,18 +61,17 @@ class TimeEntry extends React.Component<TimeEntryPropsTypes, {}> {
 
         const { timeEntry } = this.props.store;
 
-        return this.essentialDataIsLoading === false ? (
+        return !this.essentialDataIsLoading ? (
             <>
-                <TimeEntryCalendar />
-
-                <TimeEntryModal openOnPage="time-entry" />
+                <TimeEntryCalendar/>
+                <TimeEntryModal openOnPage="time-entry"/>
 
                 <Modal
-                    show={timeEntry.minimumHoursNotMetModal.show && timeEntry.minimumHoursNotMetModal.minminumHours > 0}
+                    show={timeEntry.minimumHoursNotMetModal.show && timeEntry.minimumHoursNotMetModal.minHours > 0}
                     title="Minimum work time not met"
                     text={
                         'You are required to account for at least ' +
-                        timeEntry.minimumHoursNotMetModal.minminumHours +
+                        timeEntry.minimumHoursNotMetModal.minHours +
                         ' hours of activity time during a work day.'
                     }
                     actions={[
@@ -138,22 +130,22 @@ class TimeEntry extends React.Component<TimeEntryPropsTypes, {}> {
         ) : (
             <Row justifyContent="center">
                 <Col width={64}>
-                    <LoadingSpinner size={64} />
+                    <LoadingSpinner size={64}/>
                 </Col>
             </Row>
         );
     }
 
-    private handleMinimumHoursNotMetModalClose = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    private handleMinimumHoursNotMetModalClose = () => {
         this.props.store!.timeEntry.minimumHoursNotMetModal.show = false;
-        this.props.store!.timeEntry.minimumHoursNotMetModal.minminumHours = 0;
+        this.props.store!.timeEntry.minimumHoursNotMetModal.minHours = 0;
     };
 
-    private handleLunchBreakModalClick = (forceSubmit: boolean) => (e?: React.MouseEvent<HTMLButtonElement>) => {
+    private handleLunchBreakModalClick = (forceSubmit: boolean) => () => {
         TimeEntryActions.closeLunchBreakNotTakenModal(forceSubmit);
     };
 
-    private handleEditsWillGetLostModalClick = (forceChange: boolean) => (e?: React.MouseEvent<HTMLButtonElement>) => {
+    private handleEditsWillGetLostModalClick = (forceChange: boolean) => () => {
         if (!this.props.store) {
             return;
         }

@@ -207,7 +207,7 @@ export class TimeApprovalDayEntry extends React.Component<TimeApprovalDayEntryPr
                                         <p>Files:</p>
                                     </div>
                                     <div className={s.lines}>
-                                        {entry.files.map((file, fileIndex) => (
+                                        {entry.files.map((file) => (
                                             <div className={s.line} key={file.filename + file.durationInMinutes}>
                                                 <p className={s.fileDuration}>
                                                     {DateHandler.convertTotalMinutesToHM(file.durationInMinutes, true)}
@@ -242,7 +242,7 @@ export class TimeApprovalDayEntry extends React.Component<TimeApprovalDayEntryPr
         );
     }
 
-    private handleEditEntry = (entry: TimeApprovalEntry) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleEditEntry = (entry: TimeApprovalEntry) => () => {
         TimeEntryActions.editExistingEntry({
             id: entry.entryId,
             userId: entry.userId,

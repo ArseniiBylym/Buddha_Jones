@@ -25,6 +25,7 @@ interface ProjectBoardContentProps extends AppOnlyStoreState {
     onHeaderElementsChange: (reloadTitles: boolean, reloadRightSideElements: boolean) => void;
     project: ProjectDetails;
     projectIsUpdating: boolean;
+    projectMatchId: number | null;
 }
 
 // Types
@@ -172,13 +173,13 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
     public constructor(props: ProjectBoardContentPropsType) {
         super(props);
 
-        reaction(() => this.userCanEditProjectName, userCanEditProjectName => this.showEditProjectCoreButton());
+        reaction(() => this.userCanEditProjectName, () => this.showEditProjectCoreButton());
 
-        reaction(() => this.userCanEditProjectCodeName, userCanEditProjectCodeName => this.showEditProjectCoreButton());
+        reaction(() => this.userCanEditProjectCodeName, () => this.showEditProjectCoreButton());
 
         reaction(
             () => this.userCanEditProjectReleaseDate,
-            userCanEditProjectReleaseDate => this.showEditProjectCoreButton()
+            () => this.showEditProjectCoreButton()
         );
     }
 
@@ -247,7 +248,11 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                         />
                     </ProjectBoardDescription>
 
-                    <ProjectBoardCampaigns project={project} projectIsUpdating={project.loading} />
+                    <ProjectBoardCampaigns
+                        project={project}
+                        projectIsUpdating={project.loading}
+                        projectMatchId={this.props.projectMatchId}
+                    />
                 </div>
 
                 <Modal
@@ -397,7 +402,7 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
         );
     };
 
-    private handleCoreEditButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleCoreEditButtonClick = () => {
         this.editingProjectCore = true;
         HeaderActions.setMainHeaderElementsOnLeft([]);
     };

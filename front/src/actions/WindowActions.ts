@@ -2,7 +2,7 @@ import { action } from 'mobx';
 
 export class WindowActionsClass {
     @action
-    static setBoardWidth = async (width: number): Promise<boolean> => {
+    static setBoardWidth = async (): Promise<boolean> => {
         // TODO
 
         return true;

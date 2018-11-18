@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { observer, inject } from 'mobx-react';
-import { ProjectPicker, ProjectPickerValues, ProjectPickerGroupValues } from 'components/Buddha';
+import { ProjectPicker, ProjectPickerValues, ProjectPickerGroupValues, ProjectPickerSections } from 'components/Buddha';
 import { AppOnlyStoreState } from 'store/AllStores';
-import { DatePicker } from 'components/Calendar';
+import { DatePicker } from '../../../../components/Calendar';
 
 // Props
 interface ProducerSpotSentFormProjectProps {
@@ -11,6 +11,7 @@ interface ProducerSpotSentFormProjectProps {
     project: ProjectPickerGroupValues | null;
     clientId: number | null;
     date: Date;
+    isClosedWhenInit?: boolean;
 }
 
 // Types
@@ -29,11 +30,9 @@ export class ProducerSpotSentFormProject extends React.Component<ProducerSpotSen
                             element: (
                                 <DatePicker
                                     key="date-picker"
-                                    onChange={this.handleDateChange}
                                     label="Spot sent date"
                                     value={this.props.date}
                                     align="right"
-                                    maxDate={new Date()}
                                 />
                             ),
                         },
@@ -49,17 +48,13 @@ export class ProducerSpotSentFormProject extends React.Component<ProducerSpotSen
                     }}
                     title="Pick project"
                     show="project"
-                    openOn="project"
+                    openOn={(this.props.isClosedWhenInit) ? null : ProjectPickerSections.project}
                     requiredSelection="project"
                     noSeparator={true}
                 />
             </>
         );
     }
-
-    private handleDateChange = (date: Date | null) => {
-        this.props.onDateChange(date);
-    };
 
     private handleProjectChange = (values: ProjectPickerValues | null) => {
         this.props.onProjectChange(values);

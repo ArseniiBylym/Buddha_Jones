@@ -1,9 +1,10 @@
+/*
 import * as React from 'react';
 import * as classNames from 'classnames';
 import { observable, computed, action } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { ClientsActions, ProjectsDetailsActions } from 'actions';
-import { ButtonEdit, ButtonSave } from 'components/Button';
+import { ButtonClose, ButtonEdit, ButtonSave } from 'components/Button';
 import { Paragraph } from 'components/Content';
 import { DropdownContainer, OptionsList, OptionsListValuePropType } from 'components/Form';
 import { IconEmail, IconPhone, IconBriefcase } from 'components/Icons';
@@ -26,9 +27,8 @@ interface ExecutiveContactInfo {
 interface ProjectBoardCampaignExecutiveProps {
     userCanViewExecutive: boolean;
     userCanEditExecutive: boolean;
-    userCanViewPORContact: boolean;
-    userCanViewInvoiceContact: boolean;
     clientId: number;
+    customerId: number | null;
     projectId: number;
     projectCampaignId: number;
     campaignId: number;
@@ -38,10 +38,8 @@ interface ProjectBoardCampaignExecutiveProps {
 // Component
 @inject('store')
 @observer
-export class ProjectBoardCampaignExecutive extends React.Component<
-    ProjectBoardCampaignExecutiveProps & AppOnlyStoreState,
-    {}
-> {
+export class ProjectBoardCampaignExecutive extends React.Component<ProjectBoardCampaignExecutiveProps & AppOnlyStoreState,
+    {}> {
     private executiveDropdown: DropdownContainer | null = null;
 
     @observable private loading: boolean = false;
@@ -130,7 +128,7 @@ export class ProjectBoardCampaignExecutive extends React.Component<
     }
 
     public componentDidMount() {
-        if (this.props.userCanViewExecutive || this.props.userCanEditExecutive) {
+        if (this.props.clientId && (this.props.userCanViewExecutive || this.props.userCanEditExecutive)) {
             this.loading = true;
             ClientsActions.fetchCustomerDetails(this.props.clientId).then(() => {
                 this.loading = false;
@@ -147,22 +145,33 @@ export class ProjectBoardCampaignExecutive extends React.Component<
                     headerElements={
                         this.props.userCanEditExecutive && this.clientExecutives.length > 0
                             ? [
-                                  {
-                                      key: 'edit-creative-executive-button',
-                                      element: (
-                                          <ButtonEdit
-                                              float="right"
-                                              onClick={this.handleEditingToggle}
-                                              label={this.isInEditMode ? 'Cancel edit' : 'Edit contacts'}
-                                          />
-                                      ),
-                                  },
-                              ]
+                                {
+                                    key: 'edit-creative-executive-button',
+                                    element: (
+                                        <>
+                                            {this.isInEditMode &&
+                                            <ButtonClose
+                                                float="right"
+                                                onClick={this.handleEditingToggle}
+                                                label={'Cancel'}
+                                            />
+                                            }
+                                            {!this.isInEditMode &&
+                                            <ButtonEdit
+                                                float="right"
+                                                onClick={this.handleEditingToggle}
+                                                label={'Edit contacts'}
+                                            />
+                                            }
+                                        </>
+                                    ),
+                                },
+                            ]
                             : []
                     }
                 >
                     {this.loading ? (
-                        <LoadingIndicator label="Loading studio contacts" />
+                        <LoadingIndicator label="Loading studio contacts"/>
                     ) : this.isInEditMode ? (
                         this.renderEditable()
                     ) : (
@@ -195,30 +204,15 @@ export class ProjectBoardCampaignExecutive extends React.Component<
                             {this.selectedExecutive !== null && <strong>{this.selectedExecutive.name}</strong>}
                         </Paragraph>
 
-                        {this.props.userCanViewPORContact &&
-                            this.selectedExecutive && (
-                                <Paragraph>
-                                    <span>PO contact: </span>
-                                    <strong>{this.selectedExecutive.name}</strong>
-                                </Paragraph>
-                            )}
-
-                        {this.props.userCanViewInvoiceContact &&
-                            this.selectedExecutive && (
-                                <Paragraph>
-                                    <span>Invoice contact: </span>
-                                    <strong>{this.selectedExecutive.name}</strong>
-                                </Paragraph>
-                            )}
                     </div>
 
                     {this.selectedExecutiveContactInfo.length > 0 && (
                         <ul className={s.addresses}>
                             {this.selectedExecutiveContactInfo.map(info => (
                                 <li key={`value-${info.key}`}>
-                                    {(info.type === 'email' && <IconEmail width={15} height={12} />) ||
-                                        (info.type === 'address' && <IconBriefcase width={14} height={12} />) ||
-                                        (info.type === 'phone' && <IconPhone width={14} height={12} />)}
+                                    {(info.type === 'email' && <IconEmail width={15} height={12}/>) ||
+                                    (info.type === 'address' && <IconBriefcase width={14} height={12}/>) ||
+                                    (info.type === 'phone' && <IconPhone width={14} height={12}/>)}
                                     {(info.type === 'email' && <a href={`mailto:${info.label}`}>{info.label}</a>) || (
                                         <p>{info.label}</p>
                                     )}
@@ -272,7 +266,7 @@ export class ProjectBoardCampaignExecutive extends React.Component<
                         isSaving={this.changingExecutive === 'saving'}
                     />
 
-                    <ClearFix />
+                    <ClearFix/>
                 </Col>
             </Row>
         );
@@ -286,6 +280,9 @@ export class ProjectBoardCampaignExecutive extends React.Component<
             this.isInEditMode = false;
             this.editSelectedExecutiveId = null;
         } else {
+            if (this.props.customerId) {
+                ClientsActions.fetchClientsForStudioOptions(this.props.customerId);
+            }
             this.editSelectedExecutiveId = this.selectedExecutive !== null ? this.selectedExecutive.id : null;
             this.isInEditMode = true;
         }
@@ -323,3 +320,4 @@ export class ProjectBoardCampaignExecutive extends React.Component<
         }
     };
 }
+*/

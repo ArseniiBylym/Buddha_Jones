@@ -43,6 +43,10 @@
       background: #0768d8;
       border-color: #0768d8;
     }
+    &.readonly {
+      background: #ccc;
+      border-color: #ccc;
+    }
   }
   &:hover {
     & .checkmark {
@@ -51,6 +55,10 @@
       &.active {
         background: #68a5ed;
       }
+      &.readonly {
+         background: #ccc;
+         border-color: #ccc;
+       }
     }
   }
   &.labelGreen {

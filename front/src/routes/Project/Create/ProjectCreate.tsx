@@ -21,7 +21,7 @@ const s = require('./ProjectCreate.css');
 export default class ProjectCreatePage extends React.Component<AppState, {}> {
     @observable private name: string = '';
     @observable private codeName: string = '';
-    @observable private client: { id: number; name: string } | null = null;
+    @observable private studio: { id: number; name: string } | null = null;
     @observable private releaseDate: Date | null = null;
     @observable private notes: string = '';
     @observable private isUploading: boolean = false;
@@ -53,12 +53,13 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
                                 align="right"
                                 type="field"
                                 maxWidth={640}
-                                clientId={this.client !== null ? this.client.id : null}
-                                clientName={this.client !== null ? this.client.name : null}
-                                onChange={this.handleClientFilterChange}
+                                clientId={this.studio !== null ? this.studio.id : null}
+                                clientName={this.studio !== null ? this.studio.name : null}
+                                onChange={this.handleStudioFilterChange}
                                 label="Pick studio"
                                 allAreAllowed={false}
                                 truncuateLabelTo={96}
+                                src={'studios'}
                             />
                         </Col>
                     </Row>
@@ -113,7 +114,7 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
         );
     }
 
-    private handleBackToBoardNavigation = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleBackToBoardNavigation = () => {
         history.push('/portal/projects/1');
     };
 
@@ -125,12 +126,12 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
         ]);
     };
 
-    private handleClientFilterChange = (client: { id: number; name: string } | null = null) => {
-        this.client =
-            client !== null
+    private handleStudioFilterChange = (studio: { id: number; name: string } | null = null) => {
+        this.studio =
+            studio !== null
                 ? {
-                      id: client.id,
-                      name: client.name,
+                      id: studio.id,
+                      name: studio.name,
                   }
                 : null;
     };
@@ -147,13 +148,13 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
         this.notes = e.target.value;
     };
 
-    private handleSubmit = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    private handleSubmit = () => {
         let projectData: ProjectCreateData = {
             id: 0,
             name: this.name.trim(),
             codeName: this.codeName.trim(),
-            clientId: this.client !== null ? this.client.id : null,
-            clientName: this.client !== null ? this.client.name : null,
+            studioId: this.studio !== null ? this.studio.id : null,
+            studioName: this.studio !== null ? this.studio.name : null,
             releaseDate: this.releaseDate !== null ? dateFormat(this.releaseDate, 'YYYY-MM-DD') : null,
             notes: this.notes.trim(),
         };
@@ -163,7 +164,7 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
             return;
         }
 
-        if (projectData.clientId === null) {
+        if (projectData.studioId === null) {
             NotificationsActions.AlertUser('Project studio is required');
             return;
         }
@@ -182,16 +183,16 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
                 // Change page to project page
                 history.push(
                     '/portal/project/' +
-                        projectData.clientId +
+                        projectData.studioId +
                         '/' +
-                        projectData.clientName +
+                        projectData.studioName +
                         '/' +
                         projectData.id +
                         '/' +
                         projectData.name || projectData.codeName
                 );
             })
-            .catch(error => {
+            .catch(() => {
                 if (this.uploadRetries > 5) {
                     this.isUploading = false;
                     this.uploadRetries = 0;

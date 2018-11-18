@@ -1,8 +1,9 @@
 import { action } from 'mobx';
 import { ClientsStore } from 'store/AllStores';
 import { API, APIPath } from 'fetch';
-import { ClientApiResponse, ClientDetailsApiResponse } from 'types/clients';
+import { ClientApiResponse, ClientDetailsApiResponse, ClientForStudio } from 'types/clients';
 import { DateHandler } from 'helpers/DateHandler';
+import { ClientContact } from '../types/clients';
 
 enum CustomersFetchType {
     None,
@@ -11,7 +12,47 @@ enum CustomersFetchType {
     BySearch,
 }
 
+export interface NewCustomerFormData {
+    studio_id: number | null;
+    name: string;
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+    email: string;
+    phone: string;
+    billing_contact: string;
+    billing_email: string;
+    billing_phone: string;
+}
+
+export interface NewStudioContactFormData {
+    customer_id: number | null;
+    name: string;
+    title: string;
+    email: string;
+    mobile_phone: string;
+}
+
 export class ClientsActionsClass {
+    @action
+    public createNewCustomer = async (customer: NewCustomerFormData | null): Promise<any> => {
+        try {
+            await API.postData(APIPath.CUSTOMER_NEW, customer as Object);
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    @action
+    public createNewStudioContact = async (studioContact: NewStudioContactFormData | null): Promise<any> => {
+        try {
+            await API.postData(APIPath.CUSTOMER_CONTACT , studioContact as Object);
+        } catch (error) {
+            throw error;
+        }
+    };
+
     @action
     public fetchClientsInitialsLetters = async (): Promise<string[]> => {
         try {
@@ -90,7 +131,7 @@ export class ClientsActionsClass {
                     // Update clients list
                     ClientsStore[
                         fetchType === CustomersFetchType.BySearch ? 'clientsBySearchQuery' : 'clientsByLetter'
-                    ][index].clients = response.map(client => ({
+                        ][index].clients = response.map(client => ({
                         id: client.id,
                         name: client.customerName,
                         cardcode: client.cardcode,
@@ -155,7 +196,7 @@ export class ClientsActionsClass {
                 if (
                     forceFetch === false &&
                     (clientDetails.loading ||
-                        (clientDetails.loading === false && clientDetails.customer === null) ||
+                        (clientDetails.loading === false && clientDetails.contacts.length === 0) ||
                         DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, clientDetails.lastFetchTimeStamp) === false)
                 ) {
                     toFetch = false;
@@ -170,31 +211,27 @@ export class ClientsActionsClass {
                         id: customerId,
                         lastFetchTimeStamp: 0,
                         loading: true,
-                        customer: null,
+                        contacts: []
                     });
                     clientMatch = ClientsStore.clientsDetails.length - 1;
                 }
 
                 const client = ClientsStore.clientsDetails[clientMatch];
-                const response = (await API.getData(APIPath.CUSTOMER + '/' + customerId)) as ClientDetailsApiResponse;
+                const response = (await API.getData(APIPath.CUSTOMER_CONTACT, {
+                    customer_id: customerId
+                })) as ClientDetailsApiResponse[];
 
-                client.loading = false;
                 client.lastFetchTimeStamp = Date.now();
-                client.customer = {
-                    id: customerId,
-                    name: response.customerName,
-                    cardcode: response.cardcode,
-                    contacts: response.contact.map(creativeExecutive => ({
-                        id: creativeExecutive.id,
-                        clientId: customerId,
-                        name: creativeExecutive.name,
-                        cardcode: creativeExecutive.cardcode,
-                        email: creativeExecutive.email,
-                        mobilePhone: creativeExecutive.mobilePhone,
-                        officePhone: creativeExecutive.officePhone,
-                        postalAddress: creativeExecutive.postalAddress,
-                    })),
-                };
+                client.loading = false;
+                client.contacts = response.map(contact => {
+                    return {
+                        id: contact.id,
+                        customerId: contact.customerId,
+                        name: contact.name,
+                        title: contact.title,
+                        email: contact.email,
+                    };
+                });
             }
 
             return true;
@@ -205,4 +242,41 @@ export class ClientsActionsClass {
             throw error;
         }
     };
+
+    @action
+    public fetchClientsForStudioOptions = async (studioId: number): Promise<ClientForStudio[]> => {
+        try {
+
+            const response = (await API.getData(APIPath.CUSTOMER, {
+                studio_id: studioId,
+                offset: 0,
+                length: 9999999,
+            })) as ClientApiResponse[];
+
+            return response.map((client: ClientApiResponse) => {
+                return {
+                    id: client.id,
+                    name: client.customerName
+                };
+            });
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    @action
+    public fetchCustomerContactsForProjectCampaign = async (projectCampaignId: number): Promise<ClientContact[]> => {
+        try {
+
+            const response = (await API.getData(APIPath.PROJECT_CAMPAIGN_CUSTOMER_CONTACT + '/' + projectCampaignId)) as ClientDetailsApiResponse[];
+
+            return response.map((contact: ClientDetailsApiResponse) => {
+                delete contact.mobilePhone;
+                return contact;
+            });
+        } catch (error) {
+            throw error;
+        }
+    };
+
 }

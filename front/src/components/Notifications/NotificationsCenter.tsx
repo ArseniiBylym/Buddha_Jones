@@ -33,54 +33,54 @@ export class NotificationsCenter extends React.Component<AppOnlyStoreState, {}> 
         return (
             <div
                 className={classNames(s.notificationsCenter, {
-                    [s.hideHistory]: this.showHistory === false,
+                    [s.hideHistory]: !this.showHistory,
                 })}
             >
                 <Button
                     className={s.toggle}
-                    onClick={e => this.handleNotificationsHistoryToggle(e)}
+                    onClick={() => this.handleNotificationsHistoryToggle()}
                     icon={{
                         size: 'large',
                         background: 'white',
                         element:
-                            this.showHistory === false ? (
-                                <IconHamburgerMenu width={14} height={12} />
+                            !this.showHistory ? (
+                                <IconHamburgerMenu width={14} height={12}/>
                             ) : (
-                                <IconClose width={12} height={12} />
+                                <IconClose width={12} height={12}/>
                             ),
                     }}
                     tooltip={{
-                        text: this.showHistory === false ? 'Notifications' : 'Close',
+                        text: !this.showHistory ? 'Notifications' : 'Close',
                         on: 'left',
                     }}
                 />
 
                 <div className={s.notificationsLive}>
                     {notifications &&
-                        notifications.liveNotifications
-                            .filter(notification => notification !== null && typeof notification.title !== 'undefined')
-                            .map(notification => this.renderNotification(notification))}
+                    notifications.liveNotifications
+                        .filter(notification => notification !== null && typeof notification.title !== 'undefined')
+                        .map(notification => this.renderNotification(notification))}
                 </div>
 
                 <div className={s.notificationsHistory}>
                     {notifications &&
-                        notifications.allNotifications
-                            .filter(notification => notification !== null && typeof notification.title !== 'undefined')
-                            .map(notification => this.renderNotification(notification))}
+                    notifications.allNotifications
+                        .filter(notification => notification !== null && typeof notification.title !== 'undefined')
+                        .map(notification => this.renderNotification(notification))}
 
                     {notifications !== null &&
-                        notifications.allNotifications.length <= 0 && (
-                            <Notification
-                                id={0}
-                                title="You have no recent notifications"
-                                showDate={false}
-                                dismissable={{
-                                    allow: false,
-                                    onDismiss: null,
-                                    dismissAutomaticallyAfterXSeconds: null,
-                                }}
-                            />
-                        )}
+                    notifications.allNotifications.length <= 0 && (
+                        <Notification
+                            id={0}
+                            title="You have no recent notifications"
+                            showDate={false}
+                            dismissable={{
+                                allow: false,
+                                onDismiss: null,
+                                dismissAutomaticallyAfterXSeconds: null,
+                            }}
+                        />
+                    )}
                 </div>
             </div>
         );
@@ -102,14 +102,14 @@ export class NotificationsCenter extends React.Component<AppOnlyStoreState, {}> 
                 dismissable={
                     typeof notification.dismissable !== 'undefined' && notification.dismissable
                         ? {
-                              allow: notification.dismissable,
-                              onDismiss: this.handleNotificationDismiss(notification.id),
-                              dismissAutomaticallyAfterXSeconds:
-                                  typeof notification.dismissAutomaticallyAfterXSeconds !== 'undefined' &&
-                                  notification.dismissAutomaticallyAfterXSeconds
-                                      ? notification.dismissAutomaticallyAfterXSeconds
-                                      : null,
-                          }
+                            allow: notification.dismissable,
+                            onDismiss: this.handleNotificationDismiss(notification.id),
+                            dismissAutomaticallyAfterXSeconds:
+                                typeof notification.dismissAutomaticallyAfterXSeconds !== 'undefined' &&
+                                notification.dismissAutomaticallyAfterXSeconds
+                                    ? notification.dismissAutomaticallyAfterXSeconds
+                                    : null,
+                        }
                         : undefined
                 }
             />
@@ -142,7 +142,7 @@ export class NotificationsCenter extends React.Component<AppOnlyStoreState, {}> 
         }, 400);
     };
 
-    private handleNotificationsHistoryToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleNotificationsHistoryToggle = () => {
         // Toggle hidden status of notifications history
         if (this.exists) {
             this.showHistory = !this.showHistory;

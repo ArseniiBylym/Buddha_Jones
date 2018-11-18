@@ -6,9 +6,9 @@ import { upperFirst as _upperFirst } from 'lodash';
 // Styles
 const s = require('./Input.css');
 
-// Types
+// Type
 type InputAlignProp = 'left' | 'center' | 'right';
-type InputColorProp = 'default' | 'blue' | 'brown' | 'blueFill' | 'brownFill' | 'greenFill' | 'red';
+export type InputColorProp = 'default' | 'blue' | 'brown' | 'blueFill' | 'brownFill' | 'greenFill' | 'red';
 type InputType = 'text' | 'email' | 'password';
 
 // Props
@@ -99,8 +99,8 @@ export class Input extends React.Component<InputProps, {}> {
                     }}
                     className={classNames(this.props.fieldClassName)}
                     name={this.props.name ? this.props.name : undefined}
-                    disabled={this.props.disabled === true ? true : false}
-                    readOnly={this.props.readOnly === true ? true : false}
+                    disabled={this.props.disabled === true}
+                    readOnly={this.props.readOnly === true}
                     placeholder={this.props.label}
                     value={this.props.value !== null ? this.props.value : undefined}
                     defaultValue={this.props.value === null ? this.props.defaultValue : undefined}
