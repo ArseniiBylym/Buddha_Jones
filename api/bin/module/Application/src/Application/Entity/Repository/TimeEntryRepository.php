@@ -41,6 +41,7 @@ class TimeEntryRepository extends EntityRepository
                   ptc.projectId,
                   ptc.campaignId, c.campaignName,
                   a.spotId, s.spotName,
+                  s.trtId, trt.runtime,
                   a.versionId, v.versionName,
                   a.activityId,
                   ac.name AS activityValue,
@@ -54,6 +55,8 @@ class TimeEntryRepository extends EntityRepository
                 FROM \Application\Entity\RediTimeEntry a
                 LEFT JOIN \Application\Entity\RediSpot s
                   WITH a.spotId=s.id
+                LEFT JOIN \Application\Entity\RediTrt trt
+                  WITH trt.id = s.trtId
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
                   WITH ptc.id=a.projectCampaignId
                 LEFT JOIN \Application\Entity\RediProject p
@@ -347,6 +350,8 @@ class TimeEntryRepository extends EntityRepository
                     cu.cardname AS customerName,
                     a.spotId,
                     s.spotName,
+                    s.trtId,
+                    trt.runtime,
                     a.versionId,
                     v.versionName,
                     a.activityId,
@@ -360,6 +365,8 @@ class TimeEntryRepository extends EntityRepository
                 FROM \Application\Entity\RediTimeEntry a
                 LEFT JOIN \Application\Entity\RediSpot s
                   WITH a.spotId=s.id
+                LEFT JOIN \Application\Entity\RediTrt trt
+                  WITH trt.id = s.trtId
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
                   WITH ptc.id=a.projectCampaignId
                 LEFT JOIN \Application\Entity\RediProject p
@@ -415,6 +422,7 @@ class TimeEntryRepository extends EntityRepository
                   ptc.projectId,
                   ptc.campaignId, c.campaignName,
                   a.spotId, s.spotName,
+                  s.trtId, trt.runtime,
                   a.versionId, v.versionName,
                   a.activityId,
                   ac.name AS activityValue,
@@ -426,6 +434,8 @@ class TimeEntryRepository extends EntityRepository
                 FROM \Application\Entity\RediTimeEntry a
                 LEFT JOIN \Application\Entity\RediSpot s
                   WITH a.spotId=s.id
+                LEFT JOIN \Application\Entity\RediTrt trt
+                  WITH trt.id = s.trtId
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
                   WITH ptc.id=a.projectCampaignId
                 LEFT JOIN \Application\Entity\RediProject p
