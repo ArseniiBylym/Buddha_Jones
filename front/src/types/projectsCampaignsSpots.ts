@@ -176,6 +176,7 @@ export interface SpotsResultsEntry {
     id: number;
     spotName: string;
     projectId: number;
+    trtId: number;
 }
 
 export interface VersionsResultsEntry {

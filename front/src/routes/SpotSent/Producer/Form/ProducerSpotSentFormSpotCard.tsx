@@ -99,7 +99,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                         checked={this.props.spot.isFinishingRequest}
                         label="Finish Request"
                         labelOnLeft={true}
-                        readOnly={(!this.props.spot.spot) ? true : false}
+                        readOnly={(!this.props.spot.spot)}
                         type={'no-icon'}
                     />,
                     <Checkmark
@@ -108,7 +108,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                         checked={this.props.spot.isResend}
                         label="Spot resend"
                         labelOnLeft={true}
-                        readOnly={(!this.props.spot.spot) ? true : false}
+                        readOnly={(!this.props.spot.spot)}
                         type={'no-icon'}
                     />,
                     <ButtonClose key="remove-spot" onClick={this.props.onSpotRemove} label="Remove spot" />,
@@ -191,13 +191,13 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                         this.campaignEditorialUsers.isLoading && <LoadingIndicator label="Loading editors" />}
 
                     {this.props.spot.projectCampaign !== null &&
-                        this.campaignEditorialUsers.isLoading === false &&
+                        !this.campaignEditorialUsers.isLoading &&
                         this.campaignEditorialUsers.users.length <= 0 && (
                             <Paragraph type="dim">Campaign has no editors assigned.</Paragraph>
                         )}
 
                     {this.props.spot.projectCampaign !== null &&
-                        this.campaignEditorialUsers.isLoading === false &&
+                        !this.campaignEditorialUsers.isLoading &&
                         this.campaignEditorialUsers.users.length > 0 &&
                         this.selectedEditors.length <= 0 && <Paragraph type="dim">Add editors</Paragraph>}
 
