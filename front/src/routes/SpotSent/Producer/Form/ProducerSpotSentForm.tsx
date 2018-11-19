@@ -23,6 +23,7 @@ import { FinishingHousesPicker } from '../../../../components/Buddha/FinishingHo
 import { match } from 'react-router';
 import * as dateFormat from 'date-fns/format';
 import { ProducerSpotSentFormSentTo } from './SentTo/ProducerSpotSentFormSentTo';
+import { RemoveConfirmationModal } from '../../../../components/RemoveConfiramtionModal';
 
 export interface ProducerSpotSentValue {
     date: Date;
@@ -153,6 +154,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         customer_contact: [],
     };
 
+    @observable private currentSpotIndex: number = 0;
+    @observable private isRemoveConfirmationModalActive: boolean = false;
     @observable private isFinishingTypeSectionOpen: boolean = false;
     @observable private showJson: boolean = false;
 
@@ -225,6 +228,12 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     public render() {
         return (
             <>
+                <RemoveConfirmationModal
+                    isActive={this.isRemoveConfirmationModalActive}
+                    onConfirmationModalClose={this.handleClosingSpotDeleteConfirmation}
+                    onConfirmationSuccess={this.handleSpotRemove}
+                />
+
                 {this.essentialDataIsLoading &&
                 <>
                     {this.getLoadingSpinner()}
@@ -255,7 +264,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     <ProducerSpotSentFormSpotCard
                                         key={spotIndex}
                                         onSpotResendToggle={this.handleSpotResendToggle(spotIndex)}
-                                        onSpotRemove={this.handleSpotRemove(spotIndex)}
+                                        onSpotRemove={this.onOpenRemoveConfirmationModalHandler(spotIndex)}
                                         onSpotChange={this.handleSpotChange(spotIndex)}
                                         onFinishingRequestToggle={this.handleFinishingRequestToggle(spotIndex)}
                                         onSentViaMethodChange={this.handleSentViaMethodsChange(spotIndex)}
@@ -445,14 +454,14 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     {this.spotSentValues.finish_option && (this.spotSentValues.finish_option as SpotSentValueParentChildForSubmit).parent === 2 &&
                                     <Checkmark
                                         onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'gfx_finish')}
-                                        checked={(this.spotSentValues.gfx_finish === 1) ? true : false}
+                                        checked={(this.spotSentValues.gfx_finish === 1)}
                                         label={'GFX finishing request'}
                                         type={'no-icon'}
                                     />
                                     }
                                     <Checkmark
                                         onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'music_cue_sheet')}
-                                        checked={(this.spotSentValues.music_cue_sheet === 1) ? true : false}
+                                        checked={(this.spotSentValues.music_cue_sheet === 1)}
                                         label={'Music Cue Sheet'}
                                         type={'no-icon'}
                                     />
@@ -460,19 +469,19 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     <>
                                         <Checkmark
                                             onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'audio_prep')}
-                                            checked={(this.spotSentValues.audio_prep === 1) ? true : false}
+                                            checked={(this.spotSentValues.audio_prep === 1)}
                                             label={'Audio prep'}
                                             type={'no-icon'}
                                         />
                                         <Checkmark
                                             onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'video_prep')}
-                                            checked={(this.spotSentValues.video_prep === 1) ? true : false}
+                                            checked={(this.spotSentValues.video_prep === 1)}
                                             label={'Video prep'}
                                             type={'no-icon'}
                                         />
                                         <Checkmark
                                             onClick={this.handleFinishingTypeCheckmarkSelect.bind(this, 'graphics_finish')}
-                                            checked={(this.spotSentValues.graphics_finish === 1) ? true : false}
+                                            checked={(this.spotSentValues.graphics_finish === 1)}
                                             label={'Graphics Finish'}
                                             type={'no-icon'}
                                         />
@@ -594,6 +603,16 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         );
     }
 
+    private handleClosingSpotDeleteConfirmation = (): void => {
+        this.isRemoveConfirmationModalActive = false;
+    };
+
+    @action
+    private onOpenRemoveConfirmationModalHandler = (spotIndex: number) => (): void => {
+        this.isRemoveConfirmationModalActive = true;
+        this.currentSpotIndex = spotIndex;
+    };
+
     private getLoadingSpinner(): JSX.Element {
         return (
             <LoadingSpinner className={s.loadingSpinner} size={64}/>
@@ -610,7 +629,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     private handleDateChange = (date: Date | null) => {
         if (date !== null) {
-            /*this.spotSentValues.deadline = dateFormat(date, 'MM/DD/YYYY');*/
             this.spotSentValues.deadline = date;
         }
     };
@@ -627,57 +645,14 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             this.spotSentValues.project_id = null;
             this.spotSentValues.project_name = null;
         }
-        /*if (
-            values &&
-            values.project &&
-            (this.values.project === null ||
-                this.values.project.selectedProject === null ||
-                this.values.project.selectedProject.id !== values.project.id)
-        ) {
-            this.createFirstSpot();
-        } else if (values === null || values.project === null) {
-            this.values.spots = [];
-            this.spotSentValues.spot_version = [];
-            this.values.sentVia = [];
-            this.values.studioContacts = [];
-            this.values.studioNotes = '';
-            this.values.internalNotes = '';
-        }
-
-        if (values && this.values.project === null) {
-            this.values.project = {
-                selectedProject: null,
-                clientId: 0,
-            };
-            this.spotSentValues.project_id = null;
-        }
-
-        if (values && values.customerId) {
-            this.values.project = {
-                selectedProject: values.project,
-                clientId: values.customerId,
-            };
-            this.spotSentValues.project_id = (values.project && values.project.id) ? values.project.id : null;
-
-            if (values.customerId) {
-                ClientsActions.fetchCustomerDetails(values.customerId);
-            }
-        } else {
-            this.values.project = null;
-            this.spotSentValues.project_id = null;
-        }*/
     };
 
     private handleSpotResendToggle = (spotIndex: number) => (checked: boolean) => {
-        /*this.values.spots[spotIndex].isResend = checked;*/
-
         (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_resend = checked ? 1 : 0;
     };
 
     @action
     private handleFinishingRequestToggle = (spotIndex: number) => (checked: boolean) => {
-        /*this.values.spots[spotIndex].isFinishingRequest = checked;*/
-
         (this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit).finish_request = checked ? 1 : 0;
         this.isFinishingTypeSectionOpen = (this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).some(spot => spot.finish_request === 1);
     };
@@ -697,14 +672,18 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     @action
-    private handleSpotRemove = (spotIndex: number) => () => {
-        this.values.spots = [...this.values.spots.slice(0, spotIndex), ...this.values.spots.slice(spotIndex + 1)];
-
-        this.spotSentValues.spot_version = [
-            ...(this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).slice(0, spotIndex),
-            ...(this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).slice(spotIndex + 1)
+    private handleSpotRemove = () => {
+        this.values.spots = [
+            ...this.values.spots.slice(0, this.currentSpotIndex),
+            ...this.values.spots.slice(this.currentSpotIndex + 1)
         ];
 
+        this.spotSentValues.spot_version = [
+            ...(this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).slice(0, this.currentSpotIndex),
+            ...(this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).slice(this.currentSpotIndex + 1)
+        ];
+
+        this.isRemoveConfirmationModalActive = false;
     };
 
     @action
