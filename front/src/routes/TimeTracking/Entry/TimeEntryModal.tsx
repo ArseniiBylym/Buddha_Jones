@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as styles from './TimeEntryModal.scss';
 import { computed, observable, action } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { Modal } from 'components/Modals';
@@ -7,8 +6,6 @@ import { TimeEntryCalendarDuration } from './TimeEntryCalendarDuration';
 import { TimeEntryContent } from './TimeEntryContent';
 import { TimeEntryActions, TimeApprovalActions } from 'actions';
 import { AppOnlyStoreState } from 'store/AllStores';
-import { LoadingSpinner } from 'components/Loaders';
-import { Paragraph } from 'components/Content';
 import { RemoveConfirmationModal } from '../../../components/RemoveConfiramtionModal';
 
 interface Props {
