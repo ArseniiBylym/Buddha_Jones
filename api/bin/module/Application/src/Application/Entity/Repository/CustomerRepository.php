@@ -25,7 +25,7 @@ class CustomerRepository extends EntityRepository
         $this->_entityManager = $entityManager;
     }
 
-    public function search($offset = 0, $length = 10, $filter=array())
+    public function search($offset = 0, $length = 10, $filter = array())
     {
         $dql = "SELECT  
                   cu.id,
@@ -45,17 +45,17 @@ class CustomerRepository extends EntityRepository
         }
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
-            if(strtolower($filter['first_letter']=='other')) {
+            if (strtolower($filter['first_letter'] == 'other')) {
                 $dqlFilter[] = " (SUBSTRING(cu.cardname, 1,1)<'A' AND SUBSTRING(cu.cardname, 1,1)<'0') ";
-            } elseif($filter['first_letter']=='0-9') {
+            } elseif ($filter['first_letter'] == '0-9') {
                 $dqlFilter[] = " (SUBSTRING(cu.cardname, 1,1)>0 OR SUBSTRING(cu.cardname, 1,1)='0') ";
             } else {
                 $dqlFilter[] = " (UPPER(SUBSTRING(cu.cardname, 1, 1))=:first_letter) ";
             }
         }
 
-        if(count($dqlFilter)) {
-            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $dql .= " ORDER BY cu.cardname ASC";
@@ -74,7 +74,7 @@ class CustomerRepository extends EntityRepository
         }
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
-            if($filter['first_letter']!='0-9' && strtolower($filter['first_letter']!='other')) {
+            if ($filter['first_letter'] != '0-9' && strtolower($filter['first_letter'] != 'other')) {
                 $query->setParameter('first_letter', $filter['first_letter']);
             }
         }
@@ -84,7 +84,7 @@ class CustomerRepository extends EntityRepository
         return $data;
     }
 
-    public function searchCount($filter=array())
+    public function searchCount($filter = array())
     {
         $dql = "SELECT 
                   COUNT(cu.id) AS total_count 
@@ -101,17 +101,17 @@ class CustomerRepository extends EntityRepository
         }
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
-            if(strtolower($filter['first_letter']=='other')) {
+            if (strtolower($filter['first_letter'] == 'other')) {
                 $dqlFilter[] = " (SUBSTRING(cu.cardname, 1,1)<'A' AND SUBSTRING(cu.cardname, 1,1)<'0') ";
-            } elseif($filter['first_letter']=='0-9') {
+            } elseif ($filter['first_letter'] == '0-9') {
                 $dqlFilter[] = " (SUBSTRING(cu.cardname, 1,1)>0 OR SUBSTRING(cu.cardname, 1,1)='0') ";
             } else {
                 $dqlFilter[] = " (UPPER(SUBSTRING(cu.cardname, 1, 1))=:first_letter) ";
             }
         }
 
-        if(count($dqlFilter)) {
-            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -123,15 +123,15 @@ class CustomerRepository extends EntityRepository
         if (isset($filter['studio_id']) && $filter['studio_id']) {
             $query->setParameter('studio_id', $filter['studio_id']);
         }
-        
+
         if (isset($filter['first_letter']) && $filter['first_letter']) {
-            if($filter['first_letter']!='0-9' && strtolower($filter['first_letter']!='other')) {
+            if ($filter['first_letter'] != '0-9' && strtolower($filter['first_letter'] != 'other')) {
                 $query->setParameter('first_letter', $filter['first_letter']);
             }
         }
-        $result =  $query->getArrayResult();
+        $result = $query->getArrayResult();
 
-        return (isset($result[0]['total_count'])?(int)$result[0]['total_count']:0);
+        return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
     }
 
     public function getById($id)
@@ -148,7 +148,7 @@ class CustomerRepository extends EntityRepository
 
         $response = (isset($result[0]) ? $result[0] : null);
 
-        if($response) {
+        if ($response) {
             $contactDql = "SELECT 
                   cc
                 FROM \Application\Entity\RediCustomerContact cc
@@ -191,7 +191,7 @@ class CustomerRepository extends EntityRepository
 
         $response = array();
 
-        foreach($data as $row) {
+        foreach ($data as $row) {
             $response[] = $row['cfl'];
         }
 
@@ -200,8 +200,8 @@ class CustomerRepository extends EntityRepository
 
     public function getDistinctStudioFirstLetter($studioIds)
     {
-        $studioIds = implode(',', $studioIds?:array(0));
-        
+        $studioIds = implode(',', $studioIds ? : array(0));
+
         $dql = "SELECT DISTINCT 
                   cfl 
                 FROM
@@ -233,7 +233,7 @@ class CustomerRepository extends EntityRepository
         return $response;
     }
 
-    public function searchCustomerContact($filter=array())
+    public function searchCustomerContact($filter = array())
     {
         $dql = "SELECT  
                   cc
@@ -249,8 +249,8 @@ class CustomerRepository extends EntityRepository
             $dqlFilter[] = " cc.customerId=:customer_id ";
         }
 
-        if(count($dqlFilter)) {
-            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $dql .= " ORDER BY cc.name ASC";
@@ -262,13 +262,13 @@ class CustomerRepository extends EntityRepository
         }
 
         if (isset($filter['customer_id']) && $filter['customer_id']) {
-            $query->setParameter('customer_id',  $filter['customer_id']);
+            $query->setParameter('customer_id', $filter['customer_id']);
         }
 
         $data = $query->getArrayResult();
 
-        if(!empty($filter['get_details'])) {
-            foreach($data as &$row) {
+        if (!empty($filter['get_details'])) {
+            foreach ($data as &$row) {
                 $row['projectCampaign'] = $this->getProjectCampaignOfCustomerContact($row['id']);
             }
         }
@@ -294,10 +294,10 @@ class CustomerRepository extends EntityRepository
         $query->execute();
         $data = $query->fetchAll();
 
-        foreach ($data as &$row ) {
+        foreach ($data as &$row) {
             $row['id'] = (int)$row['id'];
         }
-        
+
         return $data;
     }
 
@@ -319,7 +319,7 @@ class CustomerRepository extends EntityRepository
                   cctpc.customerContactId=:customer_contact_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('customer_contact_id',  $customerContactId);
+        $query->setParameter('customer_contact_id', $customerContactId);
 
         $data = $query->getArrayResult();
 
@@ -356,7 +356,7 @@ class CustomerRepository extends EntityRepository
 
         return $result;
     }
-    
+
     public function getCampaignProjectCustomerContact($projectCampaignId)
     {
         $dql = "SELECT 
@@ -381,7 +381,26 @@ class CustomerRepository extends EntityRepository
      * @param int $customerId
      * @return array customer price
      */
-    public function searchCustomerPrice($customerId)
+    public function searchCustomerPrice($customerId, $type = null)
+    {
+        $type = strtolower($type);
+
+        $typeAData = array();
+        $typeBData = array();
+
+        if (empty($type) || $type === 'a') {
+            $typeAData = $this->searchCustomerPriceByType($customerId, 'A');
+        }
+
+        if (empty($type) || $type === 'b') {
+            $typeBData = $this->searchCustomerPriceByType($customerId, 'B');
+        }
+
+        return array_merge($typeAData, $typeBData);
+
+    }
+
+    public function searchCustomerPriceByType($customerId, $type)
     {
         $dql = "SELECT  
                   a.id AS activityId,
@@ -397,17 +416,20 @@ class CustomerRepository extends EntityRepository
                   WITH aty.id=a.typeId
                 WHERE a.typeId IN (1,4)
                 AND (cp.customerId=:customer_id OR cp.customerId IS NULL)
+                AND (cp.type = :type OR cp.type IS NULL)
                 GROUP BY a.id
                 ORDER BY a.name ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('customer_id', $customerId);
+        $query->setParameter('type', $type);
 
         $data = $query->getArrayResult();
 
-        $data = array_map(function($cPrice) use ($customerId) {
-            $cPrice['customerId'] = $cPrice['customerId']?$cPrice['customerId']:$customerId;
-            $cPrice['price'] = ($cPrice['price'] !== null)?(float)$cPrice['price'] : null;
+        $data = array_map(function ($cPrice) use ($customerId, $type) {
+            $cPrice['customerId'] = $cPrice['customerId'] ? $cPrice['customerId'] : $customerId;
+            $cPrice['price'] = ($cPrice['price'] !== null) ? (float)$cPrice['price'] : null;
+            $cPrice['type'] = $type;
 
             return $cPrice;
         }, $data);
@@ -415,18 +437,20 @@ class CustomerRepository extends EntityRepository
         return $data;
     }
 
-    public function getCustomerPriceById($customerId, $activityId)
+    public function getCustomerPriceById($customerId, $activityId, $type)
     {
         $dql = "SELECT  
                   cp
                 FROM \Application\Entity\RediCustomerPrice cp
                 WHERE 
                     cp.customerId=:customer_id
-                    AND cp.activityId=:activity_id";
+                    AND cp.activityId=:activity_id
+                    AND cp.type = :type";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('customer_id', $customerId);
         $query->setParameter('activity_id', $activityId);
+        $query->setParameter('type', $type);
         $query->setMaxResults(1);
 
         $data = $query->getArrayResult();
@@ -451,7 +475,7 @@ class CustomerRepository extends EntityRepository
         return (!empty($data[0]) ? $data[0] : null);
     }
 
-    public function searchStudio($filter=array(), $offset = 0, $length = 10)
+    public function searchStudio($filter = array(), $offset = 0, $length = 10)
     {
         $dql = "SELECT  
                   st
@@ -464,17 +488,17 @@ class CustomerRepository extends EntityRepository
         }
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
-            if(strtolower($filter['first_letter']=='other')) {
+            if (strtolower($filter['first_letter'] == 'other')) {
                 $dqlFilter[] = " (SUBSTRING(st.studioName, 1,1)<'A' AND SUBSTRING(st.studioName, 1,1)<'0') ";
-            } elseif($filter['first_letter']=='0-9') {
+            } elseif ($filter['first_letter'] == '0-9') {
                 $dqlFilter[] = " (SUBSTRING(st.studioName, 1,1)>0 OR SUBSTRING(st.studioName, 1,1)='0') ";
             } else {
                 $dqlFilter[] = " (UPPER(SUBSTRING(st.studioName, 1, 1))=:first_letter) ";
             }
         }
 
-        if(count($dqlFilter)) {
-            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $dql .= " ORDER BY st.studioName ASC";
@@ -489,7 +513,7 @@ class CustomerRepository extends EntityRepository
         }
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
-            if($filter['first_letter']!='0-9' && strtolower($filter['first_letter']!='other')) {
+            if ($filter['first_letter'] != '0-9' && strtolower($filter['first_letter'] != 'other')) {
                 $query->setParameter('first_letter', $filter['first_letter']);
             }
         }
@@ -499,7 +523,7 @@ class CustomerRepository extends EntityRepository
         return $data;
     }
 
-    public function searchStudioCount($filter=array())
+    public function searchStudioCount($filter = array())
     {
         $dql = "SELECT  
                   COUNT(st.id) AS total_count 
@@ -512,17 +536,17 @@ class CustomerRepository extends EntityRepository
         }
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
-            if(strtolower($filter['first_letter']=='other')) {
+            if (strtolower($filter['first_letter'] == 'other')) {
                 $dqlFilter[] = " (SUBSTRING(st.studioName, 1,1)<'A' AND SUBSTRING(st.studioName, 1,1)<'0') ";
-            } elseif($filter['first_letter']=='0-9') {
+            } elseif ($filter['first_letter'] == '0-9') {
                 $dqlFilter[] = " (SUBSTRING(st.studioName, 1,1)>0 OR SUBSTRING(st.studioName, 1,1)='0') ";
             } else {
                 $dqlFilter[] = " (UPPER(SUBSTRING(st.studioName, 1, 1))=:first_letter) ";
             }
         }
 
-        if(count($dqlFilter)) {
-            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -532,17 +556,17 @@ class CustomerRepository extends EntityRepository
         }
 
         if (isset($filter['first_letter']) && $filter['first_letter']) {
-            if($filter['first_letter']!='0-9' && strtolower($filter['first_letter']!='other')) {
+            if ($filter['first_letter'] != '0-9' && strtolower($filter['first_letter'] != 'other')) {
                 $query->setParameter('first_letter', $filter['first_letter']);
             }
         }
 
         $result = $query->getArrayResult();
 
-        return (isset($result[0]['total_count'])?(int)$result[0]['total_count']:0);
+        return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
     }
 
-    public function searchNewCustomer($filter=array(), $offset = 0, $length = 10)
+    public function searchNewCustomer($filter = array(), $offset = 0, $length = 10)
     {
         $dql = "SELECT  
                   cn
@@ -558,8 +582,8 @@ class CustomerRepository extends EntityRepository
             $dqlFilter[] = " cn.createdBy = :created_by ";
         }
 
-        if(count($dqlFilter)) {
-            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $dql .= " ORDER BY cn.id ASC";
@@ -581,7 +605,7 @@ class CustomerRepository extends EntityRepository
         return $data;
     }
 
-    public function searchNewCustomerCount($filter=array())
+    public function searchNewCustomerCount($filter = array())
     {
         $dql = "SELECT 
                   COUNT(cn.id) AS total_count 
@@ -597,8 +621,8 @@ class CustomerRepository extends EntityRepository
             $dqlFilter[] = " cn.createdBy = :created_by ";
         }
 
-        if(count($dqlFilter)) {
-            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -611,8 +635,8 @@ class CustomerRepository extends EntityRepository
             $query->setParameter('created_by', $filter['created_by']);
         }
 
-        $result =  $query->getArrayResult();
+        $result = $query->getArrayResult();
 
-        return (isset($result[0]['total_count'])?(int)$result[0]['total_count']:0);
+        return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
     }
 }

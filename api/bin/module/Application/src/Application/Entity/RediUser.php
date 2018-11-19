@@ -59,16 +59,16 @@ class RediUser
     /**
      * @var string
      *
-     * @ORM\Column(name="initials", type="string", length=20, nullable=true)
+     * @ORM\Column(name="nick_name", type="string", length=50, nullable=true)
      */
-    private $initials;
+    private $nickName;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="nick_name", type="string", length=45, nullable=true)
+     * @ORM\Column(name="initials", type="string", length=20, nullable=true)
      */
-    private $nickName;
+    private $initials;
 
     /**
      * @var string
@@ -282,29 +282,6 @@ class RediUser
     }
 
     /**
-     * Set initials
-     *
-     * @param string $initials
-     * @return RediUser
-     */
-    public function setInitials($initials)
-    {
-        $this->initials = $initials;
-
-        return $this;
-    }
-
-    /**
-     * Get initials
-     *
-     * @return string 
-     */
-    public function getInitials()
-    {
-        return $this->initials;
-    }
-
-    /**
      * Set nickName
      *
      * @param string $nickName
@@ -325,6 +302,29 @@ class RediUser
     public function getNickName()
     {
         return $this->nickName;
+    }
+
+    /**
+     * Set initials
+     *
+     * @param string $initials
+     * @return RediUser
+     */
+    public function setInitials($initials)
+    {
+        $this->initials = $initials;
+
+        return $this;
+    }
+
+    /**
+     * Get initials
+     *
+     * @return string 
+     */
+    public function getInitials()
+    {
+        return $this->initials;
     }
 
     /**
