@@ -1,9 +1,13 @@
 import { action } from 'mobx';
 import { ClientsStore } from 'store/AllStores';
 import { API, APIPath } from 'fetch';
-import { ClientApiResponse, ClientDetailsApiResponse, ClientForStudio } from 'types/clients';
+import {ClientApiResponse, ClientDetailsApiResponse, ClientForStudio, NewClientRequestFromApi} from 'types/clients';
 import { DateHandler } from 'helpers/DateHandler';
-import { ClientContact } from '../types/clients';
+import {ClientContact, NewClientRequest} from '../types/clients';
+import {UsersStore} from "../store/AllStores";
+import {UserTypeFromApi} from "../types/users";
+import {format} from "logform";
+import cli = format.cli;
 
 enum CustomersFetchType {
     None,
@@ -275,6 +279,50 @@ export class ClientsActionsClass {
                 return contact;
             });
         } catch (error) {
+            throw error;
+        }
+    };
+
+    @action
+    public fetchNewClientList = async (forceFetch: boolean = false): Promise<boolean> => {
+        try {
+            if (
+                forceFetch ||
+                (ClientsStore.newClientsRequestListLoading === false &&
+                    DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, ClientsStore.newClientsRequestListLastFetchTimestamp))
+            ) {
+                ClientsStore.newClientsRequestListLoading = true;
+
+                const response = (await API.getData(APIPath.CUSTOMER_NEW)) as NewClientRequestFromApi[];
+
+                ClientsStore.newClientsRequestList = response
+                    .map((client: NewClientRequestFromApi) => ({
+                        id: client.id,
+                        studio_id: client.studioId,
+                        studio_name: client.studioName,
+                        name: client.name,
+                        street: client.street,
+                        city: client.city,
+                        state: client.state,
+                        zip: client.zip,
+                        email: client.email,
+                        phone: client.phone,
+                        billing_contact: client.billingContact,
+                        billing_email: client.billingEmail,
+                        billing_phone: client.billingPhone,
+                        completed: client.completed,
+                        created_by: client.createdBy,
+                        updated_by: client.updatedBy,
+                    }));
+                ClientsStore.newClientsRequestListLastFetchTimestamp = Date.now();
+                ClientsStore.newClientsRequestListLoading = false;
+            }
+
+            return true;
+        } catch (error) {
+            setTimeout(() => {
+                this.fetchNewClientList(true);
+            }, 512);
             throw error;
         }
     };

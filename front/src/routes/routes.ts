@@ -10,6 +10,7 @@ import { ProducerSpotSentListAsync, ProducerSpotSentFormAsync } from './SpotSent
 import { ProjectBoardPermissionListAsync } from './Configuration/UserManagement/ProjectBoardPermission/List';
 import { ProjectBoardPermissionEditAsync } from './Configuration/UserManagement/ProjectBoardPermission/Form';
 import { UserManagementUsersListAsync } from './Configuration/UserManagement/UsersList/List';
+import { NewClientRequestListAsync } from './StudioClient/NewClientRequest/List';
 
 // Icons
 const dashboardIcon = require('../assets/images/navigation/navigation-icon-dashboard.png');
@@ -22,6 +23,7 @@ const dashboardGroup = { key: 'dashboard', name: 'Dashboard', icon: dashboardIco
 const projectsGroup = { key: 'projects', name: 'Projects', icon: projectsIcon };
 const studioGroup = { key: 'studio', name: 'Studio', icon: studioIcon };
 const configurationGroup = { key: 'configuration', name: 'Configuration', icon: configurationIcon };
+const StudioClientGroup = { key: 'studio-client', name: 'StudioClient', icon: studioIcon };
 
 export const routes: Route[] = [
     {
@@ -164,6 +166,17 @@ export const routes: Route[] = [
         path: '/portal/user/account',
         exact: true,
         allowAllUsers: true,
+    },
+    {
+        component: NewClientRequestListAsync,
+        key: 'new-customer-approval',
+        accessKey: RouteAccessKey.NewCustomerApproval,
+        group: StudioClientGroup,
+        name: 'New client request',
+        path: '/portal/studio-client/new-client-request',
+        entry: '/portal/studio-client/new-client-request',
+        exact: true,
+        allowAllUsers: false,
     },
 ];
 

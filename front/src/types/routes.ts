@@ -24,4 +24,5 @@ export enum RouteAccessKey {
     ActivitiesDefinition = 'activities-definition',
     ProjectBoardPermission = 'project-board-permission',
     MyAccount = 'my-account',
+    NewCustomerApproval = 'new-customer-approval',
 }

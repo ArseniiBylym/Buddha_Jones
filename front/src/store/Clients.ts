@@ -1,5 +1,6 @@
 import { observable, computed } from 'mobx';
-import { Client, ClientContact } from 'types/clients';
+import {Client, ClientContact, NewClientRequest} from 'types/clients';
+import {Project} from "../types/project";
 
 export class Clients {
 
@@ -66,6 +67,10 @@ export class Clients {
     public get clientsDetailsFlatIds(): number[] {
         return this.clientsDetails.map(client => client.id);
     }
+
+    @observable public newClientsRequestList: NewClientRequest[] = [];
+    @observable public newClientsRequestListLastFetchTimestamp: number = 0;
+    @observable public newClientsRequestListLoading: boolean = false;
 
 /*    @computed
     public get allClientsCreativeExecutives(): ClientContact[] {
