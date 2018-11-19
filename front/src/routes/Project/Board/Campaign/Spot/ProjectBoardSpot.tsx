@@ -393,9 +393,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                                 </DropdownContainer>
                             </div>
                         )}
-
                     </Row>
-
                 </Col>
             </Row>
         );

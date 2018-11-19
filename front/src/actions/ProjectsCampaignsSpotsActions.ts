@@ -131,6 +131,7 @@ export class ProjectsCampaignsSpotsActionsClass {
             search = this.prepareSearchQuery(search);
 
             let campaignData = this.getCampaignResult(userId, projectId, search, page);
+
             if (campaignData === null) {
                 ProjectsCampaignsSpotsStore.campaigns.push({
                     projectId: projectId,
@@ -256,9 +257,7 @@ export class ProjectsCampaignsSpotsActionsClass {
     @action
     public fetchTRT = async (): Promise<boolean> => {
         try {
-            const response: TRTItem[] = await API.getData<TRTItem[]>(APIPath.TRT);
-
-            ProjectsCampaignsSpotsStore.trtList = response;
+            ProjectsCampaignsSpotsStore.trtList = await API.getData<TRTItem[]>(APIPath.TRT);
 
             return true;
         } catch (error) {

@@ -8,7 +8,7 @@ import { ProjectPickerSelectionRequirementLabel } from '.';
 import { Button } from '../Button';
 import { ProjectPickerContent, ProjectPickerResult } from './ProjectPickerContent';
 import { AppOnlyStoreState } from 'store/AllStores';
-import { ProjectPermissionsActions } from 'actions';
+import { ProjectPermissionsActions, ProjectsCampaignsSpotsActions } from 'actions';
 import { UserPermissionKey } from 'types/projectPermissions';
 
 // Styles
@@ -302,10 +302,9 @@ export class ProjectPicker extends React.Component<ComponentProps, {}> {
                     )
                 ),
                 classNames: this.getSectionButtonClassName(ProjectPickerSections.spot),
-                label:
-                    this.props.value && this.props.value.spot ?
-                        this.props.value.spot.name :
-                        'Spot' + (this.isSpotRequired ? '' : ' (optional)'),
+                label: this.props.value && this.props.value.spot ?
+                    this.props.value.spot.name :
+                    'Spot' + (this.isSpotRequired ? '' : ' (optional)'),
             });
         }
 
@@ -346,6 +345,10 @@ export class ProjectPicker extends React.Component<ComponentProps, {}> {
 
     public componentDidMount() {
         const areProjectsOpenByDefaultAllowed: boolean = this.isProjectVisible;
+
+        if (this.props.store && this.props.store.projectsCampaignsSpots.trtList.length === 0) {
+            ProjectsCampaignsSpotsActions.fetchTRT();
+        }
 
         const areCampaignsOpenByDefaultAllowed: boolean = Boolean(
             areProjectsOpenByDefaultAllowed &&
@@ -464,6 +467,7 @@ export class ProjectPicker extends React.Component<ComponentProps, {}> {
                 </Row>
 
                 <ProjectPickerContent
+                    trtList={projectsCampaignsSpots.trtList}
                     onResultPicked={this.handleResultPick}
                     onSearchQueryChange={this.handleSearchQueryChange}
                     onSectionClose={this.handleSectionClose}

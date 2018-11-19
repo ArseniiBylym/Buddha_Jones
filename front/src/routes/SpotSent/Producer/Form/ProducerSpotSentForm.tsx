@@ -258,43 +258,47 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                 >
                     {this.spotSentValues.spot_version instanceof Array &&
                     <Section title="Spots">
-                        {(this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).map((spot: SpotSentVersionForSubmit, spotIndex: number) => (
-                            <ProducerSpotSentFormSpotCard
-                                key={spotIndex}
-                                onSpotResendToggle={this.handleSpotResendToggle(spotIndex)}
-                                onSpotRemove={this.onOpenRemoveConfirmationModalHandler(spotIndex)}
-                                onSpotChange={this.handleSpotChange(spotIndex)}
-                                onFinishingRequestToggle={this.handleFinishingRequestToggle(spotIndex)}
-                                onSentViaMethodChange={this.handleSentViaMethodsChange(spotIndex)}
-                                onEditorAdd={this.handleSpotAddingEditor(spotIndex)}
-                                onEditorRemove={this.handleSpotRemovingEditor(spotIndex)}
-                                project={{
-                                    id: this.spotSentValues.project_id as number,
-                                    name: this.spotSentValues.project_name as string
-                                }}
-                                clientId={this.values.project ? this.values.project.clientId : null}
-                                spot={{
-                                    projectCampaign: (spot.project_campaign_id) ? {
-                                        id: spot.project_campaign_id as number,
-                                        name: spot.campaign_name as string
-                                    } : null,
-                                    spot: (spot.spot_id) ? {
-                                        id: spot.spot_id as number,
-                                        name: spot.spot_name as string
-                                    } : null,
-                                    version: (spot.version_id) ? {
-                                        id: spot.version_id as number,
-                                        name: spot.version_name as string
-                                    } : null,
-                                    isResend: (spot.spot_resend === 1) ? true : false,
-                                    isFinishingRequest: (spot.finish_request === 1) ? true : false,
-                                    selectedEditorsIds: spot.editors as number[],
-                                    sentViaMethod: (spot.sent_via_method) ? spot.sent_via_method as number[] : []
-                                }}
-                                spotIndex={spotIndex}
-                                forUserId={this.props.store!.user.data!.id}
-                            />
-                        ))}
+                        {(this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).map(
+                            (spot: SpotSentVersionForSubmit, spotIndex: number) => {
+                                return (
+                                    <ProducerSpotSentFormSpotCard
+                                        key={spotIndex}
+                                        onSpotResendToggle={this.handleSpotResendToggle(spotIndex)}
+                                        onSpotRemove={this.onOpenRemoveConfirmationModalHandler(spotIndex)}
+                                        onSpotChange={this.handleSpotChange(spotIndex)}
+                                        onFinishingRequestToggle={this.handleFinishingRequestToggle(spotIndex)}
+                                        onSentViaMethodChange={this.handleSentViaMethodsChange(spotIndex)}
+                                        onEditorAdd={this.handleSpotAddingEditor(spotIndex)}
+                                        onEditorRemove={this.handleSpotRemovingEditor(spotIndex)}
+                                        project={{
+                                            id: this.spotSentValues.project_id as number,
+                                            name: this.spotSentValues.project_name as string
+                                        }}
+                                        clientId={this.values.project ? this.values.project.clientId : null}
+                                        spot={{
+                                            projectCampaign: (spot.project_campaign_id) ? {
+                                                id: spot.project_campaign_id as number,
+                                                name: spot.campaign_name as string
+                                            } : null,
+                                            spot: (spot.spot_id) ? {
+                                                id: spot.spot_id as number,
+                                                name: spot.spot_name as string
+                                            } : null,
+                                            version: (spot.version_id) ? {
+                                                id: spot.version_id as number,
+                                                name: spot.version_name as string
+                                            } : null,
+                                            isResend: (spot.spot_resend === 1) ? true : false,
+                                            isFinishingRequest: (spot.finish_request === 1) ? true : false,
+                                            selectedEditorsIds: spot.editors as number[],
+                                            sentViaMethod: (spot.sent_via_method) ? spot.sent_via_method as number[] : []
+                                        }}
+                                        spotIndex={spotIndex}
+                                        forUserId={this.props.store!.user.data!.id}
+                                    />
+                                );
+                            }
+                        )}
 
                         {/*{this.values.spots.length <= 0 && <Paragraph type="dim">No spots have been added.</Paragraph>}*/}
                         {this.spotSentValues.spot_version.length <= 0 &&
@@ -358,13 +362,15 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     align="left"
                                 />
                             </div>
-                            <div className={s.sentViaMethodsContainer}
-                                 style={{ marginTop: '30px', marginBottom: '15px' }}>
+                            <div
+                                className={s.sentViaMethodsContainer}
+                                style={{ marginTop: '30px', marginBottom: '15px' }}
+                            >
                                 <Checkmark
                                     onClick={() => {
                                         this.spotSentValues.full_lock = 0;
                                     }}
-                                    checked={(this.spotSentValues.full_lock === 0) ? true : false}
+                                    checked={(this.spotSentValues.full_lock === 0)}
                                     label={'Soft Lock'}
                                     type={'no-icon'}
                                 />
@@ -372,7 +378,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                     onClick={() => {
                                         this.spotSentValues.full_lock = 1;
                                     }}
-                                    checked={(this.spotSentValues.full_lock === 1) ? true : false}
+                                    checked={(this.spotSentValues.full_lock === 1)}
                                     label={'Full Lock'}
                                     type={'no-icon'}
                                 />
@@ -575,9 +581,12 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     </Section>
                 </AnimateHeight>
                 <Section>
-                    <button onClick={() => {
-                        this.showJson = !this.showJson;
-                    }}>Show/Hide JSON
+                    <button
+                        onClick={() => {
+                            this.showJson = !this.showJson;
+                        }}
+                    >
+                        Show/Hide JSON
                     </button>
                 </Section>
                 {this.showJson &&

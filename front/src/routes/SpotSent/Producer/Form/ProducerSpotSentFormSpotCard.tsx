@@ -191,13 +191,13 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                         this.campaignEditorialUsers.isLoading && <LoadingIndicator label="Loading editors" />}
 
                     {this.props.spot.projectCampaign !== null &&
-                        this.campaignEditorialUsers.isLoading === false &&
+                        !this.campaignEditorialUsers.isLoading &&
                         this.campaignEditorialUsers.users.length <= 0 && (
                             <Paragraph type="dim">Campaign has no editors assigned.</Paragraph>
                         )}
 
                     {this.props.spot.projectCampaign !== null &&
-                        this.campaignEditorialUsers.isLoading === false &&
+                        !this.campaignEditorialUsers.isLoading &&
                         this.campaignEditorialUsers.users.length > 0 &&
                         this.selectedEditors.length <= 0 && <Paragraph type="dim">Add editors</Paragraph>}
 
