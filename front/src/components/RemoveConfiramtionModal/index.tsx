@@ -10,6 +10,7 @@ interface Props {
     onConfirmationSuccess?: () => void;
     isRemoving?: boolean;
     isErrorRemovingEntry?: boolean;
+    confirmationMessage?: string;
 }
 
 export class RemoveConfirmationModal extends React.Component<Props, {}> {
@@ -17,7 +18,8 @@ export class RemoveConfirmationModal extends React.Component<Props, {}> {
         return {
             onConfirmationSuccess: () => undefined,
             isRemoving: false,
-            isErrorRemovingEntry: false
+            isErrorRemovingEntry: false,
+            confirmationMessage: 'Are you sure you want to delete this time entry?'
         };
     }
 
@@ -27,7 +29,7 @@ export class RemoveConfirmationModal extends React.Component<Props, {}> {
                 show={this.props.isActive}
                 onClose={this.props.onConfirmationModalClose}
                 title="Deleting entry is irreversible"
-                text="Are you sure you want to delete this time entry?"
+                text={this.props.confirmationMessage}
                 actions={[
                     {
                         closeOnClick: true,

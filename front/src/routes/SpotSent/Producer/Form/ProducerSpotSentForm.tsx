@@ -232,6 +232,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     isActive={this.isRemoveConfirmationModalActive}
                     onConfirmationModalClose={this.handleClosingSpotDeleteConfirmation}
                     onConfirmationSuccess={this.handleSpotRemove}
+                    confirmationMessage={'Are you sure you want to delete this entry?'}
                 />
 
                 {this.essentialDataIsLoading &&
