@@ -60,6 +60,8 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_graphicsRequestFinishingRepository;
     protected $_graphicsRequestStatusRepository;
     protected $_outsideCostRepository;
+    protected $_notificationRepository;
+    protected $_notificationUserRepository;
     protected $_projectRepository;
     protected $_projectEditorProgressRepository;
     protected $_projectToCampaignRepository;
@@ -147,6 +149,8 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_graphicsRequestFinishingRepository = $this->_em->getRepository('Application\Entity\RediGraphicsRequestFinishing');
         $this->_graphicsRequestStatusRepository = $this->_em->getRepository('Application\Entity\RediGraphicsRequestStatus');
         $this->_outsideCostRepository = $this->_em->getRepository('Application\Entity\RediOutsideCost');
+        $this->_notificationRepository = $this->_em->getRepository('Application\Entity\RediNotification');
+        $this->_notificationUserRepository = $this->_em->getRepository('Application\Entity\RediNotificationUser');
         $this->_projectRepository = $this->_em->getRepository('Application\Entity\RediProject');
         $this->_projectEditorProgressRepository = $this->_em->getRepository('Application\Entity\RediProjectEditorProgress');
         $this->_projectToCampaignRepository = $this->_em->getRepository('Application\Entity\RediProjectToCampaign');

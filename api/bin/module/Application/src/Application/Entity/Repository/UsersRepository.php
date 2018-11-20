@@ -709,8 +709,7 @@ class UsersRepository extends EntityRepository
         return in_array($userTypeId, $this->_billingUserTypeIds);
     }
 
-    public function getUserByTypeName($typeName)
-    {
+    public function getTypeIdsByName($typeName) {
         switch ($typeName) {
             case 'music':
                 $typeIds = $this->_musicUserTypeIds;
@@ -721,6 +720,13 @@ class UsersRepository extends EntityRepository
             default:
                 $typeIds = null;
         }
+
+        return $typeIds;
+    }
+
+    public function getUserByTypeName($typeName)
+    {
+        $typeIds = $this->getTypeIdsByName($typeName);
 
         if ($typeIds) {
             $dql = "SELECT 

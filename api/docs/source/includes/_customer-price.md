@@ -66,6 +66,7 @@ Retrieve list of customer price.
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | customer_id | int | null | Customer id
+false | type | char | null | Send 'A' OR 'B'. dont send if all result from both type is needed
 
 #### Send request like bellow
 `GET /customer-price?customer_id=1`
@@ -105,3 +106,4 @@ Required | Parameter | Type | Default | Description
 **true** | customer_id | int | null | Customer ID
 **true** | activity_id | int | null | Activity Id
 **true** | price | float | null | price
+false | type | char | 'A' | Type - send 'A' or 'B'

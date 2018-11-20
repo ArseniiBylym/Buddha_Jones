@@ -41,9 +41,9 @@ class NotificationRepository extends EntityRepository
               LEFT JOIN \Application\Entity\RediNotificationUser nu
                 WITH nu.notificationId = n.id ";
 
-    if (!empty($filter['user_id'])) {
-      $dqlParam['user_id'] = $filter['user_id'];
-      $dqlFilter[] = " nu.userId = :user_id ";
+    if (!empty($filter['user_type_id'])) {
+      $dqlParam['user_type_id'] = $filter['user_type_id'];
+      $dqlFilter[] = " nu.userTypeId = :user_type_id ";
     }
 
     if (isset($filter['confirm'])) {
@@ -138,7 +138,7 @@ class NotificationRepository extends EntityRepository
    * @param int $createdByUserId
    * @return void
    */
-  public function create($key, $data, $notificationUserIds, $createdByUserId)
+  public function create($key, $data, $notificationUserTypeIds, $createdByUserId)
   {
     try {
       $messageData = $this->getFullMessageData($key, $data);
@@ -166,12 +166,14 @@ class NotificationRepository extends EntityRepository
           $this->_entityManager->persist($notificationData);
         }
 
-        foreach ($notificationUserIds as $userId) {
-          $notificationUser = new RediNotificationUser();
-          $notificationUser->setNotificationId($notificationId);
-          $notificationUser->setUserId($userId);
+        if ($notificationUserTypeIds) {
+          foreach ($notificationUserTypeIds as $userTypeId) {
+            $notificationUser = new RediNotificationUser();
+            $notificationUser->setNotificationId($notificationId);
+            $notificationUser->setUserTypeId($userTypeId);
 
-          $this->_entityManager->persist($notificationUser);
+            $this->_entityManager->persist($notificationUser);
+          }
         }
 
         $this->_entityManager->flush();
