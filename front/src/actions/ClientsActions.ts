@@ -1,13 +1,9 @@
 import { action } from 'mobx';
 import { ClientsStore } from 'store/AllStores';
 import { API, APIPath } from 'fetch';
-import {ClientApiResponse, ClientDetailsApiResponse, ClientForStudio, NewClientRequestFromApi} from 'types/clients';
+import { ClientApiResponse, ClientDetailsApiResponse, ClientForStudio, NewClientRequestFromApi } from 'types/clients';
 import { DateHandler } from 'helpers/DateHandler';
-import {ClientContact, NewClientRequest} from '../types/clients';
-import {UsersStore} from "../store/AllStores";
-import {UserTypeFromApi} from "../types/users";
-import {format} from "logform";
-import cli = format.cli;
+import { ClientContact } from '../types/clients';
 
 enum CustomersFetchType {
     None,

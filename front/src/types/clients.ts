@@ -1,4 +1,4 @@
-import {DateObjectFromApi} from "./api";
+import { DateObjectFromApi } from './api';
 
 export interface ClientForStudio {
     id: number | null;
