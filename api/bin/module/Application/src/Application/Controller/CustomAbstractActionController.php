@@ -170,6 +170,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_statusRepository = $this->_em->getRepository('Application\Entity\RediStatus');
         $this->_studioRepository = $this->_em->getRepository('Application\Entity\RediStudio');
         $this->_timeEntryRepository = $this->_em->getRepository('Application\Entity\RediTimeEntry');
+        $this->_timeEntryStatusRepository = $this->_em->getRepository('Application\Entity\RediTimeEntryStatus');
         $this->_timeEntryFileRepository = $this->_em->getRepository('Application\Entity\RediTimeEntryFile');
         $this->_versionRepository = $this->_em->getRepository('Application\Entity\RediVersion');
         $this->_versionStatusRepository = $this->_em->getRepository('Application\Entity\RediVersionStatus');
