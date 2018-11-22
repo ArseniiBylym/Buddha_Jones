@@ -199,6 +199,7 @@ return array(
             'Application\Controller\TimeEntry'                                      => 'Application\Controller\TimeEntryController',
             'Application\Controller\TimeEntryOfUser'                                => 'Application\Controller\TimeEntryOfUserController',
             'Application\Controller\TimeEntryStatus'                                => 'Application\Controller\TimeEntryStatusController',
+            'Application\Controller\TimeEntryBillingStatus'                          => 'Application\Controller\TimeEntryBillingStatusController',
             'Application\Controller\TimeEntrySubmitForReview'                       => 'Application\Controller\TimeEntrySubmitForReviewController',
             'Application\Controller\TimeEntryApprove'                               => 'Application\Controller\TimeEntryApproveController',
             'Application\Controller\TimeApprovalPermission'                         => 'Application\Controller\TimeApprovalPermissionController',

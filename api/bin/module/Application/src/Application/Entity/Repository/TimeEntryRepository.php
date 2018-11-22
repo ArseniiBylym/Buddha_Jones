@@ -789,7 +789,10 @@ class TimeEntryRepository extends EntityRepository
                     te.start_date AS startDate,
                     te.duration,
                     st.id AS statusId,
-                    st.name AS statusName
+                    st.name AS statusName,
+                    u.id AS userId,
+                    u.first_name AS firstName,
+                    u.last_name AS lastName
                 FROM
                     redi_time_entry te
                         inner join
@@ -808,6 +811,8 @@ class TimeEntryRepository extends EntityRepository
                     redi_version v ON v.id = te.version_id
                         left join
                     redi_time_entry_status st ON st.id = te.status
+                        LEFT JOIN
+                    redi_user u ON u.id = te.user_id
                 WHERE
                     a.type_id IN (1 , 2)
                         and te.status IN (1, 3, 4, 6)
@@ -841,6 +846,8 @@ class TimeEntryRepository extends EntityRepository
                 "duration" => $row['duration'],
                 "statusId" => $row['statusId'],
                 "statusName" => $row['statusName'],
+                "userId" => (int)$row['userId'],
+                "userName" => trim($row['firstName'] . ' ' . $row['lastName']),
             );
 
             $data[$row['campaignId']]['totalDuration'] = $this->convertDurationAndSum($data[$row['campaignId']]['totalDuration'], $row['duration']);

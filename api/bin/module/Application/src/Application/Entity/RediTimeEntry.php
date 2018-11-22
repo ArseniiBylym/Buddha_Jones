@@ -126,6 +126,13 @@ class RediTimeEntry
      */
     private $status;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="bill_status", type="integer", nullable=true)
+     */
+    private $billStatus;
+
 
 
     /**
@@ -481,5 +488,28 @@ class RediTimeEntry
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * Set billStatus
+     *
+     * @param integer $billStatus
+     * @return RediTimeEntry
+     */
+    public function setBillStatus($billStatus)
+    {
+        $this->billStatus = $billStatus;
+
+        return $this;
+    }
+
+    /**
+     * Get billStatus
+     *
+     * @return integer 
+     */
+    public function getBillStatus()
+    {
+        return $this->billStatus;
     }
 }
