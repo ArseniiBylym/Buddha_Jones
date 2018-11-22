@@ -21,7 +21,7 @@ class TimeEntryApproveController extends CustomAbstractActionController
         $filter['project_id'] = trim($this->getRequest()->getQuery('project_id', null));
         $filter['activity_id'] = (int)trim($this->getRequest()->getQuery('activity_id', 0));
         $filter['user_id'] = (int)trim($this->getRequest()->getQuery('user_id', 0));
-        $filter['status'] = 3; // filter time entries which are sent for review
+        $filter['status'] = 2; // filter time entries which are sent for review
 
         if($allTimeEntryPermission && count($canApproveTimeEntryOfUser)) {
             $filter['user_type_id'] = $canApproveTimeEntryOfUser;
@@ -101,7 +101,7 @@ class TimeEntryApproveController extends CustomAbstractActionController
         $canApproveTimeEntryOfUser = $this->_usersRepo->getUserToApproveTimeEntry($this->_user_type_id);
 
         // get time entries user can approve
-        $filter['status'] = 3; // filter time entries which are sent for review
+        $filter['status'] = 2; // filter time entries which are sent for review
 
         if($allTimeEntryPermission && count($canApproveTimeEntryOfUser)) {
             $filter['user_type_id'] = $canApproveTimeEntryOfUser;
@@ -113,7 +113,7 @@ class TimeEntryApproveController extends CustomAbstractActionController
 
         if(count($timeEntryData)) {
             $ids = (array)json_decode(isset($data['ids']) ? $data['ids'] : null, true);
-            $status = (!empty($data['status'])) ? (int)$data['status'] : null;
+            $status = 3; //(!empty($data['status'])) ? (int)$data['status'] : null;
 
             if (count($ids) && $status && in_array($status, array(4, 6))) {
                 $ids = array_intersect($timeEntryData, $ids);

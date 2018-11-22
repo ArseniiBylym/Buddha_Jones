@@ -13,7 +13,7 @@ class TimeEntrySubmitForReviewController extends CustomAbstractActionController
 {
     public function create($data)
     {
-        $newStatus = 3;
+        $newStatus = 2;
 
         $workerId = (int)trim(isset($data['worker_id']) ? $data['worker_id'] : $this->_user_id);
         $date = trim(isset($data['date']) ? $data['date'] : '');

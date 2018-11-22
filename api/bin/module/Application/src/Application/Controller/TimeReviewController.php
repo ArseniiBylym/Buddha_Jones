@@ -12,7 +12,7 @@ use League\Csv\Reader;
 use Application\Entity\RediCcStatement;
 use Application\Entity\RediCcStatementLine;
 
-class SpotBillingController extends CustomAbstractActionController
+class TimeReviewController extends CustomAbstractActionController
 {
     public function getList()
     {
@@ -20,8 +20,8 @@ class SpotBillingController extends CustomAbstractActionController
         $length = (int)trim($this->getRequest()->getQuery('length', 10));
         $filter = array();
 
-        $data = $this->_spotRepo->getSpotBillingList($filter, $offset, $length);
-        $totalCount = $this->_spotRepo->getSpotBillingProjectCount($filter);
+        $data = $this->_timeEntryRepo->getSpotBillingList($filter, $offset, $length);
+        $totalCount = $this->_timeEntryRepo->getSpotBillingProjectCount($filter);
 
         $response = array(
             'status' => 1,

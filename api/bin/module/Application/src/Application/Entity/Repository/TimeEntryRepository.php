@@ -4,6 +4,7 @@ namespace Application\Entity\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManager;
 use Zend\Config\Config;
+use Zend\Memory\Value;
 
 class TimeEntryRepository extends EntityRepository
 {
@@ -632,5 +633,174 @@ class TimeEntryRepository extends EntityRepository
         $dql = "TRUNCATE redi_user_type_time_entry_permission";
         $query = $this->getEntityManager()->getConnection()->prepare($dql);
         $query->execute();
+    }
+
+    /**
+     * Get list of project (with campaign data and other related data)
+     *
+     * @param array $filter
+     * @param integer $offset
+     * @param integer $length
+     * @return void
+     */
+    public function getSpotBillingList($filter = array(), $offset = 0, $length = 10)
+    {
+        $pool = $this->getSpotBillingProjectPool($filter = array(), $offset = 0, $length = 10);
+
+        $dql = sprintf(
+                "SELECT 
+                    te.project_campaign_id AS projectCampaignId,
+                    ptc.project_id AS projectId,
+                    p.project_name AS projectName,
+                    ptc.campaign_id AS campaignId,
+                    c.campaign_name AS campaignName,
+                    p.studio_id AS studioId,
+                    s.studio_name AS studioName,
+                    a.type_id AS activityTypeId,
+                    CONCAT(SUM(SUBSTRING_INDEX(duration, '.', 1)) + FLOOR(SUM(SUBSTRING_INDEX(te.duration, '.', - 1)) / 60),
+                        '.',
+                        SUM(SUBSTRING_INDEX(te.duration, '.', - 1)) %% 60) AS totalDuration
+                FROM
+                    redi_time_entry te
+                        inner join
+                    redi_activity a ON a.id = te.activity_id
+                        inner join
+                    redi_project_to_campaign ptc ON ptc.id = te.project_campaign_id
+                        inner join
+                    redi_project p ON p.id = ptc.project_id
+                        left join
+                    redi_studio s ON s.id = p.studio_id
+                        inner join
+                    redi_campaign c ON c.id = ptc.campaign_id
+                WHERE
+                    a.type_id IN (1 , 2)
+                        and te.status IN (1, 3, 4, 6)
+                        AND p.id IN (%s)
+                GROUP BY ptc.project_id , ptc.campaign_id , a.type_id ",
+            implode(',', $pool)
+        );
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->execute();
+        $result = $query->fetchAll();
+
+        $data = array();
+
+        foreach ($result as $row) {
+            if (empty($data[$row['projectId']])) {
+                $data[$row['projectId']] = array(
+                    "projectId" => (int)$row['projectId'],
+                    "projectName" => $row['projectName'],
+                    "studioId" => (int)$row['studioId'],
+                    "studioName" => $row['studioName'],
+                    "totalDuration" => "0.00",
+                );
+            }
+
+            $data[$row['projectId']]['campaign'][] = array(
+                "campaignId" => (int)$row['campaignId'],
+                "campaignName" => $row['campaignName'],
+                "projectCampaignId" => (int)$row['projectCampaignId'],
+                "activityTypeId" => $row['activityTypeId'],
+                "totalDuration" => $row['totalDuration'],
+            );
+
+            $data[$row['projectId']]['totalDuration'] = $this->convertDurationAndSum($data[$row['projectId']]['totalDuration'], $row['totalDuration']);
+        }
+
+        return array_values($data);
+    }
+
+    public function getSpotBillingProjectPool($filter = array(), $offset = 0, $length = 10)
+    {
+        $dql = "SELECT 
+                    p.id
+                FROM
+                    \Application\Entity\RediTimeEntry te
+                INNER JOIN \Application\Entity\RediActivity a 
+                    WITH a.id = te.activityId
+                INNER JOIN \Application\Entity\RediProjectToCampaign ptc 
+                    WITH ptc.id = te.projectCampaignId
+                INNER JOIN \Application\Entity\RediProject p
+                    WITH p.id = ptc.projectId
+                WHERE
+                    a.typeId IN (1 , 2)
+                    AND te.status IN (1, 3, 4, 6)
+                GROUP BY p.id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setFirstResult($offset);
+        $query->setMaxResults($length);
+        $query->execute();
+
+        $data = $query->getArrayResult();
+
+        return array_column($data, 'id');
+    }
+
+    /**
+     * Get count of project for spot billing
+     *
+     * @return int Number of projects for spot billing
+     */
+    public function getSpotBillingProjectCount($filter = array())
+    {
+        $dql = "SELECT 
+                    COUNT(DISTINCT p.id) AS total_count
+                FROM
+                    \Application\Entity\RediTimeEntry te
+                INNER JOIN \Application\Entity\RediActivity a 
+                    WITH a.id = te.activityId
+                INNER JOIN \Application\Entity\RediProjectToCampaign ptc 
+                    WITH ptc.id = te.projectCampaignId
+                INNER JOIN \Application\Entity\RediProject p
+                    WITH p.id = ptc.projectId
+                WHERE
+                    a.typeId IN (1 , 2)
+                    AND te.status IN (1, 3, 4, 6)";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getArrayResult();
+
+        return (int)(!empty($result[0]['total_count']) ? $result[0]['total_count'] : 0);
+    }
+
+    public function convertDurationToFloat($duration) {
+        $split = explode('.', $duration);
+        $value = 0.0;
+
+        if (!empty($split[0])) {
+            $value += (int)$split[0];
+        }
+
+        if (!empty($split[1])) {
+            $value += (float)(((int)str_pad($split[1], 2, '0') * 100) / (60 * 100));
+        }
+
+        return $value;
+    }
+
+    public function convertFloatToDuration($floatVal) {
+        $split = explode('.', $floatVal);
+        $value = 0.0;
+
+        if (!empty($split[0])) {
+            $value += (int)$split[0];
+        }
+
+        if (!empty($split[1])) {
+            $value += (float)(((int)str_pad($split[1], 2, '0') * 60) / (100 * 100));
+        }
+
+        return (string) number_format($value, 2);
+    }
+
+    public function convertDurationAndSum($value1, $value2) {
+        $value1 = $this->convertDurationToFloat($value1);
+        $value2 = $this->convertDurationToFloat($value2);
+
+        $sum = $value1 + $value2;
+
+        return $this->convertFloatToDuration($sum);
     }
 }
