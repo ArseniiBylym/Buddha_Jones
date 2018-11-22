@@ -9,10 +9,13 @@ use Zend\Memory\Value;
 class TimeEntryRepository extends EntityRepository
 {
     private $_className = "\Application\Entity\RediTimeEntry";
+    private $_entityManager;
 
     public function __construct(EntityManager $entityManager) {
         $classMetaData = $entityManager->getClassMetadata($this->_className);
         parent::__construct($entityManager, $classMetaData);
+
+        $this->_entityManager = $entityManager;
     }
 
     public function search($offset = 0, $length = 10, $filter=array())
@@ -643,9 +646,9 @@ class TimeEntryRepository extends EntityRepository
      * @param integer $length
      * @return void
      */
-    public function getSpotBillingList($filter = array(), $offset = 0, $length = 10)
+    public function getTimeReviewProjectList($filter = array(), $offset = 0, $length = 10)
     {
-        $pool = $this->getSpotBillingProjectPool($filter = array(), $offset = 0, $length = 10);
+        $pool = $this->getTimeReviewProjectPool($filter = array(), $offset = 0, $length = 10);
 
         $dql = sprintf(
                 "SELECT 
@@ -711,7 +714,7 @@ class TimeEntryRepository extends EntityRepository
         return array_values($data);
     }
 
-    public function getSpotBillingProjectPool($filter = array(), $offset = 0, $length = 10)
+    public function getTimeReviewProjectPool($filter = array(), $offset = 0, $length = 10)
     {
         $dql = "SELECT 
                     p.id
@@ -743,7 +746,7 @@ class TimeEntryRepository extends EntityRepository
      *
      * @return int Number of projects for spot billing
      */
-    public function getSpotBillingProjectCount($filter = array())
+    public function getTimeReviewProjectCount($filter = array())
     {
         $dql = "SELECT 
                     COUNT(DISTINCT p.id) AS total_count
@@ -763,6 +766,87 @@ class TimeEntryRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         return (int)(!empty($result[0]['total_count']) ? $result[0]['total_count'] : 0);
+    }
+
+    public function getTimeReviewDataByProject($projectId)
+    {
+        $commonRepo = new CommonRepository($this->_entityManager);
+
+        $dql = "SELECT
+                    te.id AS timeEntryId,
+                    te.project_campaign_id AS projectCampaignId,
+                    ptc.project_id AS projectId,
+                    p.project_name AS projectName,
+                    ptc.campaign_id AS campaignId,
+                    c.campaign_name AS campaignName,
+                    p.studio_id AS studioId,
+                    s.studio_name AS studioName,
+                    sp.id AS spotId,
+                    sp.spot_name AS spotName,
+                    v.id AS versionId,
+                    v.version_name AS versionName,
+                    a.type_id AS activityTypeId,
+                    te.start_date AS startDate,
+                    te.duration,
+                    st.id AS statusId,
+                    st.name AS statusName
+                FROM
+                    redi_time_entry te
+                        inner join
+                    redi_activity a ON a.id = te.activity_id
+                        inner join
+                    redi_project_to_campaign ptc ON ptc.id = te.project_campaign_id
+                        inner join
+                    redi_project p ON p.id = ptc.project_id
+                        left join
+                    redi_studio s ON s.id = p.studio_id
+                        inner join
+                    redi_campaign c ON c.id = ptc.campaign_id
+                        left join
+                    redi_spot sp ON sp.id = te.spot_id
+                        left join
+                    redi_version v ON v.id = te.version_id
+                        left join
+                    redi_time_entry_status st ON st.id = te.status
+                WHERE
+                    a.type_id IN (1 , 2)
+                        and te.status IN (1, 3, 4, 6)
+                        AND p.id = :project_id ";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('project_id', $projectId);
+        $query->execute();
+        $result = $query->fetchAll();
+
+        $data = array();
+
+        foreach ($result as $row) {
+            if (empty($data[$row['campaignId']])) {
+                $data[$row['campaignId']] = array(
+                    "campaignId" => (int)$row['campaignId'],
+                    "campaignName" => $row['campaignName'],
+                    "projectCampaignId" => (int)$row['projectCampaignId'],
+                    "totalDuration" => "0.00",
+                );
+            }
+
+            $data[$row['campaignId']]['timeEntry'][] = array(
+                "timeEntryId" => (int)$row['timeEntryId'],
+                "activityTypeId" => (int)$row['activityTypeId'],
+                "spotId" => (int)$row['spotId'],
+                "spotName" => $row['spotName'],
+                "versionId" => (int)$row['versionId'],
+                "versionName" => $row['versionName'],
+                "startDate" => $commonRepo->formatDateForInsert($row['startDate']),
+                "duration" => $row['duration'],
+                "statusId" => $row['statusId'],
+                "statusName" => $row['statusName'],
+            );
+
+            $data[$row['campaignId']]['totalDuration'] = $this->convertDurationAndSum($data[$row['campaignId']]['totalDuration'], $row['duration']);
+        }
+
+        return array_values($data);
     }
 
     public function convertDurationToFloat($duration) {

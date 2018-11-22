@@ -20,8 +20,8 @@ class TimeReviewController extends CustomAbstractActionController
         $length = (int)trim($this->getRequest()->getQuery('length', 10));
         $filter = array();
 
-        $data = $this->_timeEntryRepo->getSpotBillingList($filter, $offset, $length);
-        $totalCount = $this->_timeEntryRepo->getSpotBillingProjectCount($filter);
+        $data = $this->_timeEntryRepo->getTimeReviewProjectList($filter, $offset, $length);
+        $totalCount = $this->_timeEntryRepo->getTimeReviewProjectCount($filter);
 
         $response = array(
             'status' => 1,
@@ -34,9 +34,9 @@ class TimeReviewController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    public function get($id)
+    public function get($projectId)
     {
-        $data = $this->_commentRepo->getById($id, $this->_siteUrl . 'thumb/profile_image/');
+        $data = $this->_timeEntryRepo->getTimeReviewDataByProject($projectId);
 
         $response = array(
             'status' => 1,
@@ -46,47 +46,4 @@ class TimeReviewController extends CustomAbstractActionController
 
         return new JsonModel($response);
     }
-
-    public function update($id, $data)
-    {
-        $confirm = (int)trim(isset($data['confirm']) ? $data['confirm'] : 0);
-
-        if ($confirm) {
-            $notification = $this->_notificationRepository->find($id);
-            $checkUserType = $this->_notificationUserRepository->findOneBy(array('notificationId' => $id, 'userTypeId' => $this->_user_type_id));
-
-            if ($notification && $checkUserType) {
-                $now = new \DateTime('now');
-
-                $notification->setconfirm($confirm);
-                $notification->setUpdatedBy($this->_user_id);
-                $notification->setUpdatedAt($now);
-
-                $this->_em->persist($notification);
-                $this->_em->flush();
-
-                $response = array(
-                    'status' => 1,
-                    'message' => 'Request successful.',
-                );
-            } else {
-                $response = array(
-                    'status' => 0,
-                    'message' => 'Notification not found.'
-                );
-            }
-        } else {
-            $response = array(
-                'status' => 0,
-                'message' => 'You can not unconfirm a notification.'
-            );
-        }
-
-        if ($response['status'] == 0) {
-            $this->getResponse()->setStatusCode(400);
-        }
-
-        return new JsonModel($response);
-    }
-
 }
