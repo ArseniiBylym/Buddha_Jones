@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { AppState } from 'store/AllStores';
-import { ClientsActions } from 'actions';
+import { ClientsActions, NewClientRequest } from 'actions';
 import { inject, observer } from 'mobx-react';
 import { action, computed, observable } from 'mobx';
 import { Table, TableCell, TableRow } from '../../../../components/Table';
@@ -8,7 +8,7 @@ import { ButtonEdit } from '../../../../components/Button';
 import { Paragraph } from '../../../../components/Content';
 import { LoadingSpinner } from '../../../../components/Loaders';
 import { Col, Row, Section } from '../../../../components/Section';
-import { NewClientRequest } from '../../../../types/clients';
+import { NewCustomerForm } from '../../../Project/Board/CustomerSelector/CustomerForm';
 
 @inject('store')
 @observer
@@ -50,32 +50,31 @@ class NewClientRequestList extends React.Component<AppState, {}> {
     @action
     private initNewClientRequestIsEdit = (): void => {
         if (this.props.store) {
-            this.newClientRequestIsEdit = this.props.store.clients.newClientsRequestList.map((clientRequest: NewClientRequest, ind: number) => {
-                newClientRequestIsEdit
+            this.newClientRequestIsEdit = this.props.store.clients.newClientsRequestList.map((clientRequest: NewClientRequest) => {
+                return {
+                    id: clientRequest.id as number,
+                    isEdit: false
+                };
             });
         }
     };
 
-    private setHeaderAndInitialData = (): void => {
+    @action
+    private handleNewClientRequestEdit = (ind: number): void => {
+        if (this.newClientRequestIsEdit && this.newClientRequestIsEdit[ind]) {
+            this.newClientRequestIsEdit[ind].isEdit = !this.newClientRequestIsEdit[ind].isEdit;
+        }
+    };
+
+    private setHeaderAndInitialData = async () => {
+
         // Fetch required data
-        ClientsActions.fetchNewClientList();
+        await ClientsActions.fetchNewClientList();
 
-        if (this.props.store) {
-            this.newClientRequestIsEdit = this.props.store.clients.newClientsRequestList.map((clientRequest: NewClientRequest, ind: number) => {
-                newClientRequestIsEdit
-            });
-        }
+        // Assign default values for newClientRequestIsEdit
+        this.initNewClientRequestIsEdit();
 
-/*        // Set header
-        HeaderActions.setMainHeaderTitlesAndElements(
-            'User Management',
-            'Configuration',
-            null,
-            null
-        );*/
     };
-
-
 
     private isTableTitles(title: string): boolean {
         if (
@@ -108,7 +107,7 @@ class NewClientRequestList extends React.Component<AppState, {}> {
     private getTableWithNoDataText(): JSX.Element {
         return (
             <TableRow>
-                <TableCell colSpan={2} align="center">
+                <TableCell colSpan={5} align="center">
                     <Paragraph type="dim" align="center">
                         There are no new client requests.
                     </Paragraph>
@@ -129,29 +128,39 @@ class NewClientRequestList extends React.Component<AppState, {}> {
                     .map((key: string) => {
                         return (
                             <TableCell key={`tablecell-${key}-${ind}`} align="left">
-                                {clientRequest[key]}
+                                {(clientRequest[key]) ? clientRequest[key] : 'N/A'}
                             </TableCell>
                         );
                 });
                 return (
-                    <>
-                        <TableRow key={`tablerow-${ind}`}>
+                    <React.Fragment key={`tablerow-${ind}`}>
+                        <TableRow>
                             {tableCellsArr}
-                            <TableCell align="right">
-                                <ButtonEdit
-                                    onClick={this.handleNewClientRequestEdit}
-                                    label="Edit"
-                                    labelOnLeft={false}
-                                    float="right"
-                                />
-                            </TableCell>
+                            {this.newClientRequestIsEdit.length > 0 && this.newClientRequestIsEdit[ind] && !this.newClientRequestIsEdit[ind].isEdit &&
+                                <TableCell align="right">
+                                    <ButtonEdit
+                                        onClick={this.handleNewClientRequestEdit.bind(this, ind)}
+                                        label="Edit"
+                                        labelOnLeft={false}
+                                        float="right"
+                                    />
+                                </TableCell>
+                            }
                         </TableRow>
-                        <TableRow key={`tablerow-${ind}`}>
-                            <TableCell colSpan={5}>
-
-                            </TableCell>
-                        </TableRow>
-                    </>
+                        {this.newClientRequestIsEdit.length > 0 && this.newClientRequestIsEdit[ind] && this.newClientRequestIsEdit[ind].isEdit &&
+                            <TableRow>
+                                <TableCell colSpan={5}>
+                                    <NewCustomerForm
+                                        onToggleEditMode={this.handleNewClientRequestEdit.bind(this, ind)}
+                                        studioId={null}
+                                        mode={'approvalForm'}
+                                        formData={clientRequest}
+                                        isAddedToSap={(clientRequest.completed === 1) ? true : false}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        }
+                    </React.Fragment>
                 );
             });
             return (
@@ -168,7 +177,7 @@ class NewClientRequestList extends React.Component<AppState, {}> {
                     {
                         (this.props.store.clients.newClientsRequestList && this.props.store.clients.newClientsRequestList.length > 0 )
                         ? tableRowsArr
-                        : this.getTableWithNoDataText
+                        : this.getTableWithNoDataText()
                     }
                 </Table>
             );
@@ -178,10 +187,6 @@ class NewClientRequestList extends React.Component<AppState, {}> {
             );
         }
     }
-
-    private handleNewClientRequestEdit = (): void => {
-        debugger;
-    };
 
 }
 

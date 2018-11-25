@@ -13,17 +13,23 @@ enum CustomersFetchType {
 }
 
 export interface NewCustomerFormData {
+    id?: number;
     studio_id: number | null;
-    name: string;
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-    email: string;
-    phone: string;
-    billing_contact: string;
-    billing_email: string;
-    billing_phone: string;
+    name: string | null;
+    street: string | null;
+    city: string | null;
+    state: string | null;
+    zip: string | null;
+    email: string | null;
+    phone: string | null;
+    billing_contact: string | null;
+    billing_email: string | null;
+    billing_phone: string | null;
+}
+
+export interface NewClientRequest extends NewCustomerFormData {
+    studio_name: string | null;
+    completed: 0 | 1;
 }
 
 export interface NewStudioContactFormData {
@@ -39,6 +45,22 @@ export class ClientsActionsClass {
     public createNewCustomer = async (customer: NewCustomerFormData | null): Promise<any> => {
         try {
             await API.postData(APIPath.CUSTOMER_NEW, customer as Object);
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    @action
+    public editNewCustomer = async (customer: NewCustomerFormData | null): Promise<any> => {
+        try {
+            if (customer && customer.id) {
+                for (let key in customer) {
+                    if (customer[key] === null || customer[key] === 'null') {
+                        delete customer[key];
+                    }
+                }
+                await API.putData(APIPath.CUSTOMER_NEW + '/' + customer.id, customer as Object);
+            }
         } catch (error) {
             throw error;
         }
@@ -307,8 +329,6 @@ export class ClientsActionsClass {
                         billing_email: client.billingEmail,
                         billing_phone: client.billingPhone,
                         completed: client.completed,
-                        created_by: client.createdBy,
-                        updated_by: client.updatedBy,
                     }));
                 ClientsStore.newClientsRequestListLastFetchTimestamp = Date.now();
                 ClientsStore.newClientsRequestListLoading = false;

@@ -108,7 +108,7 @@ export class CustomerSelector extends React.Component<Props, {}> {
                             />
                         </div>
 
-                        < ButtonSave
+                        <ButtonSave
                             onClick={this.handleSaveChanges}
                             float="left"
                             label={

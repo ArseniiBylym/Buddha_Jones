@@ -1,5 +1,6 @@
 import { observable, computed } from 'mobx';
-import { Client, ClientContact, NewClientRequest } from 'types/clients';
+import { Client, ClientContact } from 'types/clients';
+import { NewClientRequest } from '../actions';
 
 export class Clients {
 

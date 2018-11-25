@@ -68,25 +68,6 @@ export interface ClientContact {
     email: string | null;
 }
 
-export interface NewClientRequest {
-    id: number;
-    studio_id: number;
-    studio_name: string | null;
-    name: string | null;
-    street: string | null;
-    city: string | null;
-    state: string | null;
-    zip: string | null;
-    email: string | null;
-    phone: string | null;
-    billing_contact: string | null;
-    billing_email: string | null;
-    billing_phone: string | null;
-    completed: 0 | 1;
-    created_by: 0 | 1;
-    updated_by: 0 | 1;
-}
-
 export interface NewClientRequestFromApi {
     id: number;
     studioId: number;
