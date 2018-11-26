@@ -23,6 +23,8 @@ class LoginRefreshController extends AbstractRestfulController
         $this->_userRepository = $this->_em->getRepository('Application\Entity\RediUser');
         $this->_userTypeRepository = $this->_em->getRepository('Application\Entity\RediUserType');
 
+        $this->_userRepo = $this->getServiceLocator()->get('Application\Entity\Repository\UsersRepository');
+
         $this->_config = $this->getServiceLocator()->get('Config');
 
         $this->getResponse()->getHeaders()
@@ -81,7 +83,8 @@ class LoginRefreshController extends AbstractRestfulController
                             'status' => 1,
                             'message' => "User login time extended",
                             'data' => array(
-                                'token' => $jwtToken
+                                'token' => $jwtToken,
+                                'lastClockIn' => $this->_userRepo->getUserLastClockin($userId),
                             )
                         );
                     }

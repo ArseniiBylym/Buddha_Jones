@@ -744,4 +744,20 @@ class UsersRepository extends EntityRepository
         return array();
     }
 
+    public function getUserLastClockin($userId)
+    {
+        $dql = "SELECT 
+                    uci.clockin
+                FROM \Application\Entity\RediUserClockin uci
+                WHERE uci.userId = :user_id
+                ORDER BY uci.clockin DESC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setMaxResults(1);
+        $query->setParameter('user_id', $userId);
+        $result = $query->getArrayResult();
+
+        return (!empty($result[0]['clockin'])?$result[0]['clockin'] : null);
+    }
+
 }

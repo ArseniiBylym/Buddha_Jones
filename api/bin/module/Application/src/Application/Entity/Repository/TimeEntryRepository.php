@@ -677,9 +677,9 @@ class TimeEntryRepository extends EntityRepository
                     redi_campaign c ON c.id = ptc.campaign_id
                 WHERE
                     a.type_id IN (1 , 2)
-                        and te.status IN (1, 3, 4, 6)
+                        and te.status IN (1, 2, 3)
                         AND p.id IN (%s)
-                GROUP BY ptc.project_id , ptc.campaign_id , a.type_id ",
+                GROUP BY p.id , ptc.campaign_id , a.type_id ",
             implode(',', $pool)
         );
 
@@ -728,7 +728,7 @@ class TimeEntryRepository extends EntityRepository
                     WITH p.id = ptc.projectId
                 WHERE
                     a.typeId IN (1 , 2)
-                    AND te.status IN (1, 3, 4, 6)
+                    AND te.status IN (1, 2, 3)
                 GROUP BY p.id";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -760,7 +760,7 @@ class TimeEntryRepository extends EntityRepository
                     WITH p.id = ptc.projectId
                 WHERE
                     a.typeId IN (1 , 2)
-                    AND te.status IN (1, 3, 4, 6)";
+                    AND te.status IN (1, 2, 3)";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $result = $query->getArrayResult();
@@ -815,7 +815,7 @@ class TimeEntryRepository extends EntityRepository
                     redi_user u ON u.id = te.user_id
                 WHERE
                     a.type_id IN (1 , 2)
-                        and te.status IN (1, 3, 4, 6)
+                        and te.status IN (1, 2, 3)
                         AND p.id = :project_id ";
 
         $query = $this->getEntityManager()->getConnection()->prepare($dql);
