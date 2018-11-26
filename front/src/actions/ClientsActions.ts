@@ -311,7 +311,10 @@ export class ClientsActionsClass {
             ) {
                 ClientsStore.newClientsRequestListLoading = true;
 
-                const response = (await API.getData(APIPath.CUSTOMER_NEW)) as NewClientRequestFromApi[];
+                const response = (await API.getData(APIPath.CUSTOMER_NEW, {
+                    offset: 0,
+                    length: 9999999,
+                })) as NewClientRequestFromApi[];
 
                 ClientsStore.newClientsRequestList = response
                     .map((client: NewClientRequestFromApi) => ({

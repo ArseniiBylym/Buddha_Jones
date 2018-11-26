@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as styles from './CustomerForm.scss';
 import * as classnames from 'classnames';
 import { observer } from 'mobx-react';
-import { action, observable } from 'mobx';
+import { action, observable, toJS } from 'mobx';
 import { Input, InputColorProp } from 'components/Form/index';
 import { ButtonClose, ButtonSave } from 'components/Button/index';
 import { ClientsActions, NewCustomerFormData } from 'actions/index';
@@ -14,6 +14,7 @@ type NewCustomerFormModeProp = 'newCustomer' | 'approvalForm';
 // Props
 interface Props {
     onToggleEditMode: () => void | null;
+    onSaved?: () => Promise<boolean>;
     studioId: number | null;
     mode: NewCustomerFormModeProp;
     formData?: NewCustomerFormData;
@@ -189,7 +190,11 @@ export class NewCustomerForm extends React.Component<Props, {}> {
                         let newCustomerFormData: NewCustomerFormData = this.newCustomerFormData as NewCustomerFormData;
                         newCustomerFormData['completed'] = (this.isAddedToSap) ? 1 : 0;
                         await ClientsActions.editNewCustomer(newCustomerFormData);
-                        this.props.onToggleEditMode();
+                        if (this.props.onSaved) {
+                            this.props.onSaved();
+                        } else {
+                            this.props.onToggleEditMode();
+                        }
                         break;
                     default:
                         await ClientsActions.createNewCustomer(this.newCustomerFormData);
@@ -226,7 +231,7 @@ export class NewCustomerForm extends React.Component<Props, {}> {
     private setFormInitialState(): void {
         switch (this.props.mode) {
             case 'approvalForm' :
-                this.newCustomerFormData = (this.props.formData) ? this.props.formData : this.getEmptyFormData();
+                this.newCustomerFormData = (this.props.formData) ? toJS(this.props.formData) : this.getEmptyFormData();
                 this.isAddedToSap = (this.props.isAddedToSap) ? this.props.isAddedToSap : false;
                 break;
             default:

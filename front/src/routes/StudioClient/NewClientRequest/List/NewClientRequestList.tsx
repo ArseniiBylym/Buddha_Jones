@@ -7,8 +7,9 @@ import { Table, TableCell, TableRow } from '../../../../components/Table';
 import { ButtonEdit } from '../../../../components/Button';
 import { Paragraph } from '../../../../components/Content';
 import { LoadingSpinner } from '../../../../components/Loaders';
-import { Col, Row, Section } from '../../../../components/Section';
+import { Col, Row } from '../../../../components/Section';
 import { NewCustomerForm } from '../../../Project/Board/CustomerSelector/CustomerForm';
+import { HeaderActions } from '../../../../actions';
 
 @inject('store')
 @observer
@@ -33,13 +34,9 @@ class NewClientRequestList extends React.Component<AppState, {}> {
             return null;
         }
         return this.essentialDataIsLoading === false ? (
-            <Section
-                noSeparator={true}
-                title="New clients"
-                headerElements={[]}
-            >
+            <>
                 {this.getTableWithData()}
-            </Section>
+            </>
         ) : (
             <>
                 {this.getTableWithLoadingSpinner()}
@@ -66,13 +63,22 @@ class NewClientRequestList extends React.Component<AppState, {}> {
         }
     };
 
-    private setHeaderAndInitialData = async () => {
+    private setHeaderAndInitialData = async (forceFetch: boolean = false): Promise<boolean> => {
 
         // Fetch required data
-        await ClientsActions.fetchNewClientList();
+        await ClientsActions.fetchNewClientList(forceFetch);
 
         // Assign default values for newClientRequestIsEdit
         this.initNewClientRequestIsEdit();
+
+        // Set header
+        HeaderActions.setMainHeaderTitlesAndElements(
+            'New Clients',
+            null,
+            null
+        );
+
+        return true;
 
     };
 
@@ -152,6 +158,7 @@ class NewClientRequestList extends React.Component<AppState, {}> {
                                 <TableCell colSpan={5}>
                                     <NewCustomerForm
                                         onToggleEditMode={this.handleNewClientRequestEdit.bind(this, ind)}
+                                        onSaved={this.setHeaderAndInitialData.bind(this, true)}
                                         studioId={null}
                                         mode={'approvalForm'}
                                         formData={clientRequest}
