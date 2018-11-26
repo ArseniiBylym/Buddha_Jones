@@ -9,7 +9,7 @@ import { Paragraph } from '../../../../components/Content';
 import { LoadingSpinner } from '../../../../components/Loaders';
 import { Col, Row } from '../../../../components/Section';
 import { NewCustomerForm } from '../../../Project/Board/CustomerSelector/CustomerForm';
-import { HeaderActions } from '../../../../actions';
+import { HeaderActions, NewCustomerFormData } from '../../../../actions';
 
 @inject('store')
 @observer
@@ -156,7 +156,11 @@ class NewClientRequestList extends React.Component<AppState, {}> {
                                 <TableCell colSpan={5}>
                                     <NewCustomerForm
                                         onToggleEditMode={this.handleNewClientRequestEdit.bind(this, ind)}
-                                        onSaved={this.setHeaderAndInitialData.bind(this, true)}
+                                        onSaved={(formData: NewCustomerFormData) => {
+                                            Object.keys(formData).forEach((key: string) => {
+                                                clientRequest[key] = formData[key];
+                                            });
+                                        }}
                                         studioId={null}
                                         mode={'approvalForm'}
                                         formData={clientRequest}

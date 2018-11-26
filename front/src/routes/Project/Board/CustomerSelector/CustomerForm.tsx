@@ -14,7 +14,7 @@ type NewCustomerFormModeProp = 'newCustomer' | 'approvalForm';
 // Props
 interface Props {
     onToggleEditMode: () => void | null;
-    onSaved?: () => void | null;
+    onSaved?: (formData: NewCustomerFormData) => void | null;
     studioId: number | null;
     mode: NewCustomerFormModeProp;
     formData?: NewCustomerFormData;
@@ -143,7 +143,7 @@ export class NewCustomerForm extends React.Component<Props, {}> {
                             {
                                 this.status === 'success' &&
                                 <div className={styles.successMessage}>
-                                    New customer was added successfully
+                                    {(this.props.mode === 'newCustomer') ? 'New customer was added successfully' : 'Saved'}
                                 </div>
                             }
 
@@ -190,16 +190,17 @@ export class NewCustomerForm extends React.Component<Props, {}> {
                         let newCustomerFormData: NewCustomerFormData = this.newCustomerFormData as NewCustomerFormData;
                         newCustomerFormData['completed'] = (this.isAddedToSap) ? 1 : 0;
                         await ClientsActions.editNewCustomer(newCustomerFormData);
+                        this.status = 'success';
                         if (this.props.onSaved) {
-                            this.props.onSaved();
+                            this.props.onSaved(this.newCustomerFormData as NewCustomerFormData);
                         } else {
                             this.props.onToggleEditMode();
                         }
                         break;
                     default:
                         await ClientsActions.createNewCustomer(this.newCustomerFormData);
-                        this.status = 'success';
                         this.getEmptyFormData();
+                        this.status = 'success';
                 }
 
             } catch (error) {
