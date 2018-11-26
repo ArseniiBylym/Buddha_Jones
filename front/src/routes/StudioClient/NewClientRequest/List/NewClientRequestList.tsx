@@ -63,7 +63,7 @@ class NewClientRequestList extends React.Component<AppState, {}> {
         }
     };
 
-    private setHeaderAndInitialData = async (forceFetch: boolean = false): Promise<boolean> => {
+    private setHeaderAndInitialData = async (forceFetch: boolean = false) => {
 
         // Fetch required data
         await ClientsActions.fetchNewClientList(forceFetch);
@@ -77,8 +77,6 @@ class NewClientRequestList extends React.Component<AppState, {}> {
             null,
             null
         );
-
-        return true;
 
     };
 

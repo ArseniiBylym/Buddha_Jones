@@ -14,7 +14,7 @@ type NewCustomerFormModeProp = 'newCustomer' | 'approvalForm';
 // Props
 interface Props {
     onToggleEditMode: () => void | null;
-    onSaved?: () => Promise<boolean>;
+    onSaved?: () => void | null;
     studioId: number | null;
     mode: NewCustomerFormModeProp;
     formData?: NewCustomerFormData;
