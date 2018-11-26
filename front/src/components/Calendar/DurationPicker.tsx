@@ -133,9 +133,9 @@ export class DurationPicker extends React.Component<DurationPickerProps, {}> {
     private handleMinutesManualInput = () => {
         if (this.minutes <= 10) {
             this.setMinutes(0);
-        } else if (this.minutes >= 15 && this.minutes <= 17) {
+        } else if (this.minutes > 10 && this.minutes < 23) {
             this.setMinutes(15);
-        } else if (this.minutes >= 30 && this.minutes <= 35) {
+        } else if (this.minutes >= 23 && this.minutes <= 35) {
             this.setMinutes(30);
         } else {
             this.setMinutes(45);
