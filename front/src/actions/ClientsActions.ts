@@ -1,7 +1,7 @@
 import { action } from 'mobx';
 import { ClientsStore } from 'store/AllStores';
 import { API, APIPath } from 'fetch';
-import { ClientApiResponse, ClientDetailsApiResponse, ClientForStudio } from 'types/clients';
+import { ClientApiResponse, ClientDetailsApiResponse, ClientForStudio, NewClientRequestFromApi } from 'types/clients';
 import { DateHandler } from 'helpers/DateHandler';
 import { ClientContact } from '../types/clients';
 
@@ -13,17 +13,23 @@ enum CustomersFetchType {
 }
 
 export interface NewCustomerFormData {
+    id?: number;
     studio_id: number | null;
-    name: string;
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-    email: string;
-    phone: string;
-    billing_contact: string;
-    billing_email: string;
-    billing_phone: string;
+    name: string | null;
+    street: string | null;
+    city: string | null;
+    state: string | null;
+    zip: string | null;
+    email: string | null;
+    phone: string | null;
+    billing_contact: string | null;
+    billing_email: string | null;
+    billing_phone: string | null;
+}
+
+export interface NewClientRequest extends NewCustomerFormData {
+    studio_name: string | null;
+    completed: 0 | 1;
 }
 
 export interface NewStudioContactFormData {
@@ -39,6 +45,22 @@ export class ClientsActionsClass {
     public createNewCustomer = async (customer: NewCustomerFormData | null): Promise<any> => {
         try {
             await API.postData(APIPath.CUSTOMER_NEW, customer as Object);
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    @action
+    public editNewCustomer = async (customer: NewCustomerFormData | null): Promise<any> => {
+        try {
+            if (customer && customer.id) {
+                for (let key in customer) {
+                    if (customer[key] === null || customer[key] === 'null') {
+                        delete customer[key];
+                    }
+                }
+                await API.putData(APIPath.CUSTOMER_NEW + '/' + customer.id, customer as Object);
+            }
         } catch (error) {
             throw error;
         }
@@ -275,6 +297,51 @@ export class ClientsActionsClass {
                 return contact;
             });
         } catch (error) {
+            throw error;
+        }
+    };
+
+    @action
+    public fetchNewClientList = async (forceFetch: boolean = false): Promise<boolean> => {
+        try {
+            if (
+                forceFetch ||
+                (ClientsStore.newClientsRequestListLoading === false &&
+                    DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, ClientsStore.newClientsRequestListLastFetchTimestamp))
+            ) {
+                ClientsStore.newClientsRequestListLoading = true;
+
+                const response = (await API.getData(APIPath.CUSTOMER_NEW, {
+                    offset: 0,
+                    length: 9999999,
+                })) as NewClientRequestFromApi[];
+
+                ClientsStore.newClientsRequestList = response
+                    .map((client: NewClientRequestFromApi) => ({
+                        id: client.id,
+                        studio_id: client.studioId,
+                        studio_name: client.studioName,
+                        name: client.name,
+                        street: client.street,
+                        city: client.city,
+                        state: client.state,
+                        zip: client.zip,
+                        email: client.email,
+                        phone: client.phone,
+                        billing_contact: client.billingContact,
+                        billing_email: client.billingEmail,
+                        billing_phone: client.billingPhone,
+                        completed: client.completed,
+                    }));
+                ClientsStore.newClientsRequestListLastFetchTimestamp = Date.now();
+                ClientsStore.newClientsRequestListLoading = false;
+            }
+
+            return true;
+        } catch (error) {
+            setTimeout(() => {
+                this.fetchNewClientList(true);
+            }, 512);
             throw error;
         }
     };
