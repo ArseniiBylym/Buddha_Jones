@@ -19,10 +19,12 @@ class UsersRepository extends EntityRepository
     private $_musicUserTypeIds = array(18, 19);
     private $_writerUserTypeIds = array(26);
     private $_config;
+    private $_entityManager;
 
     public function __construct(EntityManager $entityManager)
     {
-        $this->_config = $config = new \Zend\Config\Config(include getcwd() . '/config/autoload/global.php');
+        $this->_config = new \Zend\Config\Config(include getcwd() . '/config/autoload/global.php');
+        $this->_entityManager = $entityManager;
 
         $classMetaData = $entityManager->getClassMetadata($this->_className);
         parent::__construct($entityManager, $classMetaData);
@@ -758,6 +760,27 @@ class UsersRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         return (!empty($result[0]['clockin'])?$result[0]['clockin'] : null);
+    }
+
+    public function getUserClockinByDate($userId, $date)
+    {
+        $commonRepo = new CommonRepository($this->_entityManager);
+        $date = $commonRepo->formatDateForInsert($date);
+
+        $dql = "SELECT 
+                    uci.clockin
+                FROM \Application\Entity\RediUserClockin uci
+                WHERE uci.userId = :user_id
+                    AND uci.clockin >= :start_date
+                    AND uci.clockin <= :end_date";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_id', $userId);
+        $query->setParameter('start_date', $date->format('Y-m-d 00:00:00'));
+        $query->setParameter('end_date', $date->format('Y-m-d 23:59:59'));
+        $result = $query->getArrayResult();
+
+        return (!empty($result[0])?$result[0] : null);
     }
 
 }
