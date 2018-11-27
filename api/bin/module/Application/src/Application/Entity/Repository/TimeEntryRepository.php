@@ -650,6 +650,7 @@ class TimeEntryRepository extends EntityRepository
     {
         $pool = $this->getTimeReviewProjectPool($filter = array(), $offset = 0, $length = 10);
 
+        // var_dump($pool); exit;
         $dql = sprintf(
                 "SELECT 
                     te.project_campaign_id AS projectCampaignId,
@@ -667,13 +668,13 @@ class TimeEntryRepository extends EntityRepository
                     redi_time_entry te
                         inner join
                     redi_activity a ON a.id = te.activity_id
-                        inner join
+                        INNER join
                     redi_project_to_campaign ptc ON ptc.id = te.project_campaign_id
-                        inner join
+                        INNER join
                     redi_project p ON p.id = ptc.project_id
                         left join
                     redi_studio s ON s.id = p.studio_id
-                        inner join
+                        left join
                     redi_campaign c ON c.id = ptc.campaign_id
                 WHERE
                     a.type_id IN (1 , 2)
