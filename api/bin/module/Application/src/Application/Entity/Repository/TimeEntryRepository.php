@@ -661,7 +661,7 @@ class TimeEntryRepository extends EntityRepository
                     p.studio_id AS studioId,
                     s.studio_name AS studioName,
                     a.type_id AS activityTypeId,
-                    CONCAT(SUM(SUBSTRING_INDEX(duration, '.', 1)) + FLOOR(SUM(SUBSTRING_INDEX(te.duration, '.', - 1)) / 60),
+                    CONCAT(SUM(SUBSTRING_INDEX(te.duration, '.', 1)) + FLOOR(SUM(SUBSTRING_INDEX(te.duration, '.', - 1)) / 60),
                         '.',
                         SUM(SUBSTRING_INDEX(te.duration, '.', - 1)) %% 60) AS totalDuration
                 FROM
@@ -894,5 +894,14 @@ class TimeEntryRepository extends EntityRepository
         $sum = $value1 + $value2;
 
         return $this->convertFloatToDuration($sum);
+    }
+
+    public function updateCalculatedTimeField($userId, $date) {
+        $dql = "CALL `redi_calculate_user_time_enty`(:user_id, :date)";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('user_id', $userId);
+        $query->bindParam('date', $date);
+        $query->execute();
     }
 }

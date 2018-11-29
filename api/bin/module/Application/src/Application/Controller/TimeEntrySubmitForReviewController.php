@@ -34,9 +34,10 @@ class TimeEntrySubmitForReviewController extends CustomAbstractActionController
                 $this->_em->persist($entry);
             }
 
-
             $this->_em->flush();
 
+            $this->_timeEntryRepo->updateCalculatedTimeField($workerId, $date);
+            
             $response = array(
                 'status' => 1,
                 'message' => 'Request successful.'
