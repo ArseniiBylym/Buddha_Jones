@@ -269,7 +269,7 @@ export class ProjectDetailsActionsClass {
         try {
             const campaign = this.findCampaign(projectId, projectCampaignId);
             if (campaign) {
-                await API.putData(APIPath.PROJECT_CAMPAIGN + '/' + projectId + '/' + projectCampaignId, {
+                await API.putData(APIPath.PROJECT_CAMPAIGN + '/' + projectCampaignId, {
                     budget: budget,
                     budget_note: budgetNotes,
                 });
@@ -779,7 +779,7 @@ export class ProjectDetailsActionsClass {
         requestNotes: string | null
     ): Promise<boolean> => {
         try {
-            await API.putData(APIPath.PROJECT_CAMPAIGN + '/' + projectId + '/' + projectCampaignId, {
+            await API.putData(APIPath.PROJECT_CAMPAIGN + '/' + projectCampaignId, {
                 [`request_${type}_team`]: requestToggle ? 1 : 0,
                 [`${type}_team_notes`]: requestNotes ? requestNotes : null,
             });
