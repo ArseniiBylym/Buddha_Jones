@@ -904,4 +904,104 @@ class TimeEntryRepository extends EntityRepository
         $query->bindParam('date', $date);
         $query->execute();
     }
+
+    public function getNonBillableTimeEntryOfProject($projectId)
+    {
+        $dql = "SELECT 
+                    te.id,
+                    te.duration, 
+                    ptc.projectId,
+                    ptc.campaignId
+                FROM
+                    \Application\Entity\RediTimeEntry te
+                INNER JOIN \Application\Entity\RediActivity a 
+                    WITH a.id = te.activityId
+                INNER JOIN \Application\Entity\RediProjectToCampaign ptc 
+                    WITH ptc.id = te.projectCampaignId
+                WHERE
+                    ptc.projectId = :project_id
+                    AND a.typeId = 2
+                    AND te.billStatus IS NULL";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('project_id', $projectId);
+        $result = $query->getArrayResult();
+
+        $total = array_reduce($result, function($carry, $row) {
+            return $this->convertDurationAndSum($carry, $row['duration']);
+        });
+
+        return $total;
+    }
+
+    public function getNonBillableTimeEntryOfCampaign($campaignId)
+    {
+        $dql = "SELECT 
+                    te.id,
+                    te.duration, 
+                    ptc.projectId,
+                    ptc.campaignId
+                FROM
+                    \Application\Entity\RediTimeEntry te
+                INNER JOIN \Application\Entity\RediActivity a 
+                    WITH a.id = te.activityId
+                INNER JOIN \Application\Entity\RediProjectToCampaign ptc 
+                    WITH ptc.id = te.projectCampaignId
+                WHERE
+                    ptc.campaignId = :campaign_id
+                    AND a.typeId = 2
+                    AND te.billStatus IS NULL";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('campaign_id', $campaignId);
+        $result = $query->getArrayResult();
+
+        $total = array_reduce($result, function($carry, $row) {
+            return $this->convertDurationAndSum($carry, $row['duration']);
+        });
+
+        return $total;
+    }
+
+    public function getTimeEntryForBillingBySpotId($spotId) {
+        $dql = "SELECT 
+                    te.id,
+                    te.startDate,                    
+                    te.duration,
+                    te.straightTime,
+                    te.overTime,
+                    te.doubleTime,
+                    te.status,
+                    tes.name AS statusName,
+                    te.activityId,
+                    te.activityDescription,
+                    te.notes,
+                    a.name AS activityName,
+                    a.typeId AS activityTypeId,
+                    aty.activityType AS activityTypeName,
+                    te.userId,
+                    u.firstName AS userFirstName,
+                    u.lastName AS userLastName
+                FROM
+                    \Application\Entity\RediTimeEntry te
+                INNER JOIN \Application\Entity\RediActivity a 
+                    WITH a.id = te.activityId
+                LEFT JOIN \Application\Entity\RediActivityType aty
+                    WITH aty.id = a.typeId
+                INNER JOIN \Application\Entity\RediProjectToCampaign ptc 
+                    WITH ptc.id = te.projectCampaignId
+                LEFT JOIN \Application\Entity\RediTimeEntryStatus tes
+                    WITH tes.id = te.status
+                LEFT JOIN \Application\Entity\RediUser u
+                    WITH u.id = te.userId
+                WHERE
+                    te.spotId = :spot_id
+                    AND te.billStatus IS NULL";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('spot_id', $spotId);
+        $result = $query->getArrayResult();
+
+        return $result;
+    }
 }

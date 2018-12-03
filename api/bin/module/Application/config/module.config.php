@@ -190,6 +190,7 @@ return array(
             'Application\Controller\ProjectPermission'                              => 'Application\Controller\ProjectPermissionController',
             'Application\Controller\Search'                                         => 'Application\Controller\SearchController',
             'Application\Controller\Spot'                                           => 'Application\Controller\SpotController',
+            'Application\Controller\SpotBilling'                                    => 'Application\Controller\SpotBillingController',
             'Application\Controller\SpotSent'                                       => 'Application\Controller\SpotSentController',
             'Application\Controller\SpotSentValidate'                               => 'Application\Controller\SpotSentValidateController',
             'Application\Controller\SpotSentOptions'                                => 'Application\Controller\SpotSentOptionsController',
