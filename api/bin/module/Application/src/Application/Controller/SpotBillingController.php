@@ -94,7 +94,12 @@ class SpotBillingController extends CustomAbstractActionController
 
 
                 // list of time entries
-                $spotInfo['timeEntry'] = $this->_timeEntryRepo->getTimeEntryForBillingBySpotId($spotId);
+                $spotInfo['timeEntry'] = array();
+                $timeEntry = $this->_timeEntryRepo->getTimeEntryForBillingBySpotId($spotId);
+
+                foreach ($timeEntry as $row) {
+                    $spotInfo['timeEntry'][$row['date']][] = $row;
+                }
 
                 $response = array(
                     'status' => 1,

@@ -5,6 +5,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManager;
 use Zend\Config\Config;
 use Zend\Memory\Value;
+use Zend\Stdlib\DateTime;
 
 class TimeEntryRepository extends EntityRepository
 {
@@ -964,8 +965,24 @@ class TimeEntryRepository extends EntityRepository
     }
 
     public function getTimeEntryForBillingBySpotId($spotId) {
+        // get spot info for project to campaign id
+        $spotDql = "SELECT 
+                    s.projectCampaignId
+                FROM
+                    \Application\Entity\RediSpot s
+                WHERE
+                    s.id = :spot_id";
+
+        $spotQuery = $this->getEntityManager()->createQuery($spotDql);
+        $spotQuery->setParameter('spot_id', $spotId);
+        $spotResult = $spotQuery->getArrayResult();
+        $projectCampaignId = (!empty($spotResult[0]['projectCampaignId']) ? $spotResult[0]['projectCampaignId'] : 0);
+
         $dql = "SELECT 
                     te.id,
+                    te.projectCampaignId,
+                    te.spotId,
+                    te.versionId,
                     te.startDate,                    
                     te.duration,
                     te.straightTime,
@@ -995,12 +1012,22 @@ class TimeEntryRepository extends EntityRepository
                 LEFT JOIN \Application\Entity\RediUser u
                     WITH u.id = te.userId
                 WHERE
-                    te.spotId = :spot_id
+                    (te.spotId = :spot_id
+                    OR (te.projectCampaignId = :project_campaign_id AND te.spotId IS NULL))
+                    AND a.typeId NOT IN(2,3)
                     AND te.billStatus IS NULL";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('spot_id', $spotId);
+        $query->setParameter('project_campaign_id', $projectCampaignId);
         $result = $query->getArrayResult();
+
+        $result = array_map(function($row) {
+            $row['id'] = (int)$row['id'];
+            $row['date'] = $row['startDate']->format('Y-m-d');
+
+            return $row;
+        }, $result);
 
         return $result;
     }
