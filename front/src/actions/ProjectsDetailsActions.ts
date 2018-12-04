@@ -293,7 +293,7 @@ export class ProjectDetailsActionsClass {
         try {
             const campaign = this.findCampaign(projectId, projectCampaignId);
             if (campaign) {
-                await API.putData(APIPath.PROJECT_CAMPAIGN + '/' + projectId + '/' + projectCampaignId, {
+                await API.putData(APIPath.PROJECT_CAMPAIGN + '/' + projectCampaignId, {
                     material_receive_date: date !== null ? date.toISOString() : null,
                 });
 
