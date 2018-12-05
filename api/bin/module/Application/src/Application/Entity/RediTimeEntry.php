@@ -38,16 +38,16 @@ class RediTimeEntry
     /**
      * @var integer
      *
-     * @ORM\Column(name="version_id", type="integer", nullable=true)
+     * @ORM\Column(name="spot_id", type="integer", nullable=true)
      */
-    private $versionId;
+    private $spotId;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="spot_id", type="integer", nullable=true)
+     * @ORM\Column(name="version_id", type="integer", nullable=true)
      */
-    private $spotId;
+    private $versionId;
 
     /**
      * @var \DateTime
@@ -143,16 +143,23 @@ class RediTimeEntry
     /**
      * @var integer
      *
-     * @ORM\Column(name="status", type="integer", nullable=true)
+     * @ORM\Column(name="bill_id", type="bigint", nullable=true)
      */
-    private $status;
+    private $billId;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="bill_status", type="integer", nullable=true)
+     * @ORM\Column(name="bill_line_id", type="bigint", nullable=true)
      */
-    private $billStatus;
+    private $billLineId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="status", type="integer", nullable=true)
+     */
+    private $status;
 
 
 
@@ -213,29 +220,6 @@ class RediTimeEntry
     }
 
     /**
-     * Set versionId
-     *
-     * @param integer $versionId
-     * @return RediTimeEntry
-     */
-    public function setVersionId($versionId)
-    {
-        $this->versionId = $versionId;
-
-        return $this;
-    }
-
-    /**
-     * Get versionId
-     *
-     * @return integer 
-     */
-    public function getVersionId()
-    {
-        return $this->versionId;
-    }
-
-    /**
      * Set spotId
      *
      * @param integer $spotId
@@ -256,6 +240,29 @@ class RediTimeEntry
     public function getSpotId()
     {
         return $this->spotId;
+    }
+
+    /**
+     * Set versionId
+     *
+     * @param integer $versionId
+     * @return RediTimeEntry
+     */
+    public function setVersionId($versionId)
+    {
+        $this->versionId = $versionId;
+
+        return $this;
+    }
+
+    /**
+     * Get versionId
+     *
+     * @return integer 
+     */
+    public function getVersionId()
+    {
+        return $this->versionId;
     }
 
     /**
@@ -558,6 +565,52 @@ class RediTimeEntry
     }
 
     /**
+     * Set billId
+     *
+     * @param integer $billId
+     * @return RediTimeEntry
+     */
+    public function setBillId($billId)
+    {
+        $this->billId = $billId;
+
+        return $this;
+    }
+
+    /**
+     * Get billId
+     *
+     * @return integer 
+     */
+    public function getBillId()
+    {
+        return $this->billId;
+    }
+
+    /**
+     * Set billLineId
+     *
+     * @param integer $billLineId
+     * @return RediTimeEntry
+     */
+    public function setBillLineId($billLineId)
+    {
+        $this->billLineId = $billLineId;
+
+        return $this;
+    }
+
+    /**
+     * Get billLineId
+     *
+     * @return integer 
+     */
+    public function getBillLineId()
+    {
+        return $this->billLineId;
+    }
+
+    /**
      * Set status
      *
      * @param integer $status
@@ -578,28 +631,5 @@ class RediTimeEntry
     public function getStatus()
     {
         return $this->status;
-    }
-
-    /**
-     * Set billStatus
-     *
-     * @param integer $billStatus
-     * @return RediTimeEntry
-     */
-    public function setBillStatus($billStatus)
-    {
-        $this->billStatus = $billStatus;
-
-        return $this;
-    }
-
-    /**
-     * Get billStatus
-     *
-     * @return integer 
-     */
-    public function getBillStatus()
-    {
-        return $this->billStatus;
     }
 }

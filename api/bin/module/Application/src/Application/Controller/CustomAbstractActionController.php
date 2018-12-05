@@ -41,7 +41,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_commentRepository;
     protected $_commentTypeRepository;
     protected $_customerRepository;
-    protected $_customerPriceRepository;
+    // protected $_customerPriceRepository;
     protected $_customerContactRepository;
     protected $_customerNewRepository;
     protected $_projectToCamapignCC;
@@ -83,7 +83,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_timeEntryRepository;
     protected $_timeEntryFileRepository;
     protected $_timeEntryStatusRepository;
-    protected $_timeEntryBillStatusRepository;
+    // protected $_timeEntryBillStatusRepository;
     protected $_versionRepository;
     protected $_versionStatusRepository;
     protected $_userTypeRepository;
@@ -135,7 +135,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_customerContactRepository = $this->_em->getRepository('Application\Entity\RediCustomerContact');
         $this->_customerNewRepository = $this->_em->getRepository('Application\Entity\RediCustomerNew');
         $this->_projectToCamapignCC = $this->_em->getRepository('Application\Entity\RediProjectToCampaignCc');
-        $this->_customerPriceRepository = $this->_em->getRepository('Application\Entity\RediCustomerPrice');
+        // $this->_customerPriceRepository = $this->_em->getRepository('Application\Entity\RediCustomerPrice');
         $this->_editorToSpotRepository = $this->_em->getRepository('Application\Entity\RediEditorToSpot');
         $this->_estimateToOutsideCostRepository = $this->_em->getRepository('Application\Entity\RediEstimateToOutsideCost');
         $this->_estimateRepository = $this->_em->getRepository('Application\Entity\RediEstimate');
@@ -173,7 +173,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_studioRepository = $this->_em->getRepository('Application\Entity\RediStudio');
         $this->_timeEntryRepository = $this->_em->getRepository('Application\Entity\RediTimeEntry');
         $this->_timeEntryStatusRepository = $this->_em->getRepository('Application\Entity\RediTimeEntryStatus');
-        $this->_timeEntryBillStatusRepository = $this->_em->getRepository('Application\Entity\RediTimeEntryBillStatus');
+        // $this->_timeEntryBillStatusRepository = $this->_em->getRepository('Application\Entity\RediTimeEntryBillStatus');
         $this->_timeEntryFileRepository = $this->_em->getRepository('Application\Entity\RediTimeEntryFile');
         $this->_versionRepository = $this->_em->getRepository('Application\Entity\RediVersion');
         $this->_versionStatusRepository = $this->_em->getRepository('Application\Entity\RediVersionStatus');

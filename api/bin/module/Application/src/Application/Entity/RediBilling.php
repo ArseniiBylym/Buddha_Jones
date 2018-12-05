@@ -24,6 +24,13 @@ class RediBilling
     /**
      * @var integer
      *
+     * @ORM\Column(name="user_id", type="integer", nullable=true)
+     */
+    private $userId;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="customer_id", type="integer", nullable=true)
      */
     private $customerId;
@@ -31,37 +38,16 @@ class RediBilling
     /**
      * @var integer
      *
-     * @ORM\Column(name="project_id", type="integer", nullable=true)
-     */
-    private $projectId;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="campaign_id", type="integer", nullable=true)
-     */
-    private $campaignId;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="spot_id", type="integer", nullable=true)
+     * @ORM\Column(name="spot_id", type="bigint", nullable=true)
      */
     private $spotId;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="notes", type="text", nullable=true)
-     */
-    private $notes;
-
-    /**
      * @var integer
      *
-     * @ORM\Column(name="status_id", type="smallint", nullable=true)
+     * @ORM\Column(name="status", type="smallint", nullable=true)
      */
-    private $statusId;
+    private $status;
 
     /**
      * @var \DateTime
@@ -69,6 +55,13 @@ class RediBilling
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     */
+    private $updatedAt;
 
 
 
@@ -80,6 +73,29 @@ class RediBilling
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set userId
+     *
+     * @param integer $userId
+     * @return RediBilling
+     */
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+
+        return $this;
+    }
+
+    /**
+     * Get userId
+     *
+     * @return integer 
+     */
+    public function getUserId()
+    {
+        return $this->userId;
     }
 
     /**
@@ -106,52 +122,6 @@ class RediBilling
     }
 
     /**
-     * Set projectId
-     *
-     * @param integer $projectId
-     * @return RediBilling
-     */
-    public function setProjectId($projectId)
-    {
-        $this->projectId = $projectId;
-
-        return $this;
-    }
-
-    /**
-     * Get projectId
-     *
-     * @return integer 
-     */
-    public function getProjectId()
-    {
-        return $this->projectId;
-    }
-
-    /**
-     * Set campaignId
-     *
-     * @param integer $campaignId
-     * @return RediBilling
-     */
-    public function setCampaignId($campaignId)
-    {
-        $this->campaignId = $campaignId;
-
-        return $this;
-    }
-
-    /**
-     * Get campaignId
-     *
-     * @return integer 
-     */
-    public function getCampaignId()
-    {
-        return $this->campaignId;
-    }
-
-    /**
      * Set spotId
      *
      * @param integer $spotId
@@ -175,49 +145,26 @@ class RediBilling
     }
 
     /**
-     * Set notes
+     * Set status
      *
-     * @param string $notes
+     * @param integer $status
      * @return RediBilling
      */
-    public function setNotes($notes)
+    public function setStatus($status)
     {
-        $this->notes = $notes;
+        $this->status = $status;
 
         return $this;
     }
 
     /**
-     * Get notes
-     *
-     * @return string 
-     */
-    public function getNotes()
-    {
-        return $this->notes;
-    }
-
-    /**
-     * Set statusId
-     *
-     * @param integer $statusId
-     * @return RediBilling
-     */
-    public function setStatusId($statusId)
-    {
-        $this->statusId = $statusId;
-
-        return $this;
-    }
-
-    /**
-     * Get statusId
+     * Get status
      *
      * @return integer 
      */
-    public function getStatusId()
+    public function getStatus()
     {
-        return $this->statusId;
+        return $this->status;
     }
 
     /**
@@ -241,5 +188,28 @@ class RediBilling
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     * @return RediBilling
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return \DateTime 
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
     }
 }
