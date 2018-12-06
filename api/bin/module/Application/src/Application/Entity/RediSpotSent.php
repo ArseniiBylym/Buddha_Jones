@@ -304,6 +304,20 @@ class RediSpotSent
     /**
      * @var integer
      *
+     * @ORM\Column(name="bill_id", type="bigint", nullable=true)
+     */
+    private $billId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="bill_line_id", type="bigint", nullable=true)
+     */
+    private $billLineId;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="created_by", type="integer", nullable=true)
      */
     private $createdBy;
@@ -1259,6 +1273,52 @@ class RediSpotSent
     public function getSpotSentDate()
     {
         return $this->spotSentDate;
+    }
+
+    /**
+     * Set billId
+     *
+     * @param integer $billId
+     * @return RediSpotSent
+     */
+    public function setBillId($billId)
+    {
+        $this->billId = $billId;
+
+        return $this;
+    }
+
+    /**
+     * Get billId
+     *
+     * @return integer 
+     */
+    public function getBillId()
+    {
+        return $this->billId;
+    }
+
+    /**
+     * Set billLineId
+     *
+     * @param integer $billLineId
+     * @return RediSpotSent
+     */
+    public function setBillLineId($billLineId)
+    {
+        $this->billLineId = $billLineId;
+
+        return $this;
+    }
+
+    /**
+     * Get billLineId
+     *
+     * @return integer 
+     */
+    public function getBillLineId()
+    {
+        return $this->billLineId;
     }
 
     /**

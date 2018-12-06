@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * RediProject
  *
- * @ORM\Table(name="redi_project", indexes={@ORM\Index(name="project_name", columns={"project_name"}), @ORM\Index(name="project_code", columns={"project_code"})})
+ * @ORM\Table(name="redi_project", uniqueConstraints={@ORM\UniqueConstraint(name="project_prefix", columns={"project_prefix"})}, indexes={@ORM\Index(name="project_name", columns={"project_name"}), @ORM\Index(name="project_code", columns={"project_code"})})
  * @ORM\Entity
  */
 class RediProject
@@ -34,6 +34,13 @@ class RediProject
      * @ORM\Column(name="project_code", type="string", length=100, nullable=true)
      */
     private $projectCode;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="project_prefix", type="string", length=10, nullable=true)
+     */
+    private $projectPrefix;
 
     /**
      * @var \DateTime
@@ -126,6 +133,29 @@ class RediProject
     public function getProjectCode()
     {
         return $this->projectCode;
+    }
+
+    /**
+     * Set projectPrefix
+     *
+     * @param string $projectPrefix
+     * @return RediProject
+     */
+    public function setProjectPrefix($projectPrefix)
+    {
+        $this->projectPrefix = $projectPrefix;
+
+        return $this;
+    }
+
+    /**
+     * Get projectPrefix
+     *
+     * @return string 
+     */
+    public function getProjectPrefix()
+    {
+        return $this->projectPrefix;
     }
 
     /**

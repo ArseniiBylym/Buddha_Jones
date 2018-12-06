@@ -29,6 +29,13 @@ class RediBillingLine
     private $billId;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="spot_id", type="bigint", nullable=true)
+     */
+    private $spotId;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
@@ -110,6 +117,29 @@ class RediBillingLine
     public function getBillId()
     {
         return $this->billId;
+    }
+
+    /**
+     * Set spotId
+     *
+     * @param integer $spotId
+     * @return RediBillingLine
+     */
+    public function setSpotId($spotId)
+    {
+        $this->spotId = $spotId;
+
+        return $this;
+    }
+
+    /**
+     * Get spotId
+     *
+     * @return integer 
+     */
+    public function getSpotId()
+    {
+        return $this->spotId;
     }
 
     /**

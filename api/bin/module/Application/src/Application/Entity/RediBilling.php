@@ -38,9 +38,9 @@ class RediBilling
     /**
      * @var integer
      *
-     * @ORM\Column(name="spot_id", type="bigint", nullable=true)
+     * @ORM\Column(name="project_campaign_id", type="bigint", nullable=true)
      */
-    private $spotId;
+    private $projectCampaignId;
 
     /**
      * @var integer
@@ -122,26 +122,26 @@ class RediBilling
     }
 
     /**
-     * Set spotId
+     * Set projectCampaignId
      *
-     * @param integer $spotId
+     * @param integer $projectCampaignId
      * @return RediBilling
      */
-    public function setSpotId($spotId)
+    public function setProjectCampaignId($projectCampaignId)
     {
-        $this->spotId = $spotId;
+        $this->projectCampaignId = $projectCampaignId;
 
         return $this;
     }
 
     /**
-     * Get spotId
+     * Get projectCampaignId
      *
      * @return integer 
      */
-    public function getSpotId()
+    public function getProjectCampaignId()
     {
-        return $this->spotId;
+        return $this->projectCampaignId;
     }
 
     /**
