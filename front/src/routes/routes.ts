@@ -11,12 +11,14 @@ import { ProjectBoardPermissionListAsync } from './Configuration/UserManagement/
 import { ProjectBoardPermissionEditAsync } from './Configuration/UserManagement/ProjectBoardPermission/Form';
 import { UserManagementUsersListAsync } from './Configuration/UserManagement/UsersList/List';
 import { NewClientRequestListAsync } from './StudioClient/NewClientRequest/List';
+import { BillingStudioRateCardsAsync } from './Billing/StudioRateCard';
 
 // Icons
 const dashboardIcon = require('../assets/images/navigation/navigation-icon-dashboard.png');
 const projectsIcon = require('../assets/images/navigation/navigation-icon-projects.png');
 const studioIcon = require('../assets/images/navigation/navigation-icon-customer.png');
 const configurationIcon = require('../assets/images/navigation/navigation-icon-activity.png');
+const billingIcon = require('assets/images/navigation/navigation-icon-billing.png');
 
 // Groups
 const dashboardGroup = { key: 'dashboard', name: 'Dashboard', icon: dashboardIcon };
@@ -24,6 +26,7 @@ const projectsGroup = { key: 'projects', name: 'Projects', icon: projectsIcon };
 const studioGroup = { key: 'studio', name: 'Studio', icon: studioIcon };
 const configurationGroup = { key: 'configuration', name: 'Configuration', icon: configurationIcon };
 const StudioClientGroup = { key: 'studio-client', name: 'StudioClient', icon: studioIcon };
+const billingGroup = { key: 'billing', name: 'Billing', icon: billingIcon };
 
 export const routes: Route[] = [
     {
@@ -106,6 +109,17 @@ export const routes: Route[] = [
         name: 'Spot sent',
         path: '/portal/studio/producer-spot-sent-details/:id',
         exact: false,
+        allowAllUsers: true,
+    },
+    {
+        component: BillingStudioRateCardsAsync,
+        key: 'studio-rate-card',
+        accessKey: RouteAccessKey.StudioRateCard,
+        group: billingGroup,
+        name: 'Studio rate card',
+        path: '/portal/billing/studio-rate-card',
+        entry: '/portal/billing/studio-rate-card',
+        exact: true,
         allowAllUsers: true,
     },
     {
