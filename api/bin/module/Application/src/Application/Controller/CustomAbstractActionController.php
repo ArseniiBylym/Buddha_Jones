@@ -41,7 +41,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_commentRepository;
     protected $_commentTypeRepository;
     protected $_customerRepository;
-    // protected $_customerPriceRepository;
+    protected $_customerPriceRepository;
     protected $_customerContactRepository;
     protected $_customerNewRepository;
     protected $_projectToCamapignCC;
@@ -70,6 +70,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_projectToCampaignEditorRepository;
     protected $_projectToCampaignDesignerRepository;
     protected $_projectPermissionsRepository;
+    protected $_ratecardTypeRepository;
     protected $_spotRepository;
     protected $_spotSentRepository;
     protected $_spotSentOptionRepository;
@@ -80,6 +81,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_staffRepository;
     protected $_statusRepository;
     protected $_studioRepository;
+    protected $_studioRateCardRepository;
     protected $_timeEntryRepository;
     protected $_timeEntryFileRepository;
     protected $_timeEntryStatusRepository;
@@ -135,7 +137,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_customerContactRepository = $this->_em->getRepository('Application\Entity\RediCustomerContact');
         $this->_customerNewRepository = $this->_em->getRepository('Application\Entity\RediCustomerNew');
         $this->_projectToCamapignCC = $this->_em->getRepository('Application\Entity\RediProjectToCampaignCc');
-        // $this->_customerPriceRepository = $this->_em->getRepository('Application\Entity\RediCustomerPrice');
+        $this->_customerPriceRepository = $this->_em->getRepository('Application\Entity\RediCustomerPrice');
         $this->_editorToSpotRepository = $this->_em->getRepository('Application\Entity\RediEditorToSpot');
         $this->_estimateToOutsideCostRepository = $this->_em->getRepository('Application\Entity\RediEstimateToOutsideCost');
         $this->_estimateRepository = $this->_em->getRepository('Application\Entity\RediEstimate');
@@ -161,6 +163,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_projectToCampaignEditorRepository = $this->_em->getRepository('Application\Entity\RediProjectToCampaignEditor');
         $this->_projectToCampaignUserRepository = $this->_em->getRepository('Application\Entity\RediProjectToCampaignUser');
         $this->_projectPermissionsRepository = $this->_em->getRepository('Application\Entity\RediProjectPermissions');
+        $this->_ratecardTypeRepository = $this->_em->getRepository('Application\Entity\RediRatecardType');
         $this->_spotRepository = $this->_em->getRepository('Application\Entity\RediSpot');
         $this->_spotVersionRepository = $this->_em->getRepository('Application\Entity\RediSpotVersion');
         $this->_spotVersionEditorRepository = $this->_em->getRepository('Application\Entity\RediSpotVersionEditor');
@@ -171,6 +174,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_staffRepository = $this->_em->getRepository('Application\Entity\RediStaff');
         $this->_statusRepository = $this->_em->getRepository('Application\Entity\RediStatus');
         $this->_studioRepository = $this->_em->getRepository('Application\Entity\RediStudio');
+        $this->_studioRatecardRepository = $this->_em->getRepository('Application\Entity\RediStudioRatecard');
         $this->_timeEntryRepository = $this->_em->getRepository('Application\Entity\RediTimeEntry');
         $this->_timeEntryStatusRepository = $this->_em->getRepository('Application\Entity\RediTimeEntryStatus');
         // $this->_timeEntryBillStatusRepository = $this->_em->getRepository('Application\Entity\RediTimeEntryBillStatus');

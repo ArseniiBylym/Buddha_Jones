@@ -35,6 +35,13 @@ class RediRatecardType
      */
     private $ratecardName;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ratecard_note", type="text", nullable=true)
+     */
+    private $ratecardNote;
+
 
 
     /**
@@ -91,5 +98,28 @@ class RediRatecardType
     public function getRatecardName()
     {
         return $this->ratecardName;
+    }
+
+    /**
+     * Set ratecardNote
+     *
+     * @param string $ratecardNote
+     * @return RediRatecardType
+     */
+    public function setRatecardNote($ratecardNote)
+    {
+        $this->ratecardNote = $ratecardNote;
+
+        return $this;
+    }
+
+    /**
+     * Get ratecardNote
+     *
+     * @return string 
+     */
+    public function getRatecardNote()
+    {
+        return $this->ratecardNote;
     }
 }
