@@ -78,7 +78,7 @@ class StudioRatecardController extends CustomAbstractActionController
         $type = $this->_commonRepo->filterPostData($data, 'type', 'string');
         $rate = $this->_commonRepo->filterPostData($data, 'rate', 'float');
 
-        if ($ratecardId && $activityId && $rate) {
+        if ($ratecardId && $activityId) {
             $ratecard = $this->_studioRatecardRepository->findOneBy(array('ratecardId' => $ratecardId, 'activityId' => $activityId));
 
             if (!$ratecard) {
