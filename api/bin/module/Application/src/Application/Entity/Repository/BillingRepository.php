@@ -535,4 +535,92 @@ class BillingRepository extends EntityRepository
         return $bill;
     }
 
+    public function getBillingListFromSpotBilling()
+    {
+        $dql = "SELECT 
+                    ss.projectId,
+                    p.projectName,
+                    ss.campaignId,
+                    c.campaignName,
+                    ss.projectCampaignId,
+                    ss.spotId,
+                    s.spotName,
+                    ss.versionId,
+                    v.versionName
+                FROM \Application\Entity\RediSpotSent ss
+                LEFT JOIN \Application\Entity\RediProject p 
+                    WITH p.id = ss.projectId
+                LEFT JOIN \Application\Entity\RediCampaign c 
+                    WITH c.id = ss.campaignId
+                LEFT JOIN \Application\Entity\RediSpot s 
+                    WITH s.id = ss.spotId
+                LEFT JOIN \Application\Entity\RediVersion v 
+                    WITH v.id = ss.versionId
+                WHERE ss.billId IS NULL
+                    AND ss.projectId IS NOT NULL
+                    AND ss.campaignId IS NOT NULL
+                GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId
+                ORDER BY p.projectName ASC , c.campaignName ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getArrayResult();
+
+        $response = array();
+
+        foreach ($result as $row) {
+            if (empty($response[$row['projectId']])) {
+                $response[$row['projectId']] = array(
+                    'projectId' => $row['projectId'],
+                    'projectName' => $row['projectName'],
+                    'campaign' => array(),
+                );
+            }
+
+            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']])) {
+                $response[$row['projectId']]['campaign'][$row['campaignId']] = array(
+                    'campaignId' => $row['campaignId'],
+                    'campaignName' => $row['campaignName'],
+                    'projectCampaignId' => $row['projectCampaignId'],
+                    'spot' => array(),
+                );
+            }
+
+            if (empty($row['spotId'])) {
+                continue;
+            }
+
+            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']])) {
+                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']] = array(
+                    'spotId' => $row['spotId'],
+                    'spotName' => $row['spotName'],
+                    'version' => array(),
+                );
+            }
+
+            if (empty($row['versionId'])) {
+                continue;
+            }
+
+            $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']]['version'][] = array(
+                'versionId' => $row['versionId'],
+                'versionName' => $row['versionName'],
+            );
+        }
+
+        $response = array_values(array_map(function ($project) {
+            $project['campaign'] = array_values(array_map(function ($campaign) {
+                $campaign['spot'] = array_values(array_map(function ($spot) {
+                    $spot['version'] = array_values($spot['version']);
+                    return $spot;
+                }, $campaign['spot']));
+
+                return $campaign;
+            }, $project['campaign']));
+
+            return $project;
+        }, $response));
+
+        return $response;
+    }
+
 }

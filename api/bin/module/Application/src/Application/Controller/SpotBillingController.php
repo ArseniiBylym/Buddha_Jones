@@ -12,6 +12,18 @@ use Application\Entity\RediCcStatementLine;
 
 class SpotBillingController extends CustomAbstractActionController
 {
+    public function getList() {
+        $data = $this->_billingRepo->getBillingListFromSpotBilling();
+
+        $response = array(
+            'status' => 1,
+            'message' => 'Request Successful',
+            'data' => $data,
+        );
+
+        return new JsonModel($response);
+    }
+
     public function get($spotId)
     {
 

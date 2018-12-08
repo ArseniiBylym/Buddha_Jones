@@ -22,6 +22,8 @@ class StudioRatecardController extends CustomAbstractActionController
     {
         $studioId = (int)$this->getRequest()->getQuery('studio_id', 0);
         $ratecardId = $this->getRequest()->getQuery('ratecard_id', 0);
+        $selectedRatecardId = null;
+        $studioRatecard = array();
 
         if ($studioId || $ratecardId) {
             if ($ratecardId) {
@@ -40,16 +42,30 @@ class StudioRatecardController extends CustomAbstractActionController
             $ratecardType = $this->_customerRepo->getRatecardType($studioId);
 
             if (!$ratecardId) {
-                $ratecardId = $selectedRatecardId = (!empty($ratecardType[0]['ratecard_id'])) ? (int)$ratecardType[0]['ratecard_id'] : 0;
+                $selectedRatecardId = (!empty($ratecardType[0]['ratecard_id'])) ? (int)$ratecardType[0]['ratecard_id'] : 0;
             }
 
-            $studioRatecard = $this->_customerRepo->searchStudioRatecardType($selectedRatecardId);
+            if ($selectedRatecardId) {
+                $studioRatecard = $this->_customerRepo->searchStudioRatecardType($selectedRatecardId);
+            }
+
+            $studio = $this->_studioRepository->find($studioId);
+            $studioInfo = array();
+
+            if ($studio) {
+                $studioInfo = array(
+                    'id' => $studio->getId(),
+                    'cardcode' => $studio->getCardcode(),
+                    'studioName' => trim($studio->getStudioName()),
+                );
+            }
 
             $response = array(
                 'status' => 1,
                 'message' => 'Request successful',
                 'data' => array(
                     'ratecardType' => $ratecardType,
+                    'studio' => $studioInfo,
                     'selectedRatecardId' => $selectedRatecardId,
                     'studioRateCard' => $studioRatecard,
                 ),

@@ -1,5 +1,78 @@
 # Spot Billing
 
+## Get Spot list for billing
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request Successful",
+    "data": [
+        {
+            "projectId": 47,
+            "projectName": "Annihilation",
+            "campaign": [
+                {
+                    "campaignId": 4,
+                    "campaignName": "Theatrical Teaser/Trai",
+                    "projectCampaignId": 156,
+                    "spot": [
+                        {
+                            "spotId": 84,
+                            "spotName": "#1 Interrogation",
+                            "version": [
+                                {
+                                    "versionId": 2,
+                                    "versionName": "1A"
+                                },
+                                {
+                                    "versionId": 1,
+                                    "versionName": "1"
+                                },
+                                {
+                                    "versionId": 3,
+                                    "versionName": "1B"
+                                }
+                            ]
+                        },
+                        {
+                            "spotId": 79,
+                            "spotName": "#2 Saved",
+                            "version": []
+                        }
+                    ]
+                },
+                {
+                    "campaignId": 6,
+                    "campaignName": "Theatrical Work",
+                    "projectCampaignId": 207,
+                    "spot": [
+                        {
+                            "spotId": 84,
+                            "spotName": "#1 Interrogation",
+                            "version": [
+                                {
+                                    "versionId": 1,
+                                    "versionName": "1"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+```
+
+
+### HTTP Request
+
+`GET /spot-billing`
+
+
+
 ## Get Spot information for billing
 
 > 200: success response
