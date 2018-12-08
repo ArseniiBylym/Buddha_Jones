@@ -10,3 +10,19 @@
 .clickable {
     cursor: pointer;
 }
+
+.rateCardContainer {
+    display: flex;
+}
+
+.rateCardSelector {
+    line-height: 29px;
+    margin-right: 8px!important;;
+}
+
+.rateCardAddButton {
+    .buttonIconSmall {
+        width: 20px;
+        height: 20px;
+    }
+}

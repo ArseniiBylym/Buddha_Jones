@@ -11,7 +11,7 @@ import { ProjectBoardPermissionListAsync } from './Configuration/UserManagement/
 import { ProjectBoardPermissionEditAsync } from './Configuration/UserManagement/ProjectBoardPermission/Form';
 import { UserManagementUsersListAsync } from './Configuration/UserManagement/UsersList/List';
 import { NewClientRequestListAsync } from './StudioClient/NewClientRequest/List';
-import { BillingStudioRateCardsAsync } from './Billing/StudioRateCard';
+import { BillingStudioRateCardAsync, BillingStudioRateCardsAsync } from './Billing/StudioRateCard';
 
 // Icons
 const dashboardIcon = require('../assets/images/navigation/navigation-icon-dashboard.png');
@@ -120,6 +120,16 @@ export const routes: Route[] = [
         path: '/portal/billing/studio-rate-card',
         entry: '/portal/billing/studio-rate-card',
         exact: true,
+        allowAllUsers: true,
+    },
+    {
+        component: BillingStudioRateCardAsync,
+        key: 'studio-rate-card',
+        accessKey: RouteAccessKey.StudioRateCard,
+        group: billingGroup,
+        name: 'Studio rate card',
+        path: '/portal/billing/studio-rate-card/:studio_id/:rate_card_id?',
+        exact: false,
         allowAllUsers: true,
     },
     {
