@@ -179,11 +179,6 @@ Required | Parameter | Type | Default | Description
 **true** | ratecard_id | int | null | ratecard id
 
 
-
-
-
-
-
 ## Get Studio Ratecard list
 
 Retrieve list of Studio ratecard.
@@ -197,21 +192,27 @@ Retrieve list of Studio ratecard.
     "data": {
         "ratecardType": [
             {
-                "ratecardId": 2,
-                "studioId": 2,
-                "ratecardName": "ab",
-                "ratecardNote": "some note\nabc adlsfj alkajdfl;adjs fas\nasfldajsf l;\nasdf;lak sjfl;asd\nasdf\n\n\nasdflakjsdf;lasdjf"
+                "ratecardId": 1,
+                "studioId": 3,
+                "ratecardName": "A",
+                "ratecardNote": "some note"
             },
             {
-                "ratecardId": 1,
-                "studioId": 2,
-                "ratecardName": "My test rate A",
-                "ratecardNote": null
+                "ratecardId": 10,
+                "studioId": 3,
+                "ratecardName": "DD",
+                "ratecardNote": "some note"
             }
         ],
+        "studio": {
+            "id": 3,
+            "cardcode": null,
+            "studioName": "HBO"
+        },
         "selectedRatecardId": 1,
         "studioRateCard": [
             {
+                "id": 24,
                 "ratecardId": 1,
                 "activityId": 1,
                 "activityName": "AE Work (NOT Dailies)",
@@ -221,23 +222,25 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 25,
                 "ratecardId": 1,
                 "activityId": 4,
                 "activityName": "Dailies Assembly",
                 "activityTypeId": 1,
                 "activityType": "Billable",
-                "trtId": 2,
-                "runtime": ":10",
-                "revisionInc": 4,
-                "note": "test note here",
-                "type": "B",
-                "rate": 13
+                "trtId": null,
+                "runtime": null,
+                "revisionInc": null,
+                "note": null,
+                "type": "H",
+                "rate": null
             },
             {
+                "id": 26,
                 "ratecardId": 1,
                 "activityId": 5,
                 "activityName": "Dailies Import",
@@ -247,10 +250,11 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 27,
                 "ratecardId": 1,
                 "activityId": 8,
                 "activityName": "Edit",
@@ -260,10 +264,11 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 28,
                 "ratecardId": 1,
                 "activityId": 9,
                 "activityName": "Editing on Fiber",
@@ -273,10 +278,11 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 21,
                 "ratecardId": 1,
                 "activityId": 10,
                 "activityName": "Fiber",
@@ -286,10 +292,25 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 29,
+                "ratecardId": 1,
+                "activityId": 10,
+                "activityName": "Fiber",
+                "activityTypeId": 1,
+                "activityType": "Billable",
+                "trtId": null,
+                "runtime": null,
+                "revisionInc": null,
+                "note": null,
+                "type": "H",
+                "rate": null
+            },
+            {
+                "id": 30,
                 "ratecardId": 1,
                 "activityId": 11,
                 "activityName": "Finish Audio Mix",
@@ -299,10 +320,11 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 31,
                 "ratecardId": 1,
                 "activityId": 12,
                 "activityName": "Finish Online",
@@ -312,10 +334,11 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 32,
                 "ratecardId": 1,
                 "activityId": 13,
                 "activityName": "Finish Prep",
@@ -325,10 +348,11 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 33,
                 "ratecardId": 1,
                 "activityId": 14,
                 "activityName": "Finish Supervision",
@@ -338,10 +362,11 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 34,
                 "ratecardId": 1,
                 "activityId": 15,
                 "activityName": "Game Capture",
@@ -351,10 +376,11 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 35,
                 "ratecardId": 1,
                 "activityId": 17,
                 "activityName": "Graphic Design",
@@ -364,10 +390,11 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 36,
                 "ratecardId": 1,
                 "activityId": 18,
                 "activityName": "Graphic Finish",
@@ -377,10 +404,11 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 37,
                 "ratecardId": 1,
                 "activityId": 19,
                 "activityName": "Graphic Styleframes/Boards",
@@ -390,10 +418,11 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 38,
                 "ratecardId": 1,
                 "activityId": 20,
                 "activityName": "Graphic Work in Downtime",
@@ -403,10 +432,11 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 39,
                 "ratecardId": 1,
                 "activityId": 27,
                 "activityName": "Music Cue Sheets",
@@ -416,10 +446,11 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 40,
                 "ratecardId": 1,
                 "activityId": 30,
                 "activityName": "Narration Supervision",
@@ -429,23 +460,25 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 86,
                 "ratecardId": 1,
-                "activityId": 40,
-                "activityName": "Trailer",
-                "activityTypeId": 4,
-                "activityType": "Rate Card",
+                "activityId": 44,
+                "activityName": "test abc123",
+                "activityTypeId": 1,
+                "activityType": "Billable",
                 "trtId": null,
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             },
             {
+                "id": 41,
                 "ratecardId": 1,
                 "activityId": 37,
                 "activityName": "Writing",
@@ -455,7 +488,7 @@ Retrieve list of Studio ratecard.
                 "runtime": null,
                 "revisionInc": null,
                 "note": null,
-                "type": null,
+                "type": "H",
                 "rate": null
             }
         ]
@@ -474,9 +507,9 @@ Required | Parameter | Type | Default | Description
 **true** | ratecard_id | int | null | ratecard id (send any of the params ratecard_id or studio_id. if ratecard_id is not sent and studio_id is sent one of the ratecard will be selcted by defaule)
 **true** | studio_id | int | null | studion id(send any of the params ratecard_id or studio_id. if ratecard_id is not sent and studio_id is sent one of the ratecard will be selcted by defaule)
 
-## Update Studio Ratecard
+## Create Studio Ratecard
 
-Update a new campaign.
+Create a new row for studio ratecard.
 
 > Sample request
 
@@ -485,7 +518,7 @@ axios.post('/studio-ratecard', {
     ratecard_id:1
     activity_id:4
     rate:13
-    type:B
+    type:'H'
     trt_id:2
     revision_inc:4
     note:'test note here'
@@ -500,6 +533,7 @@ axios.post('/studio-ratecard', {
     "message": "Request successful.",
     "data": [
         {
+            "id": 24,
             "ratecardId": 1,
             "activityId": 1,
             "activityName": "AE Work (NOT Dailies)",
@@ -509,10 +543,25 @@ axios.post('/studio-ratecard', {
             "runtime": null,
             "revisionInc": null,
             "note": null,
-            "type": null,
+            "type": "H",
             "rate": null
         },
         {
+            "id": 25,
+            "ratecardId": 1,
+            "activityId": 4,
+            "activityName": "Dailies Assembly",
+            "activityTypeId": 1,
+            "activityType": "Billable",
+            "trtId": null,
+            "runtime": null,
+            "revisionInc": null,
+            "note": null,
+            "type": "H",
+            "rate": null
+        },
+        {
+            "id": 156,
             "ratecardId": 1,
             "activityId": 4,
             "activityName": "Dailies Assembly",
@@ -522,229 +571,8 @@ axios.post('/studio-ratecard', {
             "runtime": ":10",
             "revisionInc": 4,
             "note": "test note here",
-            "type": "B",
+            "type": "H",
             "rate": 13
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 5,
-            "activityName": "Dailies Import",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 8,
-            "activityName": "Edit",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 9,
-            "activityName": "Editing on Fiber",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 10,
-            "activityName": "Fiber",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 11,
-            "activityName": "Finish Audio Mix",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 12,
-            "activityName": "Finish Online",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 13,
-            "activityName": "Finish Prep",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 14,
-            "activityName": "Finish Supervision",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 15,
-            "activityName": "Game Capture",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 17,
-            "activityName": "Graphic Design",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 18,
-            "activityName": "Graphic Finish",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 19,
-            "activityName": "Graphic Styleframes/Boards",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 20,
-            "activityName": "Graphic Work in Downtime",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 27,
-            "activityName": "Music Cue Sheets",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 30,
-            "activityName": "Narration Supervision",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 40,
-            "activityName": "Trailer",
-            "activityTypeId": 4,
-            "activityType": "Rate Card",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
-        },
-        {
-            "ratecardId": 1,
-            "activityId": 37,
-            "activityName": "Writing",
-            "activityTypeId": 1,
-            "activityType": "Billable",
-            "trtId": null,
-            "runtime": null,
-            "revisionInc": null,
-            "note": null,
-            "type": null,
-            "rate": null
         }
     ]
 }
@@ -758,10 +586,180 @@ axios.post('/studio-ratecard', {
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true** | reatecard_id | int | null | Campaign name
-**true** | activity_id | int | null | Campaign description
-false | rate | float | null | Editor request
-false | type | char | null | type
+**true** | reatecard_id | int | null | rate card id
+**true** | activity_id | int | null | activity id
+**true** | rate | float | null | rate
+false | type | char | null | type (H = hourly, F = flat)
 false | trt_id | int | null | trt id
 false | revision_inc | int | null | number of revision included
 false | note | string | null | note
+
+
+## Update Studio Ratecard
+
+Update a row for studio ratecard.
+
+> Sample request
+
+```javascript
+axios.put('/studio-ratecard/156', {
+    ratecard_id:1
+    activity_id:4
+    rate:23
+    type:'H'
+    trt_id:2
+    revision_inc:4
+    note:'test note here'
+});
+```
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request successful.",
+    "data": [
+        {
+            "id": 24,
+            "ratecardId": 1,
+            "activityId": 1,
+            "activityName": "AE Work (NOT Dailies)",
+            "activityTypeId": 1,
+            "activityType": "Billable",
+            "trtId": null,
+            "runtime": null,
+            "revisionInc": null,
+            "note": null,
+            "type": "H",
+            "rate": null
+        },
+        {
+            "id": 25,
+            "ratecardId": 1,
+            "activityId": 4,
+            "activityName": "Dailies Assembly",
+            "activityTypeId": 1,
+            "activityType": "Billable",
+            "trtId": null,
+            "runtime": null,
+            "revisionInc": null,
+            "note": null,
+            "type": "H",
+            "rate": null
+        },
+        {
+            "id": 156,
+            "ratecardId": 1,
+            "activityId": 4,
+            "activityName": "Dailies Assembly",
+            "activityTypeId": 1,
+            "activityType": "Billable",
+            "trtId": 2,
+            "runtime": ":10",
+            "revisionInc": 4,
+            "note": "test note here",
+            "type": "H",
+            "rate": 23
+        }
+    ]
+}
+```
+
+### HTTP Request
+
+`PUT /studio-ratecard/[:studi_rate_card_id]`
+
+### Query Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+false | reatecard_id | int | null | rate card id
+false | activity_id | int | null | activity id
+false | rate | float | null | rate
+false | type | char | null | type (H = hourly, F = flat)
+false | trt_id | int | null | trt id
+false | revision_inc | int | null | number of revision included
+false | note | string | null | note
+
+
+## Delete Studio Ratecard
+
+Delete a row from studio ratecard.
+
+> Sample request
+
+```javascript
+axios.delete('/studio-ratecard/156');
+```
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request successful.",
+    "data": [
+        {
+            "id": 24,
+            "ratecardId": 1,
+            "activityId": 1,
+            "activityName": "AE Work (NOT Dailies)",
+            "activityTypeId": 1,
+            "activityType": "Billable",
+            "trtId": null,
+            "runtime": null,
+            "revisionInc": null,
+            "note": null,
+            "type": "H",
+            "rate": null
+        },
+        {
+            "id": 25,
+            "ratecardId": 1,
+            "activityId": 4,
+            "activityName": "Dailies Assembly",
+            "activityTypeId": 1,
+            "activityType": "Billable",
+            "trtId": null,
+            "runtime": null,
+            "revisionInc": null,
+            "note": null,
+            "type": "H",
+            "rate": null
+        },
+        {
+            "id": 26,
+            "ratecardId": 1,
+            "activityId": 5,
+            "activityName": "Dailies Import",
+            "activityTypeId": 1,
+            "activityType": "Billable",
+            "trtId": null,
+            "runtime": null,
+            "revisionInc": null,
+            "note": null,
+            "type": "H",
+            "rate": null
+        },
+        {
+            "id": 27,
+            "ratecardId": 1,
+            "activityId": 8,
+            "activityName": "Edit",
+            "activityTypeId": 1,
+            "activityType": "Billable",
+            "trtId": null,
+            "runtime": null,
+            "revisionInc": null,
+            "note": null,
+            "type": "H",
+            "rate": null
+        }
+    ]
+}
+```
+
+### HTTP Request
+
+`DELETE /studio-ratecard/[:studi_rate_card_id]`
