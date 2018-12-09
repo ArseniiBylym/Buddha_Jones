@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * RediProject
  *
- * @ORM\Table(name="redi_project", uniqueConstraints={@ORM\UniqueConstraint(name="project_prefix", columns={"project_prefix"})}, indexes={@ORM\Index(name="project_name", columns={"project_name"}), @ORM\Index(name="project_code", columns={"project_code"})})
+ * @ORM\Table(name="redi_project", indexes={@ORM\Index(name="project_name", columns={"project_name"}), @ORM\Index(name="project_code", columns={"project_code"})})
  * @ORM\Entity
  */
 class RediProject

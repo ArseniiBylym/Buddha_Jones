@@ -39,14 +39,14 @@ class StudioRatecardController extends CustomAbstractActionController
                 }
             }
 
-            $ratecardType = $this->_customerRepo->getRatecardType($studioId);
+            $ratecardType = $this->_activityRepo->getRatecardType($studioId);
 
             if (!$ratecardId) {
                 $selectedRatecardId = (!empty($ratecardType[0]['ratecard_id'])) ? (int)$ratecardType[0]['ratecard_id'] : 0;
             }
 
             if ($selectedRatecardId) {
-                $studioRatecard = $this->_customerRepo->searchStudioRatecardType($selectedRatecardId);
+                $studioRatecard = $this->_activityRepo->searchStudioRatecardType($selectedRatecardId);
             }
 
             $studio = $this->_studioRepository->find($studioId);
@@ -112,7 +112,7 @@ class StudioRatecardController extends CustomAbstractActionController
             $this->_em->persist($ratecard);
             $this->_em->flush();
 
-            $data = $this->_customerRepo->searchStudioRatecardType($ratecardId);
+            $data = $this->_activityRepo->searchStudioRatecardType($ratecardId);
 
             $response = array(
                 'status' => 1,

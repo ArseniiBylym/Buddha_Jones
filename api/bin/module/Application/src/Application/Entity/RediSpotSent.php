@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * RediSpotSent
  *
- * @ORM\Table(name="redi_spot_sent", indexes={@ORM\Index(name="request_id", columns={"request_id"})})
+ * @ORM\Table(name="redi_spot_sent")
  * @ORM\Entity
  */
 class RediSpotSent

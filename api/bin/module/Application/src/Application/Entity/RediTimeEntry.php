@@ -38,16 +38,16 @@ class RediTimeEntry
     /**
      * @var integer
      *
-     * @ORM\Column(name="spot_id", type="integer", nullable=true)
+     * @ORM\Column(name="version_id", type="integer", nullable=true)
      */
-    private $spotId;
+    private $versionId;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="version_id", type="integer", nullable=true)
+     * @ORM\Column(name="spot_id", type="integer", nullable=true)
      */
-    private $versionId;
+    private $spotId;
 
     /**
      * @var \DateTime
@@ -143,23 +143,16 @@ class RediTimeEntry
     /**
      * @var integer
      *
-     * @ORM\Column(name="bill_id", type="bigint", nullable=true)
-     */
-    private $billId;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="bill_line_id", type="bigint", nullable=true)
-     */
-    private $billLineId;
-
-    /**
-     * @var integer
-     *
      * @ORM\Column(name="status", type="integer", nullable=true)
      */
     private $status;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="bill_status", type="integer", nullable=true)
+     */
+    private $billStatus;
 
 
 
@@ -220,29 +213,6 @@ class RediTimeEntry
     }
 
     /**
-     * Set spotId
-     *
-     * @param integer $spotId
-     * @return RediTimeEntry
-     */
-    public function setSpotId($spotId)
-    {
-        $this->spotId = $spotId;
-
-        return $this;
-    }
-
-    /**
-     * Get spotId
-     *
-     * @return integer 
-     */
-    public function getSpotId()
-    {
-        return $this->spotId;
-    }
-
-    /**
      * Set versionId
      *
      * @param integer $versionId
@@ -263,6 +233,29 @@ class RediTimeEntry
     public function getVersionId()
     {
         return $this->versionId;
+    }
+
+    /**
+     * Set spotId
+     *
+     * @param integer $spotId
+     * @return RediTimeEntry
+     */
+    public function setSpotId($spotId)
+    {
+        $this->spotId = $spotId;
+
+        return $this;
+    }
+
+    /**
+     * Get spotId
+     *
+     * @return integer 
+     */
+    public function getSpotId()
+    {
+        return $this->spotId;
     }
 
     /**
@@ -565,52 +558,6 @@ class RediTimeEntry
     }
 
     /**
-     * Set billId
-     *
-     * @param integer $billId
-     * @return RediTimeEntry
-     */
-    public function setBillId($billId)
-    {
-        $this->billId = $billId;
-
-        return $this;
-    }
-
-    /**
-     * Get billId
-     *
-     * @return integer 
-     */
-    public function getBillId()
-    {
-        return $this->billId;
-    }
-
-    /**
-     * Set billLineId
-     *
-     * @param integer $billLineId
-     * @return RediTimeEntry
-     */
-    public function setBillLineId($billLineId)
-    {
-        $this->billLineId = $billLineId;
-
-        return $this;
-    }
-
-    /**
-     * Get billLineId
-     *
-     * @return integer 
-     */
-    public function getBillLineId()
-    {
-        return $this->billLineId;
-    }
-
-    /**
      * Set status
      *
      * @param integer $status
@@ -631,5 +578,28 @@ class RediTimeEntry
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * Set billStatus
+     *
+     * @param integer $billStatus
+     * @return RediTimeEntry
+     */
+    public function setBillStatus($billStatus)
+    {
+        $this->billStatus = $billStatus;
+
+        return $this;
+    }
+
+    /**
+     * Get billStatus
+     *
+     * @return integer 
+     */
+    public function getBillStatus()
+    {
+        return $this->billStatus;
     }
 }

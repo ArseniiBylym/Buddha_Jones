@@ -81,6 +81,11 @@ class ActivityController extends CustomAbstractActionController
                     $this->_em->persist($activityUserType);
                 }
 
+                // data entry in studio rate card
+                if ($activity->getTypeId() == 1) {
+                    $this->_activityRepo->populateStudioRatecardByActivity($activityId);
+                }
+
                 $this->_em->flush();
 
                 $response = array(

@@ -24,13 +24,6 @@ class RediBilling
     /**
      * @var integer
      *
-     * @ORM\Column(name="user_id", type="integer", nullable=true)
-     */
-    private $userId;
-
-    /**
-     * @var integer
-     *
      * @ORM\Column(name="customer_id", type="integer", nullable=true)
      */
     private $customerId;
@@ -38,16 +31,37 @@ class RediBilling
     /**
      * @var integer
      *
-     * @ORM\Column(name="project_campaign_id", type="bigint", nullable=true)
+     * @ORM\Column(name="project_id", type="integer", nullable=true)
      */
-    private $projectCampaignId;
+    private $projectId;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="status", type="smallint", nullable=true)
+     * @ORM\Column(name="campaign_id", type="integer", nullable=true)
      */
-    private $status;
+    private $campaignId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="spot_id", type="integer", nullable=true)
+     */
+    private $spotId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="notes", type="text", nullable=true)
+     */
+    private $notes;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="status_id", type="smallint", nullable=true)
+     */
+    private $statusId;
 
     /**
      * @var \DateTime
@@ -55,13 +69,6 @@ class RediBilling
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private $createdAt;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
-     */
-    private $updatedAt;
 
 
 
@@ -73,29 +80,6 @@ class RediBilling
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set userId
-     *
-     * @param integer $userId
-     * @return RediBilling
-     */
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
-
-        return $this;
-    }
-
-    /**
-     * Get userId
-     *
-     * @return integer 
-     */
-    public function getUserId()
-    {
-        return $this->userId;
     }
 
     /**
@@ -122,49 +106,118 @@ class RediBilling
     }
 
     /**
-     * Set projectCampaignId
+     * Set projectId
      *
-     * @param integer $projectCampaignId
+     * @param integer $projectId
      * @return RediBilling
      */
-    public function setProjectCampaignId($projectCampaignId)
+    public function setProjectId($projectId)
     {
-        $this->projectCampaignId = $projectCampaignId;
+        $this->projectId = $projectId;
 
         return $this;
     }
 
     /**
-     * Get projectCampaignId
+     * Get projectId
      *
      * @return integer 
      */
-    public function getProjectCampaignId()
+    public function getProjectId()
     {
-        return $this->projectCampaignId;
+        return $this->projectId;
     }
 
     /**
-     * Set status
+     * Set campaignId
      *
-     * @param integer $status
+     * @param integer $campaignId
      * @return RediBilling
      */
-    public function setStatus($status)
+    public function setCampaignId($campaignId)
     {
-        $this->status = $status;
+        $this->campaignId = $campaignId;
 
         return $this;
     }
 
     /**
-     * Get status
+     * Get campaignId
      *
      * @return integer 
      */
-    public function getStatus()
+    public function getCampaignId()
     {
-        return $this->status;
+        return $this->campaignId;
+    }
+
+    /**
+     * Set spotId
+     *
+     * @param integer $spotId
+     * @return RediBilling
+     */
+    public function setSpotId($spotId)
+    {
+        $this->spotId = $spotId;
+
+        return $this;
+    }
+
+    /**
+     * Get spotId
+     *
+     * @return integer 
+     */
+    public function getSpotId()
+    {
+        return $this->spotId;
+    }
+
+    /**
+     * Set notes
+     *
+     * @param string $notes
+     * @return RediBilling
+     */
+    public function setNotes($notes)
+    {
+        $this->notes = $notes;
+
+        return $this;
+    }
+
+    /**
+     * Get notes
+     *
+     * @return string 
+     */
+    public function getNotes()
+    {
+        return $this->notes;
+    }
+
+    /**
+     * Set statusId
+     *
+     * @param integer $statusId
+     * @return RediBilling
+     */
+    public function setStatusId($statusId)
+    {
+        $this->statusId = $statusId;
+
+        return $this;
+    }
+
+    /**
+     * Get statusId
+     *
+     * @return integer 
+     */
+    public function getStatusId()
+    {
+        return $this->statusId;
     }
 
     /**
@@ -188,28 +241,5 @@ class RediBilling
     public function getCreatedAt()
     {
         return $this->createdAt;
-    }
-
-    /**
-     * Set updatedAt
-     *
-     * @param \DateTime $updatedAt
-     * @return RediBilling
-     */
-    public function setUpdatedAt($updatedAt)
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return \DateTime 
-     */
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt;
     }
 }

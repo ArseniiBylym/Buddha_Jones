@@ -23,7 +23,7 @@ class RatecardTypeController extends CustomAbstractActionController
         $studioId = (int)$this->getRequest()->getQuery('studio_id', 0);
 
         if ($studioId) {
-            $data = $this->_customerRepo->getRatecardType($studioId);
+            $data = $this->_activityRepo->getRatecardType($studioId);
 
             $response = array(
                 'status' => 1,
@@ -67,7 +67,10 @@ class RatecardTypeController extends CustomAbstractActionController
                 $this->_em->persist($ratecardType);
                 $this->_em->flush();
 
-                $data = $this->_customerRepo->getRatecardType($studioId);
+                // insert rows in studioRateCard for existing activity 
+                $this->_activityRepo->populateStudioRatecardByRatecard($ratecardType->getRatecardId());
+
+                $data = $this->_activityRepo->getRatecardType($studioId);
 
                 $response = array(
                     'status' => 1,
@@ -123,7 +126,7 @@ class RatecardTypeController extends CustomAbstractActionController
             $this->_em->persist($ratecardType);
             $this->_em->flush();
 
-            $data = $this->_customerRepo->getRatecardType($ratecardType->getStudioId());
+            $data = $this->_activityRepo->getRatecardType($ratecardType->getStudioId());
 
             $response = array(
                 'status' => 1,
@@ -151,9 +154,13 @@ class RatecardTypeController extends CustomAbstractActionController
             $studioId = $ratecardType->getStudioId();
             $this->_em->remove($ratecardType);
             $this->_em->flush();
+
         }
 
-        $data = $this->_customerRepo->getRatecardType($studioId);
+        $this->_activityRepo->cleanStudioRatecard();
+
+        
+        $data = $this->_activityRepo->getRatecardType($studioId);
 
         $response = array(
             'status' => 1,

@@ -15,18 +15,23 @@ class RediStudioRatecard
     /**
      * @var integer
      *
-     * @ORM\Column(name="ratecard_id", type="integer", nullable=false)
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="ratecard_id", type="integer", nullable=true)
      */
     private $ratecardId;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="activity_id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\Column(name="activity_id", type="integer", nullable=true)
      */
     private $activityId;
 
@@ -66,6 +71,16 @@ class RediStudioRatecard
     private $rate;
 
 
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
     /**
      * Set ratecardId
