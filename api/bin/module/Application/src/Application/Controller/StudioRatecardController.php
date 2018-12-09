@@ -95,14 +95,9 @@ class StudioRatecardController extends CustomAbstractActionController
         $rate = $this->_commonRepo->filterPostData($data, 'rate', 'float');
 
         if ($ratecardId && $activityId) {
-            $ratecard = $this->_studioRatecardRepository->findOneBy(array('ratecardId' => $ratecardId, 'activityId' => $activityId));
-
-            if (!$ratecard) {
-                $ratecard = new RediStudioRatecard();
-                $ratecard->setRatecardId($ratecardId);
-                $ratecard->setActivityId($activityId);
-            }
-
+            $ratecard = new RediStudioRatecard();
+            $ratecard->setRatecardId($ratecardId);
+            $ratecard->setActivityId($activityId);
             $ratecard->setTrtId($trtId);
             $ratecard->setRevisionInc($revisionInc);
             $ratecard->setNote($note);
@@ -134,6 +129,91 @@ class StudioRatecardController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
+    public function update($id, $data)
+    {
+        $ratecardId = $this->_commonRepo->filterPostData($data, 'ratecard_id', 'int');
+        $activityId = $this->_commonRepo->filterPostData($data, 'activity_id', 'int');
+        $trtId = $this->_commonRepo->filterPostData($data, 'trt_id', 'int');
+        $revisionInc = $this->_commonRepo->filterPostData($data, 'revision_inc', 'int');
+        $note = $this->_commonRepo->filterPostData($data, 'note', 'string');
+        $type = $this->_commonRepo->filterPostData($data, 'type', 'string');
+        $rate = $this->_commonRepo->filterPostData($data, 'rate', 'float');
+
+        $ratecard = $this->_studioRatecardRepository->find($id);
+
+        if ($ratecard) {
+            if ($ratecardId) {
+                $ratecard->setRatecardId($ratecardId);
+            }
+
+            if ($activityId) {
+                $ratecard->setActivityId($activityId);
+            }
+
+            if ($trtId) {
+                $ratecard->setTrtId($trtId);
+            }
+
+            if ($revisionInc) {
+                $ratecard->setRevisionInc($revisionInc);
+            }
+
+            if ($note) {
+                $ratecard->setNote($note);
+            }
+
+            if ($type) {
+                $ratecard->setType($type);
+            }
+
+            if ($rate) {
+                $ratecard->setRate($rate);
+            }
+
+            $this->_em->persist($ratecard);
+            $this->_em->flush();
+
+            $data = $this->_activityRepo->searchStudioRatecardType($ratecard->getRatecardId());
+
+            $response = array(
+                'status' => 1,
+                'message' => 'Request successful.',
+                'data' => $data,
+            );
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Unable to update as ratecard does not exist',
+            );
+        }
 
 
+        if ($response['status'] == 0) {
+            $this->getResponse()->setStatusCode(400);
+        }
+
+        return new JsonModel($response);
+    }
+
+    public function delete($id)
+    {
+        $ratecard = $this->_studioRatecardRepository->find($id);
+        $ratecardId = 0;
+
+        if ($ratecard) {
+            $ratecardId = $ratecard->getRatecardId();
+            $this->_em->remove($ratecard);
+            $this->_em->flush();
+        }
+
+        $data = $this->_activityRepo->searchStudioRatecardType($ratecardId);
+
+        $response = array(
+            'status' => 1,
+            'message' => 'Request successful.',
+            'data' => $data,
+        );
+
+        return new JsonModel($response);
+    }
 }

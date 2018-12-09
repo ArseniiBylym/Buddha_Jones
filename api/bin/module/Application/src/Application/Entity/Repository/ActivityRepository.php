@@ -371,6 +371,7 @@ class ActivityRepository extends EntityRepository
     public function searchStudioRatecardType($ratecardId)
     {
         $dql = "SELECT 
+                  src.id,
                   src.ratecardId,
                   a.id AS activityId,
                   a.name AS activityName,
@@ -382,25 +383,22 @@ class ActivityRepository extends EntityRepository
                   src.note,
                   src.type,
                   src.rate
-                FROM \Application\Entity\RediActivity a
-                LEFT JOIN \Application\Entity\RediStudioRatecard src
-                  WITH a.id=src.activityId 
+                FROM \Application\Entity\RediStudioRatecard src
+                LEFT JOIN \Application\Entity\RediActivity a
+                    WITH a.id=src.activityId 
                 INNER JOIN \Application\Entity\RediActivityType aty
                   WITH aty.id=a.typeId
                 LEFT JOIN \Application\Entity\RediTrt trt
                   WITH trt.id = src.trtId
-                WHERE a.typeId IN (1,4)
-                AND (src.ratecardId = :ratecard_id OR src.ratecardId IS NULL)
-                GROUP BY a.id
-                ORDER BY a.name ASC";
+                WHERE src.ratecardId = :ratecard_id
+                ORDER BY a.typeId ASC, a.name ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('ratecard_id', $ratecardId);
         $data = $query->getArrayResult();
 
         $data = array_map(function ($cPrice) use ($ratecardId) {
-            $cPrice['ratecardId'] = (int)($cPrice['ratecardId'] ? $cPrice['ratecardId'] : $ratecardId);
-            $cPrice['rate'] = ($cPrice['rate'] !== null) ? (float)$cPrice['rate'] : null;
+            $cPrice['rate'] = ($cPrice['rate'] !== null) ? (float) number_format($cPrice['rate'], 2) : null;
 
             return $cPrice;
         }, $data);
