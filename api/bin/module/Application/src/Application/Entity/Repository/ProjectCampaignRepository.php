@@ -26,7 +26,11 @@ class ProjectCampaignRepository extends EntityRepository
                   MAX(ph.createdAt) AS maxHistoryCreatedAt,
                   ptc.note, ptc.budget, ptc.budgetNote,
                   ptc.por, ptc.invoiceContact,
-                  ptc.materialReceiveDate
+                  ptc.materialReceiveDate,
+                  ptc.approvedByBilling,
+                  ptc.customerId,
+                  cu.cardname AS customerName,
+                  ptc.channelId, ch.channelName
                 FROM \Application\Entity\RediProjectToCampaign ptc
                 INNER JOIN \Application\Entity\RediProject p
                     WITH p.id=ptc.projectId
@@ -34,7 +38,11 @@ class ProjectCampaignRepository extends EntityRepository
                     WITH c.id=ptc.campaignId 
                 LEFT JOIN \Application\Entity\RediProjectHistory ph
                     WITH ph.projectId=ptc.projectId
-                    AND ph.campaignId=ptc.campaignId";
+                    AND ph.campaignId=ptc.campaignId
+                LEFT JOIN \Application\Entity\RediCustomer cu
+                    WITH cu.id = ptc.customerId
+                LEFT JOIN \Application\Entity\RediChannel ch
+                    WITH ch.channelId = ptc.channelId";
 
         if(!empty($filter['user_id'])){
             $dql .= " LEFT JOIN \Application\Entity\RediProjectToCampaignUser ptcu
@@ -73,6 +81,10 @@ class ProjectCampaignRepository extends EntityRepository
             $dqlFilter[] = " ptc.requestMusicTeam=:request_music_team ";
         }
 
+        if (isset($filter['approved_by_billing']) && $filter['approved_by_billing'] !== null) {
+            $dqlFilter[] = " ptc.approvedByBilling=:approved_by_billing ";
+        }
+
         if(!empty($filter['user_id'])){
             $dqlFilter[] = " (ptcu.userId IS NOT NULL OR ptcbu.userId IS NOT NULL OR ptcd.userId IS NOT NULL OR ptce.userId  IS NOT NULL) ";
         }
@@ -107,6 +119,10 @@ class ProjectCampaignRepository extends EntityRepository
 
         if (isset($filter['request_music_team']) && $filter['request_music_team'] !== null) {
             $query->setParameter('request_music_team', $filter['request_music_team']);
+        }
+
+        if (isset($filter['approved_by_billing']) && $filter['approved_by_billing'] !== null) {
+            $query->setParameter('approved_by_billing', $filter['approved_by_billing']);
         }
 
         if(!empty($filter['user_id'])){
@@ -176,6 +192,10 @@ class ProjectCampaignRepository extends EntityRepository
             $dqlFilter[] = " ptc.requestMusicTeam=:request_music_team ";
         }
 
+        if (isset($filter['approved_by_billing']) && $filter['approved_by_billing'] !== null) {
+            $dqlFilter[] = " ptc.approvedByBilling=:approved_by_billing ";
+        }
+
         if(!empty($filter['user_id'])){
             $dqlFilter[] = " (ptcu.userId IS NOT NULL OR ptcbu.userId IS NOT NULL OR ptcd.userId IS NOT NULL OR ptce.userId  IS NOT NULL) ";
         }
@@ -209,8 +229,24 @@ class ProjectCampaignRepository extends EntityRepository
             $query->setParameter('user_id', $filter['user_id']);
         }
 
+        if (isset($filter['approved_by_billing']) && $filter['approved_by_billing'] !== null) {
+            $query->setParameter('approved_by_billing', $filter['approved_by_billing']);
+        }
+
         $result = $query->getArrayResult();
 
         return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
+    }
+
+    public function getAllTrt() {
+        $dql = "SELECT
+                  trt
+                FROM \Application\Entity\RediTrt trt
+                ORDER BY trt.id ASC ";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $result =  $query->getArrayResult();
+
+        return $result;
     }
 }

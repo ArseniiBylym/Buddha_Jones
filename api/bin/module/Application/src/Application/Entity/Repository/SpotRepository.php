@@ -15,11 +15,14 @@ use Zend\Config\Config;
 class SpotRepository extends EntityRepository
 {
     private $_className = "\Application\Entity\RediSpot";
+    private $_entityManager;
 
     public function __construct(EntityManager $entityManager)
     {
         $classMetaData = $entityManager->getClassMetadata($this->_className);
         parent::__construct($entityManager, $classMetaData);
+
+        $this->_entityManager = $entityManager;
     }
 
     public function search($filter, $offset = 0, $length = 10)
@@ -37,10 +40,14 @@ class SpotRepository extends EntityRepository
                     a.billingType,
                     a.billingNote, 
                     ptc.projectId, 
-                    ptc.campaignId
+                    ptc.campaignId,
+                    a.trtId,
+                    trt.runtime
                 FROM \Application\Entity\RediSpot a 
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc 
-                    WITH a.projectCampaignId=ptc.id";
+                    WITH a.projectCampaignId=ptc.id
+                LEFT JOIN \Application\Entity\RediTrt trt
+                    WITH trt.id = a.trtId";
 
         $dqlFilter = [];
 
@@ -77,6 +84,7 @@ class SpotRepository extends EntityRepository
 
         return $result;
     }
+
     public function searchCount($filter)
     {
         $dql = "SELECT COUNT(a.id) AS total_count 
@@ -117,8 +125,24 @@ class SpotRepository extends EntityRepository
 
     public function getById($spotId)
     {
-        $dql = "SELECT a 
+        $dql = "SELECT
+                a.id,
+                a.spotName,
+                a.projectCampaignId,
+                a.revisionNotCounted,
+                a.notes,
+                a.revisions,
+                a.graphicsRevisions,
+                a.firstRevisionCost,
+                a.internalDeadline,
+                a.clientDeadline,
+                a.billingType,
+                a.billingNote,
+                a.trtId,
+                trt.runtime
                 FROM \Application\Entity\RediSpot a 
+                LEFT JOIN \Application\Entity\RediTrt trt
+                    WITH trt.id = a.trtId
                 WHERE a.id=:spot_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -132,17 +156,89 @@ class SpotRepository extends EntityRepository
 
     public function searchSpotSent($filter = array())
     {
+        if (!empty($filter['details'])) {
+            $columns = array(
+                "requestId",
+                "projectId",
+                "fullLock",
+                "finishOption",
+                "notes",
+                "internalNote",
+                "studioNote",
+                "deadline",
+                "spotSentDate",
+                "finishingHouse",
+                "framerate",
+                "framerateNote",
+                "rasterSize",
+                "rasterSizeNote",
+                "musicCueSheet",
+                "gfxFinish",
+                "audioPrep",
+                "audio",
+                "audioNote",
+                "videoPrep",
+                "graphicsFinish",
+                "specNote",
+                "specSheetFile",
+                "tagChart",
+                "deliveryToClient",
+                "deliveryNote",
+                "spotResend",
+                "statusId",
+                // "editor",
+                "customerContact",
+                "createdBy",
+                "updatedBy",
+                "createdAt",
+                "updatedAt",
+            );
+        } else {
+            $columns = array(
+                "requestId",
+                "projectId",
+                "statusId",
+                "spotSentDate",
+                "createdBy",
+                "createdAt",
+                "updatedBy",
+                "updatedAt",
+            );
+        }
+
+        $columns = array_map(function ($column) {
+            return "sc." . $column;
+        }, $columns);
+
+        $columnString = implode(',', $columns);
+
         $offset = (!empty($filter['offset'])) ? (int)$filter['offset'] : 0;
         $length = (!empty($filter['length'])) ? (int)$filter['length'] : 10;
 
         $dql = "SELECT 
-                  sc
-                FROM \Application\Entity\RediSpotSent sc";
+                " . $columnString . ",
+                uc.firstName AS createdByFirstName, uc.lastName AS createdByLastName,
+                uu.firstName AS updatedByFirstName, uu.lastName AS updatedByLastName,
+                CASE 
+                    WHEN sc.updatedAt IS NOT NULL THEN sc.updatedAt
+                    ELSE sc.createdAt
+                END  AS sortBy
+                FROM \Application\Entity\RediSpotSent sc
+                LEFT JOIN \Application\Entity\RediUser uc
+                    WITH uc.id = sc.createdBy
+                LEFT JOIN \Application\Entity\RediUser uu
+                    WITH uu.id = sc.updatedBy
+                LEFT JOIN \Application\Entity\RediCampaign c
+                    WITH c.id = sc.campaignId  ";
 
         $dqlFilter = [];
 
         if (!empty($filter['id'])) {
             $dqlFilter[] = "sc.id= :id";
+        }
+
+        if (!empty($filter['request_id'])) {
+            $dqlFilter[] = "sc.requestId= :request_id";
         }
 
         if (!empty($filter['status_id'])) {
@@ -153,10 +249,12 @@ class SpotRepository extends EntityRepository
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
+        $dql .= " GROUP BY sc.requestId ";
+
         if (!empty($filter['sort']) && $filter['sort'] === 'priority') {
             $orderBy = " ORDER BY sc.statusId ASC, sc.updatedAt DESC ";
         } else {
-            $orderBy = " ORDER BY sc.updatedAt DESC ";
+            $orderBy = " ORDER BY sortBy DESC, sc.statusId ASC, sc.requestId DESC ";
         }
 
         $dql .= $orderBy;
@@ -169,90 +267,159 @@ class SpotRepository extends EntityRepository
             $query->setParameter("id", $filter['id']);
         }
 
+        if (!empty($filter['request_id'])) {
+            $query->setParameter("request_id", $filter['request_id']);
+        }
+
         if (!empty($filter['status_id'])) {
             $query->setParameter("status_id", $filter['status_id']);
         }
 
         $result = $query->getArrayResult();
+
         $methodes = $this->getSpotSentOption('sent_via_method');
         $finishingOptions = $this->getSpotSentOption('finishing_option');
         $audioOptions = $this->getSpotSentOption('audio_option');
         $delToClientOption = $this->getSpotSentOption('delivery_to_client_option');
+        $allStatus = $this->getSpotSentOption('status');
+        $allStatusArray = array();
+
+        foreach ($allStatus as $row) {
+            $allStatusArray[$row['id']] = $row;
+        }
 
         foreach ($result as &$row) {
-            $row['id'] = (int)$row['id'];
-            $row['projectSpotVersion'] = $this->getSpotVersionBySpotSentId($row['id']);
+            unset($row['sortBy']);
 
-            if (!empty($row['sentViaMethod'])) {
-                $methodIds = explode(',', $row['sentViaMethod']);
+            $row['requestId'] = (int)$row['requestId'];
+            $row['projectId'] = (int)$row['projectId'];
+            $row['statusId'] = (int)$row['statusId'];
+            $row['createdByUser'] = trim($row['createdByFirstName'] . ' ' . $row['createdByLastName']);
+            $row['updatedByUser'] = trim($row['updatedByFirstName'] . ' ' . $row['updatedByLastName']);
+            $row['statusName'] = (!empty($row['statusId'])
+                && !empty($allStatusArray[$row['statusId']]['name']))
+                ? $allStatusArray[$row['statusId']]['name']
+                : null;
 
-                if (count($methodIds)) {
-                    $methodIds = array_map('trim', $methodIds);
-
-                    $row['sentViaMethodList'] = array_values(array_filter($methodes, function ($method) use ($methodIds) {
-                        return in_array($method['id'], $methodIds);
-                    }));
-                }
+            if (empty($row['updatedAt'])) {
+                $row['updatedAt'] = $row['createdAt'];
+                $row['updatedBy'] = $row['createdBy'];
+                $row['updatedByUser'] = $row['createdByUser'];
             }
 
-            if (!empty($row['finishOption'])) {
-                $finishingOptionIds = explode(',', $row['finishOption']);
+            unset($row['createdByFirstName']);
+            unset($row['createdByLastName']);
+            unset($row['updatedByFirstName']);
+            unset($row['updatedByLastName']);
 
-                if (count($finishingOptionIds)) {
-                    $finishingOptionIds = array_map('trim', $finishingOptionIds);
+            $row['spotData'] = $this->getSpotVersionDataByRequestId($row['requestId']);
 
-                    if (count($finishingOptionIds) === 2) {
-                        $row['finishOptionList'] = array_values(array_filter($finishingOptions, function ($option) use ($finishingOptionIds) {
-                            return $option['id'] == $finishingOptionIds[0];
-                        }));
+            foreach ($row['spotData'] as &$spotDataRow) {
+                $spotDataRow['lineStatusName'] = (!empty($spotDataRow['lineStatusId'])
+                    && !empty($allStatusArray[$spotDataRow['lineStatusId']]['name']))
+                    ? $allStatusArray[$spotDataRow['lineStatusId']]['name']
+                    : null;
+            }
 
-                        if (count($row['finishOptionList'])) {
-                            $row['finishOptionList'] = $row['finishOptionList'][0];
-                            $row['finishOptionList']['children'] = array_values(array_filter($row['finishOptionList']['children'], function ($option) use ($finishingOptionIds) {
-                                return $option['id'] == $finishingOptionIds[1];
+            if (!empty($filter['details'])) {
+                foreach ($row['spotData'] as &$spotDataRow) {
+                    if (!empty($spotDataRow['sentViaMethod'])) {
+                        $methodIds = explode(',', $spotDataRow['sentViaMethod']);
+
+                        if (count($methodIds)) {
+                            $methodIds = array_map('trim', $methodIds);
+
+                            $spotDataRow['sentViaMethodList'] = array_values(array_filter($methodes, function ($method) use ($methodIds) {
+                                return in_array($method['id'], $methodIds);
                             }));
                         }
                     } else {
-                        $row['finishOptionList'] = null;
+                        $spotDataRow['sentViaMethodList'] = array();
                     }
-                }
-            }
 
-            if (!empty($row['audio'])) {
-                $optionIds = explode(',', $row['audio']);
+                    if (!empty($spotDataRow['editor'])) {
+                        $editorIds = explode(',', $spotDataRow['editor']);
 
-                if (count($optionIds)) {
-                    $optionIds = array_map('trim', $optionIds);
-
-                    $row['audioList'] = array_values(array_filter($audioOptions, function ($option) use ($optionIds) {
-                        return in_array($option['id'], $optionIds);
-                    }));
-                }
-            }
-
-            if (!empty($row['deliveryToClient'])) {
-                $deliveryToClientIds = explode(',', $row['deliveryToClient']);
-
-                if (count($deliveryToClientIds)) {
-                    $deliveryToClientIds = array_map('trim', $deliveryToClientIds);
-
-                    if (count($deliveryToClientIds) === 2) {
-                        $row['deliveryToClientList'] = array_values(array_filter($delToClientOption, function ($option) use ($deliveryToClientIds) {
-                            return $option['id'] == $deliveryToClientIds[0];
-                        }));
-
-                        if (count($row['deliveryToClientList'])) {
-                            $row['deliveryToClientList'] = $row['deliveryToClientList'][0];
-                            $row['deliveryToClientList']['children'] = array_values(array_filter($row['deliveryToClientList']['children'], function ($option) use ($deliveryToClientIds) {
-                                return $option['id'] == $deliveryToClientIds[1];
-                            }));
+                        if (count($editorIds)) {
+                            $editorIds = array_map('trim', $editorIds);
+                            $userRepo = new UsersRepository($this->_entityManager);
+                            $spotDataRow['editorList'] = $userRepo->getUserssById($editorIds);
                         }
                     } else {
-                        $row['deliveryToClientList'] = null;
+                        $spotDataRow['editorList'] = array();
                     }
                 }
-            }
 
+                if (!empty($row['finishOption'])) {
+                    $finishingOptionIds = explode(',', $row['finishOption']);
+
+                    if (count($finishingOptionIds)) {
+                        $finishingOptionIds = array_map('trim', $finishingOptionIds);
+
+                        if (count($finishingOptionIds) === 2) {
+                            $row['finishOptionList'] = array_values(array_filter($finishingOptions, function ($option) use ($finishingOptionIds) {
+                                return $option['id'] == $finishingOptionIds[0];
+                            }));
+
+                            if (count($row['finishOptionList'])) {
+                                $row['finishOptionList'] = $row['finishOptionList'][0];
+                                $row['finishOptionList']['children'] = array_values(array_filter($row['finishOptionList']['children'], function ($option) use ($finishingOptionIds) {
+                                    return $option['id'] == $finishingOptionIds[1];
+                                }));
+                            }
+                        } else {
+                            $row['finishOptionList'] = null;
+                        }
+                    }
+                }
+
+                if (!empty($row['audio'])) {
+                    $optionIds = explode(',', $row['audio']);
+
+                    if (count($optionIds)) {
+                        $optionIds = array_map('trim', $optionIds);
+
+                        $row['audioList'] = array_values(array_filter($audioOptions, function ($option) use ($optionIds) {
+                            return in_array($option['id'], $optionIds);
+                        }));
+                    }
+                }
+
+                if (!empty($row['deliveryToClient'])) {
+                    $deliveryToClientIds = explode(',', $row['deliveryToClient']);
+
+                    if (count($deliveryToClientIds)) {
+                        $deliveryToClientIds = array_map('trim', $deliveryToClientIds);
+
+                        if (count($deliveryToClientIds) === 2) {
+                            $row['deliveryToClientList'] = array_values(array_filter($delToClientOption, function ($option) use ($deliveryToClientIds) {
+                                return $option['id'] == $deliveryToClientIds[0];
+                            }));
+
+                            if (count($row['deliveryToClientList'])) {
+                                $row['deliveryToClientList'] = $row['deliveryToClientList'][0];
+                                $row['deliveryToClientList']['children'] = array_values(array_filter($row['deliveryToClientList']['children'], function ($option) use ($deliveryToClientIds) {
+                                    return $option['id'] == $deliveryToClientIds[1];
+                                }));
+                            }
+                        } else {
+                            $row['deliveryToClientList'] = null;
+                        }
+                    }
+                }
+
+                if (!empty($row['customerContact'])) {
+                    $customerContactIds = explode(',', $row['customerContact']);
+
+                    if (count($customerContactIds)) {
+                        $customerContactIds = array_map('trim', $customerContactIds);
+                        $customerRepo = new CustomerRepository($this->_entityManager);
+
+                        $row['customerContactList'] = $customerRepo->getCustomerContactsById($customerContactIds);
+                    }
+                }
+
+            }
         }
 
         return $result;
@@ -260,14 +427,17 @@ class SpotRepository extends EntityRepository
 
     public function searchSpotSentCount($filter = array())
     {
-        $dql = "SELECT COUNT(sc.id) AS total_count 
+        $dql = "SELECT COUNT(DISTINCT sc.requestId) AS total_count 
                 FROM \Application\Entity\RediSpotSent sc ";
-
 
         $dqlFilter = [];
 
         if (!empty($filter['id'])) {
             $dqlFilter[] = "sc.id= :id";
+        }
+
+        if (!empty($filter['request_id'])) {
+            $dqlFilter[] = "sc.reqeustId= :request_id";
         }
 
         if (!empty($filter['status_id'])) {
@@ -282,6 +452,10 @@ class SpotRepository extends EntityRepository
 
         if (!empty($filter['id'])) {
             $query->setParameter("id", $filter['id']);
+        }
+
+        if (!empty($filter['request_id'])) {
+            $query->setParameter("request_id", $filter['request_id']);
         }
 
         if (!empty($filter['status_id'])) {
@@ -311,6 +485,81 @@ class SpotRepository extends EntityRepository
         }
 
         return $response;
+    }
+
+    public function getSpotVersionDataByRequestId($requestId)
+    {
+        $dql = "SELECT 
+                    sc.campaignId,
+                    ca.campaignName,
+                    sc.projectCampaignId,
+                    sc.spotId,
+                    s.spotName,
+                    sc.versionId,
+                    v.versionName,
+                    sc.spotVersionId,
+                    sc.sentViaMethod,
+                    sc.finishRequest,
+                    sc.spotResend,
+                    sc.prodAccept,
+                    sc.finishAccept,
+                    sc.lineStatusId,
+                    sc.editor,
+                    s.trtId,
+                    trt.runtime
+                FROM \Application\Entity\RediSpotSent sc
+                LEFT JOIN \Application\Entity\RediCampaign ca
+                    WITH ca.id = sc.campaignId
+                LEFT JOIN \Application\Entity\RediSpot s
+                    WITH s.id = sc.spotId
+                LEFT JOIN \Application\Entity\RediVersion v
+                    WITH v.id = sc.versionId
+                LEFT JOIN \Application\Entity\RediTrt trt
+                    WITH s.trtId = trt.id
+                WHERE sc.requestId = :request_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter("request_id", $requestId);
+
+        $result = $query->getArrayResult();
+
+        foreach ($result as &$row) {
+            $row['campaignId'] = (int)$row['campaignId'];
+            $row['projectCampaignId'] = (int)$row['projectCampaignId'];
+            $row['spotId'] = (int)$row['spotId'];
+            $row['versionId'] = (int)$row['versionId'];
+            $row['spotVersionId'] = (int)$row['spotVersionId'];
+            $row['lineStatusId'] = (int)$row['lineStatusId'];
+        }
+
+        return $result;
+    }
+
+    public function getRawSpotVersionDataByRequestId($requestId)
+    {
+        $dql = "SELECT
+                    sc.campaign_id,
+                    sc.project_campaign_id,
+                    sc.spot_id,
+                    sc.version_id,
+                    sc.spot_version_id,
+                    sc.sent_via_method,
+                    sc.finish_request,
+                    sc.spot_resend,
+                    sc.line_status_id,
+                    sc.editor,
+                    sc.editor AS editors_string,
+                    sc.prod_accept,
+                    sc.finish_accept
+                FROM redi_spot_sent sc
+                  WHERE sc.request_id = :request_id ";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('request_id', $requestId);
+        $query->execute();
+        $result = $query->fetchAll();
+
+        return $result;
     }
 
     public function getSpotVersionBySpotSentId($spotSentId, $returnWorker = false)
@@ -449,9 +698,9 @@ class SpotRepository extends EntityRepository
     public function fullSearch($filter = [], $offset = 0, $length = 10)
     {
         $dql = "SELECT 
-                    cu.customerName,
+                    cu.cardname AS customerName,
                     cu.cardcode,
-                    p.customerId,
+                    ptc.customerId,
                     p.id AS projectId,
                     ca.campaignName,
                     ca.id AS campaignId,
@@ -466,7 +715,7 @@ class SpotRepository extends EntityRepository
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id=ptc.campaignId
                 LEFT JOIN \Application\Entity\RediCustomer cu
-                    WITH cu.id=p.customerId ";
+                    WITH cu.id=ptc.customerId ";
 
         $dqlFilter = [];
 
@@ -522,7 +771,7 @@ class SpotRepository extends EntityRepository
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id=ptc.campaignId
                 LEFT JOIN \Application\Entity\RediCustomer cu
-                    WITH cu.id=p.customerId ";
+                    WITH cu.id=ptc.customerId ";
 
         $dqlFilter = [];
 
@@ -611,5 +860,68 @@ class SpotRepository extends EntityRepository
         }
 
         return $result;
+    }
+
+    public function getSpotVersionEditorBySpotAndVersion($spotId, $versionId)
+    {
+        $dql = "SELECT 
+                  u.id, 
+                  u.firstName, u.lastName,
+                  u.username,
+                  u.initials
+                FROM \Application\Entity\RediSpotVersionEditor sve
+                    INNER JOIN \Application\Entity\RediUser u
+                        WITH u.id = sve.userId
+                    INNER JOIN \Application\Entity\RediSpotVersion sv
+                        WITH sv.id = sve.spotVersionId                  
+                  WHERE sv.spotId = :spot_id
+                  AND sv.versionId = :version_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('spot_id', $spotId);
+        $query->setParameter('version_id', $versionId);
+        $result = $query->getArrayResult();
+
+        foreach ($result as &$row) {
+            $row['name'] = trim($row['firstName'] . ' ' . $row['lastName']);
+
+            $row['id'] = (int)$row['id'];
+
+            unset($row['firstName']);
+            unset($row['lastName']);
+        }
+
+        return $result;
+    }
+
+    public function getNextSpotSentRequestId()
+    {
+        $key = 'MAX_SPOT_SENT_REQUEST_ID';
+
+        $dql = "SELECT 
+                  s.settingValue
+                FROM \Application\Entity\RediSetting s
+                WHERE s.settingKey=:key";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('key', $key);
+        $query->setMaxResults(1);
+        $result = $query->getArrayResult();
+
+        $maxRequestId = ((!empty($result[0]['settingValue'])) ? (int)$result[0]['settingValue'] : 0) + 1;
+
+        // update request_id in setting table
+        $updateQuery = "UPDATE redi_setting 
+                        SET 
+                            setting_value = :max_request_id
+                        WHERE
+                            setting_key = :key";
+
+        $updateSetting = $this->getEntityManager()->getConnection()->prepare($updateQuery);
+        $updateSetting->bindParam('max_request_id', $maxRequestId);
+        $updateSetting->bindParam('key', $key);
+        $updateSetting->execute();
+
+        return $maxRequestId;
     }
 }

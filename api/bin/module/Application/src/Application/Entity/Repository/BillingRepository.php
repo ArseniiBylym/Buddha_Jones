@@ -17,7 +17,7 @@ class BillingRepository extends EntityRepository
         parent::__construct($entityManager, $classMetaData);
     }
 
-    public function search($offset = 0, $length = 10, $filter=array())
+    public function search($offset = 0, $length = 10, $filter = array())
     {
         $filter['offset'] = $offset;
         $filter['length'] = $length;
@@ -25,14 +25,14 @@ class BillingRepository extends EntityRepository
         $selectColumns = "b.id, 
                       b.spotId, s.spotName, 
                       b.projectId, p.projectName,
-                      b.customerId, cu.customerName,
+                      b.customerId, cu.cardname AS customerName,
                       b.campaignId, c.campaignName,
                       b.statusId, bis.billStatus,
                       b.createdAt";
 
         $groupBy = ' GROUP BY b.id ';
 
-        if(isset($filter['sort']) && strtolower($filter['sort'])=='priority') {
+        if (isset($filter['sort']) && strtolower($filter['sort']) == 'priority') {
             $orderBy = " ORDER BY b.statusId ASC ";
         } else {
             $orderBy = " ORDER BY b.createdAt ASC ";
@@ -44,13 +44,13 @@ class BillingRepository extends EntityRepository
     }
 
 
-    public function searchCount($filter=array())
+    public function searchCount($filter = array())
     {
         $selectColumns = " COUNT( DISTINCT  b.id) AS total_count ";
 
         $result = $this->getResultByFilter($selectColumns, $filter, null, null, false, true);
 
-        return (isset($result['total_count'])?(int)$result['total_count']:0);
+        return (isset($result['total_count']) ? (int)$result['total_count'] : 0);
     }
 
     public function getById($billId)
@@ -63,7 +63,7 @@ class BillingRepository extends EntityRepository
         $selectColumns = "b.id, 
                       b.spotId, s.spotName, 
                       b.projectId, p.projectName,
-                      b.customerId, cu.customerName,
+                      b.customerId, cu.cardname AS customerName,
                       b.campaignId, c.campaignName,
                       b.statusId, bis.billStatus,
                       b.createdAt";
@@ -76,7 +76,8 @@ class BillingRepository extends EntityRepository
         return $data;
     }
 
-    public function getResultByFilter($selectColumns, $filter=array(), $groupBy=null, $orderBy=null, $processExtraColumn=false, $returnOne=false, $returnEstimateActivity=false) {
+    public function getResultByFilter($selectColumns, $filter = array(), $groupBy = null, $orderBy = null, $processExtraColumn = false, $returnOne = false, $returnEstimateActivity = false)
+    {
         $dql = "SELECT  
                   " . $selectColumns . "
                 FROM \Application\Entity\RediBilling b 
@@ -99,7 +100,7 @@ class BillingRepository extends EntityRepository
             $dqlFilter[] = " b.id=:bill_id ";
         }
 
-      if (isset($filter['spot_id']) && $filter['spot_id']) {
+        if (isset($filter['spot_id']) && $filter['spot_id']) {
             $dqlFilter[] = " b.spotId=:spot_id ";
         }
 
@@ -123,7 +124,7 @@ class BillingRepository extends EntityRepository
             $dqlFilter[] = " ba.userId=:approver_id ";
         }
 
-        if (isset($filter['approver_status']) && $filter['approver_status']!==null) {
+        if (isset($filter['approver_status']) && $filter['approver_status'] !== null) {
             $dqlFilter[] = " ba.approved=:approver_status ";
         }
 
@@ -131,26 +132,26 @@ class BillingRepository extends EntityRepository
             $dqlFilter[] = " (s.spotName LIKE :search OR p.projectName  LIKE :search OR  c.campaignName LIKE :search ) ";
         }
 
-        if(count($dqlFilter)) {
-            $dql .= " WHERE " .  implode(" AND ", $dqlFilter);
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
 
-        if($groupBy) {
+        if ($groupBy) {
             $dql .= " " . $groupBy . " ";
         }
 
-        if($orderBy) {
+        if ($orderBy) {
             $dql .= " " . $orderBy . " ";
         }
 
         $query = $this->getEntityManager()->createQuery($dql);
 
-        if(isset($filter['offset'])) {
+        if (isset($filter['offset'])) {
             $query->setFirstResult($filter['offset']);
         }
 
-        if(isset($filter['length'])) {
+        if (isset($filter['length'])) {
             $query->setMaxResults($filter['length']);
         }
 
@@ -183,7 +184,7 @@ class BillingRepository extends EntityRepository
             $query->setParameter('approver_id', $filter['approver_id']);
         }
 
-        if (isset($filter['approver_status']) && $filter['approver_status']!==null) {
+        if (isset($filter['approver_status']) && $filter['approver_status'] !== null) {
             $query->setParameter('approver_status', $filter['approver_status']);
         }
 
@@ -193,23 +194,23 @@ class BillingRepository extends EntityRepository
 
         $data = $query->getArrayResult();
 
-        if($processExtraColumn) {
-            foreach($data as &$row) {
+        if ($processExtraColumn) {
+            foreach ($data as &$row) {
                 $row['id'] = (int)$row['id'];
 //                $row['createdAt'] = $row['createdAt']->format('Y-m-d H:i:s');
                 $row['total'] = $this->getBillingTotal($row['id']);
 //                $row['approver'] = $this->getManagerByProjectAndCampaign($row['projectId'], $row['campaignId'], $row['id'], false);
                 $row['approver'] = $this->getUserByProjectAndCampaign($row['projectId'], $row['campaignId'], $row['id'], false);
 
-                if($returnEstimateActivity) {
+                if ($returnEstimateActivity) {
                     $row['estimate'] = $this->getBillingEstimateByBillId($row['id']);
                     $row['activity'] = $this->getBillingActivityByBillId($row['id']);
                 }
             }
         }
 
-        if($returnOne) {
-            $data = (isset($data[0]))?$data[0]:null;
+        if ($returnOne) {
+            $data = (isset($data[0])) ? $data[0] : null;
         }
 
         return $data;
@@ -239,9 +240,9 @@ class BillingRepository extends EntityRepository
         $query->setParameter('bill_id', $billId);
         $data = $query->getArrayResult();
 
-        $response =  array();
+        $response = array();
 
-        foreach($data as $row) {
+        foreach ($data as $row) {
             $response[] = $row['userId'];
         }
 
@@ -293,7 +294,7 @@ class BillingRepository extends EntityRepository
 
         $activityRepo = new ActivityRepository($this->_entityManager);
 
-        foreach($data as &$row) {
+        foreach ($data as &$row) {
             $row['type'] = $activityRepo->getActivityTypeByActivityId($row['id']);
         }
 
@@ -372,7 +373,7 @@ class BillingRepository extends EntityRepository
 //        return $result;
 //    }
 
-    public function getUserByProjectAndCampaign($projectId, $campaignId, $billId=null, $returnIdOnly=true)
+    public function getUserByProjectAndCampaign($projectId, $campaignId, $billId = null, $returnIdOnly = true)
     {
         $dql = "SELECT ba.userId, ba.approved
                 FROM \Application\Entity\RediProjectToCampaign ptc 
@@ -388,11 +389,11 @@ class BillingRepository extends EntityRepository
         $query->setParameter('project_id', $projectId);
         $query->setParameter('campaign_id', $campaignId);
         $query->setParameter('bill_id', $billId);
-        $data =  $query->getArrayResult();
+        $data = $query->getArrayResult();
 
         $result = array();
 
-        if($returnIdOnly) {
+        if ($returnIdOnly) {
             foreach ($data as $user) {
                 $result[] = $user['userId'];
             }
@@ -415,7 +416,8 @@ class BillingRepository extends EntityRepository
         return $total;
     }
 
-    public function getBillEstimateTotal($billId){
+    public function getBillEstimateTotal($billId)
+    {
         $dql = "SELECT 
                   SUM(e.totalAmount * e.multiplier) AS total
                 FROM
@@ -426,24 +428,199 @@ class BillingRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setParameter('bill_id', $billId);
-        $data =  $query->getArrayResult();
+        $data = $query->getArrayResult();
 
         return (float)$data[0]['total'];
     }
 
-    public function getBillActivityTotal($billId) {
+    public function getBillActivityTotal($billId)
+    {
         $billActivity = $this->getBillingActivityByBillId($billId);
 
         $total = 0;
-        foreach($billActivity as $activityPrice) {
+        foreach ($billActivity as $activityPrice) {
             $hourSplit = explode('.', $activityPrice['hour']);
             $hour = (int)$hourSplit[0];
-            $minute = (isset($hourSplit[1]))?(int)$hourSplit[1]:0;
+            $minute = (isset($hourSplit[1])) ? (int)$hourSplit[1] : 0;
 
-            $total += $hour * $activityPrice['price'] + ($activityPrice['price']*$minute/60);
+            $total += $hour * $activityPrice['price'] + ($activityPrice['price'] * $minute / 60);
         }
 
         return $total;
+    }
+
+    public function getUnusedBillingId($userId, $spotId)
+    {
+        $dql = "SELECT 
+                  b.id
+                FROM
+                  \Application\Entity\RediBilling b
+                WHERE 
+                    b.userId = :user_id 
+                    AND b.spotId = :spot_id
+                    AND (b.status IS NULL OR b.status = 1)";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setMaxResults(1);
+        $query->setParameter('user_id', $userId);
+        $query->setParameter('spot_id', $spotId);
+        $data = $query->getArrayResult();
+
+        return (!empty($data[0]['id'])) ? (int)$data[0]['id'] : null;
+    }
+
+    public function updateBillIdOfTimeEntry($billId, $timeEntryIds = array(), $resetExisting = false)
+    {
+        // reset existing billid
+        if ($resetExisting && $timeEntryIds) {
+            $resetDql = "UPDATE
+                            \Application\Entity\RediTimeEntry te
+                        SET te.billId = NULL
+                        WHERE te.billId = :bill_id";
+
+            $resetQuery = $this->getEntityManager()->createQuery($resetDql);
+            $resetQuery->setParameter('bill_id', $billId);
+            $resetQuery->execute();
+        }
+
+        if ($timeEntryIds) {
+            $dql = "UPDATE
+                            \Application\Entity\RediTimeEntry te
+                        SET te.billId = :bill_id
+                        WHERE te.id IN (:time_entry_ids)";
+
+            $query = $this->getEntityManager()->createQuery($dql);
+            $query->setParameter('bill_id', $billId);
+            $query->setParameter('time_entry_ids', $timeEntryIds, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+            $query->execute();
+        }
+    }
+
+    public function deleteExistingBillingLine($billId)
+    {
+        $resetDql = "DELETE
+                    FROM \Application\Entity\RediBillingLine bl
+                    WHERE bl.billId = :bill_id";
+
+        $resetQuery = $this->getEntityManager()->createQuery($resetDql);
+        $resetQuery->setParameter('bill_id', $billId);
+        $resetQuery->execute();
+    }
+
+    public function getSingle($billId)
+    {
+        $dql = "SELECT
+                        b
+                    FROM \Application\Entity\RediBilling b
+                    WHERE b.id = :id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setMaxResults(1);
+        $query->setParameter('id', $billId);
+        $result = $query->getArrayResult();
+
+        $bill = (!empty($result[0])) ? $result[0] : null;
+
+        if ($bill) {
+            $lineDql = "SELECT
+                        bl
+                    FROM \Application\Entity\RediBillingLine bl
+                    WHERE bl.billId = :bill_id";
+
+            $lineQuery = $this->getEntityManager()->createQuery($lineDql);
+            $lineQuery->setParameter('bill_id', $billId);
+            $bill['billing_line'] = $lineQuery->getArrayResult();
+        }
+
+        return $bill;
+    }
+
+    public function getBillingListFromSpotBilling()
+    {
+        $dql = "SELECT 
+                    ss.projectId,
+                    p.projectName,
+                    ss.campaignId,
+                    c.campaignName,
+                    ss.projectCampaignId,
+                    ss.spotId,
+                    s.spotName,
+                    ss.versionId,
+                    v.versionName
+                FROM \Application\Entity\RediSpotSent ss
+                LEFT JOIN \Application\Entity\RediProject p 
+                    WITH p.id = ss.projectId
+                LEFT JOIN \Application\Entity\RediCampaign c 
+                    WITH c.id = ss.campaignId
+                LEFT JOIN \Application\Entity\RediSpot s 
+                    WITH s.id = ss.spotId
+                LEFT JOIN \Application\Entity\RediVersion v 
+                    WITH v.id = ss.versionId
+                WHERE ss.billId IS NULL
+                    AND ss.projectId IS NOT NULL
+                    AND ss.campaignId IS NOT NULL
+                GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId
+                ORDER BY p.projectName ASC , c.campaignName ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getArrayResult();
+
+        $response = array();
+
+        foreach ($result as $row) {
+            if (empty($response[$row['projectId']])) {
+                $response[$row['projectId']] = array(
+                    'projectId' => $row['projectId'],
+                    'projectName' => $row['projectName'],
+                    'campaign' => array(),
+                );
+            }
+
+            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']])) {
+                $response[$row['projectId']]['campaign'][$row['campaignId']] = array(
+                    'campaignId' => $row['campaignId'],
+                    'campaignName' => $row['campaignName'],
+                    'projectCampaignId' => $row['projectCampaignId'],
+                    'spot' => array(),
+                );
+            }
+
+            if (empty($row['spotId'])) {
+                continue;
+            }
+
+            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']])) {
+                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']] = array(
+                    'spotId' => $row['spotId'],
+                    'spotName' => $row['spotName'],
+                    'version' => array(),
+                );
+            }
+
+            if (empty($row['versionId'])) {
+                continue;
+            }
+
+            $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']]['version'][] = array(
+                'versionId' => $row['versionId'],
+                'versionName' => $row['versionName'],
+            );
+        }
+
+        $response = array_values(array_map(function ($project) {
+            $project['campaign'] = array_values(array_map(function ($campaign) {
+                $campaign['spot'] = array_values(array_map(function ($spot) {
+                    $spot['version'] = array_values($spot['version']);
+                    return $spot;
+                }, $campaign['spot']));
+
+                return $campaign;
+            }, $project['campaign']));
+
+            return $project;
+        }, $response));
+
+        return $response;
     }
 
 }

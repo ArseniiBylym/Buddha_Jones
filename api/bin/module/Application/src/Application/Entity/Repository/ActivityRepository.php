@@ -27,12 +27,10 @@ class ActivityRepository extends EntityRepository
                     a.projectCampaignRequired, a.projectCampaignSpotVersionRequired,
                     a.filesIncluded, a.status, a.allowedInFuture
                 FROM \Application\Entity\RediActivity a
-                LEFT JOIN \Application\Entity\RediActivityToType att
-                  WITH att.activityId=a.id
                 LEFT JOIN \Application\Entity\RediActivityToUserType atut
                   WITH atut.activityId=a.id
                 LEFT JOIN \Application\Entity\RediActivityType at
-                  WITH at.id=att.typeId ";
+                  WITH at.id=a.typeId ";
 
         $dqlFilter = [];
 
@@ -41,7 +39,7 @@ class ActivityRepository extends EntityRepository
         }
 
         if (isset($filter['type_id']) && count($filter['type_id'])) {
-            $dqlFilter[] = " (att.typeId IN (" . implode(',', $filter['type_id']) . ")) ";
+            $dqlFilter[] = " (a.typeId IN (" . implode(',', $filter['type_id']) . ")) ";
         }
 
         if (isset($filter['user_type_id']) && $filter['user_type_id']) {
@@ -101,10 +99,8 @@ class ActivityRepository extends EntityRepository
                     a.projectCampaignRequired, a.projectCampaignSpotVersionRequired,
                     a.filesIncluded, a.status, a.allowedInFuture, cp.price
                 FROM \Application\Entity\RediActivity a
-                LEFT JOIN \Application\Entity\RediActivityToType att
-                  WITH att.activityId=a.id
                 LEFT JOIN \Application\Entity\RediActivityType at
-                  WITH at.id=att.typeId
+                  WITH at.id=a.typeId
                 LEFT JOIN \Application\Entity\RediActivityToUserType atut
                   WITH atut.activityId=a.id
                 LEFT JOIN \Application\Entity\RediCustomerPrice cp
@@ -117,7 +113,7 @@ class ActivityRepository extends EntityRepository
         }
 
         if (isset($filter['type_id']) && count($filter['type_id'])) {
-            $dqlFilter[] = " (att.typeId IN (" . implode(',', $filter['type_id']) . ")) ";
+            $dqlFilter[] = " (a.typeId IN (" . implode(',', $filter['type_id']) . ")) ";
         }
 
         if (isset($filter['user_type_id']) && $filter['user_type_id']) {
@@ -176,8 +172,6 @@ class ActivityRepository extends EntityRepository
     {
         $dql = "SELECT COUNT(DISTINCT a.id) AS total_count
                 FROM \Application\Entity\RediActivity a
-                LEFT JOIN \Application\Entity\RediActivityToType att
-                  WITH att.activityId=a.id
                 LEFT JOIN \Application\Entity\RediActivityToUserType atut
                   WITH atut.activityId=a.id";
 
@@ -188,7 +182,7 @@ class ActivityRepository extends EntityRepository
         }
 
         if (isset($filter['type_id']) && count($filter['type_id'])) {
-            $dqlFilter[] = " (att.typeId IN (" . implode(',', $filter['type_id']) . ")) ";
+            $dqlFilter[] = " (a.typeId IN (" . implode(',', $filter['type_id']) . ")) ";
         }
 
         if (isset($filter['user_type_id']) && $filter['user_type_id']) {
@@ -240,12 +234,10 @@ class ActivityRepository extends EntityRepository
                 a.projectCampaignRequired, a.projectCampaignSpotVersionRequired,
                 a.filesIncluded, a.status, a.allowedInFuture
             FROM \Application\Entity\RediActivity a
-            LEFT JOIN \Application\Entity\RediActivityToType att
-            WITH att.activityId=a.id
             LEFT JOIN \Application\Entity\RediActivityToUserType atut
             WITH atut.activityId=a.id
             LEFT JOIN \Application\Entity\RediActivityType at
-            WITH at.id=att.typeId ";
+            WITH at.id=a.typeId ";
         $dql .= " WHERE a.id = :activity_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -291,10 +283,10 @@ class ActivityRepository extends EntityRepository
 
     public function getActivityTypeByActivityId($activityId) {
         $dql = "SELECT at
-                FROM \Application\Entity\RediActivityToType att
+                FROM \Application\Entity\RediActivity a
                 INNER JOIN \Application\Entity\RediActivityType at
-                  WITH at.id=att.typeId
-                WHERE att.activityId=:activity_id
+                  WITH at.id=a.typeId
+                WHERE a.id=:activity_id
                 GROUP BY at.id
                 ORDER BY at.activityType ASC";
 
@@ -317,5 +309,100 @@ class ActivityRepository extends EntityRepository
         $query->setParameter('activity_id', $activityId);
 
         return $query->getArrayResult();
+    }
+
+    public function populateStudioRatecardByActivity($activityId) {
+        $dql = "INSERT INTO 
+                redi_studio_ratecard
+                (ratecard_id, activity_id, trt_id, revision_inc, note, type, rate)
+                (SELECT ratecard_id, :activity_id, null, null, null, 'H', null FROM redi_ratecard_type)";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('activity_id', $activityId);
+        $query->execute();
+    }
+
+    public function populateStudioRatecardByRatecard($ratecardId) {
+        $typeId = 1;
+
+        $dql = "INSERT INTO 
+                redi_studio_ratecard
+                (ratecard_id, activity_id, trt_id, revision_inc, note, type, rate)
+                (SELECT :ratecard_id, id, null, null, null, 'H', null FROM redi_activity WHERE type_id = :type_id)";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('ratecard_id', $ratecardId);
+        $query->bindParam('type_id', $typeId);
+        $query->execute();
+    }
+
+    public function cleanStudioRatecard() {
+        $dql = "DELETE FROM 
+                redi_studio_ratecard
+                WHERE activity_id NOT IN (SELECT id FROM redi_activity)
+                OR ratecard_id NOT IN (SELECT ratecard_id FROM redi_ratecard_type)";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->execute();
+    }
+
+    public function getRatecardType($studioId)
+    {
+        $dql = "SELECT 
+                    rct
+                FROM \Application\Entity\RediRatecardType rct
+                WHERE rct.studioId = :studio_id
+                ORDER BY rct.ratecardName";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('studio_id', $studioId);
+        $data = $query->getArrayResult();
+
+        $data = array_map(function ($rc) {
+            $rc['ratecardId'] = (int)$rc['ratecardId'];
+            $rc['studioId'] = (int)$rc['studioId'];
+
+            return $rc;
+        }, $data);
+
+        return $data;
+    }
+
+    public function searchStudioRatecardType($ratecardId)
+    {
+        $dql = "SELECT 
+                  src.id,
+                  src.ratecardId,
+                  a.id AS activityId,
+                  a.name AS activityName,
+                  a.typeId AS activityTypeId,
+                  aty.activityType,
+                  trt.id AS trtId,
+                  trt.runtime AS runtime,
+                  src.revisionInc,
+                  src.note,
+                  src.type,
+                  src.rate
+                FROM \Application\Entity\RediStudioRatecard src
+                LEFT JOIN \Application\Entity\RediActivity a
+                    WITH a.id=src.activityId 
+                INNER JOIN \Application\Entity\RediActivityType aty
+                  WITH aty.id=a.typeId
+                LEFT JOIN \Application\Entity\RediTrt trt
+                  WITH trt.id = src.trtId
+                WHERE src.ratecardId = :ratecard_id
+                ORDER BY a.typeId ASC, a.name ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('ratecard_id', $ratecardId);
+        $data = $query->getArrayResult();
+
+        $data = array_map(function ($cPrice) use ($ratecardId) {
+            $cPrice['rate'] = ($cPrice['rate'] !== null) ? (float) number_format($cPrice['rate'], 2) : null;
+
+            return $cPrice;
+        }, $data);
+
+        return $data;
     }
 }

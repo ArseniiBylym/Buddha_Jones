@@ -4,6 +4,9 @@ namespace Application\Entity\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManager;
 use Zend\Config\Config;
+use Zend\View\Model\ViewModel;
+
+
 
 // before called Table now Repository Table Data Gateway
 // In Bug Entity add  @Entity(repositoryClass="BugRepository")
@@ -14,13 +17,14 @@ use Zend\Config\Config;
 class CommonRepository extends EntityRepository
 {
     public $mimeToExtension = array(
-        "image/bmp" => ".bmp",
-        "image/x-windows-bmp" => ".bmp",
+        // "image/bmp" => ".bmp",
+        // "image/x-windows-bmp" => ".bmp",
         "application/msword" => ".doc",
         "image/gif" => ".gif",
-        "image/x-icon" => ".ico",
+        // "image/x-icon" => ".ico",
         "image/pjpeg" => ".jpeg",
         "image/jpeg" => ".jpg",
+        "image/png" => ".png",
         "application/pdf" => ".pdf",
         "application/mspowerpoint" => ".ppt",
         "application/powerpoint" => ".ppt",
@@ -29,7 +33,10 @@ class CommonRepository extends EntityRepository
         "application/octet-stream" => ".psd",
         "application/rtf" => ".rtf",
         "application/x-rtf" => ".rtf",
-        "text/richtext" => ".rtf"
+        "text/richtext" => ".rtf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" => ".docx",
+        "application/vnd.ms-excel" => ".xls",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => ".xlsx",
     );
 
     private $_className = "\Application\Entity\RediActivity";
@@ -65,10 +72,11 @@ class CommonRepository extends EntityRepository
 //        curl_close($ch);
 //    }
 
-    public function generateRandomString($minLength=10, $maxLength=100) {
+    public function generateRandomString($minLength = 10, $maxLength = 100)
+    {
         $length = rand($minLength, $maxLength);
         $str = "";
-        $characters = array_merge(range('A','Z'), range('a','z'), range('0','9'));
+        $characters = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));
         $max = count($characters) - 1;
         for ($i = 0; $i < $length; $i++) {
             $rand = mt_rand(0, $max);
@@ -86,32 +94,165 @@ class CommonRepository extends EntityRepository
      * @param $dateString String
      * @return \DateTime
      */
-    public function formatDateForInsert($dateString) {
-        if($dateString) {
+    public function formatDateForInsert($dateString)
+    {
+        if ($dateString) {
             try {
                 $date = new \DateTime($dateString);
-            } catch(\Exception $err) {
+            } catch (\Exception $err) {
                 $date = null;
             }
         } else {
-            $date =  null;
+            $date = null;
         }
 
         return $date;
     }
 
-    public function formatDateForDisplay($dateString) {
+    public function formatDateForDisplay($dateObject, $format = 'Y-m-d')
+    {
+        if ($dateObject instanceof DateTime) {
+            try {
+                $dateString = $dateObject->format('Y-m-d');
 
+                return $dateString;
+            } catch (\Exception $e) {
+            // some message if requried
+            }
+        }
+
+        return null;
     }
 
-    public function base64DecodeFile($data){
-        if(preg_match('/^data\:([a-zA-Z]+\/[a-zA-Z]+);base64\,([a-zA-Z0-9\+\/]+\=*)$/', $data, $matches)) {
+    public function base64DecodeFile($data)
+    {
+        if (preg_match('/^data\:([a-zA-Z]+\/[a-zA-Z\.-]+);base64\,([a-zA-Z0-9\+\/]+\=*)$/', $data, $matches)) {
             return [
-                    'mime' => $matches[1],
-                    "extension" => (!empty($this->mimeToExtension[$matches[1]]))?$this->mimeToExtension[$matches[1]] : null,
-                    'data' => base64_decode($matches[2]),
+                'mime' => $matches[1],
+                "extension" => (!empty($this->mimeToExtension[$matches[1]])) ? $this->mimeToExtension[$matches[1]] : null,
+                'data' => base64_decode($matches[2]),
             ];
         }
         return false;
+    }
+
+    public function filterPostData($data, $key, $type = 'string', $defaultVal = null, $allowNull = false)
+    {
+        $type = strtolower($type);
+        // $value = $defaultVal;
+
+        if (!empty($data[$key])) {
+            $value = $data[$key];
+
+            switch ($type) {
+                case 'decimal':
+                case 'float':
+                case 'double':
+                    $value = (float)$value;
+                    break;
+                case 'int':
+                case 'integer':
+                case 'intval':
+                    $value = (int)$value;
+                    break;
+                case 'bool':
+                case 'boolean':
+                    $value = $value ? 1 : 0;
+                    break;
+                case 'date':
+                case 'datetime': // for converting datetime string to object
+                    $value = $this->formatDateForInsert($value);
+                    break;
+                case 'datetimeObj': // for converting datetime Object to datetime string
+                    $value = $this->formatDateForDisplay($value, 'Y-m-d H:i:s');
+                    break;
+                case 'array':
+                    $value = is_array($value) ? $value : array();
+                    break;
+                case 'string':
+                    $value = trim($value);
+                    break;
+                default:
+                    $value = $value;
+            }
+
+            if ($value && $type === 'json') {
+                $value = (array)json_decode($value, true);
+            }
+        }
+
+        if (empty($value)) {
+            if ($allowNull && isset($data[$key])) {
+                $value = $data[$key];
+            } else {
+                $value = $defaultVal;
+            }
+        }
+
+        return $value;
+    }
+
+    public function convertArrayKey($data, $convertTo)
+    {
+        $result = array();
+
+        foreach ($data as $key => $row) {
+
+        }
+    }
+
+    /**
+     * Send email using an email template
+     *
+     * @param array $data Email related info (from , to, subject etc.)
+     * @param string $templateName Email template name
+     * @param array $templateData Data from email template
+     * @return void
+     */
+    public function sendEmail($data, $templateName, $templateData)
+    {
+        try {
+
+            // $smtpOptions = new \Zend\Mail\Transport\SmtpOptions();
+            // $smtpOptions->setHost('smtp.gmail.com')
+            //     ->setConnectionClass('login')
+            //     ->setName('smtp.gmail.com')
+            //     ->setConnectionConfig(array(
+            //         'username' => 'YOUR GMAIL ADDRESS',
+            //         'password' => 'YOUR PASSWORD',
+            //         'ssl' => 'tls',
+            //     ));
+
+
+            $view       = new \Zend\View\Renderer\PhpRenderer();
+            $resolver   = new \Zend\View\Resolver\TemplateMapResolver();
+            $templateFile = __DIR__ . '/../../../../view/email/' . $templateName . '.phtml';
+
+            $view       = new \Zend\View\Renderer\PhpRenderer();
+            $resolver   = new \Zend\View\Resolver\TemplateMapResolver();
+            $resolver->setMap(array(
+                'mailTemplate' => $templateFile
+            ));
+            $view->setResolver($resolver);
+
+            $viewModel  = new ViewModel();
+            $viewModel->setTemplate('mailTemplate')->setVariables($templateData);
+
+            $bodyPart = new \Zend\Mime\Message();
+            $bodyMessage    = new \Zend\Mime\Part($view->render($viewModel));
+            $bodyMessage->type = 'text/html';
+            $bodyPart->setParts(array($bodyMessage));
+
+            $message        = new \Zend\Mail\Message();
+            $message->addFrom('noreply@buddhajones.com', 'Buddha Jones')
+                    ->addTo($data['to'])
+                    ->setSubject($data['subject'])
+                    ->setBody($bodyPart)
+                    ->setEncoding('UTF-8');
+            $transport  = new \Zend\Mail\Transport\Sendmail();
+            $transport->send($message);
+        } catch (\Exception $e) {
+            echo $e->getMessage(); exit;
+        }
     }
 }

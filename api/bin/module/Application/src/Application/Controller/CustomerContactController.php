@@ -3,7 +3,7 @@
 namespace Application\Controller;
 
 use Application\Entity\RediCustomerContact;
-use Application\Entity\RediCustomerContactToProjectCampaign;
+use Application\Entity\RediProjectToCampaignCc;
 use Application\Entity\RediProject;
 use Application\Entity\RediProjectHistory;
 use Application\Entity\RediProjectManager;
@@ -24,10 +24,13 @@ class CustomerContactController extends CustomAbstractActionController
 
         if ($filter['customer_id']) {
             $data = $this->_customerRepo->searchCustomerContact($filter);
+            $totalCount = count($data);
 
             $response = array(
                 'status' => 1,
                 'message' => 'Request successful',
+                'total_count' => $totalCount,
+                'object_count' => $totalCount,
                 'data' => $data
             );
 
@@ -35,7 +38,7 @@ class CustomerContactController extends CustomAbstractActionController
         } else {
             $response = array(
                 'status' => 1,
-                'message' => 'Please provide required parameter (customer_id)'
+                'message' => 'Please provide required query parameter (customer_id)'
             );
         }
 
@@ -49,7 +52,7 @@ class CustomerContactController extends CustomAbstractActionController
 
     public function get($id)
     {
-        $data = $this->_customerRepo->getCustomerContactById($id);
+        $data = $this->getSingle($id);
 
         $response = array(
             'status' => 1,
@@ -63,12 +66,11 @@ class CustomerContactController extends CustomAbstractActionController
 
     public function create($data)
     {
-        $customerId = (int)(isset($data['customer_id']) ? trim($data['customer_id']) : 0);
-        $name = trim(isset($data['name']) ? $data['name'] : '');
-        $email = trim(isset($data['email']) ? $data['email'] : '');
-        $mobilePhone = trim(isset($data['mobile_phone']) ? $data['mobile_phone'] : '');
-        $officePhone = trim(isset($data['office_phone']) ? $data['office_phone'] : '');
-        $postalAddress = trim(isset($data['postal_address']) ? $data['postal_address'] : '');
+        $customerId = $this->_commonRepo->filterPostData($data, 'customer_id', 'int', null);
+        $name = $this->_commonRepo->filterPostData($data, 'name', 'string', null);
+        $title = $this->_commonRepo->filterPostData($data, 'title', 'string', null);
+        $email = $this->_commonRepo->filterPostData($data, 'email', 'string', null);
+        $mobilePhone = $this->_commonRepo->filterPostData($data, 'mobile_phone', 'string', null);
         $projectCampaign = (array)json_decode(trim(isset($data['project_campaign']) ? $data['project_campaign'] : ''), true);
 
         if ($customerId && $name) {
@@ -79,19 +81,8 @@ class CustomerContactController extends CustomAbstractActionController
                 $customerContact->setCustomerId($customerId);
                 $customerContact->setName($name);
                 $customerContact->setEmail($email);
-                $customerContact->setCardcode($customer->getCardcode());
-
-                if ($mobilePhone) {
-                    $customerContact->setMobilePhone($mobilePhone);
-                }
-
-                if ($officePhone) {
-                    $customerContact->setOfficePhone($mobilePhone);
-                }
-
-                if ($postalAddress) {
-                    $customerContact->setPostalAddress($postalAddress);
-                }
+                $customerContact->setTitle($title);
+                $customerContact->setMobilePhone($mobilePhone);
 
                 $this->_em->persist($customerContact);
                 $this->_em->flush();
@@ -112,7 +103,7 @@ class CustomerContactController extends CustomAbstractActionController
                                 $this->_em->flush();
                             }
 
-                            $customerContactToProjectCampaign = new RediCustomerContactToProjectCampaign();
+                            $customerContactToProjectCampaign = new RediProjectToCampaignCc();
                             $customerContactToProjectCampaign->setCustomerContactId($customerContactId);
                             $customerContactToProjectCampaign->setProjectToCampaignId($existingProjectCampaign->getId());
                             $this->_em->persist($customerContactToProjectCampaign);
@@ -122,7 +113,7 @@ class CustomerContactController extends CustomAbstractActionController
                     $this->_em->flush();
                 }
 
-                $data = array_merge($this->_customerRepo->getCustomerContactById($customerContactId), array(
+                $data = array_merge($this->getSingle($customerContactId), array(
                     'customer_contact_id' => $customerContactId
                 ));
 
@@ -153,104 +144,92 @@ class CustomerContactController extends CustomAbstractActionController
 
     public function update($id, $data)
     {
-        $customerId = (int)(isset($data['customer_id']) ? trim($data['customer_id']) : 0);
-        $name = trim(isset($data['name']) ? $data['name'] : '');
-        $email = trim(isset($data['email']) ? $data['email'] : '');
-        $mobilePhone = trim(isset($data['mobile_phone']) ? $data['mobile_phone'] : '');
-        $officePhone = trim(isset($data['office_phone']) ? $data['office_phone'] : '');
-        $postalAddress = trim(isset($data['postal_address']) ? $data['postal_address'] : '');
+        $customerId = $this->_commonRepo->filterPostData($data, 'customer_id', 'int', null);
+        $name = $this->_commonRepo->filterPostData($data, 'name', 'string', null);
+        $title = $this->_commonRepo->filterPostData($data, 'title', 'string', null);
+        $email = $this->_commonRepo->filterPostData($data, 'email', 'string', null);
+        $mobilePhone = $this->_commonRepo->filterPostData($data, 'mobile_phone', 'string', null);
         $projectCampaign = (array)json_decode(trim(isset($data['project_campaign']) ? $data['project_campaign'] : ''), true);
 
         $customerContact = $this->_customerContactRepository->find($id);
 
         if ($customerContact) {
-            $customer = $this->_customerRepository->find($customerId);
+            if ($customerId) {
+                $customer = $this->_customerRepository->find($customerId);
+                if ($customer) {
 
-            if ($customer) {
-                if($customerId) {
                     $customerContact->setCustomerId($customerId);
+                }
+            }
 
-                    $customerContact->setCardcode($customer->getCardcode());
+            if ($name !== null) {
+                $customerContact->setName($name);
+            }
+
+            if ($title !== null) {
+                $customerContact->setTitle($title);
+            }
+
+            if ($email !== null) {
+                $customerContact->setEmail($email);
+            }
+
+            if ($mobilePhone !== null) {
+                $customerContact->setMobilePhone($mobilePhone);
+            }
+
+            $this->_em->persist($customerContact);
+            $this->_em->flush();
+
+            if ($projectCampaign) {
+                    // Remove existing project campaign form customer contact
+                $projectCampaignCustomerContact = $this->_projectToCamapignCC->findBy(array('customerContactId' => $id));
+
+                if ($projectCampaignCustomerContact) {
+                    foreach ($projectCampaignCustomerContact as $pccc) {
+                        $this->_em->remove($pccc);
+                    }
                 }
 
-                if($name) {
-                    $customerContact->setName($name);
-                }
-
-                if($email) {
-                    $customerContact->setEmail($email);
-                }
-
-                if ($mobilePhone) {
-                    $customerContact->setMobilePhone($mobilePhone);
-                }
-
-                if ($officePhone) {
-                    $customerContact->setOfficePhone($mobilePhone);
-                }
-
-                if ($postalAddress) {
-                    $customerContact->setPostalAddress($postalAddress);
-                }
-
-                $this->_em->persist($customerContact);
                 $this->_em->flush();
 
-                if ($projectCampaign) {
-                    // Remove existing project campaign form customer contact
-                    $projectCampaignCustomerContact = $this->_customerContactToProjectCampaignRepository->findBy(array('customerContactId' => $id));
-
-                    if($projectCampaignCustomerContact) {
-                        foreach($projectCampaignCustomerContact as $pccc) {
-                            $this->_em->remove($pccc);
-                        }
-                    }
-
-                    $this->_em->flush();
-
                     // Add new project campaign for customer contact
-                    foreach ($projectCampaign as $projectCampaignRow) {
-                        if (isset($projectCampaignRow['project_id'], $projectCampaignRow['campaign_id']) && $projectCampaignRow['project_id'] && $projectCampaignRow['campaign_id']) {
-                            $existingProjectCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectCampaignRow['project_id'], 'campaignId' => $projectCampaignRow['campaign_id']));
+                foreach ($projectCampaign as $projectCampaignRow) {
+                    if (isset($projectCampaignRow['project_id'], $projectCampaignRow['campaign_id']) && $projectCampaignRow['project_id'] && $projectCampaignRow['campaign_id']) {
+                        $existingProjectCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectCampaignRow['project_id'], 'campaignId' => $projectCampaignRow['campaign_id']));
 
-                            if (!$existingProjectCampaign) {
-                                $existingProjectCampaign = new RediProjectToCampaign();
-                                $existingProjectCampaign->setProjectId($projectCampaignRow['project_id']);
-                                $existingProjectCampaign->setCampaignId($projectCampaignRow['campaign_id']);
+                        if (!$existingProjectCampaign) {
+                            $existingProjectCampaign = new RediProjectToCampaign();
+                            $existingProjectCampaign->setProjectId($projectCampaignRow['project_id']);
+                            $existingProjectCampaign->setCampaignId($projectCampaignRow['campaign_id']);
 
-                                $this->_em->persist($existingProjectCampaign);
-                                $this->_em->flush();
-                            }
+                            $this->_em->persist($existingProjectCampaign);
+                            $this->_em->flush();
+                        }
 
-                            $existingProjectCampaignCustomerContact = $this->_customerContactToProjectCampaignRepository->findOneBy(array('customerContactId' => $id, 'projectToCampaignId' => $existingProjectCampaign->getId()));
+                        $existingProjectCampaignCustomerContact = $this->_projectToCamapignCC->findOneBy(array('customerContactId' => $id, 'projectToCampaignId' => $existingProjectCampaign->getId()));
 
-                            if(!$existingProjectCampaignCustomerContact) {
-                                $customerContactToProjectCampaign = new RediCustomerContactToProjectCampaign();
-                                $customerContactToProjectCampaign->setCustomerContactId($id);
-                                $customerContactToProjectCampaign->setProjectToCampaignId($existingProjectCampaign->getId());
-                                $this->_em->persist($customerContactToProjectCampaign);
-                            }
+                        if (!$existingProjectCampaignCustomerContact) {
+                            $customerContactToProjectCampaign = new RediProjectToCampaignCc();
+                            $customerContactToProjectCampaign->setCustomerContactId($id);
+                            $customerContactToProjectCampaign->setProjectCampaignId($existingProjectCampaign->getId());
+                            $this->_em->persist($customerContactToProjectCampaign);
                         }
                     }
-
-                    $this->_em->flush();
                 }
 
-                $data = array_merge($this->_customerRepo->getCustomerContactById($id), array(
-                    'customer_contact_id' => $id
-                ));
-
-                $response = array(
-                    'status' => 1,
-                    'message' => 'Request successful.',
-                    'data' => $data,
-                );
-            } else {
-                $response = array(
-                    'status' => 0,
-                    'message' => 'Customer not found.'
-                );
+                $this->_em->flush();
             }
+
+            $data = array_merge($this->getSingle($id), array(
+                'customer_contact_id' => $id
+            ));
+
+            $response = array(
+                'status' => 1,
+                'message' => 'Request successful.',
+                'data' => $data,
+            );
         } else {
             $response = array(
                 'status' => 0,
@@ -267,93 +246,81 @@ class CustomerContactController extends CustomAbstractActionController
 
     public function patch($id, $data)
     {
-        $customerId = (int)(isset($data['customer_id']) ? trim($data['customer_id']) : 0);
-        $name = trim(isset($data['name']) ? $data['name'] : '');
-        $email = trim(isset($data['email']) ? $data['email'] : '');
-        $mobilePhone = trim(isset($data['mobile_phone']) ? $data['mobile_phone'] : '');
-        $officePhone = trim(isset($data['office_phone']) ? $data['office_phone'] : '');
-        $postalAddress = trim(isset($data['postal_address']) ? $data['postal_address'] : '');
+        $customerId = $this->_commonRepo->filterPostData($data, 'customer_id', 'int', null);
+        $name = $this->_commonRepo->filterPostData($data, 'name', 'string', null);
+        $title = $this->_commonRepo->filterPostData($data, 'title', 'string', null);
+        $email = $this->_commonRepo->filterPostData($data, 'email', 'string', null);
+        $mobilePhone = $this->_commonRepo->filterPostData($data, 'mobile_phone', 'string', null);
         $projectCampaign = (array)json_decode(trim(isset($data['project_campaign']) ? $data['project_campaign'] : ''), true);
 
         $customerContact = $this->_customerContactRepository->find($id);
 
         if ($customerContact) {
-            $customer = $this->_customerRepository->find($customerId);
+            if ($customerId) {
+                $customer = $this->_customerRepository->find($customerId);
+                if ($customer) {
 
-            if ($customer) {
-                if($customerId) {
                     $customerContact->setCustomerId($customerId);
-
-                    $customerContact->setCardcode($customer->getCardcode());
                 }
+            }
 
-                if($name) {
-                    $customerContact->setName($name);
-                }
+            if ($name !== null) {
+                $customerContact->setName($name);
+            }
 
-                if($email) {
-                    $customerContact->setEmail($email);
-                }
+            if ($title !== null) {
+                $customerContact->setTitle($title);
+            }
 
-                if ($mobilePhone) {
-                    $customerContact->setMobilePhone($mobilePhone);
-                }
+            if ($email !== null) {
+                $customerContact->setEmail($email);
+            }
 
-                if ($officePhone) {
-                    $customerContact->setOfficePhone($mobilePhone);
-                }
+            if ($mobilePhone !== null) {
+                $customerContact->setMobilePhone($mobilePhone);
+            }
 
-                if ($postalAddress) {
-                    $customerContact->setPostalAddress($postalAddress);
-                }
+            $this->_em->persist($customerContact);
+            $this->_em->flush();
 
-                $this->_em->persist($customerContact);
-                $this->_em->flush();
-
-                if ($projectCampaign) {
+            if ($projectCampaign) {
                     // Add new project campaign for customer contact
-                    foreach ($projectCampaign as $projectCampaignRow) {
-                        if (isset($projectCampaignRow['project_id'], $projectCampaignRow['campaign_id']) && $projectCampaignRow['project_id'] && $projectCampaignRow['campaign_id']) {
-                            $existingProjectCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectCampaignRow['project_id'], 'campaignId' => $projectCampaignRow['campaign_id']));
+                foreach ($projectCampaign as $projectCampaignRow) {
+                    if (isset($projectCampaignRow['project_id'], $projectCampaignRow['campaign_id']) && $projectCampaignRow['project_id'] && $projectCampaignRow['campaign_id']) {
+                        $existingProjectCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectCampaignRow['project_id'], 'campaignId' => $projectCampaignRow['campaign_id']));
 
-                            if (!$existingProjectCampaign) {
-                                $existingProjectCampaign = new RediProjectToCampaign();
-                                $existingProjectCampaign->setProjectId($projectCampaignRow['project_id']);
-                                $existingProjectCampaign->setCampaignId($projectCampaignRow['campaign_id']);
+                        if (!$existingProjectCampaign) {
+                            $existingProjectCampaign = new RediProjectToCampaign();
+                            $existingProjectCampaign->setProjectId($projectCampaignRow['project_id']);
+                            $existingProjectCampaign->setCampaignId($projectCampaignRow['campaign_id']);
 
-                                $this->_em->persist($existingProjectCampaign);
-                                $this->_em->flush();
-                            }
+                            $this->_em->persist($existingProjectCampaign);
+                            $this->_em->flush();
+                        }
 
-                            $existingProjectCampaignCustomerContact = $this->_customerContactToProjectCampaignRepository->findOneBy(array('customerContactId' => $id, 'projectToCampaignId' => $existingProjectCampaign->getId()));
+                        $existingProjectCampaignCustomerContact = $this->_projectToCamapignCC->findOneBy(array('customerContactId' => $id, 'projectCampaignId' => $existingProjectCampaign->getId()));
 
-                            if(!$existingProjectCampaignCustomerContact) {
-                                $customerContactToProjectCampaign = new RediCustomerContactToProjectCampaign();
-                                $customerContactToProjectCampaign->setCustomerContactId($id);
-                                $customerContactToProjectCampaign->setProjectToCampaignId($existingProjectCampaign->getId());
-                                $this->_em->persist($customerContactToProjectCampaign);
-                            }
+                        if (!$existingProjectCampaignCustomerContact) {
+                            $customerContactToProjectCampaign = new RediProjectToCampaignCc();
+                            $customerContactToProjectCampaign->setCustomerContactId($id);
+                            $customerContactToProjectCampaign->setProjectCampaignId($existingProjectCampaign->getId());
+                            $this->_em->persist($customerContactToProjectCampaign);
                         }
                     }
-
-                    $this->_em->flush();
                 }
 
-                $data = array_merge($this->_customerRepo->getCustomerContactById($id), array(
-                    'customer_contact_id' => $id
-                ));
-
-                $response = array(
-                    'status' => 1,
-                    'message' => 'Request successful.',
-                    'data' => $data,
-                );
-            } else {
-                $response = array(
-                    'status' => 0,
-                    'message' => 'Customer not found.'
-                );
+                $this->_em->flush();
             }
+
+            $data = array_merge($this->getSingle($id), array(
+                'customer_contact_id' => $id
+            ));
+
+            $response = array(
+                'status' => 1,
+                'message' => 'Request successful.',
+                'data' => $data,
+            );
         } else {
             $response = array(
                 'status' => 0,
@@ -366,6 +333,12 @@ class CustomerContactController extends CustomAbstractActionController
         }
 
         return new JsonModel($response);
+    }
+
+    private function getSingle($id) {
+        $data = $this->_customerRepo->getCustomerContactById($id);
+
+        return $data;
     }
 
 }

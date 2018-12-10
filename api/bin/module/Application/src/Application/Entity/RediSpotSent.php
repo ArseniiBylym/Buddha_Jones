@@ -24,9 +24,30 @@ class RediSpotSent
     /**
      * @var integer
      *
+     * @ORM\Column(name="request_id", type="bigint", nullable=true)
+     */
+    private $requestId;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="project_id", type="integer", nullable=true)
      */
     private $projectId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="campaign_id", type="integer", nullable=true)
+     */
+    private $campaignId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="project_campaign_id", type="integer", nullable=true)
+     */
+    private $projectCampaignId;
 
     /**
      * @var integer
@@ -41,6 +62,13 @@ class RediSpotSent
      * @ORM\Column(name="sent_via_method", type="string", length=100, nullable=true)
      */
     private $sentViaMethod;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="finish_request", type="smallint", nullable=true)
+     */
+    private $finishRequest;
 
     /**
      * @var string
@@ -59,7 +87,21 @@ class RediSpotSent
     /**
      * @var string
      *
-     * @ORM\Column(name="deadline", type="text", nullable=true)
+     * @ORM\Column(name="internal_note", type="text", nullable=true)
+     */
+    private $internalNote;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="studio_note", type="text", nullable=true)
+     */
+    private $studioNote;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="deadline", type="datetime", nullable=true)
      */
     private $deadline;
 
@@ -127,6 +169,13 @@ class RediSpotSent
     private $audio;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="audio_note", type="text", nullable=true)
+     */
+    private $audioNote;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="video_prep", type="smallint", nullable=true)
@@ -178,9 +227,93 @@ class RediSpotSent
     /**
      * @var integer
      *
+     * @ORM\Column(name="spot_resend", type="smallint", nullable=true)
+     */
+    private $spotResend;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="status_id", type="integer", nullable=true)
      */
     private $statusId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="editor", type="string", length=100, nullable=true)
+     */
+    private $editor;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="customer_contact", type="string", length=100, nullable=true)
+     */
+    private $customerContact;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="spot_id", type="integer", nullable=true)
+     */
+    private $spotId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="version_id", type="integer", nullable=true)
+     */
+    private $versionId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="spot_version_id", type="integer", nullable=true)
+     */
+    private $spotVersionId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="prod_accept", type="smallint", nullable=true)
+     */
+    private $prodAccept;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="finish_accept", type="smallint", nullable=true)
+     */
+    private $finishAccept;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="line_status_id", type="integer", nullable=true)
+     */
+    private $lineStatusId;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="spot_sent_date", type="datetime", nullable=true)
+     */
+    private $spotSentDate;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="bill_id", type="bigint", nullable=true)
+     */
+    private $billId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="bill_line_id", type="bigint", nullable=true)
+     */
+    private $billLineId;
 
     /**
      * @var integer
@@ -223,6 +356,29 @@ class RediSpotSent
     }
 
     /**
+     * Set requestId
+     *
+     * @param integer $requestId
+     * @return RediSpotSent
+     */
+    public function setRequestId($requestId)
+    {
+        $this->requestId = $requestId;
+
+        return $this;
+    }
+
+    /**
+     * Get requestId
+     *
+     * @return integer 
+     */
+    public function getRequestId()
+    {
+        return $this->requestId;
+    }
+
+    /**
      * Set projectId
      *
      * @param integer $projectId
@@ -243,6 +399,52 @@ class RediSpotSent
     public function getProjectId()
     {
         return $this->projectId;
+    }
+
+    /**
+     * Set campaignId
+     *
+     * @param integer $campaignId
+     * @return RediSpotSent
+     */
+    public function setCampaignId($campaignId)
+    {
+        $this->campaignId = $campaignId;
+
+        return $this;
+    }
+
+    /**
+     * Get campaignId
+     *
+     * @return integer 
+     */
+    public function getCampaignId()
+    {
+        return $this->campaignId;
+    }
+
+    /**
+     * Set projectCampaignId
+     *
+     * @param integer $projectCampaignId
+     * @return RediSpotSent
+     */
+    public function setProjectCampaignId($projectCampaignId)
+    {
+        $this->projectCampaignId = $projectCampaignId;
+
+        return $this;
+    }
+
+    /**
+     * Get projectCampaignId
+     *
+     * @return integer 
+     */
+    public function getProjectCampaignId()
+    {
+        return $this->projectCampaignId;
     }
 
     /**
@@ -292,6 +494,29 @@ class RediSpotSent
     }
 
     /**
+     * Set finishRequest
+     *
+     * @param integer $finishRequest
+     * @return RediSpotSent
+     */
+    public function setFinishRequest($finishRequest)
+    {
+        $this->finishRequest = $finishRequest;
+
+        return $this;
+    }
+
+    /**
+     * Get finishRequest
+     *
+     * @return integer 
+     */
+    public function getFinishRequest()
+    {
+        return $this->finishRequest;
+    }
+
+    /**
      * Set finishOption
      *
      * @param string $finishOption
@@ -338,9 +563,55 @@ class RediSpotSent
     }
 
     /**
+     * Set internalNote
+     *
+     * @param string $internalNote
+     * @return RediSpotSent
+     */
+    public function setInternalNote($internalNote)
+    {
+        $this->internalNote = $internalNote;
+
+        return $this;
+    }
+
+    /**
+     * Get internalNote
+     *
+     * @return string 
+     */
+    public function getInternalNote()
+    {
+        return $this->internalNote;
+    }
+
+    /**
+     * Set studioNote
+     *
+     * @param string $studioNote
+     * @return RediSpotSent
+     */
+    public function setStudioNote($studioNote)
+    {
+        $this->studioNote = $studioNote;
+
+        return $this;
+    }
+
+    /**
+     * Get studioNote
+     *
+     * @return string 
+     */
+    public function getStudioNote()
+    {
+        return $this->studioNote;
+    }
+
+    /**
      * Set deadline
      *
-     * @param string $deadline
+     * @param \DateTime $deadline
      * @return RediSpotSent
      */
     public function setDeadline($deadline)
@@ -353,7 +624,7 @@ class RediSpotSent
     /**
      * Get deadline
      *
-     * @return string 
+     * @return \DateTime 
      */
     public function getDeadline()
     {
@@ -568,6 +839,29 @@ class RediSpotSent
     }
 
     /**
+     * Set audioNote
+     *
+     * @param string $audioNote
+     * @return RediSpotSent
+     */
+    public function setAudioNote($audioNote)
+    {
+        $this->audioNote = $audioNote;
+
+        return $this;
+    }
+
+    /**
+     * Get audioNote
+     *
+     * @return string 
+     */
+    public function getAudioNote()
+    {
+        return $this->audioNote;
+    }
+
+    /**
      * Set videoPrep
      *
      * @param integer $videoPrep
@@ -729,6 +1023,29 @@ class RediSpotSent
     }
 
     /**
+     * Set spotResend
+     *
+     * @param integer $spotResend
+     * @return RediSpotSent
+     */
+    public function setSpotResend($spotResend)
+    {
+        $this->spotResend = $spotResend;
+
+        return $this;
+    }
+
+    /**
+     * Get spotResend
+     *
+     * @return integer 
+     */
+    public function getSpotResend()
+    {
+        return $this->spotResend;
+    }
+
+    /**
      * Set statusId
      *
      * @param integer $statusId
@@ -749,6 +1066,259 @@ class RediSpotSent
     public function getStatusId()
     {
         return $this->statusId;
+    }
+
+    /**
+     * Set editor
+     *
+     * @param string $editor
+     * @return RediSpotSent
+     */
+    public function setEditor($editor)
+    {
+        $this->editor = $editor;
+
+        return $this;
+    }
+
+    /**
+     * Get editor
+     *
+     * @return string 
+     */
+    public function getEditor()
+    {
+        return $this->editor;
+    }
+
+    /**
+     * Set customerContact
+     *
+     * @param string $customerContact
+     * @return RediSpotSent
+     */
+    public function setCustomerContact($customerContact)
+    {
+        $this->customerContact = $customerContact;
+
+        return $this;
+    }
+
+    /**
+     * Get customerContact
+     *
+     * @return string 
+     */
+    public function getCustomerContact()
+    {
+        return $this->customerContact;
+    }
+
+    /**
+     * Set spotId
+     *
+     * @param integer $spotId
+     * @return RediSpotSent
+     */
+    public function setSpotId($spotId)
+    {
+        $this->spotId = $spotId;
+
+        return $this;
+    }
+
+    /**
+     * Get spotId
+     *
+     * @return integer 
+     */
+    public function getSpotId()
+    {
+        return $this->spotId;
+    }
+
+    /**
+     * Set versionId
+     *
+     * @param integer $versionId
+     * @return RediSpotSent
+     */
+    public function setVersionId($versionId)
+    {
+        $this->versionId = $versionId;
+
+        return $this;
+    }
+
+    /**
+     * Get versionId
+     *
+     * @return integer 
+     */
+    public function getVersionId()
+    {
+        return $this->versionId;
+    }
+
+    /**
+     * Set spotVersionId
+     *
+     * @param integer $spotVersionId
+     * @return RediSpotSent
+     */
+    public function setSpotVersionId($spotVersionId)
+    {
+        $this->spotVersionId = $spotVersionId;
+
+        return $this;
+    }
+
+    /**
+     * Get spotVersionId
+     *
+     * @return integer 
+     */
+    public function getSpotVersionId()
+    {
+        return $this->spotVersionId;
+    }
+
+    /**
+     * Set prodAccept
+     *
+     * @param integer $prodAccept
+     * @return RediSpotSent
+     */
+    public function setProdAccept($prodAccept)
+    {
+        $this->prodAccept = $prodAccept;
+
+        return $this;
+    }
+
+    /**
+     * Get prodAccept
+     *
+     * @return integer 
+     */
+    public function getProdAccept()
+    {
+        return $this->prodAccept;
+    }
+
+    /**
+     * Set finishAccept
+     *
+     * @param integer $finishAccept
+     * @return RediSpotSent
+     */
+    public function setFinishAccept($finishAccept)
+    {
+        $this->finishAccept = $finishAccept;
+
+        return $this;
+    }
+
+    /**
+     * Get finishAccept
+     *
+     * @return integer 
+     */
+    public function getFinishAccept()
+    {
+        return $this->finishAccept;
+    }
+
+    /**
+     * Set lineStatusId
+     *
+     * @param integer $lineStatusId
+     * @return RediSpotSent
+     */
+    public function setLineStatusId($lineStatusId)
+    {
+        $this->lineStatusId = $lineStatusId;
+
+        return $this;
+    }
+
+    /**
+     * Get lineStatusId
+     *
+     * @return integer 
+     */
+    public function getLineStatusId()
+    {
+        return $this->lineStatusId;
+    }
+
+    /**
+     * Set spotSentDate
+     *
+     * @param \DateTime $spotSentDate
+     * @return RediSpotSent
+     */
+    public function setSpotSentDate($spotSentDate)
+    {
+        $this->spotSentDate = $spotSentDate;
+
+        return $this;
+    }
+
+    /**
+     * Get spotSentDate
+     *
+     * @return \DateTime 
+     */
+    public function getSpotSentDate()
+    {
+        return $this->spotSentDate;
+    }
+
+    /**
+     * Set billId
+     *
+     * @param integer $billId
+     * @return RediSpotSent
+     */
+    public function setBillId($billId)
+    {
+        $this->billId = $billId;
+
+        return $this;
+    }
+
+    /**
+     * Get billId
+     *
+     * @return integer 
+     */
+    public function getBillId()
+    {
+        return $this->billId;
+    }
+
+    /**
+     * Set billLineId
+     *
+     * @param integer $billLineId
+     * @return RediSpotSent
+     */
+    public function setBillLineId($billLineId)
+    {
+        $this->billLineId = $billLineId;
+
+        return $this;
+    }
+
+    /**
+     * Get billLineId
+     *
+     * @return integer 
+     */
+    public function getBillLineId()
+    {
+        return $this->billLineId;
     }
 
     /**

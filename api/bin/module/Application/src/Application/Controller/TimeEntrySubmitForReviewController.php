@@ -13,7 +13,7 @@ class TimeEntrySubmitForReviewController extends CustomAbstractActionController
 {
     public function create($data)
     {
-        $newStatus = 3;
+        $newStatus = 2;
 
         $workerId = (int)trim(isset($data['worker_id']) ? $data['worker_id'] : $this->_user_id);
         $date = trim(isset($data['date']) ? $data['date'] : '');
@@ -34,9 +34,10 @@ class TimeEntrySubmitForReviewController extends CustomAbstractActionController
                 $this->_em->persist($entry);
             }
 
-
             $this->_em->flush();
 
+            $this->_timeEntryRepo->updateCalculatedTimeField($workerId, $date);
+            
             $response = array(
                 'status' => 1,
                 'message' => 'Request successful.'

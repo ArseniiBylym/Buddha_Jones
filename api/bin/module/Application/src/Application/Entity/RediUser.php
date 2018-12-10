@@ -59,6 +59,13 @@ class RediUser
     /**
      * @var string
      *
+     * @ORM\Column(name="nick_name", type="string", length=50, nullable=true)
+     */
+    private $nickName;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="initials", type="string", length=20, nullable=true)
      */
     private $initials;
@@ -272,6 +279,29 @@ class RediUser
     public function getLastName()
     {
         return $this->lastName;
+    }
+
+    /**
+     * Set nickName
+     *
+     * @param string $nickName
+     * @return RediUser
+     */
+    public function setNickName($nickName)
+    {
+        $this->nickName = $nickName;
+
+        return $this;
+    }
+
+    /**
+     * Get nickName
+     *
+     * @return string 
+     */
+    public function getNickName()
+    {
+        return $this->nickName;
     }
 
     /**

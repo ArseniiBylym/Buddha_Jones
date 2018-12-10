@@ -38,6 +38,13 @@ class RediProjectToCampaign
     /**
      * @var integer
      *
+     * @ORM\Column(name="customer_id", type="integer", nullable=true)
+     */
+    private $customerId;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="first_point_of_contact_id", type="integer", nullable=true)
      */
     private $firstPointOfContactId;
@@ -119,6 +126,13 @@ class RediProjectToCampaign
      */
     private $approvedByBilling;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="channel_id", type="integer", nullable=true)
+     */
+    private $channelId;
+
 
 
     /**
@@ -175,6 +189,29 @@ class RediProjectToCampaign
     public function getCampaignId()
     {
         return $this->campaignId;
+    }
+
+    /**
+     * Set customerId
+     *
+     * @param integer $customerId
+     * @return RediProjectToCampaign
+     */
+    public function setCustomerId($customerId)
+    {
+        $this->customerId = $customerId;
+
+        return $this;
+    }
+
+    /**
+     * Get customerId
+     *
+     * @return integer 
+     */
+    public function getCustomerId()
+    {
+        return $this->customerId;
     }
 
     /**
@@ -451,5 +488,28 @@ class RediProjectToCampaign
     public function getApprovedByBilling()
     {
         return $this->approvedByBilling;
+    }
+
+    /**
+     * Set channelId
+     *
+     * @param integer $channelId
+     * @return RediProjectToCampaign
+     */
+    public function setChannelId($channelId)
+    {
+        $this->channelId = $channelId;
+
+        return $this;
+    }
+
+    /**
+     * Get channelId
+     *
+     * @return integer 
+     */
+    public function getChannelId()
+    {
+        return $this->channelId;
     }
 }
