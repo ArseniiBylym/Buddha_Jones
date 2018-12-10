@@ -11,6 +11,7 @@
     "test": "api/v2/test/"
   },
   "scripts": {
+    "postinstall": "cd front && npm install",
     "lint": "eslint actions components core routes test utils main.js",
     "build": "react-app build",
     "start": "react-app run",
