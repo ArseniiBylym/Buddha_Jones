@@ -16,11 +16,11 @@ import { TableHeader } from '../../../components/Table';
 import RateCardSelector from './RateCardSelector';
 
 interface Props {
-    match: match<MatchRouteParams>;
+    match: match<MatchParams>;
 }
 
-interface MatchRouteParams {
-    readonly userTypeId: string;
+interface MatchParams {
+
 }
 
 @inject('store')
@@ -146,7 +146,7 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
         return [
             {
                 key: 'rate-card-selector',
-                element: <RateCardSelector/>,
+                element: <RateCardSelector {...this.props}/>,
                 minWidth: 300
             },
             {

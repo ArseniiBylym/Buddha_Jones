@@ -36,5 +36,8 @@ export interface StudioRateCard {
         data: {
             [key: number]: RateCardType
         },
+        saving: boolean,
+        adding: boolean,
+        deleting: boolean,
     };
 }

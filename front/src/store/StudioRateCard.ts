@@ -28,9 +28,15 @@ export class StudioRateCard {
         loading: boolean,
         data: {
             [key: number]: RateCardType
-        }
+        },
+        saving: boolean,
+        adding: boolean,
+        deleting: boolean,
     } = {
         loading: false,
-        data: {}
+        data: {},
+        saving: false,
+        adding: false,
+        deleting: false,
     };
 }

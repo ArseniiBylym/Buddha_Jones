@@ -4,6 +4,7 @@ import { Button, ButtonOnClickPropType, ButtonLabelColorPropType, ButtonFloatPro
 
 // Styles
 import { IconPlusBlue, IconPlusWhite } from '../Icons';
+import { LoadingIndicator } from '../Loaders';
 
 // Props
 interface ButtonAddProps {
@@ -15,6 +16,9 @@ interface ButtonAddProps {
     labelOnLeft?: boolean;
     isWhite?: boolean;
     float?: ButtonFloatPropType;
+    labelSize?: 'large' | 'small';
+    adding?: boolean;
+    addingLabel?: string;
 }
 
 // Component
@@ -30,6 +34,8 @@ export class ButtonAdd extends React.Component<ButtonAddProps, {}> {
             labelOnLeft: true,
             isWhite: false,
             float: 'none',
+            adding: false,
+            addingLabel: 'Adding',
         };
     }
 
@@ -38,6 +44,18 @@ export class ButtonAdd extends React.Component<ButtonAddProps, {}> {
     }
 
     public render() {
+        if (this.props.adding) {
+            return (
+                <LoadingIndicator
+                    float={this.props.float}
+                    label={this.props.addingLabel}
+                    labelOnRight={!this.props.labelOnLeft}
+                    isInline={false}
+                    spinnerSize={24}
+                />
+            );
+        }
+
         return (
             <Button
                 onClick={this.props.onClick}
@@ -47,14 +65,14 @@ export class ButtonAdd extends React.Component<ButtonAddProps, {}> {
                 label={
                     this.props.label
                         ? {
-                              text: this.props.label,
-                              color:
-                                  this.props.isWhite && this.props.labelColor === 'blue'
-                                      ? 'white'
-                                      : this.props.labelColor,
-                              size: this.props.isWhite ? 'large' : 'small',
-                              onLeft: this.props.labelOnLeft,
-                          }
+                            text: this.props.label,
+                            color:
+                                this.props.isWhite && this.props.labelColor === 'blue'
+                                    ? 'white'
+                                    : this.props.labelColor,
+                            size: this.props.labelSize ? this.props.labelSize : this.props.isWhite ? 'large' : 'small',
+                            onLeft: this.props.labelOnLeft,
+                        }
                         : null
                 }
                 icon={{

@@ -14,11 +14,6 @@ export class StudioRateCardActionsClass {
     };
 
     @action
-    public setStudioRateCard = (value): void => {
-        StudioRateCardStore.selectedRateCardId = value;
-    };
-
-    @action
     public getStudioRateCard = async (): Promise<boolean> => {
         try {
             StudioRateCardStore.rateCard.loading = true;
@@ -86,4 +81,102 @@ export class StudioRateCardActionsClass {
             StudioRateCardStore.rateCardTypes.loading = false;
         }
     };
+
+    @action
+    public addRateCardType = async (name: string): Promise<boolean> => {
+        try {
+            StudioRateCardStore.rateCardTypes.adding = true;
+            const response = (await API.postData(`${APIPath.STUDIO_RATE_CARD_TYPE}`, {
+                studio_id: StudioRateCardStore.id,
+                ratecard_name: name,
+            })) as RateCardType[];
+
+            const data: {
+                [key: number]: RateCardType
+            } = {};
+
+            response.forEach((value) => {
+                data[value.ratecardId] = value;
+            });
+            StudioRateCardStore.rateCardTypes.data = data;
+            if (!StudioRateCardStore.selectedRateCardId && Object.keys(data).length > 0) {
+                StudioRateCardStore.selectedRateCardId = Number(Object.keys(data)[0]);
+            }
+
+            if (Object.keys(data).length === 0) {
+                StudioRateCardStore.selectedRateCardId = null;
+            } else {
+                StudioRateCardStore.selectedRateCardId = Math.max(...this.getKeys(data));
+            }
+
+            return true;
+        } catch (error) {
+            throw error;
+        } finally {
+            // Stop loading search results
+            StudioRateCardStore.rateCardTypes.adding = false;
+        }
+    }
+
+    @action
+    public saveRateCardType = async (name: string): Promise<boolean> => {
+        try {
+            StudioRateCardStore.rateCardTypes.saving = true;
+            const response = (await API.putData(`${APIPath.STUDIO_RATE_CARD_TYPE}/${StudioRateCardStore.selectedRateCardId}`, {
+                studio_id: StudioRateCardStore.id,
+                ratecard_name: name,
+            })) as RateCardType[];
+
+            const data: {
+                [key: number]: RateCardType
+            } = {};
+
+            response.forEach((value) => {
+                data[value.ratecardId] = value;
+            });
+            StudioRateCardStore.rateCardTypes.data = data;
+            if (!StudioRateCardStore.selectedRateCardId && Object.keys(data).length > 0) {
+                StudioRateCardStore.selectedRateCardId = Number(Object.keys(data)[0]);
+            }
+
+            return true;
+        } catch (error) {
+            throw error;
+        } finally {
+            // Stop loading search results
+            StudioRateCardStore.rateCardTypes.saving = false;
+        }
+    }
+
+    @action
+    public deleteRateCardType = async (): Promise<boolean> => {
+        try {
+            StudioRateCardStore.rateCardTypes.deleting = true;
+            const response = (await API.deleteData(`${APIPath.STUDIO_RATE_CARD_TYPE}/${StudioRateCardStore.selectedRateCardId}`)) as RateCardType[];
+
+            const data: {
+                [key: number]: RateCardType
+            } = {};
+
+            response.forEach((value) => {
+                data[value.ratecardId] = value;
+            });
+            StudioRateCardStore.rateCardTypes.data = data;
+
+            if (Object.keys(data).length === 0) {
+                StudioRateCardStore.selectedRateCardId = null;
+            } else {
+                StudioRateCardStore.selectedRateCardId = Math.min(...this.getKeys(data));
+            }
+
+            return true;
+        } catch (error) {
+            throw error;
+        } finally {
+            // Stop loading search results
+            StudioRateCardStore.rateCardTypes.deleting = false;
+        }
+    }
+
+    private getKeys = (data: { [key: number]: RateCardType }): number[] => Object.keys(data).map(i => Number(i));
 }
