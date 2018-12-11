@@ -279,7 +279,7 @@ module.exports = function (app) {
 
       const selectFields = `p.id, 
                             p.customer_id AS customerId, 
-                            c.customer_name AS customerName, 
+                            c.cardname AS customerName, 
                             c.cardcode, 
                             p.notes, 
                             p.project_release AS projectRelease, 

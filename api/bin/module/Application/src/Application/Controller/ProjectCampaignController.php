@@ -31,21 +31,32 @@ class ProjectCampaignController extends CustomAbstractActionController
         $canViewRequestMusicTeam = $this->_usersRepo->extractPermission($this->_user_permission, 15, 'view_or_edit');
         $canViewRequestWrittingTeam = $this->_usersRepo->extractPermission($this->_user_permission, 14, 'view_or_edit');
         $canViewPor = $this->_usersRepo->extractPermission($this->_user_permission, 20, 'view_or_edit');
+        // check if user is a billing user
+        $isBillingUser = $this->_usersRepo->isBillingUser($this->_user_id);
 
-        if($canViewCampaign) {
+        if ($canViewCampaign) {
             $filter['project_id'] = (int)$this->getRequest()->getQuery('project_id', 0);
             $filter['campaign_id'] = (int)$this->getRequest()->getQuery('campaign_id', 0);
             $filter['request_writing_team'] = $this->getRequest()->getQuery('request_writing_team', null);
             $filter['request_music_team'] = $this->getRequest()->getQuery('request_music_team', null);
+            $filter['approved_by_billing'] = $this->getRequest()->getQuery('approved_by_billing', null);
             $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
             $length = (int)trim($this->getRequest()->getQuery('length', 10));
             $getUser = (int)trim($this->getRequest()->getQuery('get_user', 0));
 
-            if(!$canViewRequestMusicTeam) {
+            if (!$isBillingUser) {
+                $filter['approved_by_billing'] = 1;
+            }
+
+            if (strlen($filter['approved_by_billing']) == 0) {
+                $filter['approved_by_billing'] = null;
+            }
+
+            if (!$canViewRequestMusicTeam) {
                 unset($filter['request_music_team']);
             }
 
-            if(!$canViewRequestWrittingTeam) {
+            if (!$canViewRequestWrittingTeam) {
                 unset($filter['request_writing_team']);
             }
 
@@ -59,50 +70,50 @@ class ProjectCampaignController extends CustomAbstractActionController
                 $row = array_merge($row, $projectName);
 
                 if ($getUser) {
-                    if($canViewCreativeTeam) {
+                    if ($canViewCreativeTeam) {
                         $row['user'] = $this->_campaignRepo->getCampaignProjectPeople('user', $row['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
                     }
 
-                    if($canViewDesigner) {
+                    if ($canViewDesigner) {
                         $row['designer'] = $this->_campaignRepo->getCampaignProjectPeople('designer', $row['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
                     }
 
-                    if($canViewEditor) {
+                    if ($canViewEditor) {
                         $row['editor'] = $this->_campaignRepo->getCampaignProjectPeople('editor', $row['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
                     }
 
-                    if($canViewBilling) {
+                    if ($canViewBilling) {
                         $row['billingUser'] = $this->_campaignRepo->getCampaignProjectPeople('billing', $row['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
                     }
 
-                    if(!$canViewBudget) {
+                    if (!$canViewBudget) {
                         unset($row['budget']);
                         unset($row['budgetNote']);
                     }
 
-                    if(!$canViewNote) {
+                    if (!$canViewNote) {
                         unset($row['note']);
                     }
 
-                    if(!$canViewMaterialReceived) {
+                    if (!$canViewMaterialReceived) {
                         unset($row['materialReceiveDate']);
                     }
 
-                    if(!$canViewRequestMusicTeam) {
+                    if (!$canViewRequestMusicTeam) {
                         unset($row['requestMusicTeam']);
                         unset($row['musicTeamNotes']);
                     }
 
-                    if(!$canViewRequestWrittingTeam) {
+                    if (!$canViewRequestWrittingTeam) {
                         unset($row['requestWritingTeam']);
                         unset($row['writingTeamNotes']);
                     }
 
-                    if(!$canViewPor) {
+                    if (!$canViewPor) {
                         unset($row['por']);
                     }
 
-                    if(!$canViewInvoice) {
+                    if (!$canViewInvoice) {
                         unset($row['invoiceContact']);
                     }
                 }
@@ -131,80 +142,7 @@ class ProjectCampaignController extends CustomAbstractActionController
 
     public function get($projectCampaignId)
     {
-        $canViewCampaign = $this->_usersRepo->extractPermission($this->_user_permission, 6, 'view_or_edit');
-        $canViewBudget = $this->_usersRepo->extractPermission($this->_user_permission, 18, 'view_or_edit');
-        $canViewNote = $this->_usersRepo->extractPermission($this->_user_permission, 19, 'view_or_edit');
-        $canViewMaterialReceived = $this->_usersRepo->extractPermission($this->_user_permission, 17, 'view_or_edit');
-        $canViewRequestMusicTeam = $this->_usersRepo->extractPermission($this->_user_permission, 15, 'view_or_edit');
-        $canViewRequestWrittingTeam = $this->_usersRepo->extractPermission($this->_user_permission, 14, 'view_or_edit');
-        $canViewPor = $this->_usersRepo->extractPermission($this->_user_permission, 20, 'view_or_edit');
-        $canViewInvoice = $this->_usersRepo->extractPermission($this->_user_permission, 21, 'view_or_edit');
-
-        if($canViewCampaign) {
-            if ($projectCampaignId) {
-                $data = $this->_projectCampaignRepo->search(array('project_campaign_id' => $projectCampaignId), 0, 1);
-
-                if (count($data)) {
-                    $data = $data[0];
-
-                    // set project name
-                    $projectName = $this->_projectRepo->getProjectName($data['projectId'], $this->_user_type_id, true);
-                    $data = array_merge($data, $projectName);
-
-                    if(!$canViewBudget) {
-                        unset($data['budget']);
-                        unset($data['budgetNote']);
-                    }
-
-                    if(!$canViewNote) {
-                        unset($data['note']);
-                    }
-
-                    if(!$canViewMaterialReceived) {
-                        unset($data['materialReceiveDate']);
-                    }
-
-                    if(!$canViewRequestMusicTeam) {
-                        unset($data['requestMusicTeam']);
-                        unset($data['musicTeamNotes']);
-                    }
-
-                    if(!$canViewRequestWrittingTeam) {
-                        unset($data['requestWritingTeam']);
-                        unset($data['writingTeamNotes']);
-                    }
-
-                    if(!$canViewPor) {
-                        unset($data['por']);
-                    }
-
-                    if(!$canViewInvoice) {
-                        unset($data['invoiceContact']);
-                    }
-
-                    $response = array(
-                        'status' => 1,
-                        'message' => "Request successful",
-                        'data' => $data
-                    );
-                } else {
-                    $response = array(
-                        'status' => 0,
-                        'message' => 'Project campaign not found'
-                    );
-                }
-            } else {
-                $response = array(
-                    'status' => 0,
-                    'message' => 'Please send project id and campaign id'
-                );
-            }
-        } else {
-            $response = array(
-                'status' => 0,
-                'message' => 'Permission denied.'
-            );
-        }
+        $response = $this->getSingle($projectCampaignId);
 
         if ($response['status'] == 0) {
             $this->getResponse()->setStatusCode(400);
@@ -214,7 +152,8 @@ class ProjectCampaignController extends CustomAbstractActionController
     }
 
 
-    public function create($data) {
+    public function create($data)
+    {
         $this->getResponse()->setStatusCode(400);
 
         return new JsonModel(array());
@@ -230,6 +169,8 @@ class ProjectCampaignController extends CustomAbstractActionController
         $canEditPor = $this->_usersRepo->extractPermission($this->_user_permission, 20, 'edit');
         $canEditInvoice = $this->_usersRepo->extractPermission($this->_user_permission, 21, 'edit');
         $canEditMaterialReceived = $this->_usersRepo->extractPermission($this->_user_permission, 17, 'edit');
+        // check if user is a billing user
+        $isBillingUser = $this->_usersRepo->isBillingUser($this->_user_id);
 
         if ($canEditCampaign) {
             $projectCampaignId = (int)$projectCampaignId;
@@ -245,12 +186,35 @@ class ProjectCampaignController extends CustomAbstractActionController
             $por = ($canEditPor && isset($data['por'])) ? $data['por'] : null;
             $invoiceContact = ($canEditInvoice && isset($data['invoice_contact'])) ? $data['invoice_contact'] : null;
             $materialReceiveDate = ($canEditMaterialReceived && isset($data['material_receive_date'])) ? $data['material_receive_date'] : null;
+            $customerId = isset($data['customer_id']) ? $data['customer_id'] : null;
+            $approvedByBilling = ($isBillingUser && isset($data['approved_by_billing']) && strlen($data['approved_by_billing']) > 0)
+                ? (((int)$data['approved_by_billing']) ? 1 : 0)
+                : null;
+            $channelId = ($isBillingUser && isset($data['channel_id']) && strlen($data['channel_id']) > 0)
+                ? (int)$data['channel_id']
+                : null;
 
             if ($projectCampaignId) {
                 $existingProjectToCampaign = $this->_projectToCampaignRepository->find($projectCampaignId);
 
-                if($existingProjectToCampaign) {
+                if ($existingProjectToCampaign) {
                     $campaign = $this->_campaignRepository->find($existingProjectToCampaign->getCampaignId());
+                    $project = $this->_projectRepository->find($existingProjectToCampaign->getProjectId());
+                    $studio = null;
+
+                    if ($project->getStudioId()) {
+                        $studio = $this->_studioRepository->find($project->getStudioId());
+                    }
+
+                    $nofiticationData = array(
+                        "projectId" => $existingProjectToCampaign->getProjectId(),
+                        "projectName" => $project->getProjectName(),
+                        "campaignId" => $existingProjectToCampaign->getCampaignId(),
+                        "campaignName" => $campaign->getCampaignName(),
+                        "studioId" => $studio ? $studio->getId() : null,
+                        "studioName" => $studio ? $studio->getStudioName() : null,
+                        "projectCampaignId" => $projectCampaignId,
+                    );
 
                     if ($requestMusicTeam != $existingProjectToCampaign->getRequestMusicTeam()
                         || $musicTeamNote != $existingProjectToCampaign->getMusicTeamNotes()) {
@@ -264,6 +228,12 @@ class ProjectCampaignController extends CustomAbstractActionController
                         $projectHistory->setCreatedAt(new \DateTime('now'));
                         $this->_em->persist($projectHistory);
                         $this->_em->flush();
+
+                        // notification for music team
+                        if ($requestMusicTeam) {
+                            $musicUserTypeIds = $this->_usersRepo->getTypeIdsByName('music');
+                            $this->_notificationRepo->create('request_music_team', $nofiticationData, $musicUserTypeIds, $this->_user_id);
+                        }
                     }
 
                     if ($requestWritingTeam != $existingProjectToCampaign->getRequestWritingTeam()
@@ -278,6 +248,12 @@ class ProjectCampaignController extends CustomAbstractActionController
                         $projectHistory->setCreatedAt(new \DateTime('now'));
                         $this->_em->persist($projectHistory);
                         $this->_em->flush();
+
+                        // notification for music team
+                        if ($requestWritingTeam) {
+                            $writterUserTypeIds = $this->_usersRepo->getTypeIdsByName('writer');
+                            $this->_notificationRepo->create('request_writing_team', $nofiticationData, $writterUserTypeIds, $this->_user_id);
+                        }
                     }
 
                     if ($firstPointOfContact !== 0) {
@@ -334,15 +310,28 @@ class ProjectCampaignController extends CustomAbstractActionController
                         $existingProjectToCampaign->setBudgetNote($budgetNote);
                     }
 
+                    if ($approvedByBilling !== null) {
+                        $existingProjectToCampaign->setApprovedByBilling($approvedByBilling);
+                    }
+
+                    if ($channelId !== null) {
+                        $existingProjectToCampaign->setChannelId($channelId);
+                    }
+
+                    if ($customerId !== null) {
+                        $existingProjectToCampaign->setCustomerId($customerId);
+                    }
+
                     $this->_em->persist($existingProjectToCampaign);
                     $this->_em->flush();
+
+                    $id = (int)$existingProjectToCampaign->getId();
+                    $data = $this->getSingle($id);
 
                     $response = array(
                         'status' => 1,
                         'message' => 'Request successful.',
-                        'data' => array(
-                            'id' => (int)$existingProjectToCampaign->getId()
-                        )
+                        'data' => $data,
                     );
                 } else {
                     $response = array(
@@ -370,10 +359,11 @@ class ProjectCampaignController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    public function delete($projectCampaignId) {
+    public function delete($projectCampaignId)
+    {
         $canEditCampaign = $this->_usersRepo->extractPermission($this->_user_permission, 6, 'edit');
 
-        if($canEditCampaign) {
+        if ($canEditCampaign) {
             if ($projectCampaignId) {
                 $projectCampaign = $this->_projectToCampaignRepository->find($projectCampaignId);
 
@@ -405,11 +395,111 @@ class ProjectCampaignController extends CustomAbstractActionController
         }
 
 
-        if($response['status']==0) {
+        if ($response['status'] == 0) {
             $this->getResponse()->setStatusCode(400);
         }
 
         return new JsonModel($response);
+    }
+
+    private function getSingle($projectCampaignId)
+    {
+        $canViewCampaign = $this->_usersRepo->extractPermission($this->_user_permission, 6, 'view_or_edit');
+        $canViewBudget = $this->_usersRepo->extractPermission($this->_user_permission, 18, 'view_or_edit');
+        $canViewNote = $this->_usersRepo->extractPermission($this->_user_permission, 19, 'view_or_edit');
+        $canViewMaterialReceived = $this->_usersRepo->extractPermission($this->_user_permission, 17, 'view_or_edit');
+        $canViewRequestMusicTeam = $this->_usersRepo->extractPermission($this->_user_permission, 15, 'view_or_edit');
+        $canViewRequestWrittingTeam = $this->_usersRepo->extractPermission($this->_user_permission, 14, 'view_or_edit');
+        $canViewPor = $this->_usersRepo->extractPermission($this->_user_permission, 20, 'view_or_edit');
+        $canViewInvoice = $this->_usersRepo->extractPermission($this->_user_permission, 21, 'view_or_edit');
+        $canViewCreativeTeam = $this->_usersRepo->extractPermission($this->_user_permission, 10, 'view_or_edit');
+        $canViewDesigner = $this->_usersRepo->extractPermission($this->_user_permission, 13, 'view_or_edit');
+        $canViewEditor = $this->_usersRepo->extractPermission($this->_user_permission, 12, 'view_or_edit');
+        $canViewBilling = $this->_usersRepo->extractPermission($this->_user_permission, 11, 'view_or_edit');
+
+        if ($canViewCampaign) {
+            if ($projectCampaignId) {
+                $data = $this->_projectCampaignRepo->search(array('project_campaign_id' => $projectCampaignId), 0, 1);
+
+                if (count($data)) {
+                    $data = $data[0];
+
+                    // set project name
+                    $projectName = $this->_projectRepo->getProjectName($data['projectId'], $this->_user_type_id, true);
+                    $data = array_merge($data, $projectName);
+
+                    if ($canViewCreativeTeam) {
+                        $data['user'] = $this->_campaignRepo->getCampaignProjectPeople('user', $data['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
+                    }
+
+                    if ($canViewDesigner) {
+                        $data['designer'] = $this->_campaignRepo->getCampaignProjectPeople('designer', $data['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
+                    }
+
+                    if ($canViewEditor) {
+                        $data['editor'] = $this->_campaignRepo->getCampaignProjectPeople('editor', $data['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
+                    }
+
+                    if ($canViewBilling) {
+                        $data['billingUser'] = $this->_campaignRepo->getCampaignProjectPeople('billing', $data['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
+                    }
+
+                    if (!$canViewBudget) {
+                        unset($data['budget']);
+                        unset($data['budgetNote']);
+                    }
+
+                    if (!$canViewNote) {
+                        unset($data['note']);
+                    }
+
+                    if (!$canViewMaterialReceived) {
+                        unset($data['materialReceiveDate']);
+                    }
+
+                    if (!$canViewRequestMusicTeam) {
+                        unset($data['requestMusicTeam']);
+                        unset($data['musicTeamNotes']);
+                    }
+
+                    if (!$canViewRequestWrittingTeam) {
+                        unset($data['requestWritingTeam']);
+                        unset($data['writingTeamNotes']);
+                    }
+
+                    if (!$canViewPor) {
+                        unset($data['por']);
+                    }
+
+                    if (!$canViewInvoice) {
+                        unset($data['invoiceContact']);
+                    }
+
+                    $response = array(
+                        'status' => 1,
+                        'message' => "Request successful",
+                        'data' => $data
+                    );
+                } else {
+                    $response = array(
+                        'status' => 0,
+                        'message' => 'Project campaign not found'
+                    );
+                }
+            } else {
+                $response = array(
+                    'status' => 0,
+                    'message' => 'Please send project id and campaign id'
+                );
+            }
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Permission denied.'
+            );
+        }
+
+        return $response;
     }
 
 }

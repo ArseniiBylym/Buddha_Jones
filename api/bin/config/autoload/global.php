@@ -49,5 +49,8 @@ return array(
         'temp_profile_image' => getcwd() . '/data/temp_profile_image/',
         'spot_sent_spec_sheet' => getcwd() . '/public/spec_sheet/',
     ),
-    'site_url' => 'http://buddhajonesapi.localhost/'
+    'site_url' => 'http://buddhajonesapi.localhost/',
+    'email' => array(
+        'from' => 'rizwna.kader@indydutch.com'
+    )
 );

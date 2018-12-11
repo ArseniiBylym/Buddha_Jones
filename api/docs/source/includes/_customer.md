@@ -1,9 +1,5 @@
 # Customer (client)
 
-
-
-
-
 ## Get customer list
 
 Retrieve list of customer.
@@ -14,20 +10,32 @@ Retrieve list of customer.
 {
     "status": 1,
     "message": "Request successful",
-    "total_count": 3,
-    "object_count": 3,
+    "total_count": 24,
+    "object_count": 10,
     "data": [
         {
-            "id": 3,
-            "customerName": "antoher customer 3"
+            "id": 15,
+            "studioId": 2,
+            "cardcode": "C00496",
+            "cardname": " Mitchell Davis"
         },
         {
-            "id": 1,
-            "customerName": "Test Customer 1"
+            "id": 16,
+            "studioId": 2,
+            "cardcode": "C00748\r\n",
+            "cardname": "Amanda Miller\r\n"
         },
         {
-            "id": 2,
-            "customerName": "Test Customer 2"
+            "id": 11,
+            "studioId": 2,
+            "cardcode": "C00702\r\n",
+            "cardname": "Ariadne Chucholowski\r\n"
+        },
+        {
+            "id": 9,
+            "studioId": 2,
+            "cardcode": "C00722",
+            "cardname": "Bianka Cisneros"
         }
     ]
 }
@@ -44,6 +52,7 @@ Required | Parameter | Type | Default | Description
 false | length | int | 10 | Limit number of returned results
 false | offset | int | 0 | Offset returned results
 false | search | string | null | search string which will match with: customer name
+false | studio_id | int | null | studio id
 false | first_letter | string | null | send this param for filter with first letter of customer name (send '0-9' or any letter from 'A' to 'Z' or for others send 'other')
 
 
@@ -99,10 +108,6 @@ Retrieve single customer based on its ID.
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | customer_id | int | null | Narrow response to single customer with specific ID
-
-
-
-
 
 ## Get distinct first letter of customer name
 
@@ -223,11 +228,9 @@ Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | customer_id | int | null | Customer ID
 **true** | name | string | null | Name
+false | title | string | null | Title
 false | email | string | null | Email address
 false | mobile_phone | string | null | Mobile phone number
-false | office_phone | string | null | Office phone number
-false | postal_address | string | null | Postal address
-false | project_campaign | JSON | null | Project to campaign relation 
 
 
 ## Update Customer Contact
@@ -243,7 +246,6 @@ axios.put('/customer-contact', {
     customer_id:10,
     name:'test customer',
     email:'test@gmail.com',
-    project_campaign:[{"project_id":1,"campaign_id":2},{"project_id":3,"campaign_id":5}]
 });
 ```
 
@@ -265,12 +267,10 @@ axios.put('/customer-contact', {
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 false | customer_id | int | null | Customer ID
-false| name | string | null | Name
+false | name | string | null | Name
+false | title | string | null | Title
 false | email | string | null | Email address
 false | mobile_phone | string | null | Mobile phone number
-false | office_phone | string | null | Office phone number
-false | postal_address | string | null | Postal address
-false | project_campaign | JSON | null | Project to campaign relation 
 
 
 ## Patch Customer Contact
@@ -286,7 +286,6 @@ axios.patch('/customer-contact', {
     customer_id:10,
     name:'test customer',
     email:'test@gmail.com',
-    project_campaign:[{"project_id":1,"campaign_id":2},{"project_id":3,"campaign_id":5}]
 });
 ```
 
@@ -308,12 +307,10 @@ axios.patch('/customer-contact', {
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 false | customer_id | int | null | Customer ID
-false| name | string | null | Name
+false | name | string | null | Name
+false | title | string | null | Title
 false | email | string | null | Email address
 false | mobile_phone | string | null | Mobile phone number
-false | office_phone | string | null | Office phone number
-false | postal_address | string | null | Postal address
-false | project_campaign | JSON | null | Project to campaign relation 
 
 
 ## Assign Customer Contact to Project campaign
@@ -324,9 +321,8 @@ Assign Customer Contact to Project campaign relation
 
 ```javascript
 axios.post('/assign-customer-contact-to-project-campaign', {
-    first_point_of_contact_id:10,
-    project_id: 1,
-    campaign_id: 2
+    project_campaign_id:10,
+    customer_contact_id: 1,
 });
 ```
 
@@ -348,8 +344,8 @@ axios.post('/assign-customer-contact-to-project-campaign', {
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
 **true** | project_campaign_id | string | null | Project Campaign ID
-false | first_point_of_contact_id | int | null | First point of contact id
-
+false | customer_contact_id | int | null | customer contact id
+˝
 
 ## Delete Customer Contact to Project campaign
 

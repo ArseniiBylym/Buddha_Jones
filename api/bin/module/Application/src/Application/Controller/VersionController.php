@@ -43,7 +43,6 @@ class VersionController extends CustomAbstractActionController
             'data' => $data
         );
 
-
         return new JsonModel($response);
     }
 
@@ -101,14 +100,19 @@ class VersionController extends CustomAbstractActionController
                         $this->_em->persist($spotVersion);
 
                         // project history
-                        $campaign = $this->_campaignRepository->find($spot->getCampaignId());
-                        $historyMessage = 'Version "' . $name . '" was added to spot"' . $spot->getSpotName() . '" from "' . $campaign->getCampaignName() . '" campaign';
-                        $projectHistory = new RediProjectHistory();
-                        $projectHistory->setProjectId($spot->getProjectId());
-                        $projectHistory->setUserId($this->_user_id);
-                        $projectHistory->setMessage($historyMessage);
-                        $projectHistory->setCreatedAt(new \DateTime('now'));
-                        $this->_em->persist($projectHistory);
+                        $spotProjectCampaign = $this->_projectToCampaignRepository->find($spot->getProjectCampaignId());
+
+                        if($spotProjectCampaign) {
+                            $campaign = $this->_campaignRepository->find($spotProjectCampaign->getCampaignId());
+                        
+                            $historyMessage = 'Version "' . $name . '" was added to spot"' . $spot->getSpotName() . '" from "' . $campaign->getCampaignName() . '" campaign';
+                            $projectHistory = new RediProjectHistory();
+                            $projectHistory->setProjectId($spotProjectCampaign->getProjectId());
+                            $projectHistory->setUserId($this->_user_id);
+                            $projectHistory->setMessage($historyMessage);
+                            $projectHistory->setCreatedAt(new \DateTime('now'));
+                            $this->_em->persist($projectHistory);
+                        }
                     }
                 }
 
@@ -123,7 +127,9 @@ class VersionController extends CustomAbstractActionController
                 $response = array(
                     'status' => 1,
                     'message' => 'Request successful.',
-                    'data' => $data,
+                    'data' => array(
+                        'version' => $data,
+                    ),
                 );
             }
         } else {

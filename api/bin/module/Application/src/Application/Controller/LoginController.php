@@ -70,30 +70,21 @@ class LoginController extends AbstractRestfulController
                         $user = $this->_userRepository->find($userId);
                         $userType = $this->_userTypeRepository->find($user->getTypeId());
 
+                        $userData = $this->_userRepo->getUser($userId);
+
+                        $data = array_merge($userData, array(
+                            'lastClockIn' => $this->_userRepo->getUserLastClockin($userId),
+                            'pageAccess' => $this->_userRepo->getPageAccessOfUser($userType->getId()),
+                            'projectPermissions' => $this->_userRepo->getUserTypeProjectPermission($userType->getId()),
+                        ));
+
                         $response = array(
                             'status' => 1,
                             'message' => "User already logged in",
-                            'data' => array(
-                                'user_id' => $user->getId(),
-                                'username' => $user->getUsername(),
-                                'email' => $user->getEmail(),
-                                'first_name' => $user->getFirstName(),
-                                'last_name' => $user->getLastName(),
-                                'initials' => $user->getInitials(),
-                                'full_name' => trim(implode(' ', array($user->getFirstName(), $user->getLastName()))),
-                                'image' => ($user->getImage())?$this->_config['site_url'] . 'thumb/profile_image/' . $user->getImage():null,
-                                'type_id' => $userType->getId(),
-                                'type_name' => $userType->getTypeName(),
-                                'hourly_rate' => $user->getHourlyRate(),
-                                'salary_type' => $user->getSalaryType(),
-                                'salary_amount' => $user->getSalaryAmount(),
-                                'min_hour' => $user->getMinHour(),
-                                'status' => $user->getStatus(),
-                                'page_access' => $this->_userRepo->getPageAccessOfUser($userType->getId()),
-                            )
+                            'data' => $data,
                         );
                     }
-                } catch(\Exception $e){
+                } catch (\Exception $e) {
                     $authFailed = true;
                 }
             } else {
@@ -157,7 +148,7 @@ class LoginController extends AbstractRestfulController
                     $token = array(
                         'iss' => $this->_config['jwt_config']['issuer'],
                         'aud' => $this->_config['jwt_config']['audience'],
-                        'algorithm' =>  'HS256',
+                        'algorithm' => 'HS256',
                         'iat' => time(),
                         'exp' => time() + 86400,
                         'userId' => $identity->getId(),
@@ -165,28 +156,16 @@ class LoginController extends AbstractRestfulController
 
                     $jwtToken = JWT::encode($token, $jwtSecret);
                     $userType = $this->_userTypeRepository->find($identity->getTypeId());
+                    $userData = $this->_userRepo->getUser($identity->getId());
 
-                    $data = array(
-                        'user_id' => $identity->getId(),
-                        'username' => $identity->getUsername(),
-                        'email' => $identity->getEmail(),
-                        'first_name' => $identity->getFirstName(),
-                        'last_name' => $identity->getLastName(),
-                        'initials' => $identity->getInitials(),
-                        'full_name' => trim(implode(' ', array($identity->getFirstName(), $identity->getLastName()))),
-                        'image' => ($identity->getImage())?$this->_config['site_url'] . 'thumb/profile_image/' . $identity->getImage():null,
-                        'type_id' => $userType->getId(),
-                        'type_name' => $userType->getTypeName(),
-                        'hourly_rate' => $identity->getHourlyRate(),
-                        'salary_type' => $identity->getSalaryType(),
-                        'salary_amount' => $identity->getSalaryAmount(),
-                        'min_hour' => $identity->getMinHour(),
+                    $data = array_merge($userData, array(
+                        'lastClockIn' => $this->_userRepo->getUserLastClockin($identity->getId()),
                         'token' => $jwtToken,
-                        'status' => $identity->getStatus(),
-                        'page_access' => $this->_userRepo->getPageAccessOfUser($userType->getId()),
-                        'project_permissions' => $this->_userRepo->getUserTypeProjectPermission($userType->getId()),
-                    );
+                        'pageAccess' => $this->_userRepo->getPageAccessOfUser($userType->getId()),
+                        'projectPermissions' => $this->_userRepo->getUserTypeProjectPermission($userType->getId()),
+                    ));
 
+                    // update last login
                     $userInfo = $this->_userRepository->find($identity->getId());
                     $userInfo->setLastLoginDate(new \DateTime('now'));
                     $this->_em->persist($userInfo);
@@ -207,7 +186,7 @@ class LoginController extends AbstractRestfulController
                 $authFailed = 1;
                 $checkUserName = $this->_userRepository->findOneBy(array('username' => $username));
 
-                if($checkUserName) {
+                if ($checkUserName) {
                     $response = array(
                         'status' => 0,
                         'message' => 'User name and password does not match'
@@ -229,7 +208,7 @@ class LoginController extends AbstractRestfulController
 
 
         if ($response['status'] == 0) {
-            if($authFailed==1) {
+            if ($authFailed == 1) {
                 $this->getResponse()->setStatusCode(401);
             } else {
                 $this->getResponse()->setStatusCode(400);

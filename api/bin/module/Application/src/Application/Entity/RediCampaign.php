@@ -24,7 +24,7 @@ class RediCampaign
     /**
      * @var string
      *
-     * @ORM\Column(name="campaign_name", type="string", length=22, nullable=true)
+     * @ORM\Column(name="campaign_name", type="string", length=32, nullable=true)
      */
     private $campaignName;
 

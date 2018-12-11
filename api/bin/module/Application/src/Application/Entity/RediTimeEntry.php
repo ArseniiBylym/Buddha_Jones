@@ -64,6 +64,27 @@ class RediTimeEntry
     private $duration;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="straight_time", type="decimal", precision=19, scale=2, nullable=true)
+     */
+    private $straightTime;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="over_time", type="decimal", precision=19, scale=2, nullable=true)
+     */
+    private $overTime;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="double_time", type="decimal", precision=19, scale=2, nullable=true)
+     */
+    private $doubleTime;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="activity_id", type="integer", nullable=true)
@@ -125,6 +146,13 @@ class RediTimeEntry
      * @ORM\Column(name="status", type="integer", nullable=true)
      */
     private $status;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="bill_status", type="integer", nullable=true)
+     */
+    private $billStatus;
 
 
 
@@ -274,6 +302,75 @@ class RediTimeEntry
     public function getDuration()
     {
         return $this->duration;
+    }
+
+    /**
+     * Set straightTime
+     *
+     * @param string $straightTime
+     * @return RediTimeEntry
+     */
+    public function setStraightTime($straightTime)
+    {
+        $this->straightTime = $straightTime;
+
+        return $this;
+    }
+
+    /**
+     * Get straightTime
+     *
+     * @return string 
+     */
+    public function getStraightTime()
+    {
+        return $this->straightTime;
+    }
+
+    /**
+     * Set overTime
+     *
+     * @param string $overTime
+     * @return RediTimeEntry
+     */
+    public function setOverTime($overTime)
+    {
+        $this->overTime = $overTime;
+
+        return $this;
+    }
+
+    /**
+     * Get overTime
+     *
+     * @return string 
+     */
+    public function getOverTime()
+    {
+        return $this->overTime;
+    }
+
+    /**
+     * Set doubleTime
+     *
+     * @param string $doubleTime
+     * @return RediTimeEntry
+     */
+    public function setDoubleTime($doubleTime)
+    {
+        $this->doubleTime = $doubleTime;
+
+        return $this;
+    }
+
+    /**
+     * Get doubleTime
+     *
+     * @return string 
+     */
+    public function getDoubleTime()
+    {
+        return $this->doubleTime;
     }
 
     /**
@@ -481,5 +578,28 @@ class RediTimeEntry
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * Set billStatus
+     *
+     * @param integer $billStatus
+     * @return RediTimeEntry
+     */
+    public function setBillStatus($billStatus)
+    {
+        $this->billStatus = $billStatus;
+
+        return $this;
+    }
+
+    /**
+     * Get billStatus
+     *
+     * @return integer 
+     */
+    public function getBillStatus()
+    {
+        return $this->billStatus;
     }
 }

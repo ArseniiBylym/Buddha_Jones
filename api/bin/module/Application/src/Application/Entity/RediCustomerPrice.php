@@ -33,6 +33,15 @@ class RediCustomerPrice
     /**
      * @var string
      *
+     * @ORM\Column(name="type", type="string", length=1, nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="NONE")
+     */
+    private $type;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="price", type="decimal", precision=19, scale=2, nullable=true)
      */
     private $price;
@@ -83,6 +92,29 @@ class RediCustomerPrice
     public function getActivityId()
     {
         return $this->activityId;
+    }
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     * @return RediCustomerPrice
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string 
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**

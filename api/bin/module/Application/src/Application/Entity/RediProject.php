@@ -36,6 +36,13 @@ class RediProject
     private $projectCode;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="project_prefix", type="string", length=10, nullable=true)
+     */
+    private $projectPrefix;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="project_release", type="datetime", nullable=true)
@@ -45,9 +52,9 @@ class RediProject
     /**
      * @var integer
      *
-     * @ORM\Column(name="customer_id", type="integer", nullable=true)
+     * @ORM\Column(name="studio_id", type="integer", nullable=true)
      */
-    private $customerId;
+    private $studioId;
 
     /**
      * @var string
@@ -62,6 +69,13 @@ class RediProject
      * @ORM\Column(name="created_by_user_id", type="integer", nullable=true)
      */
     private $createdByUserId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="type", type="string", length=1, nullable=true)
+     */
+    private $type;
 
 
 
@@ -122,6 +136,29 @@ class RediProject
     }
 
     /**
+     * Set projectPrefix
+     *
+     * @param string $projectPrefix
+     * @return RediProject
+     */
+    public function setProjectPrefix($projectPrefix)
+    {
+        $this->projectPrefix = $projectPrefix;
+
+        return $this;
+    }
+
+    /**
+     * Get projectPrefix
+     *
+     * @return string 
+     */
+    public function getProjectPrefix()
+    {
+        return $this->projectPrefix;
+    }
+
+    /**
      * Set projectRelease
      *
      * @param \DateTime $projectRelease
@@ -145,26 +182,26 @@ class RediProject
     }
 
     /**
-     * Set customerId
+     * Set studioId
      *
-     * @param integer $customerId
+     * @param integer $studioId
      * @return RediProject
      */
-    public function setCustomerId($customerId)
+    public function setStudioId($studioId)
     {
-        $this->customerId = $customerId;
+        $this->studioId = $studioId;
 
         return $this;
     }
 
     /**
-     * Get customerId
+     * Get studioId
      *
      * @return integer 
      */
-    public function getCustomerId()
+    public function getStudioId()
     {
-        return $this->customerId;
+        return $this->studioId;
     }
 
     /**
@@ -211,5 +248,28 @@ class RediProject
     public function getCreatedByUserId()
     {
         return $this->createdByUserId;
+    }
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     * @return RediProject
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string 
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }
