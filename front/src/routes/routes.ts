@@ -1,16 +1,17 @@
 import { Route, RouteAccessKey } from 'types/routes';
-import { DashboardAsync } from './Dashboard';
-import { ProjectsListAsync } from './Projects';
-import { ProjectsBoardAsync, ProjectCreateAsync } from './Project';
 import { ActivitiesDefinitionListAsync, ActivityDefinitionFormAsync } from './Configuration/ActivitiesDefinition/index';
-import { TimeEntryAsync } from './TimeTracking';
-import { UserAccountAsync } from './User';
-import { TimeApprovalAsync } from './TimeTracking/Approval';
-import { ProducerSpotSentListAsync, ProducerSpotSentFormAsync } from './SpotSent';
-import { ProjectBoardPermissionListAsync } from './Configuration/UserManagement/ProjectBoardPermission/List';
 import { ProjectBoardPermissionEditAsync } from './Configuration/UserManagement/ProjectBoardPermission/Form';
+import { ProjectBoardPermissionListAsync } from './Configuration/UserManagement/ProjectBoardPermission/List';
 import { UserManagementUsersListAsync } from './Configuration/UserManagement/UsersList/List';
+import { DashboardAsync } from './Dashboard';
+import { ProjectCreateAsync, ProjectsBoardAsync } from './Project';
+import { ProjectsListAsync } from './Projects';
+import { SpotsToBillAsync } from './SpotBilling/SpotsToBill/SpotsToBillAsync';
+import { ProducerSpotSentFormAsync, ProducerSpotSentListAsync } from './SpotSent';
 import { NewClientRequestListAsync } from './StudioClient/NewClientRequest/List';
+import { TimeEntryAsync } from './TimeTracking';
+import { TimeApprovalAsync } from './TimeTracking/Approval';
+import { UserAccountAsync } from './User';
 
 // Icons
 const dashboardIcon = require('../assets/images/navigation/navigation-icon-dashboard.png');
@@ -106,6 +107,17 @@ export const routes: Route[] = [
         name: 'Spot sent',
         path: '/portal/studio/producer-spot-sent-details/:id',
         exact: false,
+        allowAllUsers: true,
+    },
+    {
+        component: SpotsToBillAsync,
+        key: 'spots-to-bill',
+        accessKey: RouteAccessKey.SpotBilling,
+        group: studioGroup,
+        name: 'Spots to bill',
+        path: '/portal/spots-to-bill',
+        entry: '/portal/spots-to-bill',
+        exact: true,
         allowAllUsers: true,
     },
     {
