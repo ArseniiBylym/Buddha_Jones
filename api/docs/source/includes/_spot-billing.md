@@ -8,68 +8,76 @@
 {
     "status": 1,
     "message": "Request Successful",
+    "length": 10,
+    "offset": 0,
+    "total_count": 3,
+    "object_count": 3,
     "data": [
         {
             "projectId": 47,
             "projectName": "Annihilation",
-            "campaign": [
-                {
-                    "campaignId": 4,
-                    "campaignName": "Theatrical Teaser/Trai",
-                    "projectCampaignId": 156,
-                    "spot": [
-                        {
-                            "spotId": 84,
-                            "spotName": "#1 Interrogation",
-                            "version": [
-                                {
-                                    "versionId": 2,
-                                    "versionName": "1A"
-                                },
-                                {
-                                    "versionId": 1,
-                                    "versionName": "1"
-                                },
-                                {
-                                    "versionId": 3,
-                                    "versionName": "1B"
-                                }
-                            ]
-                        },
-                        {
-                            "spotId": 79,
-                            "spotName": "#2 Saved",
-                            "version": []
-                        }
-                    ]
-                },
-                {
-                    "campaignId": 6,
-                    "campaignName": "Theatrical Work",
-                    "projectCampaignId": 207,
-                    "spot": [
-                        {
-                            "spotId": 84,
-                            "spotName": "#1 Interrogation",
-                            "version": [
-                                {
-                                    "versionId": 1,
-                                    "versionName": "1"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
+            "studioId": 2,
+            "studioName": "Warner Bros.",
+            "campaignId": 4,
+            "campaignName": "Theatrical Teaser/Trai",
+            "projectCampaignId": 156,
+            "spotId": 84,
+            "spotName": "#1 Interrogation",
+            "updatedAt": {
+                "date": "2018-11-13 18:16:27.000000",
+                "timezone_type": 3,
+                "timezone": "US/Eastern"
+            }
+        },
+        {
+            "projectId": 47,
+            "projectName": "Annihilation",
+            "studioId": 2,
+            "studioName": "Warner Bros.",
+            "campaignId": 4,
+            "campaignName": "Theatrical Teaser/Trai",
+            "projectCampaignId": 156,
+            "spotId": 79,
+            "spotName": "#2 Saved",
+            "updatedAt": {
+                "date": "2018-11-13 16:41:50.000000",
+                "timezone_type": 3,
+                "timezone": "US/Eastern"
+            }
+        },
+        {
+            "projectId": 47,
+            "projectName": "Annihilation",
+            "studioId": 2,
+            "studioName": "Warner Bros.",
+            "campaignId": 6,
+            "campaignName": "Theatrical Work",
+            "projectCampaignId": 207,
+            "spotId": 84,
+            "spotName": "#1 Interrogation",
+            "updatedAt": {
+                "date": "2018-11-13 16:11:00.000000",
+                "timezone_type": 3,
+                "timezone": "US/Eastern"
+            }
         }
     ]
 }
 ```
 
-
 ### HTTP Request
 
 `GET /spot-billing`
+
+
+### Query Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+false | search | string | null | Search string
+false | studio_id | int | null | Studio id
+false | offset | string | 0 | pagination offset
+false | length | string | 10 | pagination length
 
 
 

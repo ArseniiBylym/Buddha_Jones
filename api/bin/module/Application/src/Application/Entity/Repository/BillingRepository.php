@@ -4,6 +4,7 @@ namespace Application\Entity\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManager;
 use Zend\Config\Config;
+use Zend\XmlRpc\Value\DateTime;
 
 class BillingRepository extends EntityRepository
 {
@@ -535,92 +536,118 @@ class BillingRepository extends EntityRepository
         return $bill;
     }
 
-    public function getBillingListFromSpotBilling()
+    public function getBillingListFromSpotBilling($filter = array(), $offset = 0, $length = 10)
     {
         $dql = "SELECT 
                     ss.projectId,
                     p.projectName,
+                    st.id AS studioId,
+                    st.studioName,
                     ss.campaignId,
                     c.campaignName,
                     ss.projectCampaignId,
                     ss.spotId,
                     s.spotName,
-                    ss.versionId,
-                    v.versionName
+                    MAX(COALESCE(ss.updatedAt, ss.createdAt)) AS updatedAt
                 FROM \Application\Entity\RediSpotSent ss
                 LEFT JOIN \Application\Entity\RediProject p 
                     WITH p.id = ss.projectId
+                LEFT JOIN \Application\Entity\RediStudio st
+                    WITH p.studioId = st.id
                 LEFT JOIN \Application\Entity\RediCampaign c 
                     WITH c.id = ss.campaignId
                 LEFT JOIN \Application\Entity\RediSpot s 
                     WITH s.id = ss.spotId
-                LEFT JOIN \Application\Entity\RediVersion v 
-                    WITH v.id = ss.versionId
                 WHERE ss.billId IS NULL
                     AND ss.projectId IS NOT NULL
-                    AND ss.campaignId IS NOT NULL
-                GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId
-                ORDER BY p.projectName ASC , c.campaignName ASC";
+                    AND ss.campaignId IS NOT NULL ";
 
-        $query = $this->getEntityManager()->createQuery($dql);
-        $result = $query->getArrayResult();
+        $dqlFilter = [];
 
-        $response = array();
-
-        foreach ($result as $row) {
-            if (empty($response[$row['projectId']])) {
-                $response[$row['projectId']] = array(
-                    'projectId' => $row['projectId'],
-                    'projectName' => $row['projectName'],
-                    'campaign' => array(),
-                );
-            }
-
-            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']])) {
-                $response[$row['projectId']]['campaign'][$row['campaignId']] = array(
-                    'campaignId' => $row['campaignId'],
-                    'campaignName' => $row['campaignName'],
-                    'projectCampaignId' => $row['projectCampaignId'],
-                    'spot' => array(),
-                );
-            }
-
-            if (empty($row['spotId'])) {
-                continue;
-            }
-
-            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']])) {
-                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']] = array(
-                    'spotId' => $row['spotId'],
-                    'spotName' => $row['spotName'],
-                    'version' => array(),
-                );
-            }
-
-            if (empty($row['versionId'])) {
-                continue;
-            }
-
-            $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']]['version'][] = array(
-                'versionId' => $row['versionId'],
-                'versionName' => $row['versionName'],
-            );
+        if (!empty($filter['studio_id'])) {
+            $dqlFilter[] = " p.studioId=:studio_id ";
         }
 
-        $response = array_values(array_map(function ($project) {
-            $project['campaign'] = array_values(array_map(function ($campaign) {
-                $campaign['spot'] = array_values(array_map(function ($spot) {
-                    $spot['version'] = array_values($spot['version']);
-                    return $spot;
-                }, $campaign['spot']));
+        if (!empty($filter['search'])) {
+            $dqlFilter[] = " (s.spotName LIKE :search OR p.projectName  LIKE :search OR  c.campaignName LIKE :search ) ";
+        }
 
-                return $campaign;
-            }, $project['campaign']));
+        if (count($dqlFilter)) {
+            $dql .= " AND " . implode(" AND ", $dqlFilter);
+        }
 
-            return $project;
-        }, $response));
+        $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId
+                ORDER BY updatedAt DESC";
+        
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setFirstResult($offset);
+        $query->setMaxResults($length);
 
-        return $response;
+        if (!empty($filter['studio_id'])) {
+            $query->setParameter('studio_id', $filter['studio_id']);
+        }
+
+        if (!empty($filter['search'])) {
+            $query->setParameter('search', "%" . $filter['search'] . "%");
+        }
+
+        $result = $query->getArrayResult();
+
+        $result = array_map(function($res) {
+            if(!empty($res['updatedAt'])) {
+                $res['updatedAt'] = new \DateTime($res['updatedAt']);
+            }
+
+            return $res;
+        }, $result);
+
+        return $result;
+    }
+
+    public function getBillingListFromSpotBillingCount($filter = array()) {
+        $dql = "SELECT 
+                    COUNT(DISTINCT ss.project_id, ss.campaign_id, ss.spot_id) AS total_count
+                FROM redi_spot_sent ss
+                LEFT JOIN redi_project p
+                    ON p.id = ss.project_id
+                LEFT JOIN redi_campaign c
+                    ON c.id = ss.campaign_id
+                LEFT JOIN redi_spot s
+                    ON s.id = ss.spot_id
+                WHERE ss.bill_id IS NULL
+                    AND ss.project_id IS NOT NULL
+                    AND ss.campaign_id IS NOT NULL";
+
+        $dqlFilter = [];
+
+        if (!empty($filter['studio_id'])) {
+            $dqlFilter[] = " p.studio_id = :studio_id ";
+        }
+
+        if (!empty($filter['search'])) {
+            $dqlFilter[] = " (s.spot_name LIKE :search OR p.project_name  LIKE :search OR  c.campaign_name LIKE :search ) ";
+        }
+
+        if (count($dqlFilter)) {
+            $dql .= " AND " . implode(" AND ", $dqlFilter);
+        }
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+
+        if (!empty($filter['studio_id'])) {
+            $query->bindParam('studio_id', $filter['studio_id']);
+        }
+
+        if (!empty($filter['search'])) {
+            $searchParam = "%" . $filter['search'] . "%";
+
+            $query->bindParam('search', $searchParam);
+        }
+
+        $query->execute();
+        $result = $query->fetchAll();
+
+        return (!empty($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
     }
 
 }
