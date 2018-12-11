@@ -1,5 +1,5 @@
 import { observable, computed } from 'mobx';
-import { Client, ClientDetails, ClientContact } from 'types/clients';
+import { Client, ClientDetails, ClientContact, ClientsSearch } from 'types/clients';
 
 export class Studios {
     @observable currentStudioId: number | null = null;
@@ -31,6 +31,13 @@ export class Studios {
         loading: boolean;
         clients: Client[];
     }> = [];
+
+    @observable
+    public clientsBySearch: ClientsSearch = {
+        loading: false,
+        totalCount: 0,
+        clients: [],
+    };
 
     @computed
     public get clientsBySearchQueryFlat(): string[] {

@@ -33,6 +33,12 @@ export interface Client {
     cardcode: string | null;
 }
 
+export interface ClientsSearch {
+    loading: boolean;
+    totalCount: number;
+    clients: Client[];
+}
+
 export interface ClientDetailsApiResponse {
     id: number;
     customerId: number;

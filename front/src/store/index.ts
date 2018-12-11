@@ -20,3 +20,4 @@ export * from './TimeApproval';
 export * from './Time';
 export * from './SpotSent';
 export * from './Channels';
+export * from './StudioRateCard';
