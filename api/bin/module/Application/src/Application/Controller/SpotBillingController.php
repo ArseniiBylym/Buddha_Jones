@@ -18,26 +18,36 @@ class SpotBillingController extends CustomAbstractActionController
         $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
         $length = (int)trim($this->getRequest()->getQuery('length', 10));
         
-        $data = $this->_billingRepo->getBillingListFromSpotBilling($filter, $offset, $length);
-        $totalCount = $this->_billingRepo->getBillingListFromSpotBillingCount($filter);
+        if($this->_usersRepo->getSpotBillingAccess($this->_user_type_id)) {
+            $data = $this->_billingRepo->getBillingListFromSpotBilling($filter, $offset, $length);
+            $totalCount = $this->_billingRepo->getBillingListFromSpotBillingCount($filter);
 
-        $response = array(
-            'status' => 1,
-            'message' => 'Request Successful',
-            'length' => $length,
-            'offset' => $offset,
-            'total_count' => $totalCount,
-            'object_count' => count($data),
-            'data' => $data,
-        );
+            $response = array(
+                'status' => 1,
+                'message' => 'Request Successful',
+                'length' => $length,
+                'offset' => $offset,
+                'total_count' => $totalCount,
+                'object_count' => count($data),
+                'data' => $data,
+            );
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Permission denied.'
+            );
+        }
+
+        if ($response['status'] == 0) {
+            $this->getResponse()->setStatusCode(400);
+        }
 
         return new JsonModel($response);
     }
 
     public function get($spotId)
     {
-
-        $isBillingUser = $this->_usersRepo->isBillingUser($this->_user_id);
+        $isBillingUser = $this->_usersRepo->getSpotBillingAccess($this->_user_type_id);
 
         if ($isBillingUser) {
             $spotInfo = $this->getSpotInfo($spotId);
