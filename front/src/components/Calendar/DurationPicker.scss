@@ -1,0 +1,45 @@
+:global .durationPickerLabel,
+:global .durationPickerTime,
+:global .durationPicker :global .button {
+    display: inline-block;
+    margin: 0 4px;
+}
+
+:global .durationPickerTime {
+    font-weight: 700;
+}
+
+:global .durationPickerTime span {
+    font-weight: 300;
+    opacity: 0.6;
+    margin-right: 4px;
+}
+
+:global .durationPickerTime span:last-child {
+    margin-right: 0;
+}
+
+.decreaseArrow,
+.increaseArrow {
+    position: relative;
+    top: 3px;
+}
+
+.manualTypeInput {
+    -moz-appearance: textfield;
+    background: transparent;
+    border: 0;
+    font-size: 19px;
+    width: 23px;
+    
+    &:focus {
+        outline: 0;
+        background: rgba(0, 0, 0, 0.05);
+    }
+}
+
+.manualTypeInput::-webkit-outer-spin-button,
+.manualTypeInput::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

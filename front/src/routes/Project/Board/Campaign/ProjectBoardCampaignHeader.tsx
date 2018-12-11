@@ -115,6 +115,7 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
                                 <NewCustomerForm
                                     onToggleEditMode={this.onCustomerFormShowToggleHandler}
                                     studioId={this.props.store ? this.props.store.studios.currentStudioId : null}
+                                    mode={'newCustomer'}
                                 />
                             </div>
                         </Row>

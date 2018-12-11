@@ -114,6 +114,7 @@ export interface SpotDetails {
     justAdded: boolean;
     versions: VersionDetails[];
     hidden?: boolean;
+    trtId: number | null;
 }
 
 export interface VersionDetails {
@@ -221,6 +222,7 @@ export interface ProjectDetailsSpotFromApi {
     internalDeadline: DateObjectFromApi | null;
     clientDeadline: DateObjectFromApi | null;
     version: ProjectDetailsVersionFromApi[];
+    trtId: number | null;
 }
 
 interface ProjectDetailsVersionFromApi {

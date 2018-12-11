@@ -108,14 +108,14 @@ export class CustomerSelector extends React.Component<Props, {}> {
                             />
                         </div>
 
-                        < ButtonSave
+                        <ButtonSave
                             onClick={this.handleSaveChanges}
                             float="left"
                             label={
                                 this.status === Status.error ? 'Could not save, please try again' : 'Save details'
                             }
                             labelColor={this.status === Status.error ? 'orange' : 'blue'}
-                            savingLabel='Saving'
+                            savingLabel="Saving"
                             isSaving={this.status === Status.saving}
                         />
                     </>

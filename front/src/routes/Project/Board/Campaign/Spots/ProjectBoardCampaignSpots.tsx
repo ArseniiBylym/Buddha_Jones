@@ -10,6 +10,7 @@ import { ProjectBoardSpotForm } from '../Spot/ProjectBoardSpotForm';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { UserPermissionKey, UserPermission } from 'types/projectPermissions';
 import { Tag } from 'components/Content';
+
 const zenscroll = require('zenscroll');
 
 // Styles
@@ -148,21 +149,25 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
     @computed
     private get spotsFromColumn1(): SpotDetails[] {
         return this.props.spots
-            .filter((spot: SpotDetails) => { return !spot.hidden; })
+            .filter((spot: SpotDetails) => {
+                return !spot.hidden;
+            })
             .filter((_spot, spotIndex) => {
-                return spotIndex % 2 <= 0;
-            }
-        );
+                    return spotIndex % 2 <= 0;
+                }
+            );
     }
 
     @computed
     private get spotsFromColumn2(): SpotDetails[] {
         return this.props.spots
-            .filter((spot: SpotDetails) => { return !spot.hidden; })
+            .filter((spot: SpotDetails) => {
+                return !spot.hidden;
+            })
             .filter((_spot, spotIndex) => {
-                return spotIndex % 2 > 0;
-            }
-        );
+                    return spotIndex % 2 > 0;
+                }
+            );
     }
 
     private spotForm: HTMLDivElement | null = null;
@@ -177,29 +182,29 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
                 headerElements={
                     this.props.spots.length > 0
                         ? [
-                              {
-                                  key: 'toggle-expansion-button',
-                                  element: (
-                                      <Button
-                                          onClick={this.handleToggleSpotsExpansion}
-                                          className={s.spotsExpansionToggleButton}
-                                          label={{
-                                              size: 'small',
-                                              color: this.props.spotsAreExpanded ? 'black' : 'blue',
-                                              text: this.props.spotsAreExpanded ? 'Hide details' : 'Show details',
-                                          }}
-                                      />
-                                  ),
-                              },
-                          ]
+                            {
+                                key: 'toggle-expansion-button',
+                                element: (
+                                    <Button
+                                        onClick={this.handleToggleSpotsExpansion}
+                                        className={s.spotsExpansionToggleButton}
+                                        label={{
+                                            size: 'small',
+                                            color: this.props.spotsAreExpanded ? 'black' : 'blue',
+                                            text: this.props.spotsAreExpanded ? 'Hide details' : 'Show details',
+                                        }}
+                                    />
+                                ),
+                            },
+                        ]
                         : this.props.userCanCreateNewSpot
-                            ? [
-                                  {
-                                      key: 'create-new-spot-button',
-                                      element: this.renderSpotNewButton('none'),
-                                  },
-                              ]
-                            : []
+                        ? [
+                            {
+                                key: 'create-new-spot-button',
+                                element: this.renderSpotNewButton('none'),
+                            },
+                        ]
+                        : []
                 }
             >
                 {this.props.spotsAreExpanded ? this.renderExpandedSpots() : this.renderCollapsedSpots()}
@@ -214,7 +219,7 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
 
                     {this.renderSpotsList()}
 
-                    {this.props.spots.length <= 0 && <Tag className={s.spotName} isBig={true} title="No spots" />}
+                    {this.props.spots.length <= 0 && <Tag className={s.spotName} isBig={true} title="No spots"/>}
                 </div>
                 {this.props.userCanCreateNewSpot && this.props.spots.length > 0
                     ? this.renderSpotNewButton('small')
@@ -256,9 +261,9 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
                                 />
                             </div>
                         )) ||
-                        (this.props.userCanCreateNewSpot && this.props.spots.length > 0
-                            ? this.renderSpotNewButton('regular')
-                            : null)}
+                    (this.props.userCanCreateNewSpot && this.props.spots.length > 0
+                        ? this.renderSpotNewButton('regular')
+                        : null)}
                 </div>
             </div>
         );
@@ -377,5 +382,5 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
                     );
                 }
             );
-    }
+    };
 }

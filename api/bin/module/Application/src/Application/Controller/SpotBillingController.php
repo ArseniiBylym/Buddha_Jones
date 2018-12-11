@@ -127,28 +127,6 @@ class SpotBillingController extends CustomAbstractActionController
                     $data['campaignName'] = $campaign->getCampaignName();
                 }
             }
-
-                // if(!$canViewFirstRevisionCost) {
-                //     unset($data['firstRevisionCost']);
-                //     unset($data['billingType']);
-                //     unset($data['billingNote']);
-                // }
-
-                // if(!$canViewInternalDeadline) {
-                //     unset($data['internalDeadline']);
-                // }
-
-                // if(!$canViewClientDeadline) {
-                //     unset($data['clientDeadline']);
-                // }
-
-                // if(!$canViewSpotRevision) {
-                //     unset($data['revisions']);
-                // }
-
-                // if(!$canViewSpotGraphicsRevision) {
-                //     unset($data['graphicsRevisions']);
-                // }
         }
 
         return $data;

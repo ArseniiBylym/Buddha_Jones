@@ -6,10 +6,8 @@ import { TimeEntryCalendarHeader, TimeEntryCalendarColumns } from '.';
 // Styles
 const s = require('./TimeEntryCalendar.css');
 
-// Props
 interface TimeEntryCalendarProps {}
 
-// Component
 @observer
 export class TimeEntryCalendar extends React.Component<TimeEntryCalendarProps, {}> {
     public render() {

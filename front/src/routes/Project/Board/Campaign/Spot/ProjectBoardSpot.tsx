@@ -2,12 +2,12 @@ import * as React from 'react';
 import * as classNames from 'classnames';
 import * as dateFormat from 'date-fns/format';
 import upperFirst from 'lodash-es/upperFirst';
-import { observable, computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { formatMoney } from 'accounting';
 import { SpotDetails } from 'types/projectDetails';
 import { Row, Col } from 'components/Section';
-import { Button, ButtonClose, ButtonEdit } from 'components/Button';
+import { Button, ButtonClose, ButtonEdit, ButtonIcon, ButtonLabel } from 'components/Button';
 import { DropdownContainer, OptionsList, OptionsListValuePropType, OptionsListOptionProp } from 'components/Form';
 import { Paragraph, Tag } from 'components/Content';
 import { ProjectBoardSpotVersion } from '.';
@@ -17,6 +17,8 @@ import { ProjectsDetailsActions, ProjectsVersionsActions } from 'actions';
 import { SpotBillingTypeName } from 'types/projectDetailsEnums';
 import { Tooltip } from '../../../../../components/Content';
 import { VersionDetails, VersionEditors } from '../../../../../types/projectDetails';
+import AnimateHeight from 'react-animate-height';
+import { IconArrowTopBlue, IconDropdownArrow } from '../../../../../components/Icons';
 
 // Styles
 const s = require('./ProjectBoardSpot.css');
@@ -56,6 +58,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
         };
     }
 
+    @observable private isVersionsVisible: boolean = false;
     @observable private isEditFormVisible: boolean = false;
     @observable private removingSpotStatus: 'none' | 'removing' | 'success' | 'error' = 'none';
     @observable private addingNewVersionStatus: 'none' | 'adding' | 'success' | 'error' = 'none';
@@ -106,6 +109,15 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
     }
 
     private versionDropdown: DropdownContainer | null = null;
+
+    private static getVersionNameButtonLabel(): ButtonLabel {
+        return {
+            text: 'Versions',
+            size: 'large',
+            color: 'black',
+            onLeft: false,
+        };
+    }
 
     public render() {
         const { spot } = this.props;
@@ -170,6 +182,13 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                         <Col>
                             {!this.isEditFormVisible && (
                                 <div className={s.spotDetails}>
+                                    {spot.trtId &&
+                                    <Paragraph className={s.noMargin}>
+                                        <span>TRT: </span>
+                                        {this.getSpotTRTNameById(spot.trtId)}
+                                    </Paragraph>
+                                    }
+
                                     {spot.notes &&
                                     spot.notes.trim() && (
                                         <Paragraph className={s.noMargin}>
@@ -285,113 +304,145 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                         {this.props.userCanViewNumberOfRevisionsAndVersions &&
                         spot.versions.length > 0 && (
                             <React.Fragment>
-                                <Tag className={s.versionName} title="Versions:" isTitleDim={true} isBig={true}/>
+                                <Button
+                                    onClick={this.handleVersionExpandOrCollapse}
+                                    label={ProjectBoardSpot.getVersionNameButtonLabel()}
+                                    icon={this.getVersionNameButtonIcon()}
+                                />
+
                                 <hr className={s.separator}/>
                             </React.Fragment>
                         )}
                     </Row>
 
-                    {this.props.userCanViewNumberOfRevisionsAndVersions &&
-                    spot.versions.filter((version: VersionDetails) => {
-                        return !version.hidden;
-                    }).map((version: VersionDetails) => (
-                        <Row
-                            key={`version-${version.value}-from-spot-${spot.id}`}
-                            className={s.campaignSpotVersions}
-                            justifyContent="flex-start"
-                        >
-
-                            <ProjectBoardSpotVersion
+                    <AnimateHeight height={(this.isVersionsVisible) ? 'auto' : 0} duration={500}>
+                        {this.props.userCanViewNumberOfRevisionsAndVersions &&
+                        spot.versions.filter((version: VersionDetails) => {
+                            return !version.hidden;
+                        }).map((version: VersionDetails) => (
+                            <Row
                                 key={`version-${version.value}-from-spot-${spot.id}`}
-                                projectId={this.props.projectId}
-                                projectCampaignId={this.props.projectCampaignId}
-                                spotId={spot.id}
-                                id={version.value}
-                                name={version.label}
-                                note={version.note}
-                                status={version.status}
-                                isEditFormVisible={this.isEditFormVisible}
-                            />
+                                className={s.campaignSpotVersions}
+                                justifyContent="flex-start"
+                            >
+                                <ProjectBoardSpotVersion
+                                    key={`version-${version.value}-from-spot-${spot.id}`}
+                                    projectId={this.props.projectId}
+                                    projectCampaignId={this.props.projectCampaignId}
+                                    spotId={spot.id}
+                                    id={version.value}
+                                    name={version.label}
+                                    note={version.note}
+                                    status={version.status}
+                                    isEditFormVisible={this.isEditFormVisible}
+                                />
 
-                            {version.editors && version.editors.length > 0 &&
-                            <Tooltip text={this.spotVersionsEditors(version.editors)}>
+                                {version.editors && version.editors.length > 0 &&
+                                <Tooltip text={this.spotVersionsEditors(version.editors)}>
+                                    <Tag
+                                        className={s.versionName}
+                                        title="Editors:"
+                                        isTitleDim={true}
+                                        isBig={true}
+                                        otherLabels={[{ text: version.editors[0].name.substring(0, 8) + '...' }]}
+                                    />
+                                </Tooltip>
+                                }
+
+                                <hr className={s.separator}/>
+
+                            </Row>
+                        ))}
+
+                        <Row className={s.campaignSpotVersions} justifyContent="flex-start">
+                            {this.props.userCanViewNumberOfRevisionsAndVersions &&
+                            spot.numberOfRevisions !== 0 &&
+                            (spot.versions === null || spot.versions.length <= 0) && (
+                                <Tag className={s.versionName} title="No spot versions added" isTitleDim={true}/>
+                            )}
+
+                            {this.isEditFormVisible &&
+                            this.addingNewVersionStatus !== 'none' && (
                                 <Tag
                                     className={s.versionName}
-                                    title="Editors:"
-                                    isTitleDim={true}
+                                    isTitleBold={true}
                                     isBig={true}
-                                    otherLabels={[{ text: version.editors[0].name.substring(0, 8) + '...' }]}
+                                    title={
+                                        this.addingNewVersionStatus === 'adding'
+                                            ? 'Adding...'
+                                            : this.addingNewVersionStatus === 'error'
+                                            ? 'Error, try again'
+                                            : 'Added'
+                                    }
                                 />
-                            </Tooltip>
-                            }
+                            )}
 
-                            <hr className={s.separator}/>
+                            {this.isEditFormVisible && (
+                                <div className={s.addVersion}>
+                                    <DropdownContainer
+                                        ref={this.referenceVersionDropdown}
+                                        label="Add version"
+                                        minWidth={256}
+                                        align="right"
+                                    >
+                                        <OptionsList
+                                            onChange={this.handleNewVersionAdd}
+                                            noOptionsLabel="No existing versions"
+                                            search={{
+                                                autoFocus: true,
+                                                useExternalAlgorithm: true,
+                                                label: 'Search or create version',
+                                                value: this.versionDropdownSearch,
+                                                onChange: this.handleVersionSearchChange,
+                                            }}
+                                            label="Select version"
+                                            directHint={
+                                                this.versionDropdownSearchTrimmedLowerCase.length > 0
+                                                    ? {
+                                                        value: 'createCustomVersion',
+                                                        label: 'Create version: ' + this.versionDropdownSearch.trim(),
+                                                    }
+                                                    : null
+                                            }
+                                            options={this.filteredAvailableToAddVersions}
+                                        />
+                                    </DropdownContainer>
+                                </div>
+                            )}
 
                         </Row>
-                    ))}
-
-                    <Row className={s.campaignSpotVersions} justifyContent="flex-start">
-
-                        {this.props.userCanViewNumberOfRevisionsAndVersions &&
-                        spot.numberOfRevisions !== 0 &&
-                        (spot.versions === null || spot.versions.length <= 0) && (
-                            <Tag className={s.versionName} title="No spot versions added" isTitleDim={true}/>
-                        )}
-
-                        {this.isEditFormVisible &&
-                        this.addingNewVersionStatus !== 'none' && (
-                            <Tag
-                                className={s.versionName}
-                                isTitleBold={true}
-                                isBig={true}
-                                title={
-                                    this.addingNewVersionStatus === 'adding'
-                                        ? 'Adding...'
-                                        : this.addingNewVersionStatus === 'error'
-                                        ? 'Error, try again'
-                                        : 'Added'
-                                }
-                            />
-                        )}
-
-                        {this.isEditFormVisible && (
-                            <div className={s.addVersion}>
-                                <DropdownContainer
-                                    ref={this.referenceVersionDropdown}
-                                    label="Add version"
-                                    minWidth={256}
-                                    align="right"
-                                >
-                                    <OptionsList
-                                        onChange={this.handleNewVersionAdd}
-                                        noOptionsLabel="No existing versions"
-                                        search={{
-                                            autoFocus: true,
-                                            useExternalAlgorithm: true,
-                                            label: 'Search or create version',
-                                            value: this.versionDropdownSearch,
-                                            onChange: this.handleVersionSearchChange,
-                                        }}
-                                        label="Select version"
-                                        directHint={
-                                            this.versionDropdownSearchTrimmedLowerCase.length > 0
-                                                ? {
-                                                    value: 'createCustomVersion',
-                                                    label: 'Create version: ' + this.versionDropdownSearch.trim(),
-                                                }
-                                                : null
-                                        }
-                                        options={this.filteredAvailableToAddVersions}
-                                    />
-                                </DropdownContainer>
-                            </div>
-                        )}
-
-                    </Row>
-
+                    </AnimateHeight>
                 </Col>
             </Row>
         );
+    }
+
+    private getSpotTRTNameById(trtId: number): string {
+        if (this.props.store && this.props.store.projectsCampaignsSpots.trtList.length > 0) {
+            const trtItem = this.props.store.projectsCampaignsSpots.trtList.find((item) => item.id === trtId);
+
+            return trtItem ? trtItem.runtime : 'no trt selected';
+
+        }
+
+        return 'loading...';
+    }
+
+    @action
+    private handleVersionExpandOrCollapse = () => {
+        this.isVersionsVisible = !this.isVersionsVisible;
+    };
+
+    private getVersionNameButtonIcon(): ButtonIcon {
+        return {
+            size: 'small',
+            background: this.isVersionsVisible ? 'none-alt' : 'white',
+            element: this.isVersionsVisible ? (
+                <IconArrowTopBlue width={10} height={16}/>
+            ) : (
+                <IconDropdownArrow width={12} height={8}/>
+            ),
+        };
     }
 
     private referenceVersionDropdown = (ref: DropdownContainer) => (this.versionDropdown = ref);

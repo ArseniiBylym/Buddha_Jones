@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as styles from './TimeEntryModal.scss';
 import { computed, observable, action } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { Modal } from 'components/Modals';
@@ -7,8 +6,7 @@ import { TimeEntryCalendarDuration } from './TimeEntryCalendarDuration';
 import { TimeEntryContent } from './TimeEntryContent';
 import { TimeEntryActions, TimeApprovalActions } from 'actions';
 import { AppOnlyStoreState } from 'store/AllStores';
-import { LoadingSpinner } from 'components/Loaders';
-import { Paragraph } from 'components/Content';
+import { RemoveConfirmationModal } from '../../../components/RemoveConfiramtionModal';
 
 interface Props {
     openOnPage: 'time-entry' | 'time-approve';
@@ -62,35 +60,13 @@ export class TimeEntryModal extends React.Component<Props & AppOnlyStoreState, {
                     />
                 </Modal>
 
-                <Modal
-                    show={this.showEntryRemovalModal}
-                    onClose={this.handleClosingEntryDeleteConfirmation}
-                    title="Deleting entry is irreversible"
-                    text="Are you sure you want to delete this time entry?"
-                    actions={[
-                        {
-                            closeOnClick: true,
-                            label: 'No, do not delete',
-                            type: 'default',
-                        },
-                        {
-                            onClick: this.handleRemovingEntry,
-                            closeOnClick: false,
-                            label: 'Yes, please delete',
-                            type: 'alert',
-                        },
-                    ]}
-                >
-                    <div className={styles.centered}>
-                        {this.removingEntry && <LoadingSpinner/>}
-
-                        {this.errorRemovingEntry && (
-                            <Paragraph bold={true} type="alert">
-                                Could not delete, try again
-                            </Paragraph>
-                        )}
-                    </div>
-                </Modal>
+                <RemoveConfirmationModal
+                    isActive={this.showEntryRemovalModal}
+                    onConfirmationModalClose={this.handleClosingEntryDeleteConfirmation}
+                    isErrorRemovingEntry={this.errorRemovingEntry}
+                    isRemoving={this.removingEntry}
+                    onConfirmationSuccess={this.handleRemovingEntry}
+                />
             </>
         );
     }

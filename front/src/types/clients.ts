@@ -1,3 +1,5 @@
+import { DateObjectFromApi } from './api';
+
 export interface ClientForStudio {
     id: number | null;
     name: string | null;
@@ -64,4 +66,25 @@ export interface ClientContact {
     name: string;
     title: string | null;
     email: string | null;
+}
+
+export interface NewClientRequestFromApi {
+    id: number;
+    studioId: number;
+    studioName: string | null;
+    name: string | null;
+    street: string | null;
+    city: string | null;
+    state: string | null;
+    zip: string | null;
+    email: string | null;
+    phone: string | null;
+    billingContact: string | null;
+    billingEmail: string | null;
+    billingPhone: string | null;
+    completed: 0 | 1;
+    createdBy: 0 | 1;
+    updatedBy: 0 | 1;
+    createdAt: DateObjectFromApi;
+    updatedAt: DateObjectFromApi;
 }
