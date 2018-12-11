@@ -13,11 +13,21 @@ use Application\Entity\RediCcStatementLine;
 class SpotBillingController extends CustomAbstractActionController
 {
     public function getList() {
-        $data = $this->_billingRepo->getBillingListFromSpotBilling();
+        $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
+        $filter['studio_id'] = (int)$this->getRequest()->getQuery('studio_id', 0);
+        $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
+        $length = (int)trim($this->getRequest()->getQuery('length', 10));
+        
+        $data = $this->_billingRepo->getBillingListFromSpotBilling($filter, $offset, $length);
+        $totalCount = $this->_billingRepo->getBillingListFromSpotBillingCount($filter);
 
         $response = array(
             'status' => 1,
             'message' => 'Request Successful',
+            'length' => $length,
+            'offset' => $offset,
+            'total_count' => $totalCount,
+            'object_count' => count($data),
             'data' => $data,
         );
 
