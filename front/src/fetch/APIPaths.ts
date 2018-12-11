@@ -19,6 +19,7 @@ export enum APIPath {
     TRT                                     = '/trt',
     SPOT_SENT                               = '/spot-sent',
     SPOT_SENT_OPTIONS                       = '/spot-sent-options',
+    SPOTS_TO_BILL                           = '/spot-billing',
     FINISHING_HOUSE                         = '/finishing-house',
     VERSION                                 = '/version',
     VERSION_STATUS                          = '/version-status',
