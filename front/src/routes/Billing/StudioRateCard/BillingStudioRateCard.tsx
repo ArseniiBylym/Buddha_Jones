@@ -6,14 +6,17 @@ import { Section, SectionElement } from 'components/Section/index';
 import { InputSearch } from 'components/Form/index';
 import { inject, observer } from 'mobx-react';
 import { history } from 'App';
-import { ButtonBack, ButtonEdit } from 'components/Button';
+import { ButtonAdd, ButtonBack } from 'components/Button';
 import { match } from 'react-router';
-import { Table, TableCell, TableRow } from 'components/Table';
+import { Table } from 'components/Table';
 import { LoadingSpinner } from 'components/Loaders';
 import { action, computed, observable } from 'mobx';
-import { RateCard, StudioRateCard } from '../../../types/studioRateCard';
+import { StudioRateCard } from '../../../types/studioRateCard';
 import { TableHeader } from '../../../components/Table';
 import RateCardSelector from './RateCardSelector';
+import BillingStudioRateCardRow from './BillingStudioRateCardRow';
+import { ActivitiesActions, ProjectsCampaignsSpotsActions } from '../../../actions';
+import { RemoveConfirmationModal } from '../../../components/RemoveConfiramtionModal';
 
 interface Props {
     match: match<MatchParams>;
@@ -27,6 +30,10 @@ interface MatchParams {
 @observer
 class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
     @observable private searchString: string = '';
+    @observable private addNew: boolean = false;
+    @observable private isDeleteModalOpened: boolean = false;
+    @observable private deleteActivityIsPending: boolean = false;
+    @observable private activityToDelete: number | null = null;
 
     @computed
     private get getStudioRateCardData(): StudioRateCard {
@@ -47,8 +54,8 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
             { title: 'TRT', align: 'center' },
             { title: 'Revisions', align: 'center' },
             { title: 'Note', align: 'center' },
-            { title: '', align: 'center' },
             { title: 'Price', align: 'center' },
+            { title: '', align: 'center' },
             { title: 'Type', align: 'right' },
         ];
     }
@@ -66,6 +73,8 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
         }
 
         this.setHeaderAndInitialData();
+        ProjectsCampaignsSpotsActions.fetchTRT();
+        ActivitiesActions.fetchActivityList(true);
     }
 
     public render() {
@@ -81,65 +90,87 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
                     headerElements={this.getHeaderElements()}
                 >
                     {
-                        this.props.store!.users.isPageableUsersListLoading &&
-                        BillingStudioRateCards.getTableWithLoadingSpinner()
-                    }
-                    {
-                        this.getStudioRateCardData.loading ?
+                        this.getStudioRateCardData.rateCard.loading ?
                             BillingStudioRateCards.getTableWithLoadingSpinner()
                             :
                             <Table
                                 header={BillingStudioRateCards.getTableHeaders()}
-                                columnsWidths={['40%', '5%', '5%', '10%', '10%', '5%', '20%', '10%']}
+                                columnsWidths={['35%', '10%', '2%', '18%', '10%', '10%', '5%', '10%']}
                             >
                                 {this.getTableRows()}
+                                {
+                                    this.addNew &&
+                                    <BillingStudioRateCardRow
+                                        card={{
+                                            ratecardId: this.getStudioRateCardData.selectedRateCardId ? this.getStudioRateCardData.selectedRateCardId : 0,
+                                            id: -1,
+                                            activityId: -1,
+                                            activityName: '',
+                                            activityTypeId: 4,
+                                            activityType: 'Rate Card',
+                                            trtId: '',
+                                            runtime: '',
+                                            revisionInc: '',
+                                            note: '',
+                                            rate: 0,
+                                        }}
+                                        key="new-activity"
+                                        isNew={true}
+                                        onSaveDone={this.onSaveDone}
+                                    />
+                                }
                             </Table>
                     }
+                    {
+                        !this.addNew && !this.getStudioRateCardData.rateCard.loading &&
+                        <ButtonAdd
+                            className={styles.rateCardAddButton}
+                            label="New Activity"
+                            labelOnLeft={true}
+                            float="right"
+                            isWhite={true}
+                            labelSize="small"
+                            labelColor="black"
+                            onClick={this.handleAdd}
+                            adding={false}
+                        />
+                    }
+                    <RemoveConfirmationModal
+                        isActive={this.isDeleteModalOpened}
+                        onConfirmationModalClose={this.closeDeleteActivityModal}
+                        isErrorRemovingEntry={false}
+                        isRemoving={this.deleteActivityIsPending}
+                        onConfirmationSuccess={this.deleteActivity}
+                        confirmationMessage="Are you sure you want to delete the activity?"
+                    />
                 </Section>
             </>
         );
     }
 
+    private openDeleteActivityModal = (activityId: number) => {
+        this.activityToDelete = activityId;
+        this.isDeleteModalOpened = true;
+    }
+
+    private closeDeleteActivityModal = () => {
+        this.isDeleteModalOpened = false;
+        this.activityToDelete = null;
+    }
+
+    private handleAdd = () => {
+        this.addNew = true;
+    }
+
+    private onSaveDone = () => {
+        this.addNew = false;
+    }
+
     private getTableRows(): JSX.Element[] {
         const { data } = this.getStudioRateCardData.rateCard;
-        return Object.keys(data).map(
-            (key) => {
-                const card: RateCard = data[key];
-                return (
-                    <TableRow
-                        key={card.activityId}
-                        className={styles.clickable}
-                    >
-                        <TableCell align="left">
-                            <b>{card.activityName}</b>
-                        </TableCell>
-                        <TableCell align="center">
-                            {card.runtime}
-                        </TableCell>
-                        <TableCell align="center">
-                            {card.revisionInc}
-                        </TableCell>
-                        <TableCell align="center">
-                            {card.note}
-                        </TableCell>
-                        <TableCell align="center">
-                            <ButtonEdit
-                                onClick={this.onTableEditButtonHandler(card)}
-                                label=""
-                                labelOnLeft={false}
-                                float="none"
-                            />
-                        </TableCell>
-                        <TableCell align="center">
-                            {card.rate}
-                        </TableCell>
-                        <TableCell align="right">
-                            {card.activityType}
-                        </TableCell>
-                    </TableRow>
-                );
-            }
-        );
+        return Object.keys(data)
+            .filter((key) => data[key].activityName.toLowerCase().indexOf(this.searchString.toLowerCase()) !== -1)
+            .map((p) => <BillingStudioRateCardRow card={data[p]} key={data[p].activityId} openDeleteModal={this.openDeleteActivityModal}/>);
     }
 
     private getHeaderElements(): SectionElement[] {
@@ -164,10 +195,6 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
 
     private onChangeSearchInputHandler = (event: React.FormEvent<HTMLInputElement>): void => {
         this.searchString = event.currentTarget.value;
-    };
-
-    private onTableEditButtonHandler = (rateCard: RateCard) => () => {
-        // edit
     };
 
     private goBackToProjectBoardPermissionList = (): void => {
@@ -204,9 +231,18 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
     };
 
     @action
+    private deleteActivity = (): void => {
+        this.deleteActivityIsPending = true;
+        if (this.activityToDelete) {
+            StudioRateCardActions.removeStudioRateCard(this.activityToDelete).then(() => {
+                this.deleteActivityIsPending = false;
+                this.closeDeleteActivityModal();
+            });
+        }
+    }
+
+    @action
     private setHeaderAndInitialData = (studioName?: string): void => {
-        // this.getClient();
-        // this.getStudioRateCard();
         // Set header
         HeaderActions.setMainHeaderTitlesAndElements(
             'Studio rate card',

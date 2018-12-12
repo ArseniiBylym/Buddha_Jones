@@ -61,15 +61,13 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
                         />
                     </DropdownContainer>
                 }
-                {
-                    this.getStudioRateCardData.selectedRateCardLabel !== '' && <ButtonEdit
-                        onClick={this.handleRateAdd}
-                        label=""
-                        labelOnLeft={false}
-                        float="right"
-                        iconBackground="none"
-                    />
-                }
+                <ButtonEdit
+                    onClick={this.handleRateAdd}
+                    label=""
+                    labelOnLeft={false}
+                    float="right"
+                    iconBackground="none"
+                />
                 {
                     this.getStudioRateCardData.selectedRateCardLabel !== '' && <ButtonDelete
                         onClick={this.openDeleteModal}
@@ -154,6 +152,7 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
     @action
     private setRateCard = (value) => {
         StudioRateCardActions.setSelectedRateCardId(value);
+        StudioRateCardActions.getStudioRateCard();
     }
 }
 

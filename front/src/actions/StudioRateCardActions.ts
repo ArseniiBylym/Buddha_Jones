@@ -50,6 +50,89 @@ export class StudioRateCardActionsClass {
     };
 
     @action
+    public saveStudioRateCard = async (id: number, ratecardId: number, activityId: number, rate: number, trtId: number, revisionInc: number, note: string): Promise<boolean> => {
+        try {
+            const response = (await API.putData(`${APIPath.STUDIO_RATE_CARD}/${id}`, {
+                ratecard_id: ratecardId,
+                activity_id: activityId,
+                rate: rate,
+                trt_id: trtId,
+                revision_inc: revisionInc,
+                note: note,
+            })) as RateCard[];
+            
+            const data: {
+                [key: number]: RateCard
+            } = {};
+
+            response.forEach((value) => {
+                data[value.activityId] = value;
+            });
+
+            StudioRateCardStore.rateCard.data = data;
+            return true;
+        } catch (error) {
+            throw error;
+        } finally {
+            // Stop loading search results
+            StudioRateCardStore.rateCard.loading = false;
+        }
+    };
+
+    @action
+    public addStudioRateCard = async (ratecardId: number, activityId: number, rate: number, trtId: number, revisionInc: number, note: string): Promise<boolean> => {
+        try {
+            const response = (await API.postData(`${APIPath.STUDIO_RATE_CARD}`, {
+                ratecard_id: ratecardId,
+                activity_id: activityId,
+                rate: rate,
+                trt_id: trtId,
+                revision_inc: revisionInc,
+                note: note,
+            })) as RateCard[];
+
+            const data: {
+                [key: number]: RateCard
+            } = {};
+
+            response.forEach((value) => {
+                data[value.activityId] = value;
+            });
+
+            StudioRateCardStore.rateCard.data = data;
+            return true;
+        } catch (error) {
+            throw error;
+        } finally {
+            // Stop loading search results
+            StudioRateCardStore.rateCard.loading = false;
+        }
+    };
+
+    @action
+    public removeStudioRateCard = async (activityId: number): Promise<boolean> => {
+        try {
+            const response = (await API.deleteData(`${APIPath.STUDIO_RATE_CARD}/${activityId}`)) as RateCard[];
+
+            const data: {
+                [key: number]: RateCard
+            } = {};
+
+            response.forEach((value) => {
+                data[value.activityId] = value;
+            });
+
+            StudioRateCardStore.rateCard.data = data;
+            return true;
+        } catch (error) {
+            throw error;
+        } finally {
+            // Stop loading search results
+            StudioRateCardStore.rateCard.loading = false;
+        }
+    };
+
+    @action
     public getStudioRateCardTypes = async (): Promise<boolean> => {
         try {
             StudioRateCardStore.rateCardTypes.loading = true;
