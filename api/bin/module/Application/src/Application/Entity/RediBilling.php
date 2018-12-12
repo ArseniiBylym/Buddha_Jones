@@ -31,23 +31,9 @@ class RediBilling
     /**
      * @var integer
      *
-     * @ORM\Column(name="project_id", type="integer", nullable=true)
+     * @ORM\Column(name="project_campaign_id", type="bigint", nullable=true)
      */
-    private $projectId;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="campaign_id", type="integer", nullable=true)
-     */
-    private $campaignId;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="spot_id", type="integer", nullable=true)
-     */
-    private $spotId;
+    private $projectCampaignId;
 
     /**
      * @var string
@@ -106,72 +92,26 @@ class RediBilling
     }
 
     /**
-     * Set projectId
+     * Set projectCampaignId
      *
-     * @param integer $projectId
+     * @param integer $projectCampaignId
      * @return RediBilling
      */
-    public function setProjectId($projectId)
+    public function setProjectCampaignId($projectCampaignId)
     {
-        $this->projectId = $projectId;
+        $this->projectCampaignId = $projectCampaignId;
 
         return $this;
     }
 
     /**
-     * Get projectId
+     * Get projectCampaignId
      *
      * @return integer 
      */
-    public function getProjectId()
+    public function getProjectCampaignId()
     {
-        return $this->projectId;
-    }
-
-    /**
-     * Set campaignId
-     *
-     * @param integer $campaignId
-     * @return RediBilling
-     */
-    public function setCampaignId($campaignId)
-    {
-        $this->campaignId = $campaignId;
-
-        return $this;
-    }
-
-    /**
-     * Get campaignId
-     *
-     * @return integer 
-     */
-    public function getCampaignId()
-    {
-        return $this->campaignId;
-    }
-
-    /**
-     * Set spotId
-     *
-     * @param integer $spotId
-     * @return RediBilling
-     */
-    public function setSpotId($spotId)
-    {
-        $this->spotId = $spotId;
-
-        return $this;
-    }
-
-    /**
-     * Get spotId
-     *
-     * @return integer 
-     */
-    public function getSpotId()
-    {
-        return $this->spotId;
+        return $this->projectCampaignId;
     }
 
     /**

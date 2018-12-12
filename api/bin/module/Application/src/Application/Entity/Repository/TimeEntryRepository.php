@@ -489,6 +489,32 @@ class TimeEntryRepository extends EntityRepository
         return $result;
     }
 
+    public function getUserTimeEntrySumOfADate($userId, $date, $excludeLunch = false)
+    {
+        $date = new \DateTime($date);
+
+        $dql = "SELECT
+                  a.duration
+                FROM \Application\Entity\RediTimeEntry a
+                WHERE
+                  a.userId=:user_id
+                  AND a.startDate>=:date_start
+                  AND a.startDate<=:date_end ";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_id', $userId);
+        $query->setParameter('date_start', $date->format('Y-m-d 00:00:00'));
+        $query->setParameter('date_end',   $date->format('Y-m-d 23:59:59'));
+        $result =  $query->getArrayResult();
+
+        var_dump($result); exit;
+        $result = array_reduce($result, function ($carry, $row) {    // ... then we 'use' the actual array here
+            return $this->convertDurationAndSum($carry, $row['duration']);
+        });
+
+        return $result;
+    }
+
     public function getTimeEntryFiles($timeEntryId)
     {
         $dql = "SELECT

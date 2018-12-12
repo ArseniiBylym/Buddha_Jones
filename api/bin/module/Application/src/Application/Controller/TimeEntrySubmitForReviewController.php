@@ -24,8 +24,8 @@ class TimeEntrySubmitForReviewController extends CustomAbstractActionController
         }
 
         if ($workerId && $date) {
-
             $timeEntry = $this->_timeEntryRepo->getUserTimeEntryOfADate($workerId, $date);
+            $durationSum = $this->_timeEntryRepo->getUserTimeEntrySumOfADate($workerId, $date);
 
             foreach($timeEntry as $row) {
                 $entry = $this->_timeEntryRepository->find($row['id']);
