@@ -1,4 +1,5 @@
 export interface RateCard {
+    id: number;
     ratecardId: number;
     activityId: number;
     activityName: string;
@@ -8,7 +9,6 @@ export interface RateCard {
     runtime: null | string;
     revisionInc: null | string;
     note: null | string;
-    type: null | string;
     rate: null | number;
 }
 

@@ -81,7 +81,6 @@ class AddRateModal extends React.Component<Props & AppState, {}> {
                         onClick={this.props.onClose}
                     />
                 </div>
-
             </div>
         );
     }
