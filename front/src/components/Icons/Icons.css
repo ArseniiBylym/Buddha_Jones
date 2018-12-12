@@ -75,6 +75,13 @@
   height: 18px;
 }
 
+:global .iconRemoveBlue {
+    background: url(./../../assets/images/form/delete-icon.svg) 0 0 no-repeat;
+    background-size: 18px 18px;
+    width: 18px;
+    height: 18px;
+}
+
 :global .iconHamburgerMenu {
   background: url('./../../assets/images/navigation/hamburger-menu.svg') 0 0 no-repeat;
   background-size: 18px 12px;
