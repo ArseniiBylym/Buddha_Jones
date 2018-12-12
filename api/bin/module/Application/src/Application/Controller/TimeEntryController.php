@@ -98,6 +98,9 @@ class TimeEntryController extends CustomAbstractActionController
         $files = (array)json_decode(trim(isset($data['files']) ? $data['files'] : ''), true);
 
         if ($workerId && $startDateTime && $duration) {
+            $hasTimeOverlap = $this->_timeEntryRepo->checkTimeOverlap($workerId, $startDateTime, $duration);
+
+            if (!$hasTimeOverlap) {
             $startDateTime = new \DateTime($startDateTime);
 
             $timeEntry = new RediTimeEntry();
@@ -163,6 +166,12 @@ class TimeEntryController extends CustomAbstractActionController
                 'message' => 'Request successful.',
                 'data' => $data,
             );
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Time entry has overlap with existing time entry.'
+            );
+        }
         } else {
             $response = array(
                 'status' => 0,

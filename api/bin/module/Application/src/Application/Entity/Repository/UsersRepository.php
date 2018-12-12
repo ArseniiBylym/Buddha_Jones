@@ -290,7 +290,7 @@ class UsersRepository extends EntityRepository
         return $response;
     }
 
-    public function getUserssById($ids)
+    public function getUsersById($ids)
     {
         $dql = "SELECT 
                   u.id, u.firstName, u.lastName, u.initials
@@ -791,6 +791,21 @@ class UsersRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         return (!empty($result[0])?$result[0] : null);
+    }
+
+    public function getUsersMinHourById($userId)
+    {
+        $dql = "SELECT 
+                  u.minHour
+                FROM \Application\Entity\RediUser u
+                WHERE u.id = :user_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setMaxResults(1);
+        $query->setParameter('user_id', $userId);
+        $result = $query->getArrayResult();
+
+        return (!empty($result[0]['minHour']) ? (int)$result[0]['minHour'] : 8);
     }
 
 }
