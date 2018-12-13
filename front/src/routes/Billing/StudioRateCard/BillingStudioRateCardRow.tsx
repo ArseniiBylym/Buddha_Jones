@@ -19,27 +19,41 @@ interface Props {
     openDeleteModal?: (id: number) => void;
 }
 
+interface State {
+    validationErrors: {};
+    touched: boolean;
+}
+
 @inject('store')
 @observer
 class BillingStudioRateCardRow extends React.Component<Props & AppState, {}> {
+    public state: State = {
+        validationErrors: {},
+        touched: false,
+    };
+
+    private trtSelector: DropdownContainer;
+    private activitySelector: DropdownContainer;
+
     @observable private editMode: boolean = false;
     @observable private trtValue: string = '';
     @observable private trtId: string = '';
     @observable private revisionsValue: string = '';
     @observable private noteValue: string = '';
-    @observable private price: string | null = null;
+    @observable private price: string | null = '';
     @observable private saving: boolean = false;
     @observable private activityValue: string = '';
     @observable private activityId: string = '';
+
+    public componentDidMount() {
+        this.validate();
+    }
 
     static get defaultProps(): Partial<Props> {
         return {
             isNew: false
         };
     }
-
-    private trtSelector: DropdownContainer;
-    private activitySelector: DropdownContainer;
 
     public render() {
         if (!this.props.store) {
@@ -54,19 +68,26 @@ class BillingStudioRateCardRow extends React.Component<Props & AppState, {}> {
                 <TableCell align="left">
                     {
                         this.props.isNew ?
-                            <DropdownContainer
-                                label="Activity: "
-                                value={this.activityValue}
-                                className={styles.trtSelector}
-                                ref={this.activityRefSelector}
-                            >
-                                <OptionsList
-                                    onChange={this.handleActivityChange}
+                            <div>
+                                <DropdownContainer
+                                    label="Activity: "
                                     value={this.activityValue}
-                                    options={this.getActivitiesOptions()}
-                                    className={styles.optionClassName}
-                                />
-                            </DropdownContainer> :
+                                    className={styles.trtSelector}
+                                    ref={this.activityRefSelector}
+                                >
+                                    <OptionsList
+                                        onChange={this.handleActivityChange}
+                                        value={this.activityValue}
+                                        options={this.getActivitiesOptions()}
+                                        className={styles.optionClassName}
+                                    />
+                                </DropdownContainer>
+                                {
+                                    this.state.touched &&
+                                    this.state.validationErrors['activity'] &&
+                                    <p className={styles.addRateInputError}>{this.state.validationErrors['activity']}</p>
+                                }
+                            </div> :
                             <b>{card.activityName}</b>
                     }
                 </TableCell>
@@ -124,14 +145,14 @@ class BillingStudioRateCardRow extends React.Component<Props & AppState, {}> {
                         this.editMode || this.props.isNew ?
                             <Input
                                 // fieldClassName={/*(this.state.touched && this.state.validationError) ? styles.inputError : ''*/}
-                                label="price"
+                                label="Rate"
                                 color="brown"
                                 value={this.price}
                                 onChange={this.handlePriceChange}
                                 minWidth={100}
                             />
                             :
-                            card.rate
+                            card.rate !== null ? `$${card.rate}` : ''
                     }
                 </TableCell>
                 <TableCell align="center">
@@ -180,31 +201,51 @@ class BillingStudioRateCardRow extends React.Component<Props & AppState, {}> {
         );
     }
 
+    private validate = () => {
+        if (this.props.isNew && this.activityValue === '') {
+            this.setState({
+                validationErrors: {
+                    ...this.state.validationErrors,
+                    activity: 'Please Select Activity',
+                }
+            });
+            return;
+        }
+
+        this.setState({validationErrors: {}});
+    };
+
+    private isValid = () => Object.keys(this.state.validationErrors).length === 0;
+
     private handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        this.price = e.target.value;
-        // this.validate();
+        if (e.target.value.match(/^([0-9]+([.][0-9]*)?|[.][0-9]+)?$/)) {
+            this.price = e.target.value;
+            this.validate();
+        }
     };
 
     private handleNoteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         this.noteValue = e.target.value;
-        // this.validate();
     };
 
     private handleRevisionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        this.revisionsValue = e.target.value;
-        // this.validate();
+        if (e.target.value.match(/^\d*$/)) {
+            this.revisionsValue = e.target.value;
+        }
     };
 
     private handleTrtChange = (data) => {
         this.trtValue = data.label;
         this.trtId = data.value;
         this.trtSelector.closeDropdown();
+        this.validate();
     };
 
     private handleActivityChange = (data) => {
         this.activityValue = data.label;
         this.activityId = data.value;
         this.activitySelector.closeDropdown();
+        this.validate();
     };
 
     private getOptions = () => this.trtList.map((trt: TRTItem) => ({
@@ -243,6 +284,7 @@ class BillingStudioRateCardRow extends React.Component<Props & AppState, {}> {
         this.trtId = card.trtId ? card.trtId : '';
         this.revisionsValue = card.revisionInc ? card.revisionInc : '';
         this.noteValue = card.note ? card.note : '';
+        this.price = card.rate ? `${card.rate}` : '';
         this.editMode = true;
     };
 
@@ -260,6 +302,14 @@ class BillingStudioRateCardRow extends React.Component<Props & AppState, {}> {
     }
 
     private handleSave = () => {
+        this.setState({touched: true}, () => {
+           if (this.isValid()) {
+               this.saveActivity();
+           }
+        });
+    }
+
+    private saveActivity = () => {
         this.saving = true;
         const {
             isNew,

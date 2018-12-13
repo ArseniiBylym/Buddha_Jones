@@ -170,7 +170,7 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
         const { data } = this.getStudioRateCardData.rateCard;
         return Object.keys(data)
             .filter((key) => data[key].activityName.toLowerCase().indexOf(this.searchString.toLowerCase()) !== -1)
-            .map((p) => <BillingStudioRateCardRow card={data[p]} key={data[p].activityId} openDeleteModal={this.openDeleteActivityModal}/>);
+            .map((p) => <BillingStudioRateCardRow card={data[p]} key={p} openDeleteModal={this.openDeleteActivityModal}/>);
     }
 
     private getHeaderElements(): SectionElement[] {
