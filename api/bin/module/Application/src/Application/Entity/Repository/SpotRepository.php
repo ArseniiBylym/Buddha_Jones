@@ -343,7 +343,7 @@ class SpotRepository extends EntityRepository
                         if (count($editorIds)) {
                             $editorIds = array_map('trim', $editorIds);
                             $userRepo = new UsersRepository($this->_entityManager);
-                            $spotDataRow['editorList'] = $userRepo->getUserssById($editorIds);
+                            $spotDataRow['editorList'] = $userRepo->getUsersById($editorIds);
                         }
                     } else {
                         $spotDataRow['editorList'] = array();

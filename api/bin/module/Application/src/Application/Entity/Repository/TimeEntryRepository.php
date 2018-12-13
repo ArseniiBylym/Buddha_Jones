@@ -489,6 +489,39 @@ class TimeEntryRepository extends EntityRepository
         return $result;
     }
 
+    public function getUserTimeEntrySumOfADate($userId, $date, $excludeLunch = false)
+    {
+        $excludeActivity = array(0);
+
+        if($excludeLunch) {
+            $excludeActivity[] = 22;
+        }
+
+        $date = new \DateTime($date);
+
+        $dql = "SELECT
+                  a.duration
+                FROM \Application\Entity\RediTimeEntry a
+                WHERE
+                  a.userId=:user_id
+                  AND a.activityId NOT IN (:activity_id)
+                  AND a.startDate>=:date_start
+                  AND a.startDate<=:date_end ";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_id', $userId);
+        $query->setParameter('activity_id', $excludeActivity, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+        $query->setParameter('date_start', $date->format('Y-m-d 00:00:00'));
+        $query->setParameter('date_end',   $date->format('Y-m-d 23:59:59'));
+        $result =  $query->getArrayResult();
+
+        $result = array_reduce($result, function ($carry, $row) {    // ... then we 'use' the actual array here
+            return $this->convertDurationAndSum($carry, $row['duration']);
+        });
+
+        return $result;
+    }
+
     public function getTimeEntryFiles($timeEntryId)
     {
         $dql = "SELECT
@@ -898,7 +931,7 @@ class TimeEntryRepository extends EntityRepository
     }
 
     public function updateCalculatedTimeField($userId, $date) {
-        $dql = "CALL `redi_calculate_user_time_enty`(:user_id, :date)";
+        $dql = "CALL `redi_calculate_user_time_entry`(:user_id, :date)";
 
         $query = $this->getEntityManager()->getConnection()->prepare($dql);
         $query->bindParam('user_id', $userId);
@@ -1030,5 +1063,53 @@ class TimeEntryRepository extends EntityRepository
         }, $result);
 
         return $result;
+    }
+
+    /**
+     * Check if time entry has overlap or not
+     *
+     * @param int $userId
+     * @param string $startDateTime
+     * @param string $duration
+     * @return boolean  If there is overlap then return true, return false otherwise
+     */
+    public function checkTimeOverlap($userId, $startDateTime, $duration) {
+        try {
+            $startDateTime = new \DateTime($startDateTime);
+
+            $startDate = $startDateTime->format('Y-m-d H:i:s');
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        if (!$startDate) {
+            return false;
+        }
+
+        $dql = "SELECT 
+                    COUNT(*) AS total_count
+                FROM
+                    redi_time_entry
+                WHERE
+                    user_id = :user_id
+                    AND ((start_date > :start_date
+                    AND start_date < DATE_ADD(:start_date,
+                    INTERVAL :duration HOUR_MINUTE))
+                    OR (DATE_ADD(start_date,
+                    INTERVAL duration HOUR_MINUTE) > :start_date
+                    AND DATE_ADD(start_date,
+                    INTERVAL duration HOUR_MINUTE) < DATE_ADD(:start_date,
+                    INTERVAL :duration HOUR_MINUTE)))";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('user_id', $userId);
+        $query->bindParam('start_date', $startDate);
+        $query->bindParam('duration', $duration);
+        $query->execute();
+        $result = $query->fetchAll();
+
+        $count = (!empty($result[0]['total_count']) ? $result[0]['total_count'] : 0);
+
+        return (bool) $count;
     }
 }

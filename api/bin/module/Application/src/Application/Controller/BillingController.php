@@ -62,38 +62,31 @@ class BillingController extends CustomAbstractActionController
 
     function create($data)
     {
-        $spotId = (int)trim(isset($data['spot_id']) ? $data['spot_id'] : 0);
+        $projectCampaignId = (int)trim(isset($data['project_campaign_id']) ? $data['project_campaign_id'] : 0);
 
-        // check spot
-        $spot = $this->_spotRepository->find($spotId);
+        // project campaign
+        $projectCampaign = $this->_projectCampaignRepository->find($projectCampaignId);
 
-        if ($spot) {
-            $id = $this->_billingRepo->getUnusedBillingId($this->_user_id, $spotId);
+        if ($projectCampaign) {
+            $billId = $this->_billingRepo->getUnusedBillingId($this->_user_id, $projectCampaignId);
 
-            if (!$id) {
+            if (!$billId) {
                 $now = new \DateTime('now');
 
                 // get customerId
-                $customerId = null;
-                if ($spot->getProjectCampaignId()) {
-                    $projectCampaign = $this->_projectToCampaignRepository->find($spot->getProjectCampaignId());
-
-                    if ($projectCampaign && $projectCampaign->getCustomerId()) {
-                        $customerId = $projectCampaign->getCustomerId();
-                    }
-                }
+                $customerId = $projectCampaign->getCustomerId();
 
                 $billing = new RediBilling();
                 $billing->setUserId($this->_user_id);
                 $billing->setStatus(1); // set status to in bill
-                $billing->setSpotId($spotId);
+                $billing->setProjectCampaignId($projectCampaignId);
                 $billing->setCustomerId($customerId);
                 $billing->setCreatedAt($now);
 
                 $this->_em->persist($billing);
                 $this->_em->flush();
 
-                $id = $billing->getId();
+                $billId = $billing->getId();
             }
 
             $response = array(
@@ -127,7 +120,7 @@ class BillingController extends CustomAbstractActionController
 
         if ($bill && $bill->getUserId() === $this->_user_id) {
             // set status if provided
-            if($status) {
+            if ($status) {
                 $bill->setStatus($status);
                 $this->_em->persist($bill);
                 $this->_em->flush();
@@ -144,10 +137,10 @@ class BillingController extends CustomAbstractActionController
             if ($billingLines) {
                 $billingLines = $this->filterLines($billingLines);
 
-                if($billingLines) {
+                if ($billingLines) {
                     $this->_billingRepo->deleteExistingBillingLine($billId);
 
-                    foreach($billingLines as $line) {
+                    foreach ($billingLines as $line) {
                         $bLine = new RediBillingLine();
                         $bLine->setBillId($billId);
                         $bLine->setDescription($line['description']);
@@ -163,7 +156,7 @@ class BillingController extends CustomAbstractActionController
 
                         $lineId = $bLine->getLineId();
 
-                        if($lineId && $line['time_entry_id']) {
+                        if ($lineId && $line['time_entry_id']) {
 
                         }
                     }
