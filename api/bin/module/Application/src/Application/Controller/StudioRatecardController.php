@@ -92,7 +92,7 @@ class StudioRatecardController extends CustomAbstractActionController
         $revisionInc = $this->_commonRepo->filterPostData($data, 'revision_inc', 'int');
         $note = $this->_commonRepo->filterPostData($data, 'note', 'string');
         $type = $this->_commonRepo->filterPostData($data, 'type', 'string');
-        $rate = $this->_commonRepo->filterPostData($data, 'rate', 'float');
+        $rate = $this->_commonRepo->filterPostData($data, 'rate', 'int');
 
         if ($ratecardId && $activityId) {
             $ratecard = new RediStudioRatecard();
@@ -137,7 +137,7 @@ class StudioRatecardController extends CustomAbstractActionController
         $revisionInc = $this->_commonRepo->filterPostData($data, 'revision_inc', 'int');
         $note = $this->_commonRepo->filterPostData($data, 'note', 'string');
         $type = $this->_commonRepo->filterPostData($data, 'type', 'string');
-        $rate = $this->_commonRepo->filterPostData($data, 'rate', 'float');
+        $rate = $this->_commonRepo->filterPostData($data, 'rate', 'int');
 
         $ratecard = $this->_studioRatecardRepository->find($id);
 

@@ -398,7 +398,7 @@ class ActivityRepository extends EntityRepository
         $data = $query->getArrayResult();
 
         $data = array_map(function ($cPrice) use ($ratecardId) {
-            $cPrice['rate'] = ($cPrice['rate'] !== null) ? (float) number_format($cPrice['rate'], 2) : null;
+            $cPrice['rate'] = ($cPrice['rate'] !== null) ? (int)$cPrice['rate'] : null;
 
             return $cPrice;
         }, $data);
