@@ -36,7 +36,7 @@ export class StudioRateCardActionsClass {
             } = {};
 
             response.data.studioRateCard.forEach((value) => {
-                data[value.activityId] = value;
+                data[value.id] = value;
             });
 
             StudioRateCardStore.rateCard.data = data;
@@ -66,7 +66,7 @@ export class StudioRateCardActionsClass {
             } = {};
 
             response.forEach((value) => {
-                data[value.activityId] = value;
+                data[value.id] = value;
             });
 
             StudioRateCardStore.rateCard.data = data;
@@ -96,7 +96,7 @@ export class StudioRateCardActionsClass {
             } = {};
 
             response.forEach((value) => {
-                data[value.activityId] = value;
+                data[value.id] = value;
             });
 
             StudioRateCardStore.rateCard.data = data;
@@ -119,7 +119,7 @@ export class StudioRateCardActionsClass {
             } = {};
 
             response.forEach((value) => {
-                data[value.activityId] = value;
+                data[value.id] = value;
             });
 
             StudioRateCardStore.rateCard.data = data;
