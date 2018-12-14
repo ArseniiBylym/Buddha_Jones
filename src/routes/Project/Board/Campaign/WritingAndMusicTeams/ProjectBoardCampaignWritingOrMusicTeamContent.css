@@ -1,0 +1,44 @@
+.section {
+  padding: 24px;
+  background: transparent;
+  box-shadow: 0px 8px 8px rgba(126, 117, 109, 0);
+  transition: 300ms background 0ms cubic-bezier(0.645, 0.045, 0.355, 1),
+    300ms box-shadow 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
+
+  &.editing {
+    background: #ffffff;
+    box-shadow: 0px 4px 16px rgba(126, 117, 109, 0.1);
+  }
+}
+
+.view {
+  & h5 {
+    & strong {
+      font-size: inherit;
+      font-weight: 600;
+    }
+
+    & span {
+      font-size: inherit;
+      font-weight: 400;
+    }
+  }
+
+  & p {
+    margin-top: 6px;
+    font-size: 0.85em;
+
+    & span {
+      color: #a59e97;
+    }
+  }
+}
+
+.textarea {
+  padding-top: 12px;
+}
+
+.summary {
+  display: flex;
+  justify-content: flex-end;
+}

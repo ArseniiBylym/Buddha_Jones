@@ -1,0 +1,43 @@
+.row {
+  & > .size8Col {
+    padding-right: 12px;
+  }
+
+  & > .size4Col {
+    padding-left: 12px;
+  }
+}
+
+.nameFieldGroup {
+  & input.name {
+    font-size: 1.5em;
+    font-weight: 600;
+    padding: 22px 46px;
+  }
+}
+
+.codeNameAndReleaseDateRow {
+  margin-top: 24px;
+}
+
+:global(.dropdown).client,
+:global(.dropdown).releaseDate {
+  & :global(.dropdownLabel) {
+    font-size: 1.1em;
+    padding: 24px 48px;
+  }
+}
+
+.notesRow {
+  margin-top: 24px;
+}
+
+textarea.notes {
+  font-size: 1.1em;
+  font-weight: 400;
+  padding: 24px 48px;
+}
+
+.buttonRow {
+  margin-top: 24px;
+}

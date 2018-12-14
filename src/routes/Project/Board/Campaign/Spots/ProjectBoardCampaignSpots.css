@@ -1,0 +1,52 @@
+.section {
+  & :global(.sectionHeaderTitle) {
+    margin: 0 24px;
+  }
+  & .spotsExpansionToggleButton {
+    margin-right: 24px;
+  }
+}
+
+.spotsContainer {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 12px;
+  &>div {
+    flex: 0 1 50%;
+  }
+}
+
+.spotsInlineList {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-content: flex-start;
+  align-items: flex-start;
+  margin: 0 20px;
+  margin-top: -4px;
+  margin-bottom: 18px;
+  & .spotName {
+    margin: 4px;
+  }
+}
+
+.createNewSpotFormContainer {
+  padding: 24px;
+  background: #ffffff;
+  box-shadow: 0px 4px 16px rgba(126, 117, 109, 0.1);
+}
+
+.campaignAddSpot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 24px;
+  &.smallPadding {
+    padding-top: 0;
+  }
+  &.noPadding {
+    padding-top: 0;
+    padding-left: 0;
+    padding-bottom: 0;
+  }
+}

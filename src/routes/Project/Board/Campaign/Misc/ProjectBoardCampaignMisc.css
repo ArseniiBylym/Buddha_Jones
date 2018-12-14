@@ -1,0 +1,58 @@
+.miscContainer {
+  padding: 24px;
+  background: #efebe6;
+  border-top: 1px solid #e2dbd5;
+  box-shadow: 0px 8px 8px rgba(126, 117, 109, 0);
+  transition: 300ms background 0ms cubic-bezier(0.645, 0.045, 0.355, 1),
+    300ms box-shadow 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
+
+  & :global(.row.sectionHeader) {
+    margin-bottom: 0;
+  }
+
+  &.editing {
+    background: #ffffff;
+    box-shadow: 0px 4px 16px rgba(126, 117, 109, 0.1);
+  }
+}
+
+.budgetNotesWrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+  margin-top: 12px;
+
+  & > p {
+    padding-right: 8px;
+  }
+
+  & > div {
+    flex: 1 0 auto;
+  }
+}
+
+.dateMaterialsWillBeReceivedWrapper {
+  margin-top: 12px;
+}
+
+:global(.row).valuesRow {
+  & p {
+    font-size: 0.95em;
+    margin-top: 6px;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    & em {
+      font-style: normal;
+      color: #a59e97;
+    }
+
+    & strong {
+      font-weight: 700;
+      color: #5a4d3f;
+    }
+  }
+}

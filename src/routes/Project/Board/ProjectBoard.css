@@ -1,0 +1,18 @@
+.projectLoading {
+  margin-top: 48px;
+}
+
+.errorNote {
+  margin-top: 36px;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.retryButton {
+  margin: 0 auto;
+  margin-top: 24px;
+}
+
+.projectReleaseDate {
+  font-size: 1em;
+}

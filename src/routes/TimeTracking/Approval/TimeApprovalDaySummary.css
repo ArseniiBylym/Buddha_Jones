@@ -1,0 +1,44 @@
+.summary {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  align-items: center;
+  &>.actions {
+    display: flex;
+    padding-right: 24px;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: center;
+  }
+  &>.hours {
+    display: flex;
+    justify-content: flex-end;
+    align-content: center;
+    align-items: center;
+  }
+  & p {
+    display: inline-block;
+    margin: 4px;
+    padding: 4px 8px;
+    background: #EEEAE7;
+    color: #5A4D3F;
+    font-size: 0.85em;
+    font-weight: 400;
+    & strong {
+      font-weight: 600;
+    }
+    &.regular {
+      background: #46ad68;
+      color: #FFFFFF;
+    }
+    &.overtime {
+      background: #d16403;
+      color: #ffffff;
+    }
+    &.doubletime {
+      background: #CC2525;
+      color: #ffffff;
+    }
+  }
+}

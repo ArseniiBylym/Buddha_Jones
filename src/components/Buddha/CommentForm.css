@@ -1,0 +1,46 @@
+.comments {
+  display: block;
+}
+
+.commentForm {
+  margin-top: 12px;
+
+  &.noMargin {
+    margin-top: 0;
+  }
+}
+
+.commentForm textarea {
+  padding: 16px 24px !important;
+}
+
+.commentButtonContainer {
+  position: relative;
+  text-align: right;
+  margin-bottom: 14px;
+
+  & > div {
+    &:last-child {
+      text-align: right;
+    }
+  }
+
+  & :global(.comp-loading-indicator) {
+    margin-left: auto;
+    margin-right: 0;
+  }
+}
+
+.commentButtonContainer .commentMessage {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  margin-top: -9px;
+  font-size: 0.9em;
+}
+
+.commentButtonContainer :global(.button) {
+  margin: 0;
+  margin-left: auto;
+  margin-top: 12px;
+}

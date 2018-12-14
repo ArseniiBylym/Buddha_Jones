@@ -1,0 +1,36 @@
+:global(.comp-loading-indicator) {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+
+  &.floatLeft {
+    float: left;
+  }
+
+  &.floatRight {
+    float: right;
+  }
+
+  &:global(.comp-loading-indicator-inline) {
+    display: inline-flex;
+  }
+
+  & > p {
+    font-size: 0.8em;
+    font-weight: 600;
+    color: #5A4D3F;
+  }
+
+  & > svg {
+
+    &:first-child {
+      margin-right: 6px;
+    }
+
+    &:last-child {
+      margin-left: 6px;
+    }
+  }
+}

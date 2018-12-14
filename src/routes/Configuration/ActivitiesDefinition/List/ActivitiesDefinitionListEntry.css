@@ -1,0 +1,29 @@
+.requirementsContainerCell {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.requirements {
+  display: flex;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+  font-size: 0.825em;
+  & .tag {
+    display: inline-block;
+    margin-left: 12px;
+    padding: 4px 8px;
+    background: #eeeae7;
+    color: #5a4d3f;
+    font-weight: 600;
+  }
+}
+
+.userTypesList {
+  font-size: 0.825em;
+}
+
+.showAllUserTypesButton {
+  float: right;
+  margin-left: 6px;
+}

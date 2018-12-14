@@ -1,0 +1,12 @@
+.toggleAllUserTypesVisibility {
+  margin-right: 24px;
+}
+
+.userTypesTable {
+  margin-top: 0;
+}
+
+.summary {
+  display: flex;
+  justify-content: flex-end;
+}

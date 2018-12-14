@@ -1,0 +1,48 @@
+:global(.section) {
+  position: relative;
+}
+
+:global(.sectionHeader) {
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+:global(.sectionHeaderTitle) h3 {
+  margin: 0;
+  font-size: 0.95em;
+  font-weight: 600;
+  color: #a59e97;
+
+  & > strong {
+    font-weight: 700;
+    color: color(#a59e97 lightness(-16%));
+  }
+
+  & > em {
+    font-weight: 300;
+    color: #a59e97;
+  }
+
+  & > span {
+    color: color(#a59e97 lightness(+8%));
+    font-weight: 400;
+  }
+}
+
+:global(.sectionElements) {
+  text-align: right;
+
+  & > :global(.row) {
+    justify-content: flex-end;
+    align-content: center;
+    align-items: center;
+  }
+
+  & > :global(.row) > :global(.col) {
+    flex: 0 1 auto;
+  }
+}
+
+:global(.sectionInner) {
+  width: 100%;
+}
