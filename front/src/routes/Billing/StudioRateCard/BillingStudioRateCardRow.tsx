@@ -91,7 +91,7 @@ class BillingStudioRateCardRow extends React.Component<Props & AppState, {}> {
                             <b>{card.activityName}</b>
                     }
                 </TableCell>
-                <TableCell align="center">
+                <TableCell align="right">
                     {
                         this.props.isNew || (this.editMode && card.activityTypeId !== 1) ?
                             <DropdownContainer
@@ -140,7 +140,7 @@ class BillingStudioRateCardRow extends React.Component<Props & AppState, {}> {
                             card.note
                     }
                 </TableCell>
-                <TableCell align="center">
+                <TableCell align="right">
                     {
                         this.editMode || this.props.isNew ?
                             <Input
@@ -174,16 +174,6 @@ class BillingStudioRateCardRow extends React.Component<Props & AppState, {}> {
                             </div>
                             :
                             <div>
-                                {
-                                    card.activityTypeId === 4 &&
-                                    <ButtonDelete
-                                        onClick={this.openDeleteModal}
-                                        label=""
-                                        labelOnLeft={false}
-                                        float="right"
-                                        iconBackground="white"
-                                    />
-                                }
                                 <ButtonEdit
                                     className={styles.rowEditButton}
                                     onClick={this.enterEditMode}
@@ -192,6 +182,18 @@ class BillingStudioRateCardRow extends React.Component<Props & AppState, {}> {
                                     float="none"
                                 />
                             </div>
+                    }
+                </TableCell>
+                <TableCell align="center">
+                    {
+                        card.activityTypeId === 4 &&
+                        <ButtonDelete
+                            onClick={this.openDeleteModal}
+                            label=""
+                            labelOnLeft={false}
+                            float="right"
+                            iconBackground="white"
+                        />
                     }
                 </TableCell>
                 <TableCell align="right" className={styles.trtSelector}>

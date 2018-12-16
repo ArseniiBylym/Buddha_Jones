@@ -23,6 +23,7 @@ export interface StudioRateCard {
     id: number | null;
     selectedRateCardId: number | null;
     selectedRateCardLabel: string;
+    selectedRateCardNote: string;
     name: string;
     loading: boolean;
     rateCard: {

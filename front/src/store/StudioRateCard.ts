@@ -13,6 +13,14 @@ export class StudioRateCard {
         return '';
     }
 
+    @computed
+    public get selectedRateCardNote() {
+        if (this.selectedRateCardId && this.rateCardTypes.data[this.selectedRateCardId]) {
+            return this.rateCardTypes.data[this.selectedRateCardId].ratecardNote;
+        }
+        return '';
+    }
+
     @observable name: string = '';
     @observable loading: boolean = false;
 

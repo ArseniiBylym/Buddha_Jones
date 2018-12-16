@@ -87,3 +87,51 @@
 .rowActionButtons {
     display: flex;
 }
+
+.noteLabel {
+    margin-bottom: 2px;
+    font-size: 14px;
+}
+
+.rateCardNoteWrapper {
+    padding: 16px 24px;
+}
+
+.rateCardNote {
+    border: 1px solid #a59e97;
+    position: relative;
+    border-radius: 3px;
+    min-height: 80px;
+    margin-bottom: 24px;
+    padding: 10px 16px;
+    padding-right: 140px!important;
+}
+
+.rateCardNoteActions {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+}
+
+.noteTextAreaStyles {
+    color: #5a4d3f!important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-width: initial!important;
+    max-height: initial!important;
+    resize: none!important;
+    height: initial!important;
+    padding-right: 140px!important;
+}
+
+.noteTextAreaWrapperStyles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
