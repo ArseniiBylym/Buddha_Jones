@@ -49,16 +49,16 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
 
                         // Project selection title
                         const projectSelection: string[] = [];
-                        if (entry.projectName) {
+                        if (entry.projectName && entry.projectName !== 'null' ) {
                             projectSelection.push(entry.projectName);
                         }
-                        if (entry.projectCampaignName) {
+                        if (entry.projectCampaignName && entry.projectCampaignName !== 'null') {
                             projectSelection.push(entry.projectCampaignName);
                         }
-                        if (entry.spotName) {
+                        if (entry.spotName && entry.spotName !== 'null') {
                             projectSelection.push(entry.spotName);
                         }
-                        if (entry.versionName) {
+                        if (entry.versionName && entry.versionName !== 'null') {
                             projectSelection.push(entry.versionName);
                         }
                         const projectSelectionTitle = projectSelection.length > 0 ? projectSelection.join(' - ') : null;
