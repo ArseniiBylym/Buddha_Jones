@@ -3,10 +3,10 @@ import * as styles from './styles.scss';
 import { HeaderActions, StudioRateCardActions } from 'actions/index';
 import { AppState } from 'store/AllStores';
 import { Section, SectionElement } from 'components/Section/index';
-import { InputSearch } from 'components/Form/index';
+import { InputSearch, Input, TextArea } from 'components/Form/index';
 import { inject, observer } from 'mobx-react';
 import { history } from 'App';
-import { ButtonAdd, ButtonBack } from 'components/Button';
+import { ButtonAdd, ButtonBack, ButtonClose, ButtonEdit, ButtonSave } from 'components/Button';
 import { match } from 'react-router';
 import { Table } from 'components/Table';
 import { LoadingSpinner } from 'components/Loaders';
@@ -35,6 +35,10 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
     @observable private deleteActivityIsPending: boolean = false;
     @observable private activityToDelete: number | null = null;
 
+    @observable private noteEditMode: boolean = false;
+    @observable private noteSaving: boolean = false;
+    @observable private noteValue: string = '';
+
     @computed
     private get getStudioRateCardData(): StudioRateCard {
         return this.props.store!.studioRateCard;
@@ -51,10 +55,11 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
     private static getTableHeaders(): TableHeader[] {
         return [
             { title: 'Activity', align: 'left' },
-            { title: 'TRT', align: 'center' },
+            { title: 'TRT', align: 'right' },
             { title: 'Revisions', align: 'center' },
             { title: 'Note', align: 'center' },
-            { title: 'Price', align: 'center' },
+            { title: 'Rate', align: 'right' },
+            { title: '', align: 'center' },
             { title: '', align: 'center' },
             { title: 'Type', align: 'right' },
         ];
@@ -122,6 +127,52 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
                             </Table>
                     }
                     {
+                        !this.getStudioRateCardData.rateCard.loading &&
+                        <div className={styles.rateCardNoteWrapper}>
+                            <h3 className={styles.noteLabel}>Additional Rate Card Notes</h3>
+                            <div className={styles.rateCardNote}>
+                                {
+                                    this.noteEditMode ?
+                                        <TextArea
+                                            label="Note"
+                                            value={this.noteValue}
+                                            onChange={this.handleNoteChange}
+                                            className={styles.noteTextAreaWrapperStyles}
+                                            fieldClassName={styles.noteTextAreaStyles}
+                                        />
+                                        :
+                                        this.getStudioRateCardData.selectedRateCardNote ? this.getStudioRateCardData.selectedRateCardNote : 'No Notes Found'
+                                }
+                                {
+                                    this.noteEditMode ?
+                                        <div className={styles.rateCardNoteActions}>
+                                            <ButtonSave
+                                                label="Save"
+                                                labelColor="green"
+                                                isSaving={this.noteSaving}
+                                                savingLabel="Saving"
+                                                onClick={this.handleSaveNote}
+                                            />
+                                            <ButtonClose
+                                                className={styles.rowCancelButton}
+                                                label="Close"
+                                                onClick={this.exitNoteEditMode}
+                                            />
+                                        </div> :
+                                        <div className={styles.rateCardNoteActions}>
+                                            <ButtonEdit
+                                                className={styles.rowEditButton}
+                                                onClick={this.enterNoteEditMode}
+                                                label="Edit"
+                                                labelOnLeft={true}
+                                                float="none"
+                                            />
+                                        </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    {
                         !this.addNew && !this.getStudioRateCardData.rateCard.loading &&
                         <ButtonAdd
                             className={styles.rateCardAddButton}
@@ -146,6 +197,27 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
                 </Section>
             </>
         );
+    }
+
+    private enterNoteEditMode = () => {
+        this.noteValue = this.getStudioRateCardData.selectedRateCardNote ? this.getStudioRateCardData.selectedRateCardNote : '';
+        this.noteEditMode = true;
+    }
+
+    private exitNoteEditMode = () => {
+        this.noteEditMode = false;
+    }
+
+    private handleNoteChange = (e) => {
+        this.noteValue = e.target.value;
+    }
+
+    private handleSaveNote = () => {
+        this.noteSaving = true;
+        StudioRateCardActions.saveRateCardType(this.getStudioRateCardData.selectedRateCardLabel, this.noteValue).then(() => {
+            this.noteSaving = false;
+            this.exitNoteEditMode();
+        });
     }
 
     private openDeleteActivityModal = (activityId: number) => {
