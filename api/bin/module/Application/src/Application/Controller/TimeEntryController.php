@@ -98,80 +98,73 @@ class TimeEntryController extends CustomAbstractActionController
         $files = (array)json_decode(trim(isset($data['files']) ? $data['files'] : ''), true);
 
         if ($workerId && $startDateTime && $duration) {
-            $hasTimeOverlap = $this->_timeEntryRepo->checkTimeOverlap($workerId, $startDateTime, $duration);
+            $startDateTime = new \DateTime($startDateTime);
 
-            if (!$hasTimeOverlap) {
-                $startDateTime = new \DateTime($startDateTime);
+            $timeEntry = new RediTimeEntry();
+            $timeEntry->setUserId($workerId);
 
-                $timeEntry = new RediTimeEntry();
-                $timeEntry->setUserId($workerId);
+            if ($projectCampaignId) {
+                $timeEntry->setProjectCampaignId($projectCampaignId);
+            }
 
-                if ($projectCampaignId) {
-                    $timeEntry->setProjectCampaignId($projectCampaignId);
-                }
+            if ($spotId) {
+                $timeEntry->setSpotId($spotId);
+            }
 
-                if ($spotId) {
-                    $timeEntry->setSpotId($spotId);
-                }
+            if ($versionId) {
+                $timeEntry->setVersionId($versionId);
+            }
 
-                if ($versionId) {
-                    $timeEntry->setVersionId($versionId);
-                }
+            $timeEntry->setStartDate($startDateTime);
+            $timeEntry->setDuration($duration);
+            $timeEntry->setActivityId($activityId);
 
-                $timeEntry->setStartDate($startDateTime);
-                $timeEntry->setDuration($duration);
-                $timeEntry->setActivityId($activityId);
+            $timeEntry->setActivityDescription($activityDescription);
+            $timeEntry->setNotes($notes);
+            $timeEntry->setNonBillable($nonBillable);
 
-                $timeEntry->setActivityDescription($activityDescription);
-                $timeEntry->setNotes($notes);
-                $timeEntry->setNonBillable($nonBillable);
+            $timeEntry->setCreatedBy($this->_user_id);
+            $timeEntry->setCreatedAt(new \DateTime('now'));
+            $timeEntry->setStatus(1);
 
-                $timeEntry->setCreatedBy($this->_user_id);
-                $timeEntry->setCreatedAt(new \DateTime('now'));
-                $timeEntry->setStatus(1);
+            $this->_em->persist($timeEntry);
+            $this->_em->flush();
 
-                $this->_em->persist($timeEntry);
-                $this->_em->flush();
-
-                $timeEntryId = $timeEntry->getId();
+            $timeEntryId = $timeEntry->getId();
 
 
             // if file details are sent enter that in redi_time_entry_file table
-                if (count($files)) {
-                    foreach ($files as $file) {
-                        if (!empty($file['filename'])) {
+            if (count($files)) {
+                foreach ($files as $file) {
+                    if (!empty($file['filename'])) {
                         // if duration is not provided then default duration is 1
-                            $duration = (!empty($file['duration']) && (float)$file['duration']) ? (float)$file['duration'] : 1;
+                        $duration = (!empty($file['duration']) && (float)$file['duration']) ? (float)$file['duration'] : 1;
 
-                            $timeEntryFile = new RediTimeEntryFile();
-                            $timeEntryFile->setTimeEntryId($timeEntryId);
-                            $timeEntryFile->setFileName($file['filename']);
-                            $timeEntryFile->setDuration($duration);
+                        $timeEntryFile = new RediTimeEntryFile();
+                        $timeEntryFile->setTimeEntryId($timeEntryId);
+                        $timeEntryFile->setFileName($file['filename']);
+                        $timeEntryFile->setDuration($duration);
 
-                            if (!empty($file['description'])) {
-                                $timeEntryFile->setDescription($file['description']);
-                            }
-
-                            $this->_em->persist($timeEntryFile);
+                        if (!empty($file['description'])) {
+                            $timeEntryFile->setDescription($file['description']);
                         }
-                    }
 
-                    $this->_em->flush();
+                        $this->_em->persist($timeEntryFile);
+                    }
                 }
 
-                $data = $this->getSingleData($timeEntryId);
-
-                $response = array(
-                    'status' => 1,
-                    'message' => 'Request successful.',
-                    'data' => $data,
-                );
-            } else {
-                $response = array(
-                    'status' => 0,
-                    'message' => 'Time entry has overlap with existing time entry.'
-                );
+                $this->_em->flush();
             }
+
+            $data = $this->getSingleData($timeEntryId);
+            $hasTimeOverlap = $this->_timeEntryRepo->checkTimeOverlap($workerId, $startDateTime, $duration);
+
+            $response = array(
+                'status' => 1,
+                'message' => 'Request successful.',
+                'hasTimeOverlap' => $hasTimeOverlap,
+                'data' => $data,
+            );
         } else {
             $response = array(
                 'status' => 0,
@@ -300,10 +293,12 @@ class TimeEntryController extends CustomAbstractActionController
                     }
 
                     $data = $this->getSingleData($id);
+                    $hasTimeOverlap = $this->_timeEntryRepo->checkTimeOverlap($timeEntry->getUserId(), $timeEntry->getStartDate(), $timeEntry->getDuration(), $timeEntry->getId());
 
                     $response = array(
                         'status' => 1,
                         'message' => 'Request successful.',
+                        'hasTimeOverlap' => $hasTimeOverlap,
                         'data' => $data
                     );
 
