@@ -390,7 +390,9 @@ class ActivityRepository extends EntityRepository
                   WITH aty.id=a.typeId
                 LEFT JOIN \Application\Entity\RediTrt trt
                   WITH trt.id = src.trtId
-                WHERE src.ratecardId = :ratecard_id
+                WHERE 
+                    src.ratecardId = :ratecard_id
+                    AND a.status = 1
                 ORDER BY a.typeId ASC, a.name ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);

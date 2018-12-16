@@ -64,6 +64,11 @@ class ProjectController extends CustomAbstractActionController
         if ($getUser) {
             foreach ($data as &$dataRow) {
                 foreach ($dataRow['campaign'] as &$row) {
+                    $row['user'] = array();
+                    $row['designer'] = array();
+                    $row['editor'] = array();
+                    $row['billingUser'] = array();
+
                     if ($canViewCreativeTeam) {
                         $row['user'] = $this->_campaignRepo->getCampaignProjectPeople('user', $row['projectCampaignId'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
                     }
@@ -477,6 +482,11 @@ class ProjectController extends CustomAbstractActionController
 
             if (count($responseData['campaign'])) {
                 foreach ($responseData['campaign'] as &$row) {
+                    $row['user'] = array();
+                    $row['designer'] = array();
+                    $row['editor'] = array();
+                    $row['billingUser'] = array();
+                    
                     if ($canViewCreativeTeam) {
                         $row['user'] = $this->_campaignRepo->getCampaignProjectPeople('user', $row['projectCampaignId'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
                     }
