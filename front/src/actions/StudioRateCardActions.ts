@@ -202,12 +202,13 @@ export class StudioRateCardActionsClass {
     }
 
     @action
-    public saveRateCardType = async (name: string): Promise<boolean> => {
+    public saveRateCardType = async (name: string, note?: string): Promise<boolean> => {
         try {
             StudioRateCardStore.rateCardTypes.saving = true;
             const response = (await API.putData(`${APIPath.STUDIO_RATE_CARD_TYPE}/${StudioRateCardStore.selectedRateCardId}`, {
                 studio_id: StudioRateCardStore.id,
                 ratecard_name: name,
+                ratecard_note: note ? note : StudioRateCardStore.selectedRateCardNote
             })) as RateCardType[];
 
             const data: {
