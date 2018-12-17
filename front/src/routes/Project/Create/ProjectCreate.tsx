@@ -1,17 +1,17 @@
-import * as React from 'react';
-import * as classNames from 'classnames';
-import * as dateFormat from 'date-fns/format';
-import { observable, action } from 'mobx';
-import { observer } from 'mobx-react';
-import { Section, Row, Col } from 'components/Section';
-import { ButtonBack, ButtonSend } from 'components/Button';
-import { ClientsFilter } from 'components/Buddha';
-import { Input, TextArea } from 'components/Form';
-import { AppState } from '../../../store/AllStores';
 import { HeaderActions, NotificationsActions, ProjectsActions } from 'actions';
 import { history } from 'App';
-import { ProjectCreateData } from 'types/projectDetails';
+import * as classNames from 'classnames';
+import { ClientsFilter } from 'components/Buddha';
+import { ButtonBack, ButtonSend } from 'components/Button';
 import { DatePicker } from 'components/Calendar';
+import { Input, TextArea } from 'components/Form';
+import { Col, Row, Section } from 'components/Section';
+import * as dateFormat from 'date-fns/format';
+import { action, observable } from 'mobx';
+import { observer } from 'mobx-react';
+import * as React from 'react';
+import { ProjectCreateData } from 'types/projectDetails';
+import { AppState } from '../../../store/AllStores';
 
 // Styles
 const s = require('./ProjectCreate.css');
@@ -59,7 +59,7 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
                                 label="Pick studio"
                                 allAreAllowed={false}
                                 truncuateLabelTo={96}
-                                src={'studios'}
+                                source={'studios'}
                             />
                         </Col>
                     </Row>
