@@ -101,8 +101,8 @@ export class Pagination extends React.Component<PaginationProps, {}> {
                         <p className={s.paginationTotals}>
                             {'Showing ' +
                                 (this.props.countTotal > 1
-                                    ? this.props.entrySingularName
-                                    : this.props.entryPluralName) +
+                                    ? this.props.entryPluralName
+                                    : this.props.entrySingularName) +
                                 ' '}
                             <strong>{this.showingFrom}</strong>
                             {' — '}
