@@ -126,7 +126,7 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
                             )}
                         </Table>
                     )}
-                    {!this.getStudioRateCardData.rateCard.loading && (
+                    {!this.getStudioRateCardData.rateCard.loading && this.getStudioRateCardData.selectedRateCardId !== null && (
                         <div className={styles.rateCardNoteWrapper}>
                             <h3 className={styles.noteLabel}>Additional Rate Card Notes</h3>
                             <div className={styles.rateCardNote}>
@@ -172,7 +172,7 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
                             </div>
                         </div>
                     )}
-                    {!this.addNew && !this.getStudioRateCardData.rateCard.loading && (
+                    {!this.addNew && !this.getStudioRateCardData.rateCard.loading && this.getStudioRateCardData.selectedRateCardId !== null && (
                         <ButtonAdd
                             className={styles.rateCardAddButton}
                             label="New Activity"
