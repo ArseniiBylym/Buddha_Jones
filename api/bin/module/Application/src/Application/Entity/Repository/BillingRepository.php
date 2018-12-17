@@ -573,7 +573,12 @@ class BillingRepository extends EntityRepository
         }
 
         if (!empty($filter['search'])) {
-            $dqlFilter[] = " (s.spotName LIKE :search OR p.projectName  LIKE :search OR  c.campaignName LIKE :search ) ";
+            $dqlFilter[] = " (
+                s.spotName LIKE :search OR
+                p.projectName LIKE :search OR
+                c.campaignName LIKE :search OR
+                ptc.note LIKE :search
+            ) ";
         }
 
         if (count($dqlFilter)) {
