@@ -1,10 +1,10 @@
-import * as React from 'react';
 import * as classNames from 'classnames';
 import _truncate from 'lodash-es/truncate';
-import { observer } from 'mobx-react';
 import { observable } from 'mobx';
-import { IconArrowTopBlue, IconDropdownArrow } from '../Icons';
+import { observer } from 'mobx-react';
+import * as React from 'react';
 import AnimateHeight from 'react-animate-height';
+import { IconArrowTopBlue, IconDropdownArrow } from '../Icons';
 
 const s = require('./Card.css');
 
@@ -54,40 +54,42 @@ export class Card extends React.Component<CardProps, {}> {
                     this.props.className
                 )}
             >
-                <div
-                    ref={this.referenceHeader}
-                    className={classNames(
-                        s.header,
-                        {
-                            [s.fixed]: this.props.isHeaderFixed,
-                        },
-                        this.props.classNameForHeader
-                    )}
-                >
-                    <div className={s.left}>
-                        {(this.props.isExpandable && (
-                            <button className={s.name}>
-                                <span>
-                                    {this.isExpanded ? (
-                                        <IconArrowTopBlue width={10} height={16} />
-                                    ) : (
+                {(this.props.isExpandable || this.props.title || this.props.subTitle) && (
+                    <div
+                        ref={this.referenceHeader}
+                        className={classNames(
+                            s.header,
+                            {
+                                [s.fixed]: this.props.isHeaderFixed,
+                            },
+                            this.props.classNameForHeader
+                        )}
+                    >
+                        <div className={s.left}>
+                            {(this.props.isExpandable && (
+                                <button className={s.name}>
+                                    <span>
+                                        {this.isExpanded ? (
+                                            <IconArrowTopBlue width={10} height={16} />
+                                        ) : (
                                             <IconDropdownArrow width={12} height={8} />
                                         )}
-                                </span>
+                                    </span>
 
-                                {this.renderTitle()}
-                                {this.renderSubTitle()}
-                            </button>
-                        )) || (
+                                    {this.renderTitle()}
+                                    {this.renderSubTitle()}
+                                </button>
+                            )) || (
                                 <p className={s.name}>
                                     {this.renderTitle()}
                                     {this.renderSubTitle()}
                                 </p>
                             )}
-                    </div>
+                        </div>
 
-                    <div className={s.right}>{this.props.headerElements}</div>
-                </div>
+                        <div className={s.right}>{this.props.headerElements}</div>
+                    </div>
+                )}
 
                 {this.renderContent()}
             </div>
@@ -107,8 +109,8 @@ export class Card extends React.Component<CardProps, {}> {
             >
                 {this.props.truncuateSubTitleToCharacters
                     ? _truncate(this.props.subTitle, {
-                        length: this.props.truncuateSubTitleToCharacters,
-                    })
+                          length: this.props.truncuateSubTitleToCharacters,
+                      })
                     : this.props.subTitle}
             </em>
         ) : null;
@@ -120,8 +122,8 @@ export class Card extends React.Component<CardProps, {}> {
                 {this.props.children}
             </AnimateHeight>
         ) : (
-                <div className={s.content}>{this.props.children}</div>
-            );
+            <div className={s.content}>{this.props.children}</div>
+        );
     }
 
     private referenceContainer = (ref: HTMLDivElement) => {

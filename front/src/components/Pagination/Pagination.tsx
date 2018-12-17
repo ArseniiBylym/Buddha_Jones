@@ -1,13 +1,14 @@
-import * as React from 'react';
 import * as classNames from 'classnames';
-import { observable, action, computed } from 'mobx';
+import { DataSetEmpty } from 'components/Errors';
+import { action, computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { Row, Col } from '../Section';
+import * as React from 'react';
+import { MathHandler } from '../../helpers/MathHandler';
+import { IconArrowLeft, IconArrowRight, IconEllipsis } from '../Icons';
+import { Col, Row } from '../Section';
 
 // Styles
 const s = require('./Pagination.css');
-import { IconArrowLeft, IconArrowRight, IconEllipsis } from '../Icons';
-import { MathHandler } from '../../helpers/MathHandler';
 
 // Props
 interface PaginationProps {
@@ -82,20 +83,14 @@ export class Pagination extends React.Component<PaginationProps, {}> {
 
     public render() {
         return (
-            <div className={classNames(s.pagination, this.props.className)}>
+            <div className={classNames(s.pagination, { [s.empty]: this.props.countTotal <= 0 }, this.props.className)}>
                 {this.props.countTotal > 0 ? this.renderPages() : this.renderEmpty()}
             </div>
         );
     }
 
     private renderEmpty() {
-        return (
-            <Row>
-                <Col>
-                    <p className={s.paginationTotals}>{this.props.noEntriesLabel}</p>
-                </Col>
-            </Row>
-        );
+        return this.props.noEntriesLabel ? <DataSetEmpty label={this.props.noEntriesLabel} /> : null;
     }
 
     private renderPages() {
@@ -104,11 +99,8 @@ export class Pagination extends React.Component<PaginationProps, {}> {
                 {this.props.displayTotals && (
                     <Col>
                         <p className={s.paginationTotals}>
-                            {'Showing ' + (
-                                this.props.countTotal > 1
-                                    ? this.props.entrySingularName
-                                    : this.props.entryPluralName
-                            )}
+                            {'Showing ' +
+                                (this.props.countTotal > 1 ? this.props.entrySingularName : this.props.entryPluralName)}
                             <strong>{this.showingFrom}</strong>
                             {' — '}
                             <strong>{this.showingTo}</strong>
@@ -127,21 +119,19 @@ export class Pagination extends React.Component<PaginationProps, {}> {
                                 </button>
                             </li>
 
-                            {this.displayEllipsisAtStart &&
-                                this.firstPageToDisplay > 1 && (
-                                    <li className={s.paginationPage}>
-                                        <button onClick={this.handlePageClick(1)}>1</button>
-                                    </li>
-                                )}
+                            {this.displayEllipsisAtStart && this.firstPageToDisplay > 1 && (
+                                <li className={s.paginationPage}>
+                                    <button onClick={this.handlePageClick(1)}>1</button>
+                                </li>
+                            )}
 
-                            {this.displayEllipsisAtStart &&
-                                this.firstPageToDisplay > 1 && (
-                                    <li className={s.paginationEllipsis}>
-                                        <button onClick={this.handlePageClick(this.firstPageToDisplay - 1)}>
-                                            <IconEllipsis />
-                                        </button>
-                                    </li>
-                                )}
+                            {this.displayEllipsisAtStart && this.firstPageToDisplay > 1 && (
+                                <li className={s.paginationEllipsis}>
+                                    <button onClick={this.handlePageClick(this.firstPageToDisplay - 1)}>
+                                        <IconEllipsis />
+                                    </button>
+                                </li>
+                            )}
 
                             {this.pagesToDisplay.map(page => (
                                 <li
@@ -154,21 +144,19 @@ export class Pagination extends React.Component<PaginationProps, {}> {
                                 </li>
                             ))}
 
-                            {this.displayEllipsisAtEnd &&
-                                this.lastPageToDisplay < this.totalPages && (
-                                    <li className={s.paginationEllipsis}>
-                                        <button onClick={this.handlePageClick(this.lastPageToDisplay + 1)}>
-                                            <IconEllipsis />
-                                        </button>
-                                    </li>
-                                )}
+                            {this.displayEllipsisAtEnd && this.lastPageToDisplay < this.totalPages && (
+                                <li className={s.paginationEllipsis}>
+                                    <button onClick={this.handlePageClick(this.lastPageToDisplay + 1)}>
+                                        <IconEllipsis />
+                                    </button>
+                                </li>
+                            )}
 
-                            {this.displayEllipsisAtEnd &&
-                                this.lastPageToDisplay < this.totalPages && (
-                                    <li className={s.paginationPage}>
-                                        <button onClick={this.handlePageClick(this.totalPages)}>{this.totalPages}</button>
-                                    </li>
-                                )}
+                            {this.displayEllipsisAtEnd && this.lastPageToDisplay < this.totalPages && (
+                                <li className={s.paginationPage}>
+                                    <button onClick={this.handlePageClick(this.totalPages)}>{this.totalPages}</button>
+                                </li>
+                            )}
 
                             <li className={s.paginationArrow}>
                                 <button onClick={this.handlePageClick(this.currentPage + 1)}>
