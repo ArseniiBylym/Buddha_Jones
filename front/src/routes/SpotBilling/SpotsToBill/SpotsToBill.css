@@ -1,0 +1,14 @@
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+
+    & > p {
+        font-size: 0.8em;
+    }
+
+    & > button span {
+        font-size: 1.2em;
+    }
+}

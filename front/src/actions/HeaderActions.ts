@@ -1,6 +1,15 @@
 import { action } from 'mobx';
 import { HeaderStore } from '../store/AllStores';
 
+interface HeaderAll {
+    title?: string | null;
+    subTitle?: string | null;
+    preTitleSpan?: string | null;
+    preSubTitleSpan?: string | null;
+    elements?: JSX.Element[];
+    elementsOnLeft?: JSX.Element[];
+}
+
 export class HeaderActionsClass {
     @action
     public setMainHeaderTitle = async (title: string | null, preTitleSpan: string | null = null): Promise<boolean> => {
@@ -60,6 +69,18 @@ export class HeaderActionsClass {
         this.setMainHeaderTitles(title, subTitle, preTitleSpan, preSubTitleSpan);
         this.setMainHeaderElements(elements);
         this.setMainHeaderElementsOnLeft(elementsOnLeft);
+
+        return true;
+    };
+
+    @action
+    public replaceMainHeaderContent = async (content: HeaderAll): Promise<boolean> => {
+        HeaderStore.title = content.title || null;
+        HeaderStore.preTitleSpan = content.preTitleSpan || null;
+        HeaderStore.subTitle = content.subTitle || null;
+        HeaderStore.preSubTitleSpan = content.preSubTitleSpan || null;
+        HeaderStore.elements = content.elements || [];
+        HeaderStore.elementsOnLeft = content.elementsOnLeft || [];
 
         return true;
     };

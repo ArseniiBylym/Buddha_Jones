@@ -1,17 +1,21 @@
 import { Route, RouteAccessKey } from 'types/routes';
-import { DashboardAsync } from './Dashboard';
-import { ProjectsListAsync } from './Projects';
-import { ProjectsBoardAsync, ProjectCreateAsync } from './Project';
 import { ActivitiesDefinitionListAsync, ActivityDefinitionFormAsync } from './Configuration/ActivitiesDefinition/index';
-import { TimeEntryAsync } from './TimeTracking';
-import { UserAccountAsync } from './User';
-import { TimeApprovalAsync } from './TimeTracking/Approval';
-import { ProducerSpotSentListAsync, ProducerSpotSentFormAsync } from './SpotSent';
-import { ProjectBoardPermissionListAsync } from './Configuration/UserManagement/ProjectBoardPermission/List';
 import { ProjectBoardPermissionEditAsync } from './Configuration/UserManagement/ProjectBoardPermission/Form';
+import { ProjectBoardPermissionListAsync } from './Configuration/UserManagement/ProjectBoardPermission/List';
 import { UserManagementUsersListAsync } from './Configuration/UserManagement/UsersList/List';
+import { DashboardAsync } from './Dashboard';
+import { ProjectCreateAsync, ProjectsBoardAsync } from './Project';
+import { ProjectsListAsync } from './Projects';
+import { SpotsToBillAsync } from './SpotBilling/SpotsToBill/SpotsToBillAsync';
+import { ProducerSpotSentFormAsync, ProducerSpotSentListAsync } from './SpotSent';
 import { NewClientRequestListAsync } from './StudioClient/NewClientRequest/List';
+<<<<<<< HEAD
+import { TimeEntryAsync } from './TimeTracking';
+import { TimeApprovalAsync } from './TimeTracking/Approval';
+import { UserAccountAsync } from './User';
+=======
 import { BillingStudioRateCardAsync, BillingStudioRateCardsAsync } from './Billing/StudioRateCard';
+>>>>>>> dev
 
 // Icons
 const dashboardIcon = require('../assets/images/navigation/navigation-icon-dashboard.png');
@@ -112,6 +116,15 @@ export const routes: Route[] = [
         allowAllUsers: true,
     },
     {
+<<<<<<< HEAD
+        component: SpotsToBillAsync,
+        key: 'spots-to-bill',
+        accessKey: RouteAccessKey.SpotBilling,
+        group: studioGroup,
+        name: 'Spots to bill',
+        path: '/portal/spots-to-bill',
+        entry: '/portal/spots-to-bill',
+=======
         component: BillingStudioRateCardsAsync,
         key: 'studio-rate-card',
         accessKey: RouteAccessKey.StudioRateCard,
@@ -119,10 +132,13 @@ export const routes: Route[] = [
         name: 'Studio rate card',
         path: '/portal/billing/studio-rate-card',
         entry: '/portal/billing/studio-rate-card',
+>>>>>>> dev
         exact: true,
         allowAllUsers: true,
     },
     {
+<<<<<<< HEAD
+=======
         component: BillingStudioRateCardAsync,
         key: 'studio-rate-card',
         accessKey: RouteAccessKey.StudioRateCard,
@@ -133,6 +149,7 @@ export const routes: Route[] = [
         allowAllUsers: true,
     },
     {
+>>>>>>> dev
         component: ActivitiesDefinitionListAsync,
         key: 'activities-definition',
         accessKey: RouteAccessKey.ActivitiesDefinition,

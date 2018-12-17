@@ -1,8 +1,12 @@
-import * as React from 'react';
+import { ClientsActions, StudiosActions } from 'actions';
 import * as classNames from 'classnames';
 import { debounce as _debounce } from 'lodash';
-import { observable, action, computed } from 'mobx';
-import { observer, inject } from 'mobx-react';
+import { action, computed, observable } from 'mobx';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { AppOnlyStoreState } from 'store/AllStores';
+import { Client } from 'types/clients';
+import { Button } from '../Button';
 import {
     DropdownContainer,
     AlphabeticalOptionsList,
@@ -10,10 +14,6 @@ import {
     DropdownContainerTypeProp,
     DropdownContainerAlignProp,
 } from '../Form';
-import { Button } from '../Button';
-import { ClientsActions, StudiosActions } from 'actions';
-import { AppOnlyStoreState } from 'store/AllStores';
-import { Client } from 'types/clients';
 
 // Styles
 const s = require('./ClientsFilter.css');
@@ -30,7 +30,7 @@ interface ClientsFilterProps {
     allAreAllowed?: boolean;
     align?: DropdownContainerAlignProp;
     type?: DropdownContainerTypeProp;
-    src?: 'clients' | 'studios';
+    source?: 'clients' | 'studios';
 }
 
 // Component
@@ -49,7 +49,7 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
             allAreAllowed: true,
             align: 'right',
             type: 'oneline',
-            src: 'clients'
+            source: 'clients',
         };
     }
 
@@ -60,8 +60,8 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
     private debouncedClientSearch = _debounce((query: string) => {
         this.search = query;
         this.selectedLetter = '';
-        switch (this.props.src) {
-            case 'studios' :
+        switch (this.props.source) {
+            case 'studios':
                 StudiosActions.fetchCustomers(query, '');
                 break;
             default:
@@ -140,8 +140,8 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
         const { clients, studios } = this.props.store;
         let src;
 
-        switch (this.props.src) {
-            case 'studios' :
+        switch (this.props.source) {
+            case 'studios':
                 src = studios;
                 break;
             default:
@@ -152,8 +152,8 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
     }
 
     public componentDidMount() {
-        switch (this.props.src) {
-            case 'studios' :
+        switch (this.props.source) {
+            case 'studios':
                 StudiosActions.fetchStudiosInitialsLetters();
                 break;
             default:
@@ -182,10 +182,10 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
                     typeof this.props.clientName !== 'undefined' && this.props.clientName !== null
                         ? this.props.clientName
                         : typeof this.props.clientId !== 'undefined' && this.props.clientId !== null
-                            ? this.props.clientId.toString()
-                            : this.props.allAreAllowed
-                                ? 'All'
-                                : 'None'
+                        ? this.props.clientId.toString()
+                        : this.props.allAreAllowed
+                        ? 'All'
+                        : 'None'
                 }
             >
                 <AlphabeticalOptionsList
@@ -211,16 +211,15 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
                     loadingLetters={src ? src.existingClientsInitials.loading : true}
                 />
 
-                {typeof this.props.clientId !== 'undefined' &&
-                    this.props.clientId !== null && (
-                        <Button
-                            className={s.resetButton}
-                            onClick={this.handleReset}
-                            label={{
-                                text: 'Clear studio selection',
-                            }}
-                        />
-                    )}
+                {typeof this.props.clientId !== 'undefined' && this.props.clientId !== null && (
+                    <Button
+                        className={s.resetButton}
+                        onClick={this.handleReset}
+                        label={{
+                            text: 'Clear studio selection',
+                        }}
+                    />
+                )}
             </DropdownContainer>
         );
     }
@@ -246,8 +245,8 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
     private handleLetterChange = (letter: string) => {
         this.selectedLetter = letter;
         this.search = '';
-        switch (this.props.src) {
-            case 'studios' :
+        switch (this.props.source) {
+            case 'studios':
                 StudiosActions.fetchCustomers('', letter);
                 break;
             default:
@@ -277,5 +276,4 @@ export class ClientsFilter extends React.Component<ClientsFilterProps & AppOnlyS
         // Pass value further
         this.handleClientChange(null);
     };
-
 }

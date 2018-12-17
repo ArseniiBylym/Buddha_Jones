@@ -1,30 +1,29 @@
-import * as React from 'react';
 import * as classNames from 'classnames';
-import _truncuate from 'lodash-es/truncate';
-import { observer } from 'mobx-react';
+import _truncate from 'lodash-es/truncate';
 import { observable } from 'mobx';
-import { IconArrowTopBlue, IconDropdownArrow } from '../Icons';
+import { observer } from 'mobx-react';
+import * as React from 'react';
 import AnimateHeight from 'react-animate-height';
+import { IconArrowTopBlue, IconDropdownArrow } from '../Icons';
 
-// Styles
 const s = require('./Card.css');
 
-// Props
 interface CardProps {
     innerRef?: (container: HTMLDivElement) => void;
     innerRefForHeader?: (header: HTMLDivElement) => void;
     className?: string;
     classNameForHeader?: string;
-    title: string;
+    classNameForContent?: string;
+    title?: string;
     subTitle?: string;
     truncuateSubTitleToCharacters?: number;
     hideSubTitleWhenExpanded?: boolean;
     headerElements?: JSX.Element[];
     isExpandable?: boolean;
     isHeaderFixed?: boolean;
+    noPadding?: boolean;
 }
 
-// Component
 @observer
 export class Card extends React.Component<CardProps, {}> {
     static get defaultProps(): CardProps {
@@ -33,6 +32,7 @@ export class Card extends React.Component<CardProps, {}> {
             innerRefForHeader: undefined,
             className: undefined,
             classNameForHeader: undefined,
+            classNameForContent: undefined,
             title: '',
             subTitle: '',
             truncuateSubTitleToCharacters: undefined,
@@ -40,6 +40,7 @@ export class Card extends React.Component<CardProps, {}> {
             headerElements: [],
             isExpandable: true,
             isHeaderFixed: false,
+            noPadding: false,
         };
     }
 
@@ -57,40 +58,42 @@ export class Card extends React.Component<CardProps, {}> {
                     this.props.className
                 )}
             >
-                <div
-                    ref={this.referenceHeader}
-                    className={classNames(
-                        s.header,
-                        {
-                            [s.fixed]: this.props.isHeaderFixed,
-                        },
-                        this.props.classNameForHeader
-                    )}
-                >
-                    <div className={s.left}>
-                        {(this.props.isExpandable && (
-                            <button className={s.name}>
-                                <span>
-                                    {this.isExpanded ? (
-                                        <IconArrowTopBlue width={10} height={16} />
-                                    ) : (
-                                        <IconDropdownArrow width={12} height={8} />
-                                    )}
-                                </span>
-
-                                {this.renderTitle()}
-                                {this.renderSubTitle()}
-                            </button>
-                        )) || (
-                            <p className={s.name}>
-                                {this.renderTitle()}
-                                {this.renderSubTitle()}
-                            </p>
+                {(this.props.isExpandable || this.props.title || this.props.subTitle) && (
+                    <div
+                        ref={this.referenceHeader}
+                        className={classNames(
+                            s.header,
+                            {
+                                [s.fixed]: this.props.isHeaderFixed,
+                            },
+                            this.props.classNameForHeader
                         )}
-                    </div>
+                    >
+                        <div className={s.left}>
+                            {(this.props.isExpandable && (
+                                <button className={s.name}>
+                                    <span>
+                                        {this.isExpanded ? (
+                                            <IconArrowTopBlue width={10} height={16} />
+                                        ) : (
+                                            <IconDropdownArrow width={12} height={8} />
+                                        )}
+                                    </span>
 
-                    <div className={s.right}>{this.props.headerElements}</div>
-                </div>
+                                    {this.renderTitle()}
+                                    {this.renderSubTitle()}
+                                </button>
+                            )) || (
+                                <p className={s.name}>
+                                    {this.renderTitle()}
+                                    {this.renderSubTitle()}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className={s.right}>{this.props.headerElements}</div>
+                    </div>
+                )}
 
                 {this.renderContent()}
             </div>
@@ -109,7 +112,7 @@ export class Card extends React.Component<CardProps, {}> {
                 })}
             >
                 {this.props.truncuateSubTitleToCharacters
-                    ? _truncuate(this.props.subTitle, {
+                    ? _truncate(this.props.subTitle, {
                           length: this.props.truncuateSubTitleToCharacters,
                       })
                     : this.props.subTitle}
@@ -118,12 +121,18 @@ export class Card extends React.Component<CardProps, {}> {
     }
 
     private renderContent() {
+        const contentClassName = classNames(
+            s.content,
+            { [s.noPadding]: this.props.noPadding },
+            this.props.classNameForContent
+        );
+
         return this.props.isExpandable ? (
-            <AnimateHeight className={s.content} height={this.isExpanded ? 'auto' : 0} duration={500}>
+            <AnimateHeight className={contentClassName} height={this.isExpanded ? 'auto' : 0} duration={500}>
                 {this.props.children}
             </AnimateHeight>
         ) : (
-            <div className={s.content}>{this.props.children}</div>
+            <div className={contentClassName}>{this.props.children}</div>
         );
     }
 

@@ -1,4 +1,5 @@
 import {
+    FetchActionsClass,
     WindowActionsClass,
     UserActionsClass,
     NotificationsActionsClass,
@@ -22,6 +23,7 @@ import {
     StudioRateCardActionsClass,
 } from './index';
 
+export const FetchActions = new FetchActionsClass();
 export const WindowActions = new WindowActionsClass();
 export const UserActions = new UserActionsClass();
 export const NotificationsActions = new NotificationsActionsClass();
