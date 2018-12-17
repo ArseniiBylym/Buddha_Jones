@@ -20,4 +20,5 @@ export * from './TimeEntryActions';
 export * from './TimeApprovalActions';
 export * from './SpotSentActions';
 export * from './ChannelsActions';
+export * from './StudioRateCardActions';
 export * from './AllActions';

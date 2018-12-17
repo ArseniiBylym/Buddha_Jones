@@ -87,3 +87,6 @@ export const IconLockWhite: React.SFC<IconProps> = observer(props => {
 export const IconInformationBlue: React.SFC<IconProps> = observer(props => {
     return <Icon {...props} iconName="iconInformationBlue" />;
 });
+export const IconRemoveBlue: React.SFC<IconProps> = observer(props => {
+    return <Icon {...props} iconName="iconRemoveBlue" />;
+});

@@ -24,24 +24,33 @@ class TimeEntrySubmitForReviewController extends CustomAbstractActionController
         }
 
         if ($workerId && $date) {
+            $durationSum = $this->_timeEntryRepo->getUserTimeEntrySumOfADate($workerId, $date, true);
+            $userMinHour = $this->_usersRepo->getUsersMinHourById($this->_user_id);
 
-            $timeEntry = $this->_timeEntryRepo->getUserTimeEntryOfADate($workerId, $date);
+            if ($durationSum >= $userMinHour) {
+                $timeEntry = $this->_timeEntryRepo->getUserTimeEntryOfADate($workerId, $date);
 
-            foreach($timeEntry as $row) {
-                $entry = $this->_timeEntryRepository->find($row['id']);
+                foreach($timeEntry as $row) {
+                    $entry = $this->_timeEntryRepository->find($row['id']);
 
-                $entry->setStatus($newStatus);
-                $this->_em->persist($entry);
+                    $entry->setStatus($newStatus);
+                    $this->_em->persist($entry);
+                }
+
+                $this->_em->flush();
+
+                $this->_timeEntryRepo->updateCalculatedTimeField($workerId, $date);
+                
+                $response = array(
+                    'status' => 1,
+                    'message' => 'Request successful.'
+                );
+            } else {
+                $response = array(
+                    'status' => 0,
+                    'message' => 'Can not submit. Users total time entry is less than minimum work hour.'
+                );
             }
-
-            $this->_em->flush();
-
-            $this->_timeEntryRepo->updateCalculatedTimeField($workerId, $date);
-            
-            $response = array(
-                'status' => 1,
-                'message' => 'Request successful.'
-            );
         } else {
             $response = array(
                 'status' => 0,

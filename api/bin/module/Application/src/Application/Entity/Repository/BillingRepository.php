@@ -450,7 +450,7 @@ class BillingRepository extends EntityRepository
         return $total;
     }
 
-    public function getUnusedBillingId($userId, $spotId)
+    public function getUnusedBillingId($userId, $projectCampaignId)
     {
         $dql = "SELECT
                   b.id
@@ -464,7 +464,7 @@ class BillingRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setMaxResults(1);
         $query->setParameter('user_id', $userId);
-        $query->setParameter('spot_id', $spotId);
+        $query->setParameter('project_campaign_id', $projectCampaignId);
         $data = $query->getArrayResult();
 
         return (!empty($data[0]['id'])) ? (int)$data[0]['id'] : null;

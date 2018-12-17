@@ -20,9 +20,17 @@ class RatecardTypeController extends CustomAbstractActionController
 {
     public function getList()
     {
-        $studioId = (int)$this->getRequest()->getQuery('studio_id', 0);
+        try {
+            if (!$this->_usersRepo->getStudioRateCardAccess($this->_user_type_id)) {
+                throw new \Exception('Permission deined');
+            }
 
-        if ($studioId) {
+            $studioId = (int)$this->getRequest()->getQuery('studio_id', 0);
+
+            if (!$studioId) {
+                throw new \Exception('Please provider required parameter (studioId)');
+            }
+
             $data = $this->_activityRepo->getRatecardType($studioId);
 
             $response = array(
@@ -30,14 +38,13 @@ class RatecardTypeController extends CustomAbstractActionController
                 'message' => 'Request successful',
                 'data' => $data,
             );
-        } else {
+
+        } catch (\Exception $e) {
             $response = array(
                 'status' => 0,
-                'message' => 'Please provider required parameter (studioId)'
+                'message' => $e->getMessage(),
             );
-        }
 
-        if ($response['status'] == 0) {
             $this->getResponse()->setStatusCode(400);
         }
 
@@ -46,46 +53,52 @@ class RatecardTypeController extends CustomAbstractActionController
 
     public function create($data)
     {
-        $studioId = $this->_commonRepo->filterPostData($data, 'studio_id', 'int');
-        $ratecardName = $this->_commonRepo->filterPostData($data, 'ratecard_name', 'string');
-        $ratecardNote = $this->_commonRepo->filterPostData($data, 'ratecard_note', 'string');
+        try {
+            if (!$this->_usersRepo->getStudioRateCardAccess($this->_user_type_id)) {
+                throw new \Exception('Permission deined');
+            }
 
-        if ($studioId && $ratecardName) {
-            $studio = $this->_studioRepository->find($studioId);
+            $studioId = $this->_commonRepo->filterPostData($data, 'studio_id', 'int');
+            $ratecardName = $this->_commonRepo->filterPostData($data, 'ratecard_name', 'string');
+            $ratecardNote = $this->_commonRepo->filterPostData($data, 'ratecard_note', 'string');
 
-            if (!$studio) {
-                $response = array(
-                    'status' => 0,
-                    'message' => 'Studio does not exist'
-                );
-            } else {
-                $ratecardType = new RediRatecardType();
-                $ratecardType->setStudioId($studioId);
-                $ratecardType->setRatecardName($ratecardName);
-                $ratecardType->setRatecardNote($ratecardNote);
+            if ($studioId && $ratecardName) {
+                $studio = $this->_studioRepository->find($studioId);
 
-                $this->_em->persist($ratecardType);
-                $this->_em->flush();
+                if (!$studio) {
+                    $response = array(
+                        'status' => 0,
+                        'message' => 'Studio does not exist'
+                    );
+                } else {
+                    $ratecardType = new RediRatecardType();
+                    $ratecardType->setStudioId($studioId);
+                    $ratecardType->setRatecardName($ratecardName);
+                    $ratecardType->setRatecardNote($ratecardNote);
+
+                    $this->_em->persist($ratecardType);
+                    $this->_em->flush();
 
                 // insert rows in studioRateCard for existing activity 
-                $this->_activityRepo->populateStudioRatecardByRatecard($ratecardType->getRatecardId());
+                    $this->_activityRepo->populateStudioRatecardByRatecard($ratecardType->getRatecardId());
 
-                $data = $this->_activityRepo->getRatecardType($studioId);
+                    $data = $this->_activityRepo->getRatecardType($studioId);
 
-                $response = array(
-                    'status' => 1,
-                    'message' => 'Request successful.',
-                    'data' => $data,
-                );
+                    $response = array(
+                        'status' => 1,
+                        'message' => 'Request successful.',
+                        'data' => $data,
+                    );
+                }
+            } else {
+                throw new \Exception('Please provide required data (studio_id, ratecard_name)');
             }
-        } else {
+        } catch (\Exception $e) {
             $response = array(
                 'status' => 0,
-                'message' => 'Please provide required data (studio_id, ratecard_name)'
+                'message' => $e->getMessage(),
             );
-        }
 
-        if ($response['status'] == 0) {
             $this->getResponse()->setStatusCode(400);
         }
 
@@ -147,27 +160,38 @@ class RatecardTypeController extends CustomAbstractActionController
 
     public function delete($id)
     {
-        $ratecardType = $this->_ratecardTypeRepository->find($id);
-        $studioId = 0;
+        try {
+            if (!$this->_usersRepo->getStudioRateCardAccess($this->_user_type_id)) {
+                throw new \Exception('Permission deined');
+            }
+            $ratecardType = $this->_ratecardTypeRepository->find($id);
+            $studioId = 0;
 
-        if ($ratecardType) {
-            $studioId = $ratecardType->getStudioId();
-            $this->_em->remove($ratecardType);
-            $this->_em->flush();
+            if ($ratecardType) {
+                $studioId = $ratecardType->getStudioId();
+                $this->_em->remove($ratecardType);
+                $this->_em->flush();
 
+            }
+
+            $this->_activityRepo->cleanStudioRatecard();
+
+
+            $data = $this->_activityRepo->getRatecardType($studioId);
+
+            $response = array(
+                'status' => 1,
+                'message' => 'Request successful.',
+                'data' => $data,
+            );
+        } catch (\Exception $e) {
+            $this->getResponse()->setStatusCode(400);
+
+            $response = array(
+                'status' => 0,
+                'message' => $e->getMessage(),
+            );
         }
-
-        $this->_activityRepo->cleanStudioRatecard();
-
-        
-        $data = $this->_activityRepo->getRatecardType($studioId);
-
-        $response = array(
-            'status' => 1,
-            'message' => 'Request successful.',
-            'data' => $data,
-        );
-
         return new JsonModel($response);
     }
 

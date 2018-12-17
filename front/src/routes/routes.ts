@@ -9,15 +9,20 @@ import { ProjectsListAsync } from './Projects';
 import { SpotsToBillAsync } from './SpotBilling/SpotsToBill/SpotsToBillAsync';
 import { ProducerSpotSentFormAsync, ProducerSpotSentListAsync } from './SpotSent';
 import { NewClientRequestListAsync } from './StudioClient/NewClientRequest/List';
+<<<<<<< HEAD
 import { TimeEntryAsync } from './TimeTracking';
 import { TimeApprovalAsync } from './TimeTracking/Approval';
 import { UserAccountAsync } from './User';
+=======
+import { BillingStudioRateCardAsync, BillingStudioRateCardsAsync } from './Billing/StudioRateCard';
+>>>>>>> dev
 
 // Icons
 const dashboardIcon = require('../assets/images/navigation/navigation-icon-dashboard.png');
 const projectsIcon = require('../assets/images/navigation/navigation-icon-projects.png');
 const studioIcon = require('../assets/images/navigation/navigation-icon-customer.png');
 const configurationIcon = require('../assets/images/navigation/navigation-icon-activity.png');
+const billingIcon = require('assets/images/navigation/navigation-icon-billing.png');
 
 // Groups
 const dashboardGroup = { key: 'dashboard', name: 'Dashboard', icon: dashboardIcon };
@@ -25,6 +30,7 @@ const projectsGroup = { key: 'projects', name: 'Projects', icon: projectsIcon };
 const studioGroup = { key: 'studio', name: 'Studio', icon: studioIcon };
 const configurationGroup = { key: 'configuration', name: 'Configuration', icon: configurationIcon };
 const StudioClientGroup = { key: 'studio-client', name: 'StudioClient', icon: studioIcon };
+const billingGroup = { key: 'billing', name: 'Billing', icon: billingIcon };
 
 export const routes: Route[] = [
     {
@@ -110,6 +116,7 @@ export const routes: Route[] = [
         allowAllUsers: true,
     },
     {
+<<<<<<< HEAD
         component: SpotsToBillAsync,
         key: 'spots-to-bill',
         accessKey: RouteAccessKey.SpotBilling,
@@ -117,10 +124,32 @@ export const routes: Route[] = [
         name: 'Spots to bill',
         path: '/portal/spots-to-bill',
         entry: '/portal/spots-to-bill',
+=======
+        component: BillingStudioRateCardsAsync,
+        key: 'studio-rate-card',
+        accessKey: RouteAccessKey.StudioRateCard,
+        group: billingGroup,
+        name: 'Studio rate card',
+        path: '/portal/billing/studio-rate-card',
+        entry: '/portal/billing/studio-rate-card',
+>>>>>>> dev
         exact: true,
         allowAllUsers: true,
     },
     {
+<<<<<<< HEAD
+=======
+        component: BillingStudioRateCardAsync,
+        key: 'studio-rate-card',
+        accessKey: RouteAccessKey.StudioRateCard,
+        group: billingGroup,
+        name: 'Studio rate card',
+        path: '/portal/billing/studio-rate-card/:studio_id/:rate_card_id?',
+        exact: false,
+        allowAllUsers: true,
+    },
+    {
+>>>>>>> dev
         component: ActivitiesDefinitionListAsync,
         key: 'activities-definition',
         accessKey: RouteAccessKey.ActivitiesDefinition,

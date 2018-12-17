@@ -148,4 +148,43 @@ export class StudiosActionsClass {
         }
     };
 
+    @action
+    public searchClients = async (
+        search: string = '',
+        letter: string = '',
+        offset: number = 0,
+        length: number = 1000,
+    ): Promise<boolean> => {
+        search = search.trim().toUpperCase();
+        letter = letter.trim();
+
+        try {
+            StudiosStore.clientsBySearch.loading = true;
+            const response = (await API.getData(APIPath.STUDIO, {
+                search: search,
+                first_letter: letter,
+                offset,
+                length,
+            }, false, true)) as {
+                data: StudioApiResponse[];
+                total_count: number;
+            };
+
+            StudiosStore.clientsBySearch.clients = response.data.map(client => ({
+                id: client.id,
+                name: client.studioName,
+                cardcode: client.cardcode,
+            }));
+            
+            StudiosStore.clientsBySearch.totalCount = response.total_count;
+
+            return true;
+        } catch (error) {
+            throw error;
+        } finally {
+            // Stop loading search results
+            StudiosStore.clientsBySearch.loading = false;
+        }
+    };
+
 }

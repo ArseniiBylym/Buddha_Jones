@@ -390,7 +390,9 @@ class ActivityRepository extends EntityRepository
                   WITH aty.id=a.typeId
                 LEFT JOIN \Application\Entity\RediTrt trt
                   WITH trt.id = src.trtId
-                WHERE src.ratecardId = :ratecard_id
+                WHERE 
+                    src.ratecardId = :ratecard_id
+                    AND a.status = 1
                 ORDER BY a.typeId ASC, a.name ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -398,7 +400,7 @@ class ActivityRepository extends EntityRepository
         $data = $query->getArrayResult();
 
         $data = array_map(function ($cPrice) use ($ratecardId) {
-            $cPrice['rate'] = ($cPrice['rate'] !== null) ? (float) number_format($cPrice['rate'], 2) : null;
+            $cPrice['rate'] = ($cPrice['rate'] !== null) ? (int)$cPrice['rate'] : null;
 
             return $cPrice;
         }, $data);

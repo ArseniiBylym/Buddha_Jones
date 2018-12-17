@@ -22,3 +22,4 @@ export * from './Time';
 export * from './SpotSent';
 export * from './SpotsToBillFromApi';
 export * from './Channels';
+export * from './StudioRateCard';

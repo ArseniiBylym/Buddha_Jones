@@ -26,6 +26,7 @@ import {
     SpotSent,
     SpotsToBillFromApi,
     Channels,
+    StudioRateCard,
 } from './index';
 
 // Construct individual stores
@@ -52,6 +53,7 @@ export const TimeStore = new Time();
 export const SpotSentStore = new SpotSent();
 export const SpotsToBillFromApiStore = new SpotsToBillFromApi();
 export const ChannelsStore = new Channels();
+export const StudioRateCardStore = new StudioRateCard();
 
 // Define combined store's interface
 export interface AppStoreState {
@@ -78,6 +80,7 @@ export interface AppStoreState {
     spotSent: SpotSent;
     spotsToBillFromApi: SpotsToBillFromApi;
     channels: Channels;
+    studioRateCard: StudioRateCard;
 }
 
 // Initialize combined stores
@@ -105,6 +108,7 @@ export const store: AppStoreState = {
     spotSent: SpotSentStore,
     spotsToBillFromApi: SpotsToBillFromApiStore,
     channels: ChannelsStore,
+    studioRateCard: StudioRateCardStore,
 };
 
 // App interface

@@ -178,7 +178,7 @@ export class TimeApprovalDayEntry extends React.Component<TimeApprovalDayEntryPr
                         })}
 
                     {(entry.selectedProject === null || entry.selectedProject.project === null) && (
-                        <Tag key="no-project" title="No project" isTitleDim={true} isTitleBold={false} />
+                        <Tag key="no-project" title="" isTitleDim={true} isTitleBold={false} />
                     )}
                 </div>
 

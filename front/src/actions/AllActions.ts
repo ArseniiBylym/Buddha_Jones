@@ -20,6 +20,7 @@ import {
     TimeApprovalActionsClass,
     SpotSentActionsClass,
     ChannelsActionsClass,
+    StudioRateCardActionsClass,
 } from './index';
 
 export const FetchActions = new FetchActionsClass();
@@ -43,3 +44,4 @@ export const TimeEntryActions = new TimeEntryActionsClass();
 export const TimeApprovalActions = new TimeApprovalActionsClass();
 export const SpotSentActions = new SpotSentActionsClass();
 export const ChannelsActions = new ChannelsActionsClass();
+export const StudioRateCardActions = new StudioRateCardActionsClass();
