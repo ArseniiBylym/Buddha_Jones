@@ -30,6 +30,8 @@ interface FetchQueryProps<R, Q = {}> extends AppOnlyStoreState {
     queryObject: Q;
     /** Ignore fetching data */
     skipFetching?: boolean;
+    /** Do not automatically refresh data when it expires */
+    skipRefreshingExpiredData?: boolean;
     /** Defaults to `0` - value `0` means never, `null` means always, number larger than 0 for specific time in ms */
     dataExpiresInMiliseconds?: number | null;
     /** Defaults to `300` - every retry will be delayed by this value × retry attempt */
@@ -57,6 +59,8 @@ interface FetchQuerySummaries {
 @inject('store')
 @observer
 export class FetchQuery<R, Q = {}> extends React.Component<FetchQueryProps<R, Q>, {}> {
+    private timer: NodeJS.Timer | undefined = undefined;
+
     @observable private queryStatus: FetchQuerySummaries = {};
     @observable private dataCacheKey: string = '';
 
@@ -108,6 +112,12 @@ export class FetchQuery<R, Q = {}> extends React.Component<FetchQueryProps<R, Q>
         }
     }
 
+    componentWillUnmount() {
+        if (this.timer) {
+            clearTimeout(this.timer);
+        }
+    }
+
     render() {
         const key = this.dataCacheKey;
         const querySummary: FetchQuerySummary = has(this.queryStatus, key)
@@ -127,6 +137,11 @@ export class FetchQuery<R, Q = {}> extends React.Component<FetchQueryProps<R, Q>
 
     fetchData = async (apiEndpoint: string, queryObject: Q): Promise<boolean> => {
         try {
+            // Clear previous refresh timer
+            if (this.timer) {
+                clearTimeout(this.timer);
+            }
+
             // Do not request if API endpoint is not defined
             if (!apiEndpoint || this.props.skipFetching) {
                 return false;
@@ -185,6 +200,13 @@ export class FetchQuery<R, Q = {}> extends React.Component<FetchQueryProps<R, Q>
             // Indicate success and reset retry attempts counter
             this.queryStatus[cacheKey].status = FetchQueryStatus.Success;
             this.queryStatus[cacheKey].retriesCount = 0;
+
+            // Set next refresh timer
+            if (!this.props.skipRefreshingExpiredData && typeof this.props.dataExpiresInMiliseconds === 'number') {
+                this.timer = setTimeout(() => {
+                    this.retryFetch();
+                }, this.props.dataExpiresInMiliseconds);
+            }
 
             return true;
         } catch (error) {
