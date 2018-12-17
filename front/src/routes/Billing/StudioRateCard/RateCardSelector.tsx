@@ -4,7 +4,7 @@ import { match } from 'react-router';
 import * as styles from './styles.scss';
 import { AppState } from 'store/AllStores';
 import { DropdownContainer, OptionsList } from '../../../components/Form';
-import { ButtonEdit, ButtonDelete } from '../../../components/Button';
+import { ButtonEdit, ButtonDelete, ButtonAdd } from '../../../components/Button';
 import { action, computed, observable } from 'mobx';
 import { StudioRateCard } from '../../../types/studioRateCard';
 import { StudioRateCardActions } from '../../../actions';
@@ -28,6 +28,8 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
     private rateCardSelector?: DropdownContainer;
     @observable
     private isModalOpened: boolean = false;
+    @observable
+    private modalMode: 'new' | 'edit' = 'new';
     @observable
     private isDeleteModalOpened: boolean = false;
 
@@ -61,13 +63,28 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
                         />
                     </DropdownContainer>
                 }
-                <ButtonEdit
-                    onClick={this.handleRateAdd}
-                    label=""
-                    labelOnLeft={false}
-                    float="right"
-                    iconBackground="none"
-                />
+                {
+                    !this.getStudioRateCardData.rateCardTypes.loading && <ButtonAdd
+                        className={styles.rateCardAddButton}
+                        label=""
+                        labelOnLeft={true}
+                        float="left"
+                        isWhite={true}
+                        labelSize="small"
+                        labelColor="black"
+                        onClick={this.handleAddNewRate}
+                        adding={false}
+                    />
+                }
+                {
+                    this.getStudioRateCardData.selectedRateCardLabel !== '' && <ButtonEdit
+                        onClick={this.handleRateAdd}
+                        label=""
+                        labelOnLeft={false}
+                        float="right"
+                        iconBackground="none"
+                    />
+                }
                 {
                     this.getStudioRateCardData.selectedRateCardLabel !== '' && <ButtonDelete
                         onClick={this.openDeleteModal}
@@ -81,10 +98,10 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
                     isOpen={this.isModalOpened}
                     onClose={this.closeModal}
                     onAdd={this.addRateCardType}
-                    isAdding={this.getStudioRateCardData.rateCardTypes.adding}
                     onSave={this.saveRate}
-                    isSaving={this.getStudioRateCardData.rateCardTypes.saving}
+                    isSaving={this.getStudioRateCardData.rateCardTypes.saving || this.getStudioRateCardData.rateCardTypes.adding}
                     label={this.getStudioRateCardData.selectedRateCardLabel}
+                    mode={this.modalMode}
                 />
                 <RemoveConfirmationModal
                     isActive={this.isDeleteModalOpened}
@@ -107,6 +124,12 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
 
     private handleRateAdd = () => {
         this.isModalOpened = true;
+        this.modalMode = 'edit';
+    };
+
+    private handleAddNewRate = () => {
+        this.isModalOpened = true;
+        this.modalMode = 'new';
     };
 
     private closeModal = () => {
@@ -124,6 +147,7 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
     private addRateCardType = (name: string) => {
         StudioRateCardActions.addRateCardType(name).then(() => {
             this.closeModal();
+            this.searchClients();
         });
     };
 
@@ -148,6 +172,11 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
             key: this.getStudioRateCardData.rateCardTypes.data[key].ratecardId,
         };
     });
+
+    @action
+    private searchClients = () => {
+        StudioRateCardActions.getStudioRateCard();
+    }
 
     @action
     private setRateCard = (value) => {
