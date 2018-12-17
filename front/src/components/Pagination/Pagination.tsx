@@ -18,6 +18,10 @@ interface PaginationProps {
     countPerPage: number;
     countTotal: number;
     displayTotals?: boolean;
+    entrySingularName?: string;
+    entryPluralName?: string;
+    noEntriesLabel?: string;
+    hidePagesWhenOnlySingle?: boolean;
 }
 
 // Component
@@ -32,6 +36,10 @@ export class Pagination extends React.Component<PaginationProps, {}> {
             countTotal: 0,
             displayTotals: true,
             onPageChange: null,
+            entrySingularName: 'entry',
+            entryPluralName: 'entries',
+            noEntriesLabel: 'No entries available',
+            hidePagesWhenOnlySingle: false,
         };
     }
 
@@ -84,7 +92,7 @@ export class Pagination extends React.Component<PaginationProps, {}> {
         return (
             <Row>
                 <Col>
-                    <p className={s.paginationTotals}>No entries available</p>
+                    <p className={s.paginationTotals}>{this.props.noEntriesLabel}</p>
                 </Col>
             </Row>
         );
@@ -96,7 +104,11 @@ export class Pagination extends React.Component<PaginationProps, {}> {
                 {this.props.displayTotals && (
                     <Col>
                         <p className={s.paginationTotals}>
-                            {'Showing entries '}
+                            {'Showing ' + (
+                                this.props.countTotal > 1
+                                    ? this.props.entrySingularName
+                                    : this.props.entryPluralName
+                            )}
                             <strong>{this.showingFrom}</strong>
                             {' — '}
                             <strong>{this.showingTo}</strong>
@@ -107,62 +119,64 @@ export class Pagination extends React.Component<PaginationProps, {}> {
                 )}
 
                 <Col>
-                    <ul className={s.paginationLinksList}>
-                        <li className={s.paginationArrow}>
-                            <button onClick={this.handlePageClick(this.currentPage - 1)}>
-                                <IconArrowLeft />
-                            </button>
-                        </li>
-
-                        {this.displayEllipsisAtStart &&
-                            this.firstPageToDisplay > 1 && (
-                                <li className={s.paginationPage}>
-                                    <button onClick={this.handlePageClick(1)}>1</button>
-                                </li>
-                            )}
-
-                        {this.displayEllipsisAtStart &&
-                            this.firstPageToDisplay > 1 && (
-                                <li className={s.paginationEllipsis}>
-                                    <button onClick={this.handlePageClick(this.firstPageToDisplay - 1)}>
-                                        <IconEllipsis />
-                                    </button>
-                                </li>
-                            )}
-
-                        {this.pagesToDisplay.map(page => (
-                            <li
-                                key={page}
-                                className={classNames(s.paginationPage, {
-                                    [s.paginationPageActive]: this.currentPage === page,
-                                })}
-                            >
-                                <button onClick={this.handlePageClick(page)}>{page}</button>
+                    {this.props.hidePagesWhenOnlySingle && this.pagesToDisplay.length > 1 && (
+                        <ul className={s.paginationLinksList}>
+                            <li className={s.paginationArrow}>
+                                <button onClick={this.handlePageClick(this.currentPage - 1)}>
+                                    <IconArrowLeft />
+                                </button>
                             </li>
-                        ))}
 
-                        {this.displayEllipsisAtEnd &&
-                            this.lastPageToDisplay < this.totalPages && (
-                                <li className={s.paginationEllipsis}>
-                                    <button onClick={this.handlePageClick(this.lastPageToDisplay + 1)}>
-                                        <IconEllipsis />
-                                    </button>
+                            {this.displayEllipsisAtStart &&
+                                this.firstPageToDisplay > 1 && (
+                                    <li className={s.paginationPage}>
+                                        <button onClick={this.handlePageClick(1)}>1</button>
+                                    </li>
+                                )}
+
+                            {this.displayEllipsisAtStart &&
+                                this.firstPageToDisplay > 1 && (
+                                    <li className={s.paginationEllipsis}>
+                                        <button onClick={this.handlePageClick(this.firstPageToDisplay - 1)}>
+                                            <IconEllipsis />
+                                        </button>
+                                    </li>
+                                )}
+
+                            {this.pagesToDisplay.map(page => (
+                                <li
+                                    key={page}
+                                    className={classNames(s.paginationPage, {
+                                        [s.paginationPageActive]: this.currentPage === page,
+                                    })}
+                                >
+                                    <button onClick={this.handlePageClick(page)}>{page}</button>
                                 </li>
-                            )}
+                            ))}
 
-                        {this.displayEllipsisAtEnd &&
-                            this.lastPageToDisplay < this.totalPages && (
-                                <li className={s.paginationPage}>
-                                    <button onClick={this.handlePageClick(this.totalPages)}>{this.totalPages}</button>
-                                </li>
-                            )}
+                            {this.displayEllipsisAtEnd &&
+                                this.lastPageToDisplay < this.totalPages && (
+                                    <li className={s.paginationEllipsis}>
+                                        <button onClick={this.handlePageClick(this.lastPageToDisplay + 1)}>
+                                            <IconEllipsis />
+                                        </button>
+                                    </li>
+                                )}
 
-                        <li className={s.paginationArrow}>
-                            <button onClick={this.handlePageClick(this.currentPage + 1)}>
-                                <IconArrowRight />
-                            </button>
-                        </li>
-                    </ul>
+                            {this.displayEllipsisAtEnd &&
+                                this.lastPageToDisplay < this.totalPages && (
+                                    <li className={s.paginationPage}>
+                                        <button onClick={this.handlePageClick(this.totalPages)}>{this.totalPages}</button>
+                                    </li>
+                                )}
+
+                            <li className={s.paginationArrow}>
+                                <button onClick={this.handlePageClick(this.currentPage + 1)}>
+                                    <IconArrowRight />
+                                </button>
+                            </li>
+                        </ul>
+                    )}
                 </Col>
             </Row>
         );
