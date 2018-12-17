@@ -1,30 +1,34 @@
-import * as React from 'react';
-import * as styles from './styles.scss';
 import { HeaderActions, StudioRateCardActions } from 'actions/index';
-import { AppState } from 'store/AllStores';
-import { Section, SectionElement } from 'components/Section/index';
-import { InputSearch, Input, TextArea } from 'components/Form/index';
-import { inject, observer } from 'mobx-react';
 import { history } from 'App';
-import { ButtonAdd, ButtonBack, ButtonClose, ButtonEdit, ButtonSave } from 'components/Button';
-import { match } from 'react-router';
-import { Table } from 'components/Table';
+import {
+    ButtonAdd,
+    ButtonBack,
+    ButtonClose,
+    ButtonEdit,
+    ButtonSave
+    } from 'components/Button';
+import { InputSearch, TextArea } from 'components/Form/index';
 import { LoadingSpinner } from 'components/Loaders';
+import { Section, SectionElement } from 'components/Section/index';
+import { Table } from 'components/Table';
 import { action, computed, observable } from 'mobx';
-import { StudioRateCard } from '../../../types/studioRateCard';
-import { TableHeader } from '../../../components/Table';
-import RateCardSelector from './RateCardSelector';
-import BillingStudioRateCardRow from './BillingStudioRateCardRow';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { match } from 'react-router';
+import { AppState } from 'store/AllStores';
 import { ActivitiesActions, ProjectsCampaignsSpotsActions } from '../../../actions';
 import { RemoveConfirmationModal } from '../../../components/RemoveConfiramtionModal';
+import { TableHeader } from '../../../components/Table';
+import { StudioRateCard } from '../../../types/studioRateCard';
+import BillingStudioRateCardRow from './BillingStudioRateCardRow';
+import RateCardSelector from './RateCardSelector';
+import * as styles from './styles.scss';
 
 interface Props {
     match: match<MatchParams>;
 }
 
-interface MatchParams {
-
-}
+interface MatchParams {}
 
 @inject('store')
 @observer
@@ -47,7 +51,7 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
     private static getTableWithLoadingSpinner(): JSX.Element {
         return (
             <div className={styles.loadingSpinnerBlock}>
-                <LoadingSpinner size={64}/>
+                <LoadingSpinner size={64} />
             </div>
         );
     }
@@ -89,91 +93,86 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
 
         return (
             <>
-                <Section
-                    noSeparator={true}
-                    title="Activities pricing"
-                    headerElements={this.getHeaderElements()}
-                >
-                    {
-                        this.getStudioRateCardData.rateCard.loading ?
-                            BillingStudioRateCards.getTableWithLoadingSpinner()
-                            :
-                            <Table
-                                header={BillingStudioRateCards.getTableHeaders()}
-                                columnsWidths={['35%', '10%', '2%', '18%', '10%', '10%', '5%', '10%']}
-                            >
-                                {this.getTableRows()}
-                                {
-                                    this.addNew &&
-                                    <BillingStudioRateCardRow
-                                        card={{
-                                            ratecardId: this.getStudioRateCardData.selectedRateCardId ? this.getStudioRateCardData.selectedRateCardId : 0,
-                                            id: -1,
-                                            activityId: -1,
-                                            activityName: '',
-                                            activityTypeId: 4,
-                                            activityType: 'Rate Card',
-                                            trtId: '',
-                                            runtime: '',
-                                            revisionInc: '',
-                                            note: '',
-                                            rate: 0,
-                                        }}
-                                        key="new-activity"
-                                        isNew={true}
-                                        onSaveDone={this.onSaveDone}
-                                    />
-                                }
-                            </Table>
-                    }
-                    {
-                        !this.getStudioRateCardData.rateCard.loading &&
+                <Section noSeparator={true} title="Activities pricing" headerElements={this.getHeaderElements()}>
+                    {this.getStudioRateCardData.rateCard.loading ? (
+                        BillingStudioRateCards.getTableWithLoadingSpinner()
+                    ) : (
+                        <Table
+                            header={BillingStudioRateCards.getTableHeaders()}
+                            columnsWidths={['35%', '10%', '2%', '18%', '10%', '10%', '5%', '10%']}
+                        >
+                            {this.getTableRows()}
+                            {this.addNew && (
+                                <BillingStudioRateCardRow
+                                    card={{
+                                        ratecardId: this.getStudioRateCardData.selectedRateCardId
+                                            ? this.getStudioRateCardData.selectedRateCardId
+                                            : 0,
+                                        id: -1,
+                                        activityId: -1,
+                                        activityName: '',
+                                        activityTypeId: 4,
+                                        activityType: 'Rate Card',
+                                        trtId: '',
+                                        runtime: '',
+                                        revisionInc: '',
+                                        note: '',
+                                        rate: 0,
+                                    }}
+                                    key="new-activity"
+                                    isNew={true}
+                                    onSaveDone={this.onSaveDone}
+                                />
+                            )}
+                        </Table>
+                    )}
+                    {!this.getStudioRateCardData.rateCard.loading && (
                         <div className={styles.rateCardNoteWrapper}>
                             <h3 className={styles.noteLabel}>Additional Rate Card Notes</h3>
                             <div className={styles.rateCardNote}>
-                                {
-                                    this.noteEditMode ?
-                                        <TextArea
-                                            label="Note"
-                                            value={this.noteValue}
-                                            onChange={this.handleNoteChange}
-                                            className={styles.noteTextAreaWrapperStyles}
-                                            fieldClassName={styles.noteTextAreaStyles}
+                                {this.noteEditMode ? (
+                                    <TextArea
+                                        label="Note"
+                                        value={this.noteValue}
+                                        onChange={this.handleNoteChange}
+                                        className={styles.noteTextAreaWrapperStyles}
+                                        fieldClassName={styles.noteTextAreaStyles}
+                                    />
+                                ) : this.getStudioRateCardData.selectedRateCardNote ? (
+                                    this.getStudioRateCardData.selectedRateCardNote
+                                ) : (
+                                    'No Notes Found'
+                                )}
+                                {this.noteEditMode ? (
+                                    <div className={styles.rateCardNoteActions}>
+                                        <ButtonSave
+                                            label="Save"
+                                            labelColor="green"
+                                            isSaving={this.noteSaving}
+                                            savingLabel="Saving"
+                                            onClick={this.handleSaveNote}
                                         />
-                                        :
-                                        this.getStudioRateCardData.selectedRateCardNote ? this.getStudioRateCardData.selectedRateCardNote : 'No Notes Found'
-                                }
-                                {
-                                    this.noteEditMode ?
-                                        <div className={styles.rateCardNoteActions}>
-                                            <ButtonSave
-                                                label="Save"
-                                                labelColor="green"
-                                                isSaving={this.noteSaving}
-                                                savingLabel="Saving"
-                                                onClick={this.handleSaveNote}
-                                            />
-                                            <ButtonClose
-                                                className={styles.rowCancelButton}
-                                                label="Close"
-                                                onClick={this.exitNoteEditMode}
-                                            />
-                                        </div> :
-                                        <div className={styles.rateCardNoteActions}>
-                                            <ButtonEdit
-                                                className={styles.rowEditButton}
-                                                onClick={this.enterNoteEditMode}
-                                                label="Edit"
-                                                labelOnLeft={true}
-                                                float="none"
-                                            />
-                                        </div>
-                                }
+                                        <ButtonClose
+                                            className={styles.rowCancelButton}
+                                            label="Close"
+                                            onClick={this.exitNoteEditMode}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className={styles.rateCardNoteActions}>
+                                        <ButtonEdit
+                                            className={styles.rowEditButton}
+                                            onClick={this.enterNoteEditMode}
+                                            label="Edit"
+                                            labelOnLeft={true}
+                                            float="none"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
-                    }
-                    {
-                        !this.addNew && !this.getStudioRateCardData.rateCard.loading &&
+                    )}
+                    {!this.addNew && !this.getStudioRateCardData.rateCard.loading && (
                         <ButtonAdd
                             className={styles.rateCardAddButton}
                             label="New Activity"
@@ -185,7 +184,7 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
                             onClick={this.handleAdd}
                             adding={false}
                         />
-                    }
+                    )}
                     <RemoveConfirmationModal
                         isActive={this.isDeleteModalOpened}
                         onConfirmationModalClose={this.closeDeleteActivityModal}
@@ -200,57 +199,63 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
     }
 
     private enterNoteEditMode = () => {
-        this.noteValue = this.getStudioRateCardData.selectedRateCardNote ? this.getStudioRateCardData.selectedRateCardNote : '';
+        this.noteValue = this.getStudioRateCardData.selectedRateCardNote
+            ? this.getStudioRateCardData.selectedRateCardNote
+            : '';
         this.noteEditMode = true;
-    }
+    };
 
     private exitNoteEditMode = () => {
         this.noteEditMode = false;
-    }
+    };
 
-    private handleNoteChange = (e) => {
+    private handleNoteChange = e => {
         this.noteValue = e.target.value;
-    }
+    };
 
     private handleSaveNote = () => {
         this.noteSaving = true;
-        StudioRateCardActions.saveRateCardType(this.getStudioRateCardData.selectedRateCardLabel, this.noteValue).then(() => {
-            this.noteSaving = false;
-            this.exitNoteEditMode();
-        });
-    }
+        StudioRateCardActions.saveRateCardType(this.getStudioRateCardData.selectedRateCardLabel, this.noteValue).then(
+            () => {
+                this.noteSaving = false;
+                this.exitNoteEditMode();
+            }
+        );
+    };
 
     private openDeleteActivityModal = (activityId: number) => {
         this.activityToDelete = activityId;
         this.isDeleteModalOpened = true;
-    }
+    };
 
     private closeDeleteActivityModal = () => {
         this.isDeleteModalOpened = false;
         this.activityToDelete = null;
-    }
+    };
 
     private handleAdd = () => {
         this.addNew = true;
-    }
+    };
 
     private onSaveDone = () => {
         this.addNew = false;
-    }
+    };
 
     private getTableRows(): JSX.Element[] {
         const { data } = this.getStudioRateCardData.rateCard;
         return Object.keys(data)
-            .filter((key) => data[key].activityName.toLowerCase().indexOf(this.searchString.toLowerCase()) !== -1)
-            .map((p) => <BillingStudioRateCardRow card={data[p]} key={p} openDeleteModal={this.openDeleteActivityModal}/>);
+            .filter(key => data[key].activityName.toLowerCase().indexOf(this.searchString.toLowerCase()) !== -1)
+            .map(p => (
+                <BillingStudioRateCardRow card={data[p]} key={p} openDeleteModal={this.openDeleteActivityModal} />
+            ));
     }
 
     private getHeaderElements(): SectionElement[] {
         return [
             {
                 key: 'rate-card-selector',
-                element: <RateCardSelector {...this.props}/>,
-                minWidth: 300
+                element: <RateCardSelector {...this.props} />,
+                minWidth: 300,
             },
             {
                 key: 'search-filter',
@@ -311,7 +316,7 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
                 this.closeDeleteActivityModal();
             });
         }
-    }
+    };
 
     @action
     private setHeaderAndInitialData = (studioName?: string): void => {
