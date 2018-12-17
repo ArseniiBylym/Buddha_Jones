@@ -13,6 +13,7 @@ interface CardProps {
     innerRefForHeader?: (header: HTMLDivElement) => void;
     className?: string;
     classNameForHeader?: string;
+    classNameForContent?: string;
     title?: string;
     subTitle?: string;
     truncuateSubTitleToCharacters?: number;
@@ -20,6 +21,7 @@ interface CardProps {
     headerElements?: JSX.Element[];
     isExpandable?: boolean;
     isHeaderFixed?: boolean;
+    noPadding?: boolean;
 }
 
 @observer
@@ -30,6 +32,7 @@ export class Card extends React.Component<CardProps, {}> {
             innerRefForHeader: undefined,
             className: undefined,
             classNameForHeader: undefined,
+            classNameForContent: undefined,
             title: '',
             subTitle: '',
             truncuateSubTitleToCharacters: undefined,
@@ -37,6 +40,7 @@ export class Card extends React.Component<CardProps, {}> {
             headerElements: [],
             isExpandable: true,
             isHeaderFixed: false,
+            noPadding: false,
         };
     }
 
@@ -117,12 +121,18 @@ export class Card extends React.Component<CardProps, {}> {
     }
 
     private renderContent() {
+        const contentClassName = classNames(
+            s.content,
+            { [s.noPadding]: this.props.noPadding },
+            this.props.classNameForContent
+        );
+
         return this.props.isExpandable ? (
-            <AnimateHeight className={s.content} height={this.isExpanded ? 'auto' : 0} duration={500}>
+            <AnimateHeight className={contentClassName} height={this.isExpanded ? 'auto' : 0} duration={500}>
                 {this.props.children}
             </AnimateHeight>
         ) : (
-            <div className={s.content}>{this.props.children}</div>
+            <div className={contentClassName}>{this.props.children}</div>
         );
     }
 
