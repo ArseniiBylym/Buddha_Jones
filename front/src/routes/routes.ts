@@ -1,4 +1,5 @@
 import { Route, RouteAccessKey } from 'types/routes';
+import { BillingStudioRateCardAsync, BillingStudioRateCardsAsync } from './Billing/StudioRateCard';
 import { ActivitiesDefinitionListAsync, ActivityDefinitionFormAsync } from './Configuration/ActivitiesDefinition/index';
 import { ProjectBoardPermissionEditAsync } from './Configuration/UserManagement/ProjectBoardPermission/Form';
 import { ProjectBoardPermissionListAsync } from './Configuration/UserManagement/ProjectBoardPermission/List';
@@ -9,13 +10,9 @@ import { ProjectsListAsync } from './Projects';
 import { SpotsToBillAsync } from './SpotBilling/SpotsToBill/SpotsToBillAsync';
 import { ProducerSpotSentFormAsync, ProducerSpotSentListAsync } from './SpotSent';
 import { NewClientRequestListAsync } from './StudioClient/NewClientRequest/List';
-<<<<<<< HEAD
 import { TimeEntryAsync } from './TimeTracking';
 import { TimeApprovalAsync } from './TimeTracking/Approval';
 import { UserAccountAsync } from './User';
-=======
-import { BillingStudioRateCardAsync, BillingStudioRateCardsAsync } from './Billing/StudioRateCard';
->>>>>>> dev
 
 // Icons
 const dashboardIcon = require('../assets/images/navigation/navigation-icon-dashboard.png');
@@ -116,7 +113,6 @@ export const routes: Route[] = [
         allowAllUsers: true,
     },
     {
-<<<<<<< HEAD
         component: SpotsToBillAsync,
         key: 'spots-to-bill',
         accessKey: RouteAccessKey.SpotBilling,
@@ -124,7 +120,10 @@ export const routes: Route[] = [
         name: 'Spots to bill',
         path: '/portal/spots-to-bill',
         entry: '/portal/spots-to-bill',
-=======
+        exact: true,
+        allowAllUsers: true,
+    },
+    {
         component: BillingStudioRateCardsAsync,
         key: 'studio-rate-card',
         accessKey: RouteAccessKey.StudioRateCard,
@@ -132,13 +131,10 @@ export const routes: Route[] = [
         name: 'Studio rate card',
         path: '/portal/billing/studio-rate-card',
         entry: '/portal/billing/studio-rate-card',
->>>>>>> dev
         exact: true,
         allowAllUsers: true,
     },
     {
-<<<<<<< HEAD
-=======
         component: BillingStudioRateCardAsync,
         key: 'studio-rate-card',
         accessKey: RouteAccessKey.StudioRateCard,
@@ -149,7 +145,6 @@ export const routes: Route[] = [
         allowAllUsers: true,
     },
     {
->>>>>>> dev
         component: ActivitiesDefinitionListAsync,
         key: 'activities-definition',
         accessKey: RouteAccessKey.ActivitiesDefinition,
