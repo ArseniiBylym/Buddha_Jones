@@ -577,7 +577,8 @@ class BillingRepository extends EntityRepository
                 s.spotName LIKE :search OR
                 p.projectName LIKE :search OR
                 c.campaignName LIKE :search OR
-                ptc.note LIKE :search
+                ptc.note LIKE :search OR
+                st.studioName LIKE :search
             ) ";
         }
 
