@@ -9,6 +9,14 @@ export interface SpotsToBillFilters {
     } | null;
 }
 
+export interface SpotToBillProducer {
+    userId: number;
+    firstName: string;
+    lastName: string | null;
+    creativeRoleId: number;
+    creativeRoleName: string;
+}
+
 export interface SpotToBillFromApi {
     projectId: number;
     projectName: string;
@@ -17,8 +25,10 @@ export interface SpotToBillFromApi {
     campaignId: number;
     campaignName: string;
     projectCampaignId: number;
+    projectCampaignName: string | null;
     spotId: number;
     spotName: string;
+    producers: SpotToBillProducer[];
     updatedAt: DateObjectFromApi;
 }
 
