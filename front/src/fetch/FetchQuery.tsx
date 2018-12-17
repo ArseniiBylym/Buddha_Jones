@@ -28,6 +28,8 @@ interface FetchQueryProps<R, Q = {}> extends AppOnlyStoreState {
     apiEndpoint: string;
     /** Object representing query string to be appended to GET request */
     queryObject: Q;
+    /** Ignore fetching data */
+    skipFetching?: boolean;
     /** Defaults to `0` - value `0` means never, `null` means always, number larger than 0 for specific time in ms */
     dataExpiresInMiliseconds?: number | null;
     /** Defaults to `300` - every retry will be delayed by this value × retry attempt */
@@ -99,7 +101,8 @@ export class FetchQuery<R, Q = {}> extends React.Component<FetchQueryProps<R, Q>
     componentWillReceiveProps(nextProps: FetchQueryProps<R, Q>) {
         if (
             this.props.apiEndpoint !== nextProps.apiEndpoint ||
-            !_isEqual(this.props.queryObject, nextProps.queryObject)
+            !_isEqual(this.props.queryObject, nextProps.queryObject) ||
+            (this.props.skipFetching !== nextProps.skipFetching && nextProps.skipFetching === true)
         ) {
             this.fetchData(nextProps.apiEndpoint, nextProps.queryObject);
         }
@@ -125,23 +128,13 @@ export class FetchQuery<R, Q = {}> extends React.Component<FetchQueryProps<R, Q>
     fetchData = async (apiEndpoint: string, queryObject: Q): Promise<boolean> => {
         try {
             // Do not request if API endpoint is not defined
-            if (!apiEndpoint) {
+            if (!apiEndpoint || this.props.skipFetching) {
                 return false;
             }
 
             // Create cacheKey
             const cacheKey = FetchActions.createCacheKey(apiEndpoint, (queryObject as unknown) as object);
             this.dataCacheKey = cacheKey;
-
-            // Check if current cache is fresh enough to not fetch new data
-            if (this.props.store && get(this.props.store.fetch.cachedQueries, cacheKey)) {
-                const cache = toJS(get(this.props.store.fetch.cachedQueries, cacheKey)) as FetchData;
-                const now = Date.now();
-
-                if (now <= cache.expiresAtTimeStamp) {
-                    return true;
-                }
-            }
 
             // Indicate loading status and increment retry attemp
             if (has(this.queryStatus, cacheKey)) {
@@ -154,6 +147,18 @@ export class FetchQuery<R, Q = {}> extends React.Component<FetchQueryProps<R, Q>
                         retriesCount: 1,
                     },
                 });
+            }
+
+            // Check if current cache is fresh enough to not fetch new data
+            if (this.props.store && get(this.props.store.fetch.cachedQueries, cacheKey)) {
+                const cache = toJS(get(this.props.store.fetch.cachedQueries, cacheKey)) as FetchData;
+                const now = Date.now();
+
+                if (now <= cache.expiresAtTimeStamp) {
+                    this.queryStatus[cacheKey].status = FetchQueryStatus.Success;
+                    this.queryStatus[cacheKey].retriesCount = 0;
+                    return true;
+                }
             }
 
             // Get summary
@@ -183,10 +188,17 @@ export class FetchQuery<R, Q = {}> extends React.Component<FetchQueryProps<R, Q>
 
             return true;
         } catch (error) {
+            // tslint:disable-next-line:no-console
+            console.error('Data fetch error: ', error);
+
             const cacheKey = FetchActions.createCacheKey(apiEndpoint, (queryObject as unknown) as object);
 
             // Retry data fetch if attempts limit hasn't been crossed
-            if (this.retryAttemptsLimit > 0 && this.queryStatus[cacheKey].retriesCount <= this.retryAttemptsLimit) {
+            if (
+                this.retryAttemptsLimit > 0 &&
+                has(this.queryStatus, cacheKey) &&
+                this.queryStatus[cacheKey].retriesCount <= this.retryAttemptsLimit
+            ) {
                 this.fetchData(apiEndpoint, queryObject);
                 throw error;
             }
