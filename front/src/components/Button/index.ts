@@ -7,3 +7,4 @@ export * from './ButtonSave';
 export * from './ButtonSend';
 export * from './ButtonAdd';
 export * from './ButtonDelete';
+export * from './LinkButton';

@@ -263,23 +263,16 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
         projectName: string,
         projectCampaignId?: number
     ) => {
-        let path =
-            '/portal/project/' +
-            studioId +
-            '/' +
-            studioName +
-            '/' +
-            projectId +
-            '/' +
-            projectName +
-            '/' +
-            (typeof this.props.match !== 'undefined' ? this.props.match.params['pageId'] : '1');
-
-        if (typeof projectCampaignId !== 'undefined') {
-            path += '?projectCampaignId=' + projectCampaignId;
-        }
-
-        history.push(path);
+        history.push(
+            ProjectsActions.constructProjectUrl(
+                studioId,
+                studioName,
+                projectId,
+                projectName,
+                typeof this.props.match !== 'undefined' ? this.props.match.params['pageId'] : '1',
+                typeof projectCampaignId !== 'undefined' ? projectCampaignId : undefined
+            )
+        );
     };
 
     private setMainHeaderElements = (userCanCreateNewProjects: boolean = false) => {

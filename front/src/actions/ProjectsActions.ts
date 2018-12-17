@@ -1,9 +1,9 @@
-import { action } from 'mobx';
 import * as dateParse from 'date-fns/parse';
-import { debounce as _debounce } from 'lodash';
-import { ProjectsStore, ProjectsDetailsStore } from 'store/AllStores';
 import { API, APIPath } from 'fetch';
-import { RawProjectApiResponse, Project } from 'types/project';
+import { debounce as _debounce } from 'lodash';
+import { action } from 'mobx';
+import { ProjectsDetailsStore, ProjectsStore } from 'store/AllStores';
+import { Project, RawProjectApiResponse } from 'types/project';
 import { ProjectCreateData } from 'types/projectDetails';
 
 export class ProjectsActionsClass {
@@ -98,10 +98,10 @@ export class ProjectsActionsClass {
                     project.projectCode && project.projectName
                         ? `(${project.projectCode}) - ${project.projectName}`
                         : project.projectCode
-                            ? project.projectCode
-                            : project.projectName
-                                ? project.projectName
-                                : '',
+                        ? project.projectCode
+                        : project.projectName
+                        ? project.projectName
+                        : '',
                 clientId: project.customerId,
                 clientName: project.customerName,
                 studioId: project.studioId,
@@ -110,7 +110,8 @@ export class ProjectsActionsClass {
                 commentsCount: project.comment.count,
                 commentsUnread: project.comment.unread,
                 campaigns: project.campaign,
-                lastUpdatedAt: (project.lastUpdatedAt && project.lastUpdatedAt.date) ? dateParse(project.lastUpdatedAt.date) : null,
+                lastUpdatedAt:
+                    project.lastUpdatedAt && project.lastUpdatedAt.date ? dateParse(project.lastUpdatedAt.date) : null,
                 lastUpdatedByUserId: project.lastUpdateUser.userId,
                 lastUpdatedByUserName: project.lastUpdateUser.name,
                 lastUpdatedByUserImage: project.lastUpdateUser.image,
@@ -123,5 +124,27 @@ export class ProjectsActionsClass {
         } catch (error) {
             throw error;
         }
+    };
+
+    public constructProjectUrl = (
+        studioId: number,
+        studioName: string,
+        projectId: number,
+        projectName: string,
+        fromPage?: number,
+        scrollToProjectCampaignId?: number
+    ): string => {
+        return (
+            '/portal/project/' +
+            studioId +
+            '/' +
+            studioName +
+            '/' +
+            projectId +
+            '/' +
+            projectName +
+            (fromPage ? '/' + fromPage : '') +
+            (scrollToProjectCampaignId ? '?projectCampaignId=' + scrollToProjectCampaignId : '')
+        );
     };
 }

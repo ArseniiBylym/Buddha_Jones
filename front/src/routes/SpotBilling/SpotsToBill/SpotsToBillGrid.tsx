@@ -1,4 +1,6 @@
+import { ProjectsActions } from 'actions';
 import * as classNames from 'classnames';
+import { LinkButton } from 'components/Button';
 import { Tag } from 'components/Content';
 import { DataFetchError } from 'components/Errors/DataFetchError';
 import { LoadingShade, LoadingSpinner } from 'components/Loaders';
@@ -27,6 +29,7 @@ interface ProjectCampaignCard {
     projectCampaignId: number;
     campaignName: string;
     campaignNote: string | null;
+    projectId: number;
     projectName: string;
     studioId: number;
     studioName: string;
@@ -50,6 +53,7 @@ export class SpotsToBillGrid extends React.Component<SpotsToBillGridProps, {}> {
                     projectCampaignId: spot.projectCampaignId,
                     campaignName: spot.campaignName,
                     campaignNote: spot.projectCampaignName,
+                    projectId: spot.projectId,
                     projectName: spot.projectName,
                     studioId: spot.studioId,
                     studioName: spot.studioName,
@@ -94,7 +98,16 @@ export class SpotsToBillGrid extends React.Component<SpotsToBillGridProps, {}> {
                         <React.Fragment>
                             <div className={s.content}>
                                 <div className={s.headline}>
-                                    <h3>{projectCampaign.projectName}</h3>
+                                    <LinkButton
+                                        goToUrlOnClick={ProjectsActions.constructProjectUrl(
+                                            projectCampaign.studioId,
+                                            projectCampaign.studioName,
+                                            projectCampaign.projectId,
+                                            projectCampaign.projectName
+                                        )}
+                                        label={projectCampaign.projectName}
+                                    />
+
                                     <h4>
                                         {projectCampaign.campaignName +
                                             (projectCampaign.campaignNote ? ' - ' + projectCampaign.campaignNote : '')}

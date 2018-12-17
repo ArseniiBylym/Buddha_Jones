@@ -1,16 +1,14 @@
-import * as React from 'react';
-import { observer } from 'mobx-react';
-import * as dateFormat from 'date-fns/format';
-import { Project } from 'types/project';
-import { Row, Col } from 'components/Section';
-import { IconArrowRight } from 'components/Icons';
-import { Paragraph, Tag, Tooltip } from 'components/Content';
 import { Person } from 'components/Buddha';
+import { LinkButton } from 'components/Button';
+import { Paragraph, Tag, Tooltip } from 'components/Content';
+import { Col, Row } from 'components/Section';
+import * as dateFormat from 'date-fns/format';
+import { observer } from 'mobx-react';
+import * as React from 'react';
+import { Project } from 'types/project';
 
-// Styles
 const s = require('./ProjectsList.css');
 
-// Props
 interface ProjectsListCardProps {
     onProjectClick:
         | ((
@@ -25,7 +23,6 @@ interface ProjectsListCardProps {
     userCanViewCampaignDescription: boolean;
 }
 
-// Component
 @observer
 export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}> {
     public render() {
@@ -33,10 +30,11 @@ export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}>
             <div className={s.project} onClickCapture={this.handleProjectClick}>
                 <Row className={s.title} removeMargins={true}>
                     <Col>
-                        <h3 className={s.name}>
-                            {this.props.project.name}
-                            <IconArrowRight width={15} height={11} marginTop={-5} marginLeft={-7} />
-                        </h3>
+                        <LinkButton
+                            className={s.name}
+                            onClick={this.handleProjectClick}
+                            label={this.props.project.name}
+                        />
                         <h4 className={s.client}>{this.props.project.studioName}</h4>
                     </Col>
                 </Row>
@@ -64,7 +62,8 @@ export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}>
                     <Col className={s.dateCol}>
                         <Paragraph>
                             <span>Last update</span>
-                            {this.props.project.lastUpdatedAt && dateFormat(this.props.project.lastUpdatedAt, 'MM/DD/YYYY hh:mm A')}
+                            {this.props.project.lastUpdatedAt &&
+                                dateFormat(this.props.project.lastUpdatedAt, 'MM/DD/YYYY hh:mm A')}
                         </Paragraph>
                     </Col>
                     <Col className={s.nameCol}>
