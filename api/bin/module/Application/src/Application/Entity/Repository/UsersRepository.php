@@ -509,7 +509,12 @@ class UsersRepository extends EntityRepository
             'producer-spot-sent-form' => true,
             'new-customer-approval' => $this->getNewCustomerApproval($userTypeId),
             'studio-rate-card' => $this->getStudioRateCardAccess($userTypeId),
+            'spot-billing' => $this->getSpotBillingAccess($userTypeId),
         );
+    }
+
+    public function getSpotBillingAccess($userTypeId) {
+        return (bool)in_array($userTypeId, $this->_billingUserTypeIds);
     }
 
     public function getStudioRateCardAccess($userTypeId) {
