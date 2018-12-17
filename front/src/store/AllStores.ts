@@ -3,6 +3,7 @@ import { match } from 'react-router';
 
 // Import individual stores
 import {
+    Fetch,
     User,
     Login,
     Header,
@@ -23,10 +24,12 @@ import {
     TimeApproval,
     Time,
     SpotSent,
-    Channels
+    SpotsToBillFromApi,
+    Channels,
 } from './index';
 
 // Construct individual stores
+export const FetchStore = new Fetch();
 export const UserStore = new User();
 export const LoginStore = new Login();
 export const HeaderStore = new Header();
@@ -47,10 +50,12 @@ export const TimeEntryStore = new TimeEntry();
 export const TimeApprovalStore = new TimeApproval();
 export const TimeStore = new Time();
 export const SpotSentStore = new SpotSent();
+export const SpotsToBillFromApiStore = new SpotsToBillFromApi();
 export const ChannelsStore = new Channels();
 
 // Define combined store's interface
 export interface AppStoreState {
+    fetch: Fetch;
     user: User;
     login: Login;
     header: Header;
@@ -71,11 +76,13 @@ export interface AppStoreState {
     timeApproval: TimeApproval;
     time: Time;
     spotSent: SpotSent;
+    spotsToBillFromApi: SpotsToBillFromApi;
     channels: Channels;
 }
 
 // Initialize combined stores
 export const store: AppStoreState = {
+    fetch: FetchStore,
     user: UserStore,
     login: LoginStore,
     header: HeaderStore,
@@ -96,7 +103,8 @@ export const store: AppStoreState = {
     timeApproval: TimeApprovalStore,
     time: TimeStore,
     spotSent: SpotSentStore,
-    channels: ChannelsStore
+    spotsToBillFromApi: SpotsToBillFromApiStore,
+    channels: ChannelsStore,
 };
 
 // App interface

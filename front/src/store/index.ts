@@ -1,4 +1,5 @@
 // Exports
+export * from './Fetch';
 export * from './User';
 export * from './Login';
 export * from './Header';
@@ -19,4 +20,5 @@ export * from './TimeEntry';
 export * from './TimeApproval';
 export * from './Time';
 export * from './SpotSent';
+export * from './SpotsToBillFromApi';
 export * from './Channels';

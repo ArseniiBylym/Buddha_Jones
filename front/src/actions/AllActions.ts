@@ -1,4 +1,5 @@
 import {
+    FetchActionsClass,
     WindowActionsClass,
     UserActionsClass,
     NotificationsActionsClass,
@@ -18,9 +19,10 @@ import {
     TimeEntryActionsClass,
     TimeApprovalActionsClass,
     SpotSentActionsClass,
-    ChannelsActionsClass
+    ChannelsActionsClass,
 } from './index';
 
+export const FetchActions = new FetchActionsClass();
 export const WindowActions = new WindowActionsClass();
 export const UserActions = new UserActionsClass();
 export const NotificationsActions = new NotificationsActionsClass();
