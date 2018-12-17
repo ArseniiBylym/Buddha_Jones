@@ -259,53 +259,62 @@ class TimeEntryController extends CustomAbstractActionController
                         $timeEntry->setApprovedAt(new \DateTime('now'));
                     }
 
-                    $this->_em->persist($timeEntry);
-                    $this->_em->flush();
+                    $hasTimeOverlap = $this->_timeEntryRepo->checkTimeOverlap($timeEntry->getUserId(), $timeEntry->getStartDate(), $timeEntry->getDuration(), $timeEntry->getId());
 
-                    $timeEntryId = $timeEntry->getId();
+                    if (!$hasTimeOverlap) {
+                        $this->_em->persist($timeEntry);
+                        $this->_em->flush();
+
+                        $timeEntryId = $timeEntry->getId();
 
                         // if file informations are sent then
                         // remove previous entry
                         // and add new entry
-                    if (count($files)) {
+                        if (count($files)) {
                             // delete existing
-                        $existingTimeEntryFiles = $this->_timeEntryFileRepository->findBy(array('timeEntryId' => $timeEntryId));
+                            $existingTimeEntryFiles = $this->_timeEntryFileRepository->findBy(array('timeEntryId' => $timeEntryId));
 
-                        foreach ($existingTimeEntryFiles as $existingTimeEntryFile) {
-                            $this->_em->remove($existingTimeEntryFile);
-                        }
+                            foreach ($existingTimeEntryFiles as $existingTimeEntryFile) {
+                                $this->_em->remove($existingTimeEntryFile);
+                            }
 
-                        $this->_em->flush();
+                            $this->_em->flush();
 
                             //add new ones
-                        foreach ($files as $file) {
-                            if (!empty($file['filename'])) {
-                                $timeEntryFile = new RediTimeEntryFile();
-                                $timeEntryFile->setTimeEntryId($timeEntryId);
-                                $timeEntryFile->setFileName($file['filename']);
+                            foreach ($files as $file) {
+                                if (!empty($file['filename'])) {
+                                    $timeEntryFile = new RediTimeEntryFile();
+                                    $timeEntryFile->setTimeEntryId($timeEntryId);
+                                    $timeEntryFile->setFileName($file['filename']);
 
-                                if (!empty($file['description'])) {
-                                    $timeEntryFile->setDescription($file['description']);
+                                    if (!empty($file['description'])) {
+                                        $timeEntryFile->setDescription($file['description']);
+                                    }
+
+                                    if (!empty($file['duration'])) {
+                                        $timeEntryFile->setDuration($file['duration']);
+                                    }
+
+                                    $this->_em->persist($timeEntryFile);
                                 }
-
-                                if (!empty($file['duration'])) {
-                                    $timeEntryFile->setDuration($file['duration']);
-                                }
-
-                                $this->_em->persist($timeEntryFile);
                             }
+
+                            $this->_em->flush();
                         }
 
-                        $this->_em->flush();
+                        $data = $this->getSingleData($id);
+
+                        $response = array(
+                            'status' => 1,
+                            'message' => 'Request successful.',
+                            'data' => $data
+                        );
+                    } else {
+                        $response = array(
+                            'status' => 0,
+                            'message' => 'Time entry has overlap with existing time entry.'
+                        );
                     }
-
-                    $data = $this->getSingleData($id);
-
-                    $response = array(
-                        'status' => 1,
-                        'message' => 'Request successful.',
-                        'data' => $data
-                    );
 
                 } else {
                     $response = array(

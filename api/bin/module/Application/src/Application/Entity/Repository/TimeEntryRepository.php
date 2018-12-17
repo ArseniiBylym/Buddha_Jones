@@ -1073,9 +1073,13 @@ class TimeEntryRepository extends EntityRepository
      * @param string $duration
      * @return boolean  If there is overlap then return true, return false otherwise
      */
-    public function checkTimeOverlap($userId, $startDateTime, $duration) {
+    public function checkTimeOverlap($userId, $startDateTime, $duration, $excludedEntryId = null) {
+        $duration = number_format($duration, 2);
+        
         try {
-            $startDateTime = new \DateTime($startDateTime);
+            if (!$startDateTime instanceof \DateTime) {
+                $startDateTime = new \DateTime($startDateTime);
+            }
 
             $startDate = $startDateTime->format('Y-m-d H:i:s');
         } catch (\Exception $e) {
@@ -1092,19 +1096,28 @@ class TimeEntryRepository extends EntityRepository
                     redi_time_entry
                 WHERE
                     user_id = :user_id
-                    AND ((start_date > :start_date
+                    AND ((start_date >= :start_date
                     AND start_date < DATE_ADD(:start_date,
                     INTERVAL :duration HOUR_MINUTE))
                     OR (DATE_ADD(start_date,
                     INTERVAL duration HOUR_MINUTE) > :start_date
                     AND DATE_ADD(start_date,
-                    INTERVAL duration HOUR_MINUTE) < DATE_ADD(:start_date,
+                    INTERVAL duration HOUR_MINUTE) <= DATE_ADD(:start_date,
                     INTERVAL :duration HOUR_MINUTE)))";
+
+        if ($excludedEntryId) {
+            $dql .= " AND id != :id";
+        }
 
         $query = $this->getEntityManager()->getConnection()->prepare($dql);
         $query->bindParam('user_id', $userId);
         $query->bindParam('start_date', $startDate);
         $query->bindParam('duration', $duration);
+
+        if($excludedEntryId) {
+            $query->bindParam('id', $excludedEntryId);
+        }
+
         $query->execute();
         $result = $query->fetchAll();
 
