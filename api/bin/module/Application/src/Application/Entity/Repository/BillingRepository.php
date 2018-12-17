@@ -23,8 +23,8 @@ class BillingRepository extends EntityRepository
         $filter['offset'] = $offset;
         $filter['length'] = $length;
 
-        $selectColumns = "b.id, 
-                      b.spotId, s.spotName, 
+        $selectColumns = "b.id,
+                      b.spotId, s.spotName,
                       b.projectId, p.projectName,
                       b.customerId, cu.cardname AS customerName,
                       b.campaignId, c.campaignName,
@@ -61,8 +61,8 @@ class BillingRepository extends EntityRepository
             'length' => 1,
         );
 
-        $selectColumns = "b.id, 
-                      b.spotId, s.spotName, 
+        $selectColumns = "b.id,
+                      b.spotId, s.spotName,
                       b.projectId, p.projectName,
                       b.customerId, cu.cardname AS customerName,
                       b.campaignId, c.campaignName,
@@ -79,19 +79,19 @@ class BillingRepository extends EntityRepository
 
     public function getResultByFilter($selectColumns, $filter = array(), $groupBy = null, $orderBy = null, $processExtraColumn = false, $returnOne = false, $returnEstimateActivity = false)
     {
-        $dql = "SELECT  
+        $dql = "SELECT
                   " . $selectColumns . "
-                FROM \Application\Entity\RediBilling b 
+                FROM \Application\Entity\RediBilling b
                 LEFT JOIN \Application\Entity\RediSpot s
-                  WITH b.spotId=s.id 
-                LEFT JOIN \Application\Entity\RediBillingStatus bis 
-                  WITH b.statusId=bis.id 
+                  WITH b.spotId=s.id
+                LEFT JOIN \Application\Entity\RediBillingStatus bis
+                  WITH b.statusId=bis.id
                 LEFT JOIN \Application\Entity\RediProject p
                   WITH p.id=b.projectId
                 LEFT JOIN \Application\Entity\RediCampaign c
-                  WITH c.id=b.campaignId 
+                  WITH c.id=b.campaignId
                 LEFT JOIN \Application\Entity\RediCustomer cu
-                  WITH cu.id=b.customerId 
+                  WITH cu.id=b.customerId
                 LEFT JOIN \Application\Entity\RediBillingApproval ba
                   WITH ba.billId=b.id ";
 
@@ -219,7 +219,7 @@ class BillingRepository extends EntityRepository
 
     public function getAllStatus()
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   b
                 FROM \Application\Entity\RediBillingStatus b ";
 
@@ -232,9 +232,9 @@ class BillingRepository extends EntityRepository
 
     public function getAllApproverId($billId)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   b.userId
-                FROM \Application\Entity\RediBillingApproval b 
+                FROM \Application\Entity\RediBillingApproval b
                 WHERE b.billId=:bill_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -252,9 +252,9 @@ class BillingRepository extends EntityRepository
 
     public function getAllApproverByBillId($billId)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   b.userId AS approverId, b.approved
-                FROM \Application\Entity\RediBillingApproval b 
+                FROM \Application\Entity\RediBillingApproval b
                 WHERE b.billId=:bill_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -266,10 +266,10 @@ class BillingRepository extends EntityRepository
 
     public function getBillingEstimateByBillId($billId)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   e.id, e.spotId, e.versionId, e.multiplier, e.notes, e.typeId, e.statusId, e.totalAmount
-                FROM \Application\Entity\RediBillingEstimate bie 
-                INNER JOIN \Application\Entity\RediEstimate e 
+                FROM \Application\Entity\RediBillingEstimate bie
+                INNER JOIN \Application\Entity\RediEstimate e
                   WITh bie.estimateId=e.id
                 WHERE bie.billId=:bill_id";
 
@@ -282,10 +282,10 @@ class BillingRepository extends EntityRepository
 
     public function getBillingActivityByBillId($billId)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   a.id, a.name, a.billable, a.status, ba.price, ba.hour
-                FROM \Application\Entity\RediBillingActivity ba 
-                INNER JOIN \Application\Entity\RediActivity a 
+                FROM \Application\Entity\RediBillingActivity ba
+                INNER JOIN \Application\Entity\RediActivity a
                   WITh ba.activityId=a.id
                 WHERE ba.billId=:bill_id";
 
@@ -377,13 +377,13 @@ class BillingRepository extends EntityRepository
     public function getUserByProjectAndCampaign($projectId, $campaignId, $billId = null, $returnIdOnly = true)
     {
         $dql = "SELECT ba.userId, ba.approved
-                FROM \Application\Entity\RediProjectToCampaign ptc 
+                FROM \Application\Entity\RediProjectToCampaign ptc
                 INNER JOIN \Application\Entity\RediProjectToCampaignUser pcm
                   WITH ptc.id=pcm.projectCampaignId
                 INNER JOIN \Application\Entity\RediBillingApproval ba
                   WITH ba.billId=:bill_id AND ba.userId=pcm.userId
-                WHERE 
-                  ptc.projectId=:project_id 
+                WHERE
+                  ptc.projectId=:project_id
                   AND ptc.campaignId=:campaign_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -419,12 +419,12 @@ class BillingRepository extends EntityRepository
 
     public function getBillEstimateTotal($billId)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   SUM(e.totalAmount * e.multiplier) AS total
                 FROM
-                  \Application\Entity\RediBillingEstimate be 
-                  INNER JOIN \Application\Entity\RediEstimate e 
-                    WITH e.id = be.estimateId 
+                  \Application\Entity\RediBillingEstimate be
+                  INNER JOIN \Application\Entity\RediEstimate e
+                    WITH e.id = be.estimateId
                 WHERE be.billId = :bill_id ";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -452,12 +452,12 @@ class BillingRepository extends EntityRepository
 
     public function getUnusedBillingId($userId, $spotId)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   b.id
                 FROM
                   \Application\Entity\RediBilling b
-                WHERE 
-                    b.userId = :user_id 
+                WHERE
+                    b.userId = :user_id
                     AND b.spotId = :spot_id
                     AND (b.status IS NULL OR b.status = 1)";
 
@@ -538,7 +538,7 @@ class BillingRepository extends EntityRepository
 
     public function getBillingListFromSpotBilling($filter = array(), $offset = 0, $length = 10)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                     ss.projectId,
                     p.projectName,
                     st.id AS studioId,
@@ -546,17 +546,20 @@ class BillingRepository extends EntityRepository
                     ss.campaignId,
                     c.campaignName,
                     ss.projectCampaignId,
+                    ptc.note AS projectCampaignName,
                     ss.spotId,
                     s.spotName,
                     MAX(COALESCE(ss.updatedAt, ss.createdAt)) AS updatedAt
                 FROM \Application\Entity\RediSpotSent ss
-                LEFT JOIN \Application\Entity\RediProject p 
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
+                    WITH ptc.id = ss.projectCampaignId
+                LEFT JOIN \Application\Entity\RediProject p
                     WITH p.id = ss.projectId
                 LEFT JOIN \Application\Entity\RediStudio st
                     WITH p.studioId = st.id
-                LEFT JOIN \Application\Entity\RediCampaign c 
+                LEFT JOIN \Application\Entity\RediCampaign c
                     WITH c.id = ss.campaignId
-                LEFT JOIN \Application\Entity\RediSpot s 
+                LEFT JOIN \Application\Entity\RediSpot s
                     WITH s.id = ss.spotId
                 WHERE ss.billId IS NULL
                     AND ss.projectId IS NOT NULL
@@ -578,7 +581,7 @@ class BillingRepository extends EntityRepository
 
         $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId
                 ORDER BY updatedAt DESC";
-        
+
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setFirstResult($offset);
         $query->setMaxResults($length);
@@ -605,7 +608,7 @@ class BillingRepository extends EntityRepository
     }
 
     public function getBillingListFromSpotBillingCount($filter = array()) {
-        $dql = "SELECT 
+        $dql = "SELECT
                     COUNT(DISTINCT ss.project_id, ss.campaign_id, ss.spot_id) AS total_count
                 FROM redi_spot_sent ss
                 LEFT JOIN redi_project p
