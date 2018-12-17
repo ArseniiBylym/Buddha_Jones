@@ -561,7 +561,8 @@ class BillingRepository extends EntityRepository
                     WITH c.id = ss.campaignId
                 LEFT JOIN \Application\Entity\RediSpot s
                     WITH s.id = ss.spotId
-                WHERE ss.billId IS NULL
+                WHERE
+                    ss.billId IS NULL
                     AND ss.projectId IS NOT NULL
                     AND ss.campaignId IS NOT NULL ";
 

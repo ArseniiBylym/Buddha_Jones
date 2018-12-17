@@ -17,9 +17,16 @@ class SpotBillingController extends CustomAbstractActionController
         $filter['studio_id'] = (int)$this->getRequest()->getQuery('studio_id', 0);
         $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
         $length = (int)trim($this->getRequest()->getQuery('length', 10));
-        
+
         $data = $this->_billingRepo->getBillingListFromSpotBilling($filter, $offset, $length);
         $totalCount = $this->_billingRepo->getBillingListFromSpotBillingCount($filter);
+
+        foreach ($data as &$spot) {
+            $spot['producers'] = $this->_usersRepo->getCreativeUsersFromProjectCampaignByRole(
+                $spot['projectCampaignId'],
+                array(1, 2, 3)
+            );
+        }
 
         $response = array(
             'status' => 1,
@@ -47,8 +54,8 @@ class SpotBillingController extends CustomAbstractActionController
 
                 // get non billable project time
                 $spotInfo['nonBillableProjectActivity'] = $this->_timeEntryRepo->getNonBillableTimeEntryOfProject($projectCampaign->getProjectId());
-                
-                // get non billable campaign time                
+
+                // get non billable campaign time
                 $spotInfo['nonBillableCamapignActivity'] = $this->_timeEntryRepo->getNonBillableTimeEntryOfCampaign($projectCampaign->getCampaignId());
 
 
@@ -108,7 +115,7 @@ class SpotBillingController extends CustomAbstractActionController
 
                 // studio data
                 $project = $this->_projectRepository->find($data['projectId']);
-                
+
                 if ($project) {
                     $data['studioId'] = $project->getStudioId();
 

@@ -132,7 +132,7 @@ class UsersRepository extends EntityRepository
         }
 
         if ($userAccess['can_access_extra_data']) {
-            $selectColumn = " a.id, a.username, 
+            $selectColumn = " a.id, a.username,
                             a.firstName, a.lastName, a.nickName,
                             a.image, a.email,
                             a.initials, a.typeId, ut.typeName, utc.class,
@@ -204,14 +204,14 @@ class UsersRepository extends EntityRepository
         $imageUrl = $this->_config['site_url'] . 'thumb/profile_image/';
 
         $selectColumn = " a.id, a.username, a.nickName,
-                        a.email, a.image, 
-                        a.firstName, a.lastName, a.initials, 
+                        a.email, a.image,
+                        a.firstName, a.lastName, a.initials,
                         a.typeId, ut.typeName,
                         a.lastLoginDate, a.createdDate,
                         a.status ";
 
         if (!empty($userAccess['can_access_extra_data'])) {
-            $selectColumn .= " , a.salaryType, a.salaryAmount, 
+            $selectColumn .= " , a.salaryType, a.salaryAmount,
                             a.minHour, a.hourlyRate ";
         }
 
@@ -248,7 +248,7 @@ class UsersRepository extends EntityRepository
         $selectColumn = ' a.id ';
 
         if ($userAccess['can_access_basic_data']) {
-            $selectColumn = " a.id, a.username, 
+            $selectColumn = " a.id, a.username,
                             a.firstName, a.lastName, a.nickName,
                             a.image, a.email,
                             a.initials, a.typeId, ut.typeName,
@@ -257,7 +257,7 @@ class UsersRepository extends EntityRepository
         }
 
         if ($userAccess['can_access_extra_data']) {
-            $selectColumn = " a.id, a.username, 
+            $selectColumn = " a.id, a.username,
                             a.firstName, a.lastName, a.nickName,
                             a.image, a.email,
                             a.initials, a.typeId, ut.typeName,
@@ -292,7 +292,7 @@ class UsersRepository extends EntityRepository
 
     public function getUserssById($ids)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   u.id, u.firstName, u.lastName, u.initials
                 FROM \Application\Entity\RediUser u
                 WHERE u.id IN (:id)";
@@ -519,7 +519,7 @@ class UsersRepository extends EntityRepository
     public function getNewCustomerApproval($userTypeId) {
         $userPermission = $this->getUserPermission($userTypeId, true);
         $canEditCustomerNew = $this->extractPermission($userPermission, 33, 'view_or_edit');
-        
+
         return (bool)$canEditCustomerNew;
     }
 
@@ -698,7 +698,7 @@ class UsersRepository extends EntityRepository
 
     public function isBillingUser($userId)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                 u.typeId
                 FROM \Application\Entity\RediUser u
                 WHERE u.id = :user_id";
@@ -736,7 +736,7 @@ class UsersRepository extends EntityRepository
         $typeIds = $this->getTypeIdsByName($typeName);
 
         if ($typeIds) {
-            $dql = "SELECT 
+            $dql = "SELECT
                 u
                 FROM \Application\Entity\RediUser u
                 WHERE u.typeId IN (:type_id)";
@@ -753,7 +753,7 @@ class UsersRepository extends EntityRepository
 
     public function getUserLastClockin($userId)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                     uci.clockin
                 FROM \Application\Entity\RediUserClockin uci
                 WHERE uci.userId = :user_id
@@ -772,7 +772,7 @@ class UsersRepository extends EntityRepository
         $commonRepo = new CommonRepository($this->_entityManager);
         $date = $commonRepo->formatDateForInsert($date);
 
-        $dql = "SELECT 
+        $dql = "SELECT
                     uci.clockin
                 FROM \Application\Entity\RediUserClockin uci
                 WHERE uci.userId = :user_id
@@ -788,4 +788,46 @@ class UsersRepository extends EntityRepository
         return (!empty($result[0])?$result[0] : null);
     }
 
+    /** $roleIds - `null` is equal to users without a role, otherwise send array of role ids */
+    public function getCreativeUsersFromProjectCampaignByRole($projectCampaignId, $roleIds = null)
+    {
+        $dql = "
+            SELECT
+                user.id AS userId,
+                user.firstName AS firstName,
+                user.lastName AS lastName,
+                role.id as creativeRoleId,
+                role.roleName AS creativeRoleName
+            FROM
+                \Application\Entity\RediProjectToCampaignUser AS ptcUser
+            INNER JOIN
+                \Application\Entity\RediUser AS user
+                WITH user.id = ptcUser.userId
+            INNER JOIN
+                \Application\Entity\RediUserRole AS role
+                WITH role.id = ptcUser.roleId
+            WHERE
+                ptcUser.projectCampaignId = :project_campaign_id
+            AND
+                ptcUser.roleId
+        ";
+
+        if ($roleIds === null) {
+            $dql .= " IS NULL";
+        } elseif (is_array($roleIds)) {
+            $dql .= " IN (:roles)";
+        }
+
+        $query = $this->getEntityManager()->createQuery($dql);
+
+        $query->setParameter('project_campaign_id', $projectCampaignId);
+
+        if (is_array($roleIds)) {
+            $query->setParameter('roles', $roleIds, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+        }
+
+        $result = $query->getArrayResult();
+
+        return $result;
+    }
 }
