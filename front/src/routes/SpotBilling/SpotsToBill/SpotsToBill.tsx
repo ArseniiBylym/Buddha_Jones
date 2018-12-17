@@ -1,4 +1,5 @@
 import { HeaderActions } from 'actions';
+import { history } from 'App';
 import { ButtonAdd } from 'components/Button';
 import { BottomBar } from 'components/Layout';
 import { APIPath, FetchQuery } from 'fetch';
@@ -102,6 +103,7 @@ class SpotsToBillPage extends React.Component<SpotsToBillPageProps, {}> {
 
     private openNewBill = () => {
         // TODO
+        history.push('/portal/bill-spot-form/1');
     };
 }
 
