@@ -7,6 +7,7 @@ import { UserManagementUsersListAsync } from './Configuration/UserManagement/Use
 import { DashboardAsync } from './Dashboard';
 import { ProjectCreateAsync, ProjectsBoardAsync } from './Project';
 import { ProjectsListAsync } from './Projects';
+import { BillSpotFormAsync } from './SpotBilling/BillSpotForm/BillSpotFormAsync';
 import { SpotsToBillAsync } from './SpotBilling/SpotsToBill/SpotsToBillAsync';
 import { ProducerSpotSentFormAsync, ProducerSpotSentListAsync } from './SpotSent';
 import { NewClientRequestListAsync } from './StudioClient/NewClientRequest/List';
@@ -121,6 +122,15 @@ export const routes: Route[] = [
         path: '/portal/spots-to-bill',
         entry: '/portal/spots-to-bill',
         exact: true,
+        allowAllUsers: true,
+    },
+    {
+        component: BillSpotFormAsync,
+        key: 'bill-spot-form',
+        accessKey: RouteAccessKey.SpotBilling,
+        name: 'Bill spot form',
+        path: '/portal/bill-spot-form/:id?',
+        exact: false,
         allowAllUsers: true,
     },
     {
