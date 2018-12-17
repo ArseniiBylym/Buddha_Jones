@@ -100,7 +100,10 @@ export class Pagination extends React.Component<PaginationProps, {}> {
                     <Col>
                         <p className={s.paginationTotals}>
                             {'Showing ' +
-                                (this.props.countTotal > 1 ? this.props.entrySingularName : this.props.entryPluralName)}
+                                (this.props.countTotal > 1
+                                    ? this.props.entrySingularName
+                                    : this.props.entryPluralName) +
+                                ' '}
                             <strong>{this.showingFrom}</strong>
                             {' — '}
                             <strong>{this.showingTo}</strong>
@@ -111,7 +114,7 @@ export class Pagination extends React.Component<PaginationProps, {}> {
                 )}
 
                 <Col>
-                    {this.props.hidePagesWhenOnlySingle && this.pagesToDisplay.length > 1 && (
+                    {(this.pagesToDisplay.length > 1 || this.props.hidePagesWhenOnlySingle === false) && (
                         <ul className={s.paginationLinksList}>
                             <li className={s.paginationArrow}>
                                 <button onClick={this.handlePageClick(this.currentPage - 1)}>
