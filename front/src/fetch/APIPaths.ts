@@ -16,6 +16,7 @@ export enum APIPath {
     USER_PROJECT_TYPE_PERMISSIONS           = '/user-type-project-permissions',
     CAMPAIGN                                = '/campaign',
     SPOT                                    = '/spot',
+    TRT                                     = '/trt',
     SPOT_SENT                               = '/spot-sent',
     SPOT_SENT_OPTIONS                       = '/spot-sent-options',
     FINISHING_HOUSE                         = '/finishing-house',
@@ -44,6 +45,8 @@ export enum APIPath {
     GRAPHICS_REQUEST                        = '/graphics-request',
     STUDIO                                  = '/studio',
     STUDIO_FIRST_LETTERS                    = '/studio/first-letters',
+    STUDIO_RATE_CARD                        = '/studio-ratecard',
+    STUDIO_RATE_CARD_TYPE                   = '/ratecard-type',
     CHANNEL                                 = '/channel',
     CUSTOMER_NEW                            = '/customer-new',
     PROJECT_CAMPAIGN_CUSTOMER_CONTACT       = '/project-campaign-customer-contact'

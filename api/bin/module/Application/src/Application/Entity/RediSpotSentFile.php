@@ -24,9 +24,9 @@ class RediSpotSentFile
     /**
      * @var integer
      *
-     * @ORM\Column(name="request_id", type="bigint", nullable=true)
+     * @ORM\Column(name="spot_sent_id", type="bigint", nullable=true)
      */
-    private $requestId;
+    private $spotSentId;
 
     /**
      * @var string
@@ -55,26 +55,26 @@ class RediSpotSentFile
     }
 
     /**
-     * Set requestId
+     * Set spotSentId
      *
-     * @param integer $requestId
+     * @param integer $spotSentId
      * @return RediSpotSentFile
      */
-    public function setRequestId($requestId)
+    public function setSpotSentId($spotSentId)
     {
-        $this->requestId = $requestId;
+        $this->spotSentId = $spotSentId;
 
         return $this;
     }
 
     /**
-     * Get requestId
+     * Get spotSentId
      *
      * @return integer 
      */
-    public function getRequestId()
+    public function getSpotSentId()
     {
-        return $this->requestId;
+        return $this->spotSentId;
     }
 
     /**

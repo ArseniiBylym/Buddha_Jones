@@ -4,14 +4,19 @@ namespace Application\Entity\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManager;
 use Zend\Config\Config;
+use Zend\Memory\Value;
+use Zend\Stdlib\DateTime;
 
 class TimeEntryRepository extends EntityRepository
 {
     private $_className = "\Application\Entity\RediTimeEntry";
+    private $_entityManager;
 
     public function __construct(EntityManager $entityManager) {
         $classMetaData = $entityManager->getClassMetadata($this->_className);
         parent::__construct($entityManager, $classMetaData);
+
+        $this->_entityManager = $entityManager;
     }
 
     public function search($offset = 0, $length = 10, $filter=array())
@@ -41,6 +46,7 @@ class TimeEntryRepository extends EntityRepository
                   ptc.projectId,
                   ptc.campaignId, c.campaignName,
                   a.spotId, s.spotName,
+                  s.trtId, trt.runtime,
                   a.versionId, v.versionName,
                   a.activityId,
                   ac.name AS activityValue,
@@ -54,6 +60,8 @@ class TimeEntryRepository extends EntityRepository
                 FROM \Application\Entity\RediTimeEntry a
                 LEFT JOIN \Application\Entity\RediSpot s
                   WITH a.spotId=s.id
+                LEFT JOIN \Application\Entity\RediTrt trt
+                  WITH trt.id = s.trtId
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
                   WITH ptc.id=a.projectCampaignId
                 LEFT JOIN \Application\Entity\RediProject p
@@ -347,6 +355,8 @@ class TimeEntryRepository extends EntityRepository
                     cu.cardname AS customerName,
                     a.spotId,
                     s.spotName,
+                    s.trtId,
+                    trt.runtime,
                     a.versionId,
                     v.versionName,
                     a.activityId,
@@ -360,6 +370,8 @@ class TimeEntryRepository extends EntityRepository
                 FROM \Application\Entity\RediTimeEntry a
                 LEFT JOIN \Application\Entity\RediSpot s
                   WITH a.spotId=s.id
+                LEFT JOIN \Application\Entity\RediTrt trt
+                  WITH trt.id = s.trtId
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
                   WITH ptc.id=a.projectCampaignId
                 LEFT JOIN \Application\Entity\RediProject p
@@ -415,6 +427,7 @@ class TimeEntryRepository extends EntityRepository
                   ptc.projectId,
                   ptc.campaignId, c.campaignName,
                   a.spotId, s.spotName,
+                  s.trtId, trt.runtime,
                   a.versionId, v.versionName,
                   a.activityId,
                   ac.name AS activityValue,
@@ -426,6 +439,8 @@ class TimeEntryRepository extends EntityRepository
                 FROM \Application\Entity\RediTimeEntry a
                 LEFT JOIN \Application\Entity\RediSpot s
                   WITH a.spotId=s.id
+                LEFT JOIN \Application\Entity\RediTrt trt
+                  WITH trt.id = s.trtId
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
                   WITH ptc.id=a.projectCampaignId
                 LEFT JOIN \Application\Entity\RediProject p
@@ -470,6 +485,39 @@ class TimeEntryRepository extends EntityRepository
         $query->setParameter('date_start', $date->format('Y-m-d 00:00:00'));
         $query->setParameter('date_end',   $date->format('Y-m-d 23:59:59'));
         $result =  $query->getArrayResult();
+
+        return $result;
+    }
+
+    public function getUserTimeEntrySumOfADate($userId, $date, $excludeLunch = false)
+    {
+        $excludeActivity = array(0);
+
+        if($excludeLunch) {
+            $excludeActivity[] = 22;
+        }
+
+        $date = new \DateTime($date);
+
+        $dql = "SELECT
+                  a.duration
+                FROM \Application\Entity\RediTimeEntry a
+                WHERE
+                  a.userId=:user_id
+                  AND a.activityId NOT IN (:activity_id)
+                  AND a.startDate>=:date_start
+                  AND a.startDate<=:date_end ";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_id', $userId);
+        $query->setParameter('activity_id', $excludeActivity, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+        $query->setParameter('date_start', $date->format('Y-m-d 00:00:00'));
+        $query->setParameter('date_end',   $date->format('Y-m-d 23:59:59'));
+        $result =  $query->getArrayResult();
+
+        $result = array_reduce($result, function ($carry, $row) {    // ... then we 'use' the actual array here
+            return $this->convertDurationAndSum($carry, $row['duration']);
+        });
 
         return $result;
     }
@@ -622,5 +670,459 @@ class TimeEntryRepository extends EntityRepository
         $dql = "TRUNCATE redi_user_type_time_entry_permission";
         $query = $this->getEntityManager()->getConnection()->prepare($dql);
         $query->execute();
+    }
+
+    /**
+     * Get list of project (with campaign data and other related data)
+     *
+     * @param array $filter
+     * @param integer $offset
+     * @param integer $length
+     * @return void
+     */
+    public function getTimeReviewProjectList($filter = array(), $offset = 0, $length = 10)
+    {
+        $pool = $this->getTimeReviewProjectPool($filter = array(), $offset = 0, $length = 10);
+
+        // var_dump($pool); exit;
+        $dql = sprintf(
+                "SELECT 
+                    te.project_campaign_id AS projectCampaignId,
+                    ptc.project_id AS projectId,
+                    p.project_name AS projectName,
+                    ptc.campaign_id AS campaignId,
+                    c.campaign_name AS campaignName,
+                    p.studio_id AS studioId,
+                    s.studio_name AS studioName,
+                    a.type_id AS activityTypeId,
+                    CONCAT(SUM(SUBSTRING_INDEX(te.duration, '.', 1)) + FLOOR(SUM(SUBSTRING_INDEX(te.duration, '.', - 1)) / 60),
+                        '.',
+                        SUM(SUBSTRING_INDEX(te.duration, '.', - 1)) %% 60) AS totalDuration
+                FROM
+                    redi_time_entry te
+                        inner join
+                    redi_activity a ON a.id = te.activity_id
+                        INNER join
+                    redi_project_to_campaign ptc ON ptc.id = te.project_campaign_id
+                        INNER join
+                    redi_project p ON p.id = ptc.project_id
+                        left join
+                    redi_studio s ON s.id = p.studio_id
+                        left join
+                    redi_campaign c ON c.id = ptc.campaign_id
+                WHERE
+                    a.type_id IN (1 , 2)
+                        and te.status IN (1, 2, 3)
+                        AND p.id IN (%s)
+                GROUP BY p.id , ptc.campaign_id , a.type_id ",
+            implode(',', $pool)
+        );
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->execute();
+        $result = $query->fetchAll();
+
+        $data = array();
+
+        foreach ($result as $row) {
+            if (empty($data[$row['projectId']])) {
+                $data[$row['projectId']] = array(
+                    "projectId" => (int)$row['projectId'],
+                    "projectName" => $row['projectName'],
+                    "studioId" => (int)$row['studioId'],
+                    "studioName" => $row['studioName'],
+                    "totalDuration" => "0.00",
+                );
+            }
+
+            $data[$row['projectId']]['campaign'][] = array(
+                "campaignId" => (int)$row['campaignId'],
+                "campaignName" => $row['campaignName'],
+                "projectCampaignId" => (int)$row['projectCampaignId'],
+                "activityTypeId" => $row['activityTypeId'],
+                "totalDuration" => $row['totalDuration'],
+            );
+
+            $data[$row['projectId']]['totalDuration'] = $this->convertDurationAndSum($data[$row['projectId']]['totalDuration'], $row['totalDuration']);
+        }
+
+        return array_values($data);
+    }
+
+    public function getTimeReviewProjectPool($filter = array(), $offset = 0, $length = 10)
+    {
+        $dql = "SELECT 
+                    p.id
+                FROM
+                    \Application\Entity\RediTimeEntry te
+                INNER JOIN \Application\Entity\RediActivity a 
+                    WITH a.id = te.activityId
+                INNER JOIN \Application\Entity\RediProjectToCampaign ptc 
+                    WITH ptc.id = te.projectCampaignId
+                INNER JOIN \Application\Entity\RediProject p
+                    WITH p.id = ptc.projectId
+                WHERE
+                    a.typeId IN (1 , 2)
+                    AND te.status IN (1, 2, 3)
+                GROUP BY p.id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setFirstResult($offset);
+        $query->setMaxResults($length);
+        $query->execute();
+
+        $data = $query->getArrayResult();
+
+        return array_column($data, 'id');
+    }
+
+    /**
+     * Get count of project for spot billing
+     *
+     * @return int Number of projects for spot billing
+     */
+    public function getTimeReviewProjectCount($filter = array())
+    {
+        $dql = "SELECT 
+                    COUNT(DISTINCT p.id) AS total_count
+                FROM
+                    \Application\Entity\RediTimeEntry te
+                INNER JOIN \Application\Entity\RediActivity a 
+                    WITH a.id = te.activityId
+                INNER JOIN \Application\Entity\RediProjectToCampaign ptc 
+                    WITH ptc.id = te.projectCampaignId
+                INNER JOIN \Application\Entity\RediProject p
+                    WITH p.id = ptc.projectId
+                WHERE
+                    a.typeId IN (1 , 2)
+                    AND te.status IN (1, 2, 3)";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getArrayResult();
+
+        return (int)(!empty($result[0]['total_count']) ? $result[0]['total_count'] : 0);
+    }
+
+    public function getTimeReviewDataByProject($projectId)
+    {
+        $commonRepo = new CommonRepository($this->_entityManager);
+
+        $dql = "SELECT
+                    te.id AS timeEntryId,
+                    te.project_campaign_id AS projectCampaignId,
+                    ptc.project_id AS projectId,
+                    p.project_name AS projectName,
+                    ptc.campaign_id AS campaignId,
+                    c.campaign_name AS campaignName,
+                    p.studio_id AS studioId,
+                    s.studio_name AS studioName,
+                    sp.id AS spotId,
+                    sp.spot_name AS spotName,
+                    v.id AS versionId,
+                    v.version_name AS versionName,
+                    a.type_id AS activityTypeId,
+                    te.start_date AS startDate,
+                    te.duration,
+                    st.id AS statusId,
+                    st.name AS statusName,
+                    u.id AS userId,
+                    u.first_name AS firstName,
+                    u.last_name AS lastName
+                FROM
+                    redi_time_entry te
+                        inner join
+                    redi_activity a ON a.id = te.activity_id
+                        inner join
+                    redi_project_to_campaign ptc ON ptc.id = te.project_campaign_id
+                        inner join
+                    redi_project p ON p.id = ptc.project_id
+                        left join
+                    redi_studio s ON s.id = p.studio_id
+                        inner join
+                    redi_campaign c ON c.id = ptc.campaign_id
+                        left join
+                    redi_spot sp ON sp.id = te.spot_id
+                        left join
+                    redi_version v ON v.id = te.version_id
+                        left join
+                    redi_time_entry_status st ON st.id = te.status
+                        LEFT JOIN
+                    redi_user u ON u.id = te.user_id
+                WHERE
+                    a.type_id IN (1 , 2)
+                        and te.status IN (1, 2, 3)
+                        AND p.id = :project_id ";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('project_id', $projectId);
+        $query->execute();
+        $result = $query->fetchAll();
+
+        $data = array();
+
+        foreach ($result as $row) {
+            if (empty($data[$row['campaignId']])) {
+                $data[$row['campaignId']] = array(
+                    "campaignId" => (int)$row['campaignId'],
+                    "campaignName" => $row['campaignName'],
+                    "projectCampaignId" => (int)$row['projectCampaignId'],
+                    "totalDuration" => "0.00",
+                );
+            }
+
+            $data[$row['campaignId']]['timeEntry'][] = array(
+                "timeEntryId" => (int)$row['timeEntryId'],
+                "activityTypeId" => (int)$row['activityTypeId'],
+                "spotId" => (int)$row['spotId'],
+                "spotName" => $row['spotName'],
+                "versionId" => (int)$row['versionId'],
+                "versionName" => $row['versionName'],
+                "startDate" => $commonRepo->formatDateForInsert($row['startDate']),
+                "duration" => $row['duration'],
+                "statusId" => $row['statusId'],
+                "statusName" => $row['statusName'],
+                "userId" => (int)$row['userId'],
+                "userName" => trim($row['firstName'] . ' ' . $row['lastName']),
+            );
+
+            $data[$row['campaignId']]['totalDuration'] = $this->convertDurationAndSum($data[$row['campaignId']]['totalDuration'], $row['duration']);
+        }
+
+        return array_values($data);
+    }
+
+    public function convertDurationToFloat($duration) {
+        $split = explode('.', $duration);
+        $value = 0.0;
+
+        if (!empty($split[0])) {
+            $value += (int)$split[0];
+        }
+
+        if (!empty($split[1])) {
+            $value += (float)(((int)str_pad($split[1], 2, '0') * 100) / (60 * 100));
+        }
+
+        return $value;
+    }
+
+    public function convertFloatToDuration($floatVal) {
+        $split = explode('.', $floatVal);
+        $value = 0.0;
+
+        if (!empty($split[0])) {
+            $value += (int)$split[0];
+        }
+
+        if (!empty($split[1])) {
+            $value += (float)(((int)str_pad($split[1], 2, '0') * 60) / (100 * 100));
+        }
+
+        return (string) number_format($value, 2);
+    }
+
+    public function convertDurationAndSum($value1, $value2) {
+        $value1 = $this->convertDurationToFloat($value1);
+        $value2 = $this->convertDurationToFloat($value2);
+
+        $sum = $value1 + $value2;
+
+        return $this->convertFloatToDuration($sum);
+    }
+
+    public function updateCalculatedTimeField($userId, $date) {
+        $dql = "CALL `redi_calculate_user_time_entry`(:user_id, :date)";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('user_id', $userId);
+        $query->bindParam('date', $date);
+        $query->execute();
+    }
+
+    public function getNonBillableTimeEntryOfProject($projectId)
+    {
+        $dql = "SELECT 
+                    te.id,
+                    te.duration, 
+                    ptc.projectId,
+                    ptc.campaignId
+                FROM
+                    \Application\Entity\RediTimeEntry te
+                INNER JOIN \Application\Entity\RediActivity a 
+                    WITH a.id = te.activityId
+                INNER JOIN \Application\Entity\RediProjectToCampaign ptc 
+                    WITH ptc.id = te.projectCampaignId
+                WHERE
+                    ptc.projectId = :project_id
+                    AND a.typeId = 2
+                    AND te.billStatus IS NULL";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('project_id', $projectId);
+        $result = $query->getArrayResult();
+
+        $total = array_reduce($result, function($carry, $row) {
+            return $this->convertDurationAndSum($carry, $row['duration']);
+        });
+
+        return $total;
+    }
+
+    public function getNonBillableTimeEntryOfCampaign($campaignId)
+    {
+        $dql = "SELECT 
+                    te.id,
+                    te.duration, 
+                    ptc.projectId,
+                    ptc.campaignId
+                FROM
+                    \Application\Entity\RediTimeEntry te
+                INNER JOIN \Application\Entity\RediActivity a 
+                    WITH a.id = te.activityId
+                INNER JOIN \Application\Entity\RediProjectToCampaign ptc 
+                    WITH ptc.id = te.projectCampaignId
+                WHERE
+                    ptc.campaignId = :campaign_id
+                    AND a.typeId = 2
+                    AND te.billStatus IS NULL";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('campaign_id', $campaignId);
+        $result = $query->getArrayResult();
+
+        $total = array_reduce($result, function($carry, $row) {
+            return $this->convertDurationAndSum($carry, $row['duration']);
+        });
+
+        return $total;
+    }
+
+    public function getTimeEntryForBillingBySpotId($spotId) {
+        // get spot info for project to campaign id
+        $spotDql = "SELECT 
+                    s.projectCampaignId
+                FROM
+                    \Application\Entity\RediSpot s
+                WHERE
+                    s.id = :spot_id";
+
+        $spotQuery = $this->getEntityManager()->createQuery($spotDql);
+        $spotQuery->setParameter('spot_id', $spotId);
+        $spotResult = $spotQuery->getArrayResult();
+        $projectCampaignId = (!empty($spotResult[0]['projectCampaignId']) ? $spotResult[0]['projectCampaignId'] : 0);
+
+        $dql = "SELECT 
+                    te.id,
+                    te.projectCampaignId,
+                    te.spotId,
+                    te.versionId,
+                    te.startDate,                    
+                    te.duration,
+                    te.straightTime,
+                    te.overTime,
+                    te.doubleTime,
+                    te.status,
+                    tes.name AS statusName,
+                    te.activityId,
+                    te.activityDescription,
+                    te.notes,
+                    a.name AS activityName,
+                    a.typeId AS activityTypeId,
+                    aty.activityType AS activityTypeName,
+                    te.userId,
+                    u.firstName AS userFirstName,
+                    u.lastName AS userLastName
+                FROM
+                    \Application\Entity\RediTimeEntry te
+                INNER JOIN \Application\Entity\RediActivity a 
+                    WITH a.id = te.activityId
+                LEFT JOIN \Application\Entity\RediActivityType aty
+                    WITH aty.id = a.typeId
+                INNER JOIN \Application\Entity\RediProjectToCampaign ptc 
+                    WITH ptc.id = te.projectCampaignId
+                LEFT JOIN \Application\Entity\RediTimeEntryStatus tes
+                    WITH tes.id = te.status
+                LEFT JOIN \Application\Entity\RediUser u
+                    WITH u.id = te.userId
+                WHERE
+                    (te.spotId = :spot_id
+                    OR (te.projectCampaignId = :project_campaign_id AND te.spotId IS NULL))
+                    AND a.typeId NOT IN(2,3)
+                    AND te.billStatus IS NULL";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('spot_id', $spotId);
+        $query->setParameter('project_campaign_id', $projectCampaignId);
+        $result = $query->getArrayResult();
+
+        $result = array_map(function($row) {
+            $row['id'] = (int)$row['id'];
+            $row['date'] = $row['startDate']->format('Y-m-d');
+
+            return $row;
+        }, $result);
+
+        return $result;
+    }
+
+    /**
+     * Check if time entry has overlap or not
+     *
+     * @param int $userId
+     * @param string $startDateTime
+     * @param string $duration
+     * @return boolean  If there is overlap then return true, return false otherwise
+     */
+    public function checkTimeOverlap($userId, $startDateTime, $duration, $excludedEntryId = null) {
+        $duration = number_format($duration, 2);
+        
+        try {
+            if (!$startDateTime instanceof \DateTime) {
+                $startDateTime = new \DateTime($startDateTime);
+            }
+
+            $startDate = $startDateTime->format('Y-m-d H:i:s');
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        if (!$startDate) {
+            return false;
+        }
+
+        $dql = "SELECT 
+                    COUNT(*) AS total_count
+                FROM
+                    redi_time_entry
+                WHERE
+                    user_id = :user_id
+                    AND ((start_date >= :start_date
+                    AND start_date < DATE_ADD(:start_date,
+                    INTERVAL :duration HOUR_MINUTE))
+                    OR (DATE_ADD(start_date,
+                    INTERVAL duration HOUR_MINUTE) > :start_date
+                    AND DATE_ADD(start_date,
+                    INTERVAL duration HOUR_MINUTE) <= DATE_ADD(:start_date,
+                    INTERVAL :duration HOUR_MINUTE)))";
+
+        if ($excludedEntryId) {
+            $dql .= " AND id != :id";
+        }
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('user_id', $userId);
+        $query->bindParam('start_date', $startDate);
+        $query->bindParam('duration', $duration);
+
+        if($excludedEntryId) {
+            $query->bindParam('id', $excludedEntryId);
+        }
+
+        $query->execute();
+        $result = $query->fetchAll();
+
+        $count = (!empty($result[0]['total_count']) ? $result[0]['total_count'] : 0);
+
+        return (bool) $count;
     }
 }

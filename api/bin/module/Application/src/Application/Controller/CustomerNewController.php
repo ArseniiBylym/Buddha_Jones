@@ -172,35 +172,35 @@ class CustomerNewController extends CustomAbstractActionController
           $customerNew->setStreet($street);
         }
 
-        if ($street !== null) {
+        if ($city !== null) {
           $customerNew->setCity($city);
         }
 
-        if ($street !== null) {
+        if ($state !== null) {
           $customerNew->setState($state);
         }
 
-        if ($street !== null) {
+        if ($zip !== null) {
           $customerNew->setZip($zip);
         }
 
-        if ($street !== null) {
+        if ($email !== null) {
           $customerNew->setEmail($email);
         }
 
-        if ($street !== null) {
+        if ($phone !== null) {
           $customerNew->setPhone($phone);
         }
 
-        if ($street !== null) {
+        if ($billingContact !== null) {
           $customerNew->setBillingContact($billingContact);
         }
 
-        if ($street !== null) {
+        if ($billingEmail !== null) {
           $customerNew->setBillingEmail($billingEmail);
         }
 
-        if ($street !== null) {
+        if ($billingPhone !== null) {
           $customerNew->setBillingPhone($billingPhone);
         }
 

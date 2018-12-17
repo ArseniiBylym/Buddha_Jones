@@ -19,10 +19,12 @@ class UsersRepository extends EntityRepository
     private $_musicUserTypeIds = array(18, 19);
     private $_writerUserTypeIds = array(26);
     private $_config;
+    private $_entityManager;
 
     public function __construct(EntityManager $entityManager)
     {
-        $this->_config = $config = new \Zend\Config\Config(include getcwd() . '/config/autoload/global.php');
+        $this->_config = new \Zend\Config\Config(include getcwd() . '/config/autoload/global.php');
+        $this->_entityManager = $entityManager;
 
         $classMetaData = $entityManager->getClassMetadata($this->_className);
         parent::__construct($entityManager, $classMetaData);
@@ -288,7 +290,7 @@ class UsersRepository extends EntityRepository
         return $response;
     }
 
-    public function getUserssById($ids)
+    public function getUsersById($ids)
     {
         $dql = "SELECT 
                   u.id, u.firstName, u.lastName, u.initials
@@ -506,7 +508,17 @@ class UsersRepository extends EntityRepository
             'producer-spot-sent-list' => true,
             'producer-spot-sent-form' => true,
             'new-customer-approval' => $this->getNewCustomerApproval($userTypeId),
+            'studio-rate-card' => $this->getStudioRateCardAccess($userTypeId),
+            'spot-billing' => $this->getSpotBillingAccess($userTypeId),
         );
+    }
+
+    public function getSpotBillingAccess($userTypeId) {
+        return (bool)in_array($userTypeId, $this->_billingUserTypeIds);
+    }
+
+    public function getStudioRateCardAccess($userTypeId) {
+        return (bool)in_array($userTypeId, $this->_billingUserTypeIds);
     }
 
     public function getNewCustomerApproval($userTypeId) {
@@ -709,8 +721,7 @@ class UsersRepository extends EntityRepository
         return in_array($userTypeId, $this->_billingUserTypeIds);
     }
 
-    public function getUserByTypeName($typeName)
-    {
+    public function getTypeIdsByName($typeName) {
         switch ($typeName) {
             case 'music':
                 $typeIds = $this->_musicUserTypeIds;
@@ -721,6 +732,13 @@ class UsersRepository extends EntityRepository
             default:
                 $typeIds = null;
         }
+
+        return $typeIds;
+    }
+
+    public function getUserByTypeName($typeName)
+    {
+        $typeIds = $this->getTypeIdsByName($typeName);
 
         if ($typeIds) {
             $dql = "SELECT 
@@ -736,6 +754,58 @@ class UsersRepository extends EntityRepository
         }
 
         return array();
+    }
+
+    public function getUserLastClockin($userId)
+    {
+        $dql = "SELECT 
+                    uci.clockin
+                FROM \Application\Entity\RediUserClockin uci
+                WHERE uci.userId = :user_id
+                ORDER BY uci.clockin DESC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setMaxResults(1);
+        $query->setParameter('user_id', $userId);
+        $result = $query->getArrayResult();
+
+        return (!empty($result[0]['clockin'])?$result[0]['clockin'] : null);
+    }
+
+    public function getUserClockinByDate($userId, $date)
+    {
+        $commonRepo = new CommonRepository($this->_entityManager);
+        $date = $commonRepo->formatDateForInsert($date);
+
+        $dql = "SELECT 
+                    uci.clockin
+                FROM \Application\Entity\RediUserClockin uci
+                WHERE uci.userId = :user_id
+                    AND uci.clockin >= :start_date
+                    AND uci.clockin <= :end_date";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_id', $userId);
+        $query->setParameter('start_date', $date->format('Y-m-d 00:00:00'));
+        $query->setParameter('end_date', $date->format('Y-m-d 23:59:59'));
+        $result = $query->getArrayResult();
+
+        return (!empty($result[0])?$result[0] : null);
+    }
+
+    public function getUsersMinHourById($userId)
+    {
+        $dql = "SELECT 
+                  u.minHour
+                FROM \Application\Entity\RediUser u
+                WHERE u.id = :user_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setMaxResults(1);
+        $query->setParameter('user_id', $userId);
+        $result = $query->getArrayResult();
+
+        return (!empty($result[0]['minHour']) ? (int)$result[0]['minHour'] : 8);
     }
 
 }

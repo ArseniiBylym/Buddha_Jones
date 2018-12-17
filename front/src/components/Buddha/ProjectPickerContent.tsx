@@ -4,7 +4,7 @@ import AnimateHeight from 'react-animate-height';
 import debounce from 'lodash-es/debounce';
 import { observer } from 'mobx-react';
 import { ProjectPickerSections, ProjectPickerValues } from '.';
-import { computed, observable, reaction } from 'mobx';
+import { action, computed, observable, reaction } from 'mobx';
 import { Col, Row } from '../Section';
 import { ProjectsCampaignsSpotsActions } from 'actions';
 import { LoadingShade, LoadingSpinner } from '../Loaders';
@@ -17,7 +17,7 @@ import {
     ProjectsResultsEntry,
     SpotResult,
     SpotsResult,
-    SpotsResultsEntry,
+    SpotsResultsEntry, TRTItem,
     VersionResult,
     VersionsResult,
     VersionsResultsEntry,
@@ -57,7 +57,10 @@ interface Props {
     areProjectPermissionsLoading: boolean;
     userCanViewProjectName: boolean;
     userCanViewProjectCodeName: boolean;
+    trtList: TRTItem[] | null;
 }
+
+declare type ProjectPickerList = ProjectsResult | CampaignsResult | SpotsResult | VersionsResult | null;
 
 @observer
 export class ProjectPickerContent extends React.Component<Props, {}> {
@@ -113,6 +116,7 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
 
     public componentWillReceiveProps(nextProps: Props) {
         if (nextProps.sectionOpen && this.props.value !== nextProps.value) {
+            this.dropPaginator();
             this.fetchResults(
                 nextProps.forUserId,
                 nextProps.sectionOpen,
@@ -123,6 +127,7 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
                 false
             );
         } else if (nextProps.sectionOpen && this.props.sectionOpen !== nextProps.sectionOpen) {
+            this.dropPaginator();
             this.fetchResults(
                 nextProps.forUserId,
                 nextProps.sectionOpen,
@@ -133,6 +138,7 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
                 false
             );
         } else if (nextProps.sectionOpen && this.props.searchQuery !== nextProps.searchQuery) {
+            this.dropPaginator();
             this.fetchResultsDebounced(
                 nextProps.forUserId,
                 nextProps.sectionOpen,
@@ -146,48 +152,8 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
     }
 
     public render() {
-        const { value, forUserId } = this.props;
-
-        const currentResults =
-            this.props.sectionOpen === ProjectPickerSections.project
-                ? ProjectsCampaignsSpotsActions.getProjectResult(forUserId, this.search, this.resultsPage)
-                : this.props.sectionOpen === ProjectPickerSections.projectCampaign
-                ? ProjectsCampaignsSpotsActions.getCampaignResult(
-                    forUserId,
-                    value && value.project ? value.project.id : null,
-                    this.search,
-                    this.resultsPage
-                )
-                : this.props.sectionOpen === ProjectPickerSections.spot
-                    ? ProjectsCampaignsSpotsActions.getSpotResult(
-                        forUserId,
-                        value && (value.project || value.projectCampaign)
-                            ? {
-                                projectId: value.project ? value.project.id : null,
-                                projectCampaignId: value.projectCampaign && value.projectCampaign.campaignId ?
-                                    value.projectCampaign.campaignId :
-                                    null,
-                            }
-                            : null,
-                        this.search,
-                        this.resultsPage
-                    )
-                    : this.props.sectionOpen === ProjectPickerSections.version
-                        ? ProjectsCampaignsSpotsActions.getVersionResult(
-                            forUserId,
-                            value && (value.project || value.projectCampaign || value.spot)
-                                ? {
-                                    projectId: value.project ? value.project.id : null,
-                                    projectCampaignId: value.projectCampaign ? value.projectCampaign.id : null,
-                                    spotId: value.spot ? value.spot.id : null,
-                                }
-                                : null,
-                            this.search,
-                            this.resultsPage
-                        )
-                        : null;
-
-        const areCurrentResultsLoading = currentResults && currentResults.isLoading;
+        const currentResults: ProjectPickerList = this.getCurrentResult();
+        const areCurrentResultsLoading: boolean = Boolean(currentResults && currentResults.isLoading);
 
         return (
             <AnimateHeight height={this.props.sectionOpen !== null && !this.props.readOnly ? 'auto' : 0}>
@@ -257,6 +223,72 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
         );
     }
 
+    private getCurrentResult(): ProjectPickerList {
+        const { value, forUserId } = this.props;
+
+        switch (this.props.sectionOpen) {
+            case ProjectPickerSections.project: {
+                return ProjectsCampaignsSpotsActions.getProjectResult(forUserId, this.search, this.resultsPage);
+            }
+
+            case ProjectPickerSections.projectCampaign: {
+                const id: number | null = value && value.project ? value.project.id : null;
+
+                return ProjectsCampaignsSpotsActions.getCampaignResult(forUserId, id, this.search, this.resultsPage);
+            }
+
+            case ProjectPickerSections.spot: {
+                let ids: any = null;
+
+                if (value && (value.project || value.projectCampaign)) {
+                    const projectId: number | null = value.project ? value.project.id : null;
+                    const projectCampaignId: number | null = value.projectCampaign && value.projectCampaign.campaignId ?
+                        value.projectCampaign.campaignId : null;
+
+                    ids = {
+                        projectId,
+                        projectCampaignId,
+                    };
+                }
+
+                return ProjectsCampaignsSpotsActions.getSpotResult(forUserId, ids, this.search, this.resultsPage);
+            }
+
+            case ProjectPickerSections.version: {
+                let ids: any = null;
+
+                if (value && (value.project || value.projectCampaign || value.spot)) {
+                    ids = {
+                        projectId: value.project ? value.project.id : null,
+                        projectCampaignId: value.projectCampaign ? value.projectCampaign.id : null,
+                        spotId: value.spot ? value.spot.id : null,
+                    };
+                }
+
+                return ProjectsCampaignsSpotsActions.getVersionResult(forUserId, ids, this.search, this.resultsPage);
+            }
+
+            default:
+                return null;
+        }
+    }
+
+    @action
+    private dropPaginator = (): void => {
+        this.resultsPage = 1;
+    };
+
+    private getSpotTRTNameById(trtId: number): string {
+        if (this.props.trtList && this.props.trtList.length > 0) {
+            const trtItem = this.props.trtList.find((item) => item.id === trtId);
+
+            return trtItem ? trtItem.runtime : '';
+
+        }
+
+        return '';
+    }
+
     private renderEntries(
         currentResults: ProjectsResult | CampaignsResult | SpotsResult | VersionsResult | null
     ): JSX.Element[] {
@@ -267,20 +299,20 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
             name: string;
             clientId: number | null;
             clientName: string | null;
+            trtId?: number | null;
         }> = [];
 
         if (currentResults) {
             if (this.props.sectionOpen === ProjectPickerSections.project) {
                 const results = currentResults.results as ProjectsResultsEntry[];
+
                 entries = results.map(result => {
                     let name = '';
 
                     if (this.props.userCanViewProjectCodeName && this.props.userCanViewProjectName) {
                         name = result.projectCode
                             ? `(${result.projectCode})` + (result.projectName ? ' - ' + result.projectName : '')
-                            : result.projectName
-                                ? result.projectName
-                                : '';
+                            : result.projectName ? result.projectName : '';
                     } else {
                         name = result.projectCode ? result.projectCode : result.projectName ? result.projectName : '';
                     }
@@ -320,6 +352,7 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
                         name: result.spotName,
                         clientId: null,
                         clientName: null,
+                        trtId: result.trtId
                     };
                 });
             } else if (this.props.sectionOpen === ProjectPickerSections.version) {
@@ -337,26 +370,34 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
             }
         }
 
-        return entries.map((result, ind: number) => (
-            <li key={`li-${result.id}-${ind}`}>
-                <Button
-                    onClick={this.handleResultPick(
-                        result.section,
-                        result.id,
-                        result.name,
-                        result.clientId,
-                        result.clientName,
-                        result.campaignId ? result.campaignId : null
-                    )}
-                    label={{
-                        text: result.name,
-                        size: 'small',
-                        color: 'blue',
-                        onLeft: true,
-                    }}
-                />
-            </li>
-        ));
+        return entries.map((result, index: number) => {
+            let spotName: string = result.name;
+
+            if (result.trtId) {
+                spotName += ` (${this.getSpotTRTNameById(result.trtId)})`;
+            }
+
+            return (
+                <li key={`li-${result.id}-${index}`}>
+                    <Button
+                        onClick={this.handleResultPick(
+                            result.section,
+                            result.id,
+                            spotName,
+                            result.clientId,
+                            result.clientName,
+                            result.campaignId ? result.campaignId : null
+                        )}
+                        label={{
+                            text: spotName,
+                            size: 'small',
+                            color: 'blue',
+                            onLeft: true,
+                        }}
+                    />
+                </li>
+            );
+        });
     }
 
     private handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

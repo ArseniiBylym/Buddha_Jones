@@ -24,11 +24,11 @@ class RediNotificationUser
     /**
      * @var integer
      *
-     * @ORM\Column(name="user_id", type="integer", nullable=false)
+     * @ORM\Column(name="user_type_id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
      */
-    private $userId;
+    private $userTypeId;
 
 
 
@@ -56,25 +56,25 @@ class RediNotificationUser
     }
 
     /**
-     * Set userId
+     * Set userTypeId
      *
-     * @param integer $userId
+     * @param integer $userTypeId
      * @return RediNotificationUser
      */
-    public function setUserId($userId)
+    public function setUserTypeId($userTypeId)
     {
-        $this->userId = $userId;
+        $this->userTypeId = $userTypeId;
 
         return $this;
     }
 
     /**
-     * Get userId
+     * Get userTypeId
      *
      * @return integer 
      */
-    public function getUserId()
+    public function getUserTypeId()
     {
-        return $this->userId;
+        return $this->userTypeId;
     }
 }

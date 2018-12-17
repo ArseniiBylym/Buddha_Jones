@@ -20,9 +20,10 @@ class CustomerPriceController extends CustomAbstractActionController
     public function getList()
     {
         $customerId = (int)$this->getRequest()->getQuery('customer_id', 0);
+        $type = $this->getRequest()->getQuery('type', null);
 
-        if($customerId) {
-            $data = $this->_customerRepo->searchCustomerPrice($customerId);
+        if ($customerId) {
+            $data = $this->_customerRepo->searchCustomerPrice($customerId, $type);
 
             $response = array(
                 'status' => 1,
@@ -48,6 +49,11 @@ class CustomerPriceController extends CustomAbstractActionController
         $customerId = (int)(isset($data['customer_id']) ? trim($data['customer_id']) : 0);
         $activityId = (int)(isset($data['activity_id']) ? trim($data['activity_id']) : 0);
         $price = (float)(isset($data['price']) ? trim($data['price']) : 0);
+        $type = strtoupper(!empty($data['type']) ? trim($data['type']) : 'A');
+
+        if (!in_array($type, array('A', 'B'))) {
+            $type = 'A';
+        }
 
         if ($customerId && $activityId && $price) {
             $customer = $this->_customerRepository->find($customerId);
@@ -64,12 +70,13 @@ class CustomerPriceController extends CustomAbstractActionController
                     'message' => 'Activity does not exist'
                 );
             } else {
-                $customerPrice = $this->_customerPriceRepository->findOneby(array('customerId' => $customerId, 'activityId' => $activityId));
+                $customerPrice = $this->_customerPriceRepository->findOneby(array('customerId' => $customerId, 'activityId' => $activityId, 'type' => $type));
 
-                if(!$customerPrice) {
+                if (!$customerPrice) {
                     $customerPrice = new RediCustomerPrice();
                     $customerPrice->setCustomerId($customerId);
                     $customerPrice->setActivityId($activityId);
+                    $customerPrice->setType($type);
                 }
 
                 $customerPrice->setPrice($price);
@@ -77,7 +84,7 @@ class CustomerPriceController extends CustomAbstractActionController
                 $this->_em->persist($customerPrice);
                 $this->_em->flush();
 
-                $data = $this->_customerRepo->getCustomerPriceById($customerId, $activityId);
+                $data = $this->_customerRepo->getCustomerPriceById($customerId, $activityId, $type);
 
                 $response = array(
                     'status' => 1,

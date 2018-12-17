@@ -188,12 +188,12 @@ class SpotSentController extends CustomAbstractActionController
 
         // array to commaseparated string
         // $sentViaMethod = $this->arrayToCommaSeparated($sentViaMethod);
-        $finishOption = is_array($finishOption)?$this->arrayToCommaSeparated($finishOption, true) : $finishOption;
+        $finishOption = is_array($finishOption) ? $this->arrayToCommaSeparated($finishOption, true) : $finishOption;
         $audio = is_array($audio) ? $this->arrayToCommaSeparated($audio) : $audio;
         $deliveryToClient = is_array($deliveryToClient) ? $this->arrayToCommaSeparated($deliveryToClient, true) : $deliveryToClient;
         $customerContact = is_array($customerContact) ? $this->arrayToCommaSeparated($customerContact) : $customerContact;
 
-        if($isUpdate && !$spotVersionData) {
+        if ($isUpdate && !$spotVersionData) {
             $spotVersionData = $this->_spotRepo->getRawSpotVersionDataByRequestId($requestId);
         }
 
@@ -207,11 +207,11 @@ class SpotSentController extends CustomAbstractActionController
                 foreach ($specSheetFile as $key => $file) {
                     $fileDecoded = $this->_commonRepo->base64DecodeFile($file);
 
-                    if(!empty($fileDecoded['extension'])) {
+                    if (!empty($fileDecoded['extension'])) {
                         $files[$key] = $fileDecoded;
                     }
                 }
-            } else if($isUpdate){
+            } else if ($isUpdate) {
                 $existingSpecSheetFile = $this->_commonRepo->filterPostData($existingData, 'specSheetFile', 'json', null, true);
             }
         } catch (\Exception $e) {
@@ -220,7 +220,7 @@ class SpotSentController extends CustomAbstractActionController
 
         if (is_array($spotVersionData)) {
             if ($isUpdate) {
-                 $this->removeByRequestId($requestId);
+                $this->removeByRequestId($requestId);
             }
 
             // process spot version data
@@ -288,7 +288,7 @@ class SpotSentController extends CustomAbstractActionController
                 $sv['line_status_id'] = $this->_commonRepo->filterPostData($sv, 'line_status_id', 'int', 1);
                 $sentViaMethod = $this->_commonRepo->filterPostData($sv, 'sent_via_method', 'array', array());
 
-                if(!$sentViaMethod) {
+                if (!$sentViaMethod) {
                     $sentViaMethod = $this->_commonRepo->filterPostData($sv, 'sent_via_method');
                 }
 
@@ -301,134 +301,146 @@ class SpotSentController extends CustomAbstractActionController
             $now = new \DateTime('now');
             $spotSentIds = [];
 
-            foreach ($spotVersionData as $svd) {
-                $spotSent = new RediSpotSent();
-                $spotSent->setRequestId($requestId);
-                $spotSent->setProjectId($svd['project_id']);
-                $spotSent->setCampaignId($svd['campaign_id']);
-                $spotSent->setProjectCampaignId($svd['project_campaign_id']);
-                $spotSent->setFullLock($fullLock);
-                $spotSent->setDeadline($deadline);
-                $spotSent->setSpotSentDate($spotSentDate);
-                $spotSent->setFinishingHouse($finishingHouse);
-                $spotSent->setFramerate($framerate);
-                $spotSent->setFramerateNote($framerateNote);
-                $spotSent->setRasterSize($rasterSize);
-                $spotSent->setRasterSizeNote($rasterSizeNote);
-                $spotSent->setMusicCueSheet($musicCueSheet);
-                $spotSent->setAudioPrep($audioPrep);
-                $spotSent->setAudio($audio);
-                $spotSent->setAudioNote($audioNote);
-                $spotSent->setGraphicsFinish($graphicsFinish);
-                $spotSent->setGfxFinish($gfxFinish);
-                $spotSent->setVideoPrep($videoPrep);
-                $spotSent->setSpecNote($specNote);
-                $spotSent->setDeliveryToClient($deliveryToClient);
-                $spotSent->setDeliveryNote($deliveryNote);
-                $spotSent->setStatusId($statusId);
-                $spotSent->setNotes($notes);
-                $spotSent->setInternalNote($internalNote);
-                $spotSent->setStudioNote($studioNote);
-                $spotSent->setFinishOption($finishOption);
-                $spotSent->setCustomerContact($customerContact);
+            $validate = $this->validateData($requestId, $spotVersionData);
 
-                $spotSent->setProdAccept($svd['prod_accept']);
-                $spotSent->setFinishAccept($svd['finish_accept']);
-                $spotSent->setSpotId($svd['spot_id']);
-                $spotSent->setVersionId($svd['version_id']);
-                $spotSent->setSpotVersionId($svd['spot_version_id']);
-                $spotSent->setEditor($svd['editors_string']);
-                $spotSent->setSpotResend($svd['spot_resend']);
-                $spotSent->setFinishRequest($svd['finish_request']);
-                $spotSent->setLineStatusId($svd['line_status_id']);
-                $spotSent->setSentViaMethod($svd['sent_via_method']);
+            // var
+            if ($validate['result']) {
+                foreach ($spotVersionData as $svd) {
+                    $spotSent = new RediSpotSent();
+                    $spotSent->setRequestId($requestId);
+                    $spotSent->setProjectId($svd['project_id']);
+                    $spotSent->setCampaignId($svd['campaign_id']);
+                    $spotSent->setProjectCampaignId($svd['project_campaign_id']);
+                    $spotSent->setFullLock($fullLock);
+                    $spotSent->setDeadline($deadline);
+                    $spotSent->setSpotSentDate($spotSentDate);
+                    $spotSent->setFinishingHouse($finishingHouse);
+                    $spotSent->setFramerate($framerate);
+                    $spotSent->setFramerateNote($framerateNote);
+                    $spotSent->setRasterSize($rasterSize);
+                    $spotSent->setRasterSizeNote($rasterSizeNote);
+                    $spotSent->setMusicCueSheet($musicCueSheet);
+                    $spotSent->setAudioPrep($audioPrep);
+                    $spotSent->setAudio($audio);
+                    $spotSent->setAudioNote($audioNote);
+                    $spotSent->setGraphicsFinish($graphicsFinish);
+                    $spotSent->setGfxFinish($gfxFinish);
+                    $spotSent->setVideoPrep($videoPrep);
+                    $spotSent->setSpecNote($specNote);
+                    $spotSent->setDeliveryToClient($deliveryToClient);
+                    $spotSent->setDeliveryNote($deliveryNote);
+                    $spotSent->setStatusId($statusId);
+                    $spotSent->setNotes($notes);
+                    $spotSent->setInternalNote($internalNote);
+                    $spotSent->setStudioNote($studioNote);
+                    $spotSent->setFinishOption($finishOption);
+                    $spotSent->setCustomerContact($customerContact);
 
-                if ($isUpdate) {
-                    $spotSent->setCreatedAt($existingSpotSent->getCreatedAt());
-                    $spotSent->setCreatedBy($existingSpotSent->getCreatedBy());
+                    $spotSent->setProdAccept($svd['prod_accept']);
+                    $spotSent->setFinishAccept($svd['finish_accept']);
+                    $spotSent->setSpotId($svd['spot_id']);
+                    $spotSent->setVersionId($svd['version_id']);
+                    $spotSent->setSpotVersionId($svd['spot_version_id']);
+                    $spotSent->setEditor($svd['editors_string']);
+                    $spotSent->setSpotResend($svd['spot_resend']);
+                    $spotSent->setFinishRequest($svd['finish_request']);
+                    $spotSent->setLineStatusId($svd['line_status_id']);
+                    $spotSent->setSentViaMethod($svd['sent_via_method']);
 
-                    $spotSent->setUpdatedAt($now);
-                    $spotSent->setUpdatedBy($this->_user_id);
-                } else {
-                    $spotSent->setCreatedAt($now);
-                    $spotSent->setCreatedBy($this->_user_id);
+                    if ($isUpdate) {
+                        $spotSent->setCreatedAt($existingSpotSent->getCreatedAt());
+                        $spotSent->setCreatedBy($existingSpotSent->getCreatedBy());
+
+                        $spotSent->setUpdatedAt($now);
+                        $spotSent->setUpdatedBy($this->_user_id);
+                    } else {
+                        $spotSent->setCreatedAt($now);
+                        $spotSent->setCreatedBy($this->_user_id);
+                    }
+
+                    $this->_em->persist($spotSent);
+                    $this->_em->flush();
+                    $spotSentIds[] = $spotSent->getId();
                 }
 
-                $this->_em->persist($spotSent);
-                $this->_em->flush();
-                $spotSentIds[] = $spotSent->getId();
-            }
-
-            if (count($spotSentIds)) {
+                if (count($spotSentIds)) {
                 // save files
-                $fileNames = array();
+                    $fileNames = array();
 
-                if (count($files)) {
-                    $newDir = $specSheetDir . $requestId;
+                    if (count($files)) {
+                        $newDir = $specSheetDir . $requestId;
 
-                    if (!file_exists($newDir)) {
-                        mkdir($newDir);
-                    }
+                        if (!file_exists($newDir)) {
+                            mkdir($newDir);
+                        }
 
-                    foreach ($files as $key => $file) {
-                        $newFileName = md5($key) . $file['extension'];
-                        $fileNames[] = $newFileName;
-                        $newFileName = $newDir . '/' . $newFileName;
+                        foreach ($files as $key => $file) {
+                            $newFileName = md5($key) . $file['extension'];
+                            $fileNames[] = $newFileName;
+                            $newFileName = $newDir . '/' . $newFileName;
 
-                        file_put_contents($newFileName, $file['data']);
-                    }
+                            file_put_contents($newFileName, $file['data']);
+                        }
 
-                    $spotSents = $this->_spotSentRepository->findBy(array('requestId' => $requestId));
+                        $spotSents = $this->_spotSentRepository->findBy(array('requestId' => $requestId));
 
-                    foreach ($spotSents as $spotSent) {
-                        $spotSent->setSpecSheetFile(json_encode($fileNames));
-                        $this->_em->persist($spotSent);
-                    }
+                        foreach ($spotSents as $spotSent) {
+                            $spotSent->setSpecSheetFile(json_encode($fileNames));
+                            $this->_em->persist($spotSent);
+                        }
 
-                    $this->_em->flush();
-                } else if(count($existingSpecSheetFile)) {
-                    $spotSents = $this->_spotSentRepository->findBy(array('requestId' => $requestId));
+                        $this->_em->flush();
+                    } else if (count($existingSpecSheetFile)) {
+                        $spotSents = $this->_spotSentRepository->findBy(array('requestId' => $requestId));
 
-                    foreach ($spotSents as $spotSent) {
-                        $spotSent->setSpecSheetFile(json_encode($existingSpecSheetFile));
-                        $this->_em->persist($spotSent);
-                    }
-
-                    $this->_em->flush();
-                }
-
-                foreach ($spotVersionData as $row) {
-                    if (!empty($row['spot_version_id'])) {
-                        if (!empty($row['editors']) && is_array($row['editors'])) {
-                            $editors = array_unique($row['editors']);
-                            $spotVersionId = (int)$row['spot_version_id'];
-
-                            $spotVersionEditors = $this->_spotVersionEditorRepository->findBy(array('spotVersionId' => $spotVersionId));
-
-                            foreach ($spotVersionEditors as $spotVersionEditor) {
-                                $this->_em->remove($spotVersionEditor);
-                            }
-
-                            $this->_em->flush();
-
-                            foreach ($editors as $editorId) {
-                                $spotVersionEditor = new RediSpotVersionEditor();
-                                $spotVersionEditor->setSpotVersionId($spotVersionId);
-                                $spotVersionEditor->setUserId($editorId);
-                                $this->_em->persist($spotVersionEditor);
-                            }
+                        foreach ($spotSents as $spotSent) {
+                            $spotSent->setSpecSheetFile(json_encode($existingSpecSheetFile));
+                            $this->_em->persist($spotSent);
                         }
 
                         $this->_em->flush();
                     }
-                }
-            }
 
-            $response = array(
-                'status' => 1,
-                'message' => 'Request successful.',
-                'data' => $this->getSingle($requestId),
-            );
+                    foreach ($spotVersionData as $row) {
+                        if (!empty($row['spot_version_id'])) {
+                            if (!empty($row['editors']) && is_array($row['editors'])) {
+                                $editors = array_unique($row['editors']);
+                                $spotVersionId = (int)$row['spot_version_id'];
+
+                                $spotVersionEditors = $this->_spotVersionEditorRepository->findBy(array('spotVersionId' => $spotVersionId));
+
+                                foreach ($spotVersionEditors as $spotVersionEditor) {
+                                    $this->_em->remove($spotVersionEditor);
+                                }
+
+                                $this->_em->flush();
+
+                                foreach ($editors as $editorId) {
+                                    $spotVersionEditor = new RediSpotVersionEditor();
+                                    $spotVersionEditor->setSpotVersionId($spotVersionId);
+                                    $spotVersionEditor->setUserId($editorId);
+                                    $this->_em->persist($spotVersionEditor);
+                                }
+                            }
+
+                            $this->_em->flush();
+                        }
+                    }
+                }
+
+                $response = array(
+                    'status' => 1,
+                    'message' => 'Request successful.',
+                    'data' => $this->getSingle($requestId),
+                );
+
+            } else {
+                $response = array(
+                    'status' => 0,
+                    'message' => 'Spot sent information already exists.',
+                    'duplicateData' => $validate['data'],
+                );
+            }
         } else {
             $response = array(
                 'status' => 0,
@@ -462,7 +474,7 @@ class SpotSentController extends CustomAbstractActionController
                 $data['finishingHouseName'] = null;
                 $data['customerContact'] = array();
 
-                if(isset($data['customerContactList'])) {
+                if (isset($data['customerContactList'])) {
                     $data['customerContact'] = $data['customerContactList'];
 
                     unset($data['customerContactList']);
@@ -506,7 +518,7 @@ class SpotSentController extends CustomAbstractActionController
             }
         }
 
-        $arr = array_filter($arr, function($item) {
+        $arr = array_filter($arr, function ($item) {
             return !is_array($item);
         });
 
@@ -606,5 +618,31 @@ class SpotSentController extends CustomAbstractActionController
         }
 
         return $spotVersionData;
+    }
+
+    private function validateData($requestId, $spotVersionData)
+    {
+        foreach ($spotVersionData as $svd) {
+            $checkData = array(
+                'projectId' => $svd['project_id'],
+                'campaignId' => $svd['campaign_id'],
+                'spotId' => $svd['spot_id'],
+                'versionId' => $svd['version_id'],
+                'spotResend' => $svd['spot_resend'],
+            );
+
+            $check = $this->_spotSentRepository->findOneBy($checkData);
+
+            if ($check && $requestId !== $check->getRequestId()) {
+                return array(
+                    "result" => false,
+                    "data" => $checkData,
+                );
+            }
+        }
+
+        return array(
+            "result" => true,
+        );
     }
 }

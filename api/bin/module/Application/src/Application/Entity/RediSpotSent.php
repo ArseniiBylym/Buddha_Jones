@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * RediSpotSent
  *
- * @ORM\Table(name="redi_spot_sent", indexes={@ORM\Index(name="request_id", columns={"request_id"})})
+ * @ORM\Table(name="redi_spot_sent")
  * @ORM\Entity
  */
 class RediSpotSent
@@ -300,6 +300,20 @@ class RediSpotSent
      * @ORM\Column(name="spot_sent_date", type="datetime", nullable=true)
      */
     private $spotSentDate;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="bill_id", type="bigint", nullable=true)
+     */
+    private $billId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="bill_line_id", type="bigint", nullable=true)
+     */
+    private $billLineId;
 
     /**
      * @var integer
@@ -1259,6 +1273,52 @@ class RediSpotSent
     public function getSpotSentDate()
     {
         return $this->spotSentDate;
+    }
+
+    /**
+     * Set billId
+     *
+     * @param integer $billId
+     * @return RediSpotSent
+     */
+    public function setBillId($billId)
+    {
+        $this->billId = $billId;
+
+        return $this;
+    }
+
+    /**
+     * Get billId
+     *
+     * @return integer 
+     */
+    public function getBillId()
+    {
+        return $this->billId;
+    }
+
+    /**
+     * Set billLineId
+     *
+     * @param integer $billLineId
+     * @return RediSpotSent
+     */
+    public function setBillLineId($billLineId)
+    {
+        $this->billLineId = $billLineId;
+
+        return $this;
+    }
+
+    /**
+     * Get billLineId
+     *
+     * @return integer 
+     */
+    public function getBillLineId()
+    {
+        return $this->billLineId;
     }
 
     /**

@@ -1,17 +1,12 @@
 import * as React from 'react';
+import * as styles from './ManualTimePicker.scss';
 import * as classNames from 'classnames';
 import padStart from 'lodash-es/padStart';
 import { observer } from 'mobx-react';
-import { DropdownContainer, OptionsList, OptionsListOptionProp, OptionsListValuePropType } from '../Form';
-import { Row, Col } from '../Section';
-import { Button } from '../Button';
-import { IconTickWhite } from '../Icons';
+import { OptionsListValuePropType } from '../Form';
 import { observable, computed } from 'mobx';
 import { DateHandler } from 'helpers/DateHandler';
 import { TimeIncrements } from 'store';
-
-// Styles
-const s = require('./TimePicker.css');
 
 // Props
 interface TimePickerProps {
@@ -43,57 +38,6 @@ export class TimePicker extends React.Component<TimePickerProps, {}> {
     @observable private valueUpdatesCounter: number = 0;
 
     @computed
-    private get hoursList(): OptionsListOptionProp[] {
-        // Hours array
-        let hours: OptionsListOptionProp[] = [];
-
-        // Iterate hours
-        hours.push({ value: [0, 12], label: '12' });
-        for (let h = 1; h < 12; h++) {
-            hours.push({
-                value: [h, h + 12],
-                label: padStart(h.toString(), 2, '0'),
-            });
-        }
-
-        // Return
-        return hours;
-    }
-
-    @computed
-    private get minutesList(): OptionsListOptionProp[] {
-        // Minutes array
-        let minutes: any[] = [];
-
-        // Get increment
-        const { increments = 15 } = this.props;
-
-        // Iterate before hour ends
-        let minute: number = 0;
-
-        while (minute < 60) {
-            minutes.push({
-                value: minute,
-                label: padStart(minute.toString(), 2, '0'),
-            });
-            minute += increments;
-        }
-
-        // Return
-        return minutes;
-    }
-
-    @computed
-    private get periods(): OptionsListOptionProp[] {
-        return [{ value: 'AM', label: 'AM' }, { value: 'PM', label: 'PM' }];
-    }
-
-    @computed
-    private get valueLabel(): string {
-        return DateHandler.convertTotalMinutesToTimeLabel(this.props.totalMinutesValue).label;
-    }
-
-    @computed
     private get selectedHour(): number {
         const midDayMinutes = 60 * 12;
         return this.props.totalMinutesValue > midDayMinutes
@@ -119,8 +63,6 @@ export class TimePicker extends React.Component<TimePickerProps, {}> {
         return this.props.totalMinutesValue - hours * 60;
     }
 
-    private dropdownContainer: DropdownContainer | null = null;
-
     public componentDidMount() {
         if (this.props.defaultToCurrentTime && this.valueUpdatesCounter === 0) {
             const now = new Date();
@@ -140,72 +82,127 @@ export class TimePicker extends React.Component<TimePickerProps, {}> {
         }
     }
 
+    @computed
+    private get parsedHoursAndMinutes(): { hours: string; minutes: string } {
+        const hours = this.selectedHour === 0 ? 12 : this.selectedHour;
+
+        return {
+            hours: padStart(hours.toString(), 2, '0'),
+            minutes: padStart(this.selectedMinute.toString(), 2, '0'),
+        };
+    }
+
     public render() {
         return (
-            <DropdownContainer
-                ref={this.referenceDropdownContainer}
-                className={classNames(s.timePickerDropdown, this.props.className)}
-                align="right"
-                minWidth={256}
-                minHeight={430}
-                type={this.props.isOneLine === true ? 'oneline' : 'twolines'}
-                isWhite={this.props.isWhite}
-                label={this.props.label || ''}
-                value={this.valueLabel}
-            >
-                <Row className={s.entries} removeGutter={true} removeMargins={true}>
-                    <Col size={4} removeGutter={true}>
-                        <OptionsList
-                            onChange={this.handleTimeChange('hours')}
-                            options={this.hoursList}
-                            value={this.selectedHour}
-                            label="Hours"
-                            align="center"
-                        />
-                    </Col>
+            <>
+                <div className={styles.manualTimePicker}>
+                    <label className={styles.label}>
+                        {this.props.label || ''}
+                    </label>
 
-                    <Col size={4} removeGutter={true}>
-                        <OptionsList
-                            onChange={this.handleTimeChange('minutes')}
-                            options={this.minutesList}
-                            value={this.selectedMinute}
-                            label="Minutes"
-                            align="center"
-                        />
-                    </Col>
+                    <input
+                        className={styles.manualTimeInput}
+                        value={this.parsedHoursAndMinutes.hours}
+                        onClick={this.selectInputValue}
+                        onChange={this.onChangeTimeEntryInputs}
+                        name="hours"
+                        type="number"
+                    />
 
-                    <Col size={4} removeGutter={true}>
-                        <OptionsList
-                            onChange={this.handleTimeChange('period')}
-                            options={this.periods}
-                            value={this.valueLabel}
-                            label="Period"
-                            align="center"
-                        />
-                    </Col>
-                </Row>
+                    <div className={styles.separator}/>
 
-                <div className={s.summary}>
-                    <Button
-                        onClick={this.handleTimeSelectionConfirmation}
-                        label={{
-                            text: this.valueLabel,
-                            size: 'large',
-                            color: 'blue',
-                            onLeft: true,
-                        }}
-                        icon={{
-                            size: 'small',
-                            background: 'green',
-                            element: <IconTickWhite width={12} height={9}/>,
-                        }}
+                    <input
+                        className={styles.manualTimeInput}
+                        value={this.parsedHoursAndMinutes.minutes}
+                        onChange={this.onChangeTimeEntryInputs}
+                        onClick={this.selectInputValue}
+                        onBlur={this.handleMinutesManualInput}
+                        name="minutes"
+                        type="number"
+                    />
+
+                    <input
+                        className={classNames(styles.manualTimeInput, styles.manualTimeInputWidth)}
+                        value={this.selectedPeriod}
+                        onClick={this.selectInputValue}
+                        onChange={this.onChangeTimeEntryInputs}
+                        name="period"
                     />
                 </div>
-            </DropdownContainer>
+            </>
         );
     }
 
-    private referenceDropdownContainer = (ref: DropdownContainer) => (this.dropdownContainer = ref);
+    private selectInputValue = (event) => {
+        event.target.select();
+    };
+
+    private onChangeTimeEntryInputs = (e): any => {
+        const name: 'hours' | 'minutes' | 'period' = e.target.name;
+
+        let value: number = Number(e.target.value);
+        let valuePeriod: string = e.target.value.toLowerCase();
+
+        if (name === 'hours' && value > 12) {
+            return false;
+        } else if (name === 'hours') {
+            this.handleTimeChange(name)({
+                value: [value, value + 12],
+                label: padStart(value.toString(), 2, '0')
+            });
+        }
+
+        if (name === 'minutes' && value > 60) {
+            return false;
+        } else if (name === 'minutes') {
+            this.handleTimeChange(name)({
+                value,
+                label: padStart(value.toString(), 2, '0')
+            });
+        }
+
+        if (name === 'period' && (valuePeriod.indexOf('a') > -1 || valuePeriod.indexOf('p') > -1)) {
+            if (valuePeriod.indexOf('a') > -1) {
+                valuePeriod = 'AM';
+            }
+
+            if (valuePeriod.indexOf('p') > -1) {
+                valuePeriod = 'PM';
+            }
+
+            if (this.selectedPeriod !== valuePeriod) {
+                this.handleTimeChange(name)({
+                    value: valuePeriod,
+                    label: valuePeriod
+                });
+            }
+        }
+
+    };
+
+    private handleMinutesManualInput = (e): any => {
+        const name: 'hours' | 'minutes' | 'period' = e.target.name;
+        let value: number = Number(e.target.value);
+
+        if (name !== 'minutes') {
+            return false;
+        }
+
+        if (value <= 10) {
+            value = 0;
+        } else if (value > 10 && value < 23) {
+            value = 15;
+        } else if (value >= 23 && value <= 35) {
+            value = 30;
+        } else {
+            value = 45;
+        }
+
+        this.handleTimeChange(name)({
+            value,
+            label: padStart(value.toString(), 2, '0')
+        });
+    };
 
     private handleTimeChange = (type: 'hours' | 'minutes' | 'period') => (option: {
         value: OptionsListValuePropType;
@@ -225,16 +222,17 @@ export class TimePicker extends React.Component<TimePickerProps, {}> {
                 }
                 break;
 
-            case 'minutes':
-                if (option.value !== this.selectedMinute) {
-                    const value: number = option.value as number;
-                    const totalHoursInMinutes = this.selectedHour * 60;
-                    totalMinutes =
-                        this.selectedPeriod === 'AM'
-                            ? totalHoursInMinutes + value
-                            : totalHoursInMinutes + value + midDay;
-                }
+            case 'minutes': {
+                const value: number = option.value as number;
+                const totalHoursInMinutes = this.selectedHour * 60;
+
+                totalMinutes =
+                    this.selectedPeriod === 'AM'
+                        ? totalHoursInMinutes + value
+                        : totalHoursInMinutes + value + midDay;
+
                 break;
+            }
 
             case 'period':
                 if (option.value !== this.selectedPeriod) {
@@ -251,12 +249,6 @@ export class TimePicker extends React.Component<TimePickerProps, {}> {
 
         if (this.props.totalMinutesValue !== totalMinutes && this.props.onChange) {
             this.props.onChange(totalMinutes, DateHandler.convertTotalMinutesToTimeLabel(totalMinutes));
-        }
-    };
-
-    private handleTimeSelectionConfirmation = () => {
-        if (this.dropdownContainer && typeof this.dropdownContainer.closeDropdown === 'function') {
-            this.dropdownContainer.closeDropdown();
         }
     };
 

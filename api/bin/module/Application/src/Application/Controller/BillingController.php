@@ -14,6 +14,7 @@ use League\Csv\Reader;
 
 use Application\Entity\RediCcStatement;
 use Application\Entity\RediCcStatementLine;
+use Application\Entity\RediBillingLine;
 
 class BillingController extends CustomAbstractActionController
 {
@@ -56,120 +57,49 @@ class BillingController extends CustomAbstractActionController
             'data' => $data
         );
 
-
         return new JsonModel($response);
     }
 
     function create($data)
     {
-        $customerId = (int)trim(isset($data['customer_id']) ? $data['customer_id'] : 0);
-        $projectId = (int)trim(isset($data['project_id']) ? $data['project_id'] : 0);
-        $campaignId = (int)trim(isset($data['campaign_id']) ? $data['campaign_id'] : 0);
-        $spotId = (int)trim(isset($data['spot_id']) ? $data['spot_id'] : 0);
-        $notes = trim(isset($data['notes']) ? $data['notes'] : '');
-        $statusId = (int)trim(isset($data['status_id']) ? $data['status_id'] : 1);
+        $projectCampaignId = (int)trim(isset($data['project_campaign_id']) ? $data['project_campaign_id'] : 0);
 
-        $estimate = (array)json_decode(trim(isset($data['estimate']) ? $data['estimate'] : ''), true);
-        $activity = (array)json_decode(trim(isset($data['activity']) ? $data['activity'] : ''), true);
+        // project campaign
+        $projectCampaign = $this->_projectCampaignRepository->find($projectCampaignId);
 
-        $estimateList = [];
-        $activityList = [];
+        if ($projectCampaign) {
+            $billId = $this->_billingRepo->getUnusedBillingId($this->_user_id, $projectCampaignId);
 
-        foreach ($estimate as $estimateId) {
-            $checkEstimate = $this->_estimateRepository->find($estimateId);
+            if (!$billId) {
+                $now = new \DateTime('now');
 
-            if ($checkEstimate) {
-                $estimateList[] = $estimateId;
-            }
-        }
+                // get customerId
+                $customerId = $projectCampaign->getCustomerId();
 
-        foreach ($activity as $row) {
-            if (isset($row['activity_id']) && $row['activity_id']) {
-                $activityCheck = $this->_activityRepository->find($row['activity_id']);
+                $billing = new RediBilling();
+                $billing->setUserId($this->_user_id);
+                $billing->setStatus(1); // set status to in bill
+                $billing->setProjectCampaignId($projectCampaignId);
+                $billing->setCustomerId($customerId);
+                $billing->setCreatedAt($now);
 
-                if ($activityCheck && isset($row['price'], $row['hour'])) {
-                    $activityList[] = array(
-                        'activity_id' => (int)$row['activity_id'],
-                        'price' => (float)$row['price'],
-                        'hour' => (float)$row['hour'],
-                    );
-                }
-            }
-        }
-
-        if ($customerId && $projectId && $campaignId && $statusId && (count($estimateList) || count($activityList))) {
-            $billing = new RediBilling();
-            $billing->setCustomerId($customerId);
-            $billing->setProjectId($projectId);
-            $billing->setCampaignId($campaignId);
-            $billing->setStatusId($statusId);
-            $billing->setCreatedAt(new \DateTime('now'));
-
-            if ($notes) {
-                $billing->setNotes($notes);
-            }
-
-            if ($spotId) {
-                $billing->setSpotId($spotId);
-            }
-
-            $this->_em->persist($billing);
-            $this->_em->flush();
-
-            $billingId = $billing->getId();
-
-            if (count($estimateList)) {
-                foreach ($estimateList as $estimateId) {
-                    $billingEstimate = new RediBillingEstimate();
-                    $billingEstimate->setEstimateId($estimateId);
-                    $billingEstimate->setBillId($billingId);
-
-                    $this->_em->persist($billingEstimate);
-                }
-            }
-
-            if (count($activityList)) {
-                foreach ($activityList as $row) {
-                    $billingActivity = new RediBillingActivity();
-                    $billingActivity->setBillId($billingId);
-                    $billingActivity->setActivityId($row['activity_id']);
-                    $billingActivity->setPrice($row['price']);
-                    $billingActivity->setHour($row['hour']);
-
-                    $this->_em->persist($billingActivity);
-                }
-            }
-
-            $projectCampaign = $this->_projectToCampaignRepository->findOneBy(array('projectId' => $projectId, 'campaignId' => $campaignId));
-
-            if($projectCampaign) {
-                $projectCampaignUser = $this->_campaignRepo->getCampaignProjectPeople('user', $projectCampaign->getId());
-
-                foreach($projectCampaignUser as $user) {
-                    $billingApprovel = new RediBillingApproval();
-                    $billingApprovel->setBillId($billingId);
-                    $billingApprovel->setUserId($user['id']);
-                    $billingApprovel->setApproved(0);
-
-                    $this->_em->persist($billingApprovel);
-                }
-
+                $this->_em->persist($billing);
                 $this->_em->flush();
-            }
 
-            $data = array_merge($this->getSingle($billingId), array(
-                'billing_id' => $billingId,
-            ));
+                $billId = $billing->getId();
+            }
 
             $response = array(
                 'status' => 1,
                 'message' => 'Request successful.',
-                'data' => $data,
+                'data' => array(
+                    'billId' => $id,
+                )
             );
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Please provide required data (customer_id, project_id, campaign_id, (activity or estimate).'
+                'message' => 'Please provide valid required data (spot_id).'
             );
         }
 
@@ -180,7 +110,103 @@ class BillingController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    private function getSingle($billId) {
-        return $this->_billingRepo->getById($billId);
+    function update($billId, $data)
+    {
+        $timeEntryIds = $this->_commonRepo->filterPostData($data, 'time_entry_id', 'json', null);
+        $status = $this->_commonRepo->filterPostData($data, 'status', 'int', null);
+        $billingLines = $this->_commonRepo->filterPostData($data, 'billing_line', 'json', null);
+
+        $bill = $this->_billingRepository->find($billId);
+
+        if ($bill && $bill->getUserId() === $this->_user_id) {
+            // set status if provided
+            if ($status) {
+                $bill->setStatus($status);
+                $this->_em->persist($bill);
+                $this->_em->flush();
+            }
+
+            if ($timeEntryIds) {
+                $timeEntryIds = array_filter(array_map('intval', $timeEntryIds));
+
+                if ($timeEntryIds) {
+                    $this->_billingRepo->updateBillIdOfTimeEntry($billId, $timeEntryIds, true);
+                }
+            }
+
+            if ($billingLines) {
+                $billingLines = $this->filterLines($billingLines);
+
+                if ($billingLines) {
+                    $this->_billingRepo->deleteExistingBillingLine($billId);
+
+                    foreach ($billingLines as $line) {
+                        $bLine = new RediBillingLine();
+                        $bLine->setBillId($billId);
+                        $bLine->setDescription($line['description']);
+                        $bLine->setRateType($line['rate_type']);
+                        $bLine->setHours($line['hours']);
+                        $bLine->setRate($line['rate']);
+                        $bLine->setTotalBeforeDiscount($line['total_before_discount']);
+                        $bLine->setDiscount($line['discount']);
+                        $bLine->setTotal($line['total']);
+
+                        $this->_em->persist($bLine);
+                        $this->_em->flush();
+
+                        $lineId = $bLine->getLineId();
+
+                        if ($lineId && $line['time_entry_id']) {
+
+                        }
+                    }
+                }
+            }
+
+            $response = array(
+                'status' => 1,
+                'message' => 'Request successful.',
+                'data' => $this->getSingle($billId),
+            );
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Bill information not found for current user.'
+            );
+        }
+
+        if ($response['status'] == 0) {
+            $this->getResponse()->setStatusCode(400);
+        }
+
+        return new JsonModel($response);
+    }
+
+    private function filterLines($lines)
+    {
+        return array_filter(array_map(function ($line) {
+            $line = array(
+                'description' => $this->_commonRepo->filterPostData($line, 'description', 'string', null),
+                'rate_type' => $this->_commonRepo->filterPostData($line, 'rate_type', 'string', null),
+                'hours' => $this->_commonRepo->filterPostData($line, 'hours', 'float', null),
+                'rate' => $this->_commonRepo->filterPostData($line, 'rate', 'float', null),
+                'total_before_discount' => $this->_commonRepo->filterPostData($line, 'total_before_discount', 'float', null),
+                'discount' => $this->_commonRepo->filterPostData($line, 'discount', 'float', null),
+                'total' => $this->_commonRepo->filterPostData($line, 'total', 'float', null),
+                'time_entry_id' => $this->_commonRepo->filterPostData($line, 'time_entry_id', 'array', null),
+            );
+
+            if (empty($line['description']) || empty($line['rate_type']) || empty($line['description']) || empty($line['total'])) {
+                return null;
+            }
+
+            return $line;
+
+        }, $lines));
+    }
+
+    private function getSingle($billId)
+    {
+        return $this->_billingRepo->getSingle($billId);
     }
 }

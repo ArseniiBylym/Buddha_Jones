@@ -186,7 +186,7 @@ class ProjectCampaignController extends CustomAbstractActionController
             $por = ($canEditPor && isset($data['por'])) ? $data['por'] : null;
             $invoiceContact = ($canEditInvoice && isset($data['invoice_contact'])) ? $data['invoice_contact'] : null;
             $materialReceiveDate = ($canEditMaterialReceived && isset($data['material_receive_date'])) ? $data['material_receive_date'] : null;
-            $customerId = isset($data['customer_id'])? $data['customer_id'] : null;
+            $customerId = isset($data['customer_id']) ? $data['customer_id'] : null;
             $approvedByBilling = ($isBillingUser && isset($data['approved_by_billing']) && strlen($data['approved_by_billing']) > 0)
                 ? (((int)$data['approved_by_billing']) ? 1 : 0)
                 : null;
@@ -230,9 +230,9 @@ class ProjectCampaignController extends CustomAbstractActionController
                         $this->_em->flush();
 
                         // notification for music team
-                        if($requestMusicTeam) {
-                            $musicUserIds = array_column($this->_usersRepo->getUserByTypeName('music'), 'id');
-                            $this->_notificationRepo->create('request_music_team', $nofiticationData, $musicUserIds, $this->_user_id); 
+                        if ($requestMusicTeam) {
+                            $musicUserTypeIds = $this->_usersRepo->getTypeIdsByName('music');
+                            $this->_notificationRepo->create('request_music_team', $nofiticationData, $musicUserTypeIds, $this->_user_id);
                         }
                     }
 
@@ -250,9 +250,9 @@ class ProjectCampaignController extends CustomAbstractActionController
                         $this->_em->flush();
 
                         // notification for music team
-                        if($requestWritingTeam) {
-                            $writterUserIds = array_column($this->_usersRepo->getUserByTypeName('writer'), 'id');
-                            $this->_notificationRepo->create('request_writing_team', $nofiticationData, $writterUserIds, $this->_user_id); 
+                        if ($requestWritingTeam) {
+                            $writterUserTypeIds = $this->_usersRepo->getTypeIdsByName('writer');
+                            $this->_notificationRepo->create('request_writing_team', $nofiticationData, $writterUserTypeIds, $this->_user_id);
                         }
                     }
 
@@ -310,15 +310,15 @@ class ProjectCampaignController extends CustomAbstractActionController
                         $existingProjectToCampaign->setBudgetNote($budgetNote);
                     }
 
-                    if($approvedByBilling !== null) {
+                    if ($approvedByBilling !== null) {
                         $existingProjectToCampaign->setApprovedByBilling($approvedByBilling);
                     }
 
-                    if($channelId !== null) {
+                    if ($channelId !== null) {
                         $existingProjectToCampaign->setChannelId($channelId);
                     }
 
-                    if($customerId !== null) {
+                    if ($customerId !== null) {
                         $existingProjectToCampaign->setCustomerId($customerId);
                     }
 
@@ -402,7 +402,8 @@ class ProjectCampaignController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    private function getSingle($projectCampaignId) {
+    private function getSingle($projectCampaignId)
+    {
         $canViewCampaign = $this->_usersRepo->extractPermission($this->_user_permission, 6, 'view_or_edit');
         $canViewBudget = $this->_usersRepo->extractPermission($this->_user_permission, 18, 'view_or_edit');
         $canViewNote = $this->_usersRepo->extractPermission($this->_user_permission, 19, 'view_or_edit');

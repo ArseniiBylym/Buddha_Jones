@@ -36,6 +36,13 @@ class RediProject
     private $projectCode;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="project_prefix", type="string", length=10, nullable=true)
+     */
+    private $projectPrefix;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="project_release", type="datetime", nullable=true)
@@ -126,6 +133,29 @@ class RediProject
     public function getProjectCode()
     {
         return $this->projectCode;
+    }
+
+    /**
+     * Set projectPrefix
+     *
+     * @param string $projectPrefix
+     * @return RediProject
+     */
+    public function setProjectPrefix($projectPrefix)
+    {
+        $this->projectPrefix = $projectPrefix;
+
+        return $this;
+    }
+
+    /**
+     * Get projectPrefix
+     *
+     * @return string 
+     */
+    public function getProjectPrefix()
+    {
+        return $this->projectPrefix;
     }
 
     /**

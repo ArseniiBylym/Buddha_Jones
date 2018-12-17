@@ -29,7 +29,7 @@
       & p {
         margin-right: 12px;
         font-size: 0.85em;
-        font-weight: 700;
+        /*font-weight: 700;*/
         &::before {
           content: "─ ";
         }

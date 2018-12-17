@@ -29,37 +29,37 @@ export class SpotSentActionsClass {
                 response.forEach((spot: SpotSentAllSpotsSentFromApi) => {
                     spot.spotData.forEach((data: SpotSentAllSpotsSentSpotDataFromApi) => {
                         let spotItem: SpotSentAllSpotsSentSpotData = {
-                            project : {
-                                name : (spot.projectName) ? spot.projectName : 'N/A',
-                                title : 'Project'
+                            project: {
+                                name: (spot.projectName) ? spot.projectName : 'N/A',
+                                title: 'Project'
                             },
-                            campaign : {
-                                name : (data.campaignName) ? data.campaignName : 'N/A',
-                                title : 'Campaign'
+                            campaign: {
+                                name: (data.campaignName) ? data.campaignName : 'N/A',
+                                title: 'Campaign'
                             },
-                            spot : {
-                                name : (data.spotName) ? data.spotName : 'N/A',
-                                title : 'Spot'
+                            spot: {
+                                name: (data.spotName) ? data.spotName : 'N/A',
+                                title: 'Spot'
                             },
-                            version : {
-                                name : (data.versionName) ? data.versionName : 'N/A',
-                                title : 'Version'
+                            version: {
+                                name: (data.versionName) ? data.versionName : 'N/A',
+                                title: 'Version'
                             },
-                            finishRequest : {
-                                name : data.finishRequest,
-                                title : 'Finish request'
+                            finishRequest: {
+                                name: data.finishRequest,
+                                title: 'Finish request'
                             },
-                            status : {
-                                name : (data.lineStatusName) ? data.lineStatusName : 'N/A',
-                                title : 'Status'
+                            status: {
+                                name: (data.lineStatusName) ? data.lineStatusName : 'N/A',
+                                title: 'Status'
                             },
-                            changed : {
-                                name : (spot.updatedAt && spot.updatedAt.date) ? spot.updatedAt.date : '',
-                                title : 'Changed'
+                            changed: {
+                                name: (spot.updatedAt && spot.updatedAt.date) ? spot.updatedAt.date : '',
+                                title: 'Changed'
                             },
-                            edit : {
-                                name : spot.requestId.toString(),
-                                title : ''
+                            edit: {
+                                name: spot.requestId.toString(),
+                                title: ''
                             }
                         };
                         spotSentAllSpots.push(spotItem);
@@ -96,8 +96,13 @@ export class SpotSentActionsClass {
         try {
             if (
                 forceFetch ||
-                (SpotSentStore.spotSentDetailsLoading === false &&
-                    DateHandler.checkIfTimeStampIsOlderThanXMinutes(5, SpotSentStore.spotSentDetailsLastFetchTimestamp))
+                (
+                    !SpotSentStore.spotSentDetailsLoading &&
+                    DateHandler.checkIfTimeStampIsOlderThanXMinutes(
+                        5,
+                        SpotSentStore.spotSentDetailsLastFetchTimestamp
+                    )
+                )
             ) {
                 SpotSentStore.spotSentDetailsLoading = true;
 
@@ -112,14 +117,16 @@ export class SpotSentActionsClass {
                             campaign_name: spot.campaignName,
                             project_campaign_id: spot.projectCampaignId,
                             spot_id: spot.spotId,
-                            spot_name: spot.spotName,
+                            spot_name: spot.spotName + (spot.runtime ? ` (${spot.runtime})` : ''),
                             version_id: spot.versionId,
                             version_name: spot.versionName,
                             editors: spot.editor,
                             spot_resend: spot.spotResend,
                             finish_request: spot.finishRequest,
                             line_status_id: spot.lineStatusId,
-                            sent_via_method: (spot.sentViaMethod) ? spot.sentViaMethod.split(',').map((method: string) => { return parseInt(method, 0); }) : null
+                            sent_via_method: (spot.sentViaMethod) ? spot.sentViaMethod.split(',').map((method: string) => {
+                                return parseInt(method, 0);
+                            }) : null
                         };
                     }),
                     finish_option: response.finishOption,
@@ -174,8 +181,8 @@ export class SpotSentActionsClass {
                 SpotSentStore.spotSentFinishingHouseAreBeingFetched = true;
 
                 const response = (await API.getData(APIPath.FINISHING_HOUSE, {
-                    length : 99999,
-                    offset : 0,
+                    length: 99999,
+                    offset: 0,
                 })) as FinishingHouseOptionsFromApi[];
 
                 SpotSentStore.spotSentFinishingHouseAreBeingFetched = false;
@@ -194,14 +201,14 @@ export class SpotSentActionsClass {
     ): Promise<{ id: number; name: string; }> => {
         try {
             const newFinishingHouse = (await API.postData(APIPath.FINISHING_HOUSE, {
-                name : finishingHouseName,
+                name: finishingHouseName,
             })) as FinishingHouseOptionsFromApi[];
 
             return {
-                id : newFinishingHouse.filter((option: FinishingHouseOptionsFromApi) => {
+                id: newFinishingHouse.filter((option: FinishingHouseOptionsFromApi) => {
                     return (option.name === finishingHouseName);
                 })[0].id,
-                name : finishingHouseName
+                name: finishingHouseName
             };
         } catch (error) {
             throw error;

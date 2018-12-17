@@ -53,6 +53,11 @@ export interface VersionResult extends GenericResult {
     results: VersionsResultsEntry[];
 }
 
+export interface TRTItem {
+    id: number;
+    runtime: string;
+}
+
 export interface ProjectsQuery {
     [userId: number]: {
         [search: string]: {
@@ -171,6 +176,7 @@ export interface SpotsResultsEntry {
     id: number;
     spotName: string;
     projectId: number;
+    trtId: number;
 }
 
 export interface VersionsResultsEntry {

@@ -42,6 +42,13 @@ class RediCustomer
      */
     private $cardname;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="customer_name", type="string", length=100, nullable=true)
+     */
+    private $customerName;
+
 
 
     /**
@@ -121,5 +128,28 @@ class RediCustomer
     public function getCardname()
     {
         return $this->cardname;
+    }
+
+    /**
+     * Set customerName
+     *
+     * @param string $customerName
+     * @return RediCustomer
+     */
+    public function setCustomerName($customerName)
+    {
+        $this->customerName = $customerName;
+
+        return $this;
+    }
+
+    /**
+     * Get customerName
+     *
+     * @return string 
+     */
+    public function getCustomerName()
+    {
+        return $this->customerName;
     }
 }

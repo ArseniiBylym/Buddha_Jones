@@ -60,6 +60,8 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_graphicsRequestFinishingRepository;
     protected $_graphicsRequestStatusRepository;
     protected $_outsideCostRepository;
+    protected $_notificationRepository;
+    protected $_notificationUserRepository;
     protected $_projectRepository;
     protected $_projectEditorProgressRepository;
     protected $_projectToCampaignRepository;
@@ -68,6 +70,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_projectToCampaignEditorRepository;
     protected $_projectToCampaignDesignerRepository;
     protected $_projectPermissionsRepository;
+    protected $_ratecardTypeRepository;
     protected $_spotRepository;
     protected $_spotSentRepository;
     protected $_spotSentOptionRepository;
@@ -78,8 +81,11 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_staffRepository;
     protected $_statusRepository;
     protected $_studioRepository;
+    protected $_studioRateCardRepository;
     protected $_timeEntryRepository;
     protected $_timeEntryFileRepository;
+    protected $_timeEntryStatusRepository;
+    // protected $_timeEntryBillStatusRepository;
     protected $_versionRepository;
     protected $_versionStatusRepository;
     protected $_userTypeRepository;
@@ -147,6 +153,8 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_graphicsRequestFinishingRepository = $this->_em->getRepository('Application\Entity\RediGraphicsRequestFinishing');
         $this->_graphicsRequestStatusRepository = $this->_em->getRepository('Application\Entity\RediGraphicsRequestStatus');
         $this->_outsideCostRepository = $this->_em->getRepository('Application\Entity\RediOutsideCost');
+        $this->_notificationRepository = $this->_em->getRepository('Application\Entity\RediNotification');
+        $this->_notificationUserRepository = $this->_em->getRepository('Application\Entity\RediNotificationUser');
         $this->_projectRepository = $this->_em->getRepository('Application\Entity\RediProject');
         $this->_projectEditorProgressRepository = $this->_em->getRepository('Application\Entity\RediProjectEditorProgress');
         $this->_projectToCampaignRepository = $this->_em->getRepository('Application\Entity\RediProjectToCampaign');
@@ -155,6 +163,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_projectToCampaignEditorRepository = $this->_em->getRepository('Application\Entity\RediProjectToCampaignEditor');
         $this->_projectToCampaignUserRepository = $this->_em->getRepository('Application\Entity\RediProjectToCampaignUser');
         $this->_projectPermissionsRepository = $this->_em->getRepository('Application\Entity\RediProjectPermissions');
+        $this->_ratecardTypeRepository = $this->_em->getRepository('Application\Entity\RediRatecardType');
         $this->_spotRepository = $this->_em->getRepository('Application\Entity\RediSpot');
         $this->_spotVersionRepository = $this->_em->getRepository('Application\Entity\RediSpotVersion');
         $this->_spotVersionEditorRepository = $this->_em->getRepository('Application\Entity\RediSpotVersionEditor');
@@ -165,7 +174,10 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_staffRepository = $this->_em->getRepository('Application\Entity\RediStaff');
         $this->_statusRepository = $this->_em->getRepository('Application\Entity\RediStatus');
         $this->_studioRepository = $this->_em->getRepository('Application\Entity\RediStudio');
+        $this->_studioRatecardRepository = $this->_em->getRepository('Application\Entity\RediStudioRatecard');
         $this->_timeEntryRepository = $this->_em->getRepository('Application\Entity\RediTimeEntry');
+        $this->_timeEntryStatusRepository = $this->_em->getRepository('Application\Entity\RediTimeEntryStatus');
+        // $this->_timeEntryBillStatusRepository = $this->_em->getRepository('Application\Entity\RediTimeEntryBillStatus');
         $this->_timeEntryFileRepository = $this->_em->getRepository('Application\Entity\RediTimeEntryFile');
         $this->_versionRepository = $this->_em->getRepository('Application\Entity\RediVersion');
         $this->_versionStatusRepository = $this->_em->getRepository('Application\Entity\RediVersionStatus');

@@ -310,4 +310,101 @@ class ActivityRepository extends EntityRepository
 
         return $query->getArrayResult();
     }
+
+    public function populateStudioRatecardByActivity($activityId) {
+        $dql = "INSERT INTO 
+                redi_studio_ratecard
+                (ratecard_id, activity_id, trt_id, revision_inc, note, type, rate)
+                (SELECT ratecard_id, :activity_id, null, null, null, 'H', null FROM redi_ratecard_type)";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('activity_id', $activityId);
+        $query->execute();
+    }
+
+    public function populateStudioRatecardByRatecard($ratecardId) {
+        $typeId = 1;
+
+        $dql = "INSERT INTO 
+                redi_studio_ratecard
+                (ratecard_id, activity_id, trt_id, revision_inc, note, type, rate)
+                (SELECT :ratecard_id, id, null, null, null, 'H', null FROM redi_activity WHERE type_id = :type_id)";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->bindParam('ratecard_id', $ratecardId);
+        $query->bindParam('type_id', $typeId);
+        $query->execute();
+    }
+
+    public function cleanStudioRatecard() {
+        $dql = "DELETE FROM 
+                redi_studio_ratecard
+                WHERE activity_id NOT IN (SELECT id FROM redi_activity)
+                OR ratecard_id NOT IN (SELECT ratecard_id FROM redi_ratecard_type)";
+
+        $query = $this->getEntityManager()->getConnection()->prepare($dql);
+        $query->execute();
+    }
+
+    public function getRatecardType($studioId)
+    {
+        $dql = "SELECT 
+                    rct
+                FROM \Application\Entity\RediRatecardType rct
+                WHERE rct.studioId = :studio_id
+                ORDER BY rct.ratecardName";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('studio_id', $studioId);
+        $data = $query->getArrayResult();
+
+        $data = array_map(function ($rc) {
+            $rc['ratecardId'] = (int)$rc['ratecardId'];
+            $rc['studioId'] = (int)$rc['studioId'];
+
+            return $rc;
+        }, $data);
+
+        return $data;
+    }
+
+    public function searchStudioRatecardType($ratecardId)
+    {
+        $dql = "SELECT 
+                  src.id,
+                  src.ratecardId,
+                  a.id AS activityId,
+                  a.name AS activityName,
+                  a.typeId AS activityTypeId,
+                  aty.activityType,
+                  trt.id AS trtId,
+                  trt.runtime AS runtime,
+                  src.revisionInc,
+                  src.note,
+                  src.type,
+                  src.rate
+                FROM \Application\Entity\RediStudioRatecard src
+                LEFT JOIN \Application\Entity\RediActivity a
+                    WITH a.id=src.activityId 
+                INNER JOIN \Application\Entity\RediActivityType aty
+                  WITH aty.id=a.typeId
+                LEFT JOIN \Application\Entity\RediTrt trt
+                  WITH trt.id = src.trtId
+                WHERE 
+                    src.ratecardId = :ratecard_id
+                    AND a.status = 1
+                ORDER BY a.typeId ASC, a.name ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('ratecard_id', $ratecardId);
+        $data = $query->getArrayResult();
+
+        $data = array_map(function ($cPrice) use ($ratecardId) {
+            $cPrice['rate'] = ($cPrice['rate'] !== null) ? (int)$cPrice['rate'] : null;
+
+            return $cPrice;
+        }, $data);
+
+        return $data;
+    }
 }

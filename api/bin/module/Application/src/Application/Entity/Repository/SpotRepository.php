@@ -84,6 +84,7 @@ class SpotRepository extends EntityRepository
 
         return $result;
     }
+
     public function searchCount($filter)
     {
         $dql = "SELECT COUNT(a.id) AS total_count 
@@ -300,7 +301,7 @@ class SpotRepository extends EntityRepository
                 ? $allStatusArray[$row['statusId']]['name']
                 : null;
 
-            if(empty($row['updatedAt'])) {
+            if (empty($row['updatedAt'])) {
                 $row['updatedAt'] = $row['createdAt'];
                 $row['updatedBy'] = $row['createdBy'];
                 $row['updatedByUser'] = $row['createdByUser'];
@@ -342,7 +343,7 @@ class SpotRepository extends EntityRepository
                         if (count($editorIds)) {
                             $editorIds = array_map('trim', $editorIds);
                             $userRepo = new UsersRepository($this->_entityManager);
-                            $spotDataRow['editorList'] = $userRepo->getUserssById($editorIds);
+                            $spotDataRow['editorList'] = $userRepo->getUsersById($editorIds);
                         }
                     } else {
                         $spotDataRow['editorList'] = array();
@@ -503,7 +504,9 @@ class SpotRepository extends EntityRepository
                     sc.prodAccept,
                     sc.finishAccept,
                     sc.lineStatusId,
-                    sc.editor
+                    sc.editor,
+                    s.trtId,
+                    trt.runtime
                 FROM \Application\Entity\RediSpotSent sc
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id = sc.campaignId
@@ -511,6 +514,8 @@ class SpotRepository extends EntityRepository
                     WITH s.id = sc.spotId
                 LEFT JOIN \Application\Entity\RediVersion v
                     WITH v.id = sc.versionId
+                LEFT JOIN \Application\Entity\RediTrt trt
+                    WITH s.trtId = trt.id
                 WHERE sc.requestId = :request_id";
 
         $query = $this->getEntityManager()->createQuery($dql);

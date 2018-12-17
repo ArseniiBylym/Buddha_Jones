@@ -25,6 +25,7 @@ class ProjectRepository extends EntityRepository
                   p.id, 
                   p.studioId, st.studioName,
                   p.notes,  p.projectRelease, p.type,
+                  p.projectPrefix,
                   MAX(ph.createdAt) as lastUpdatedAt
                 FROM \Application\Entity\RediProject p
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
@@ -975,17 +976,17 @@ class ProjectRepository extends EntityRepository
 
         $response = array();
 
-        foreach($result as $row) {
-            if(empty($response[$row['projectId']])) {
+        foreach ($result as $row) {
+            if (empty($response[$row['projectId']])) {
                 $response[$row['projectId']] = array(
                     'projectId' => (int)$row['projectId'],
                     'campaign' => array(),
                 );
             }
 
-            if(empty($row['campaignId'])) continue;
+            if (empty($row['campaignId'])) continue;
 
-            if(empty($response[$row['projectId']]['campaign'][$row['campaignId']])) {
+            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']])) {
                 $response[$row['projectId']]['campaign'][$row['campaignId']] = array(
                     'campaignId' => (int)$row['campaignId'],
                     'projectCampaignId' => (int)$row['projectCampaignId'],
@@ -994,9 +995,9 @@ class ProjectRepository extends EntityRepository
                 );
             }
 
-            if(empty($row['spotId'])) continue;
+            if (empty($row['spotId'])) continue;
 
-            if(empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']])) {
+            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']])) {
                 $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']] = array(
                     'spotId' => (int)$row['spotId'],
                     'spotName' => $row['spotName'],
@@ -1004,9 +1005,9 @@ class ProjectRepository extends EntityRepository
                 );
             }
 
-            if(empty($row['versionId'])) continue;
+            if (empty($row['versionId'])) continue;
 
-            if(empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']]['version'][$row['versionId']])) {
+            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']]['version'][$row['versionId']])) {
                 $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']]['version'][$row['versionId']] = array(
                     'versionId' => (int)$row['versionId'],
                     'spotVersionId' => (int)$row['spotVersionId'],
@@ -1017,18 +1018,18 @@ class ProjectRepository extends EntityRepository
 
         $response = array_values($response);
 
-        foreach($response as &$project) {
-            if(empty($project['campaign'])) continue;
+        foreach ($response as &$project) {
+            if (empty($project['campaign'])) continue;
 
             $project['campaign'] = array_values($project['campaign']);
 
-            foreach($project['campaign'] as &$campaign) {
-                if(empty($campaign['spot'])) continue;
+            foreach ($project['campaign'] as &$campaign) {
+                if (empty($campaign['spot'])) continue;
 
                 $campaign['spot'] = array_values($campaign['spot']);
 
-                foreach($campaign['spot'] as &$spot) {
-                    if(empty($spot['version'])) continue;
+                foreach ($campaign['spot'] as &$spot) {
+                    if (empty($spot['version'])) continue;
 
                     $spot['version'] = array_values($spot['version']);
                 }
@@ -1127,7 +1128,7 @@ class ProjectRepository extends EntityRepository
         $dql .= " WHERE st.studioName IS NOT NULL ";
 
         if (count($dqlFilter)) {
-            $dql .= " AND " .implode(" AND ", $dqlFilter);
+            $dql .= " AND " . implode(" AND ", $dqlFilter);
         }
 
         $dql .= ' GROUP BY p.id ';
@@ -1157,5 +1158,41 @@ class ProjectRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         return array_column($result, 'id');
+    }
+
+    /**
+     * Check if project prefix is unique or not
+     *
+     * @param string $projectPrefix
+     * @param int $projectId
+     * @return boolean
+     */
+    public function isProjectPrefixUnique($projectPrefix, $projectId = null)
+    {
+        if (!$projectPrefix) {
+            return true;
+        }
+
+        $dql = "SELECT  
+                  COUNT(p) AS total_count
+                FROM \Application\Entity\RediProject p
+                WHERE 
+                    p.projectPrefix = :project_prefix ";
+
+        if ($projectId) {
+            $dql .= " AND p.id != :project_id";
+        }
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('project_prefix', $projectPrefix);
+
+        if ($projectId) {
+            $query->setParameter('project_id', $projectId);
+        }
+
+        $query->setMaxResults(1);
+        $data = $query->getArrayResult();
+
+        return (bool)empty($data[0]['total_count']);
     }
 }
