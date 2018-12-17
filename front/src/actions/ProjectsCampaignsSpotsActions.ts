@@ -110,6 +110,7 @@ export class ProjectsCampaignsSpotsActionsClass {
 
             return true;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.fetchProjects(userId, search, page, resultsPerPage, true);
             }, 1024);
@@ -175,6 +176,7 @@ export class ProjectsCampaignsSpotsActionsClass {
 
             return true;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.fetchCampaigns(userId, projectId, search, page, resultsPerPage, true);
             }, 1024);
@@ -246,6 +248,7 @@ export class ProjectsCampaignsSpotsActionsClass {
 
             return true;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.fetchSpots(userId, ids, search, page, resultsPerPage, true);
             }, 1024);
@@ -329,6 +332,7 @@ export class ProjectsCampaignsSpotsActionsClass {
 
             return true;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.fetchVersions(userId, ids, search, page, resultsPerPage, true);
             }, 1024);

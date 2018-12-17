@@ -130,6 +130,7 @@ class PageTimeTrackingWorkerEntry extends React.Component {
                 })
                 .catch(error => {
                     // Retry
+                    // TODO fix this kind of error handling all over the project
                     setTimeout(() => {
                         this.fetchActivities();
                     }, 1024);

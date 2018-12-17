@@ -504,6 +504,7 @@ export class ProjectPickerContent extends React.Component<Props, {}> {
 
             return true;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.fetchResults(forUserId, section, search, page, entriesPerPage, value, true);
             }, 1024);

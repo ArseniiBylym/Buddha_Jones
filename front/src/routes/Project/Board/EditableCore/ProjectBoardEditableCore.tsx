@@ -204,6 +204,7 @@ export class ProjectBoardEditableCore extends React.Component<ProjectBoardEditab
 
             return true;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             if (this.retriesCount > 5) {
                 this.status = 'error';
                 this.retriesCount = 0;

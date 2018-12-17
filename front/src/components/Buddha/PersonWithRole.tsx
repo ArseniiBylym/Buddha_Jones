@@ -217,6 +217,7 @@ export class PersonWithRole extends React.Component<PersonWithRoleProps & AppOnl
 
             this.isLoading = false;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.fetchData();
             }, 2048);

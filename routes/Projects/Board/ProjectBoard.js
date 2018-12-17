@@ -297,6 +297,7 @@ class PageProjectBoard extends React.Component {
                         !_isNil(this.props.clientName) && this.props.clientName ? this.props.clientName : null
                     )
                     .catch(() => {
+                        // TODO fix this kind of error handling all over the project
                         setTimeout(() => {
                             this.fetchProjectDetails();
                         }, 2048);

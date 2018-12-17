@@ -258,6 +258,7 @@ export class ClientsActionsClass {
 
             return true;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.fetchCustomerDetails(customerId, true);
             }, 768);
@@ -339,6 +340,7 @@ export class ClientsActionsClass {
 
             return true;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.fetchNewClientList(true);
             }, 512);
