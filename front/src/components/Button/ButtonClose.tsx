@@ -1,5 +1,6 @@
-import * as React from 'react';
 import { observer } from 'mobx-react';
+import * as React from 'react';
+import { IconClose } from '../Icons';
 import {
     Button,
     ButtonOnClickPropType,
@@ -9,10 +10,7 @@ import {
     ButtonIconColorPropType,
 } from '.';
 
-// Styles
-import { IconClose } from '../Icons';
 
-// Props
 interface ButtonCloseProps {
     className?: string | null;
     labelClassName?: string | null;
@@ -20,13 +18,13 @@ interface ButtonCloseProps {
     label?: string;
     labelColor?: ButtonLabelColorPropType;
     labelOnLeft?: boolean;
+    labelIsBold?: boolean;
     float?: ButtonFloatPropType;
     tooltipText?: string | null;
     tooltipOn?: ButtonTooltipPositionOnPropType;
     iconBackground?: ButtonIconColorPropType;
 }
 
-// Component
 @observer
 export class ButtonClose extends React.Component<ButtonCloseProps, {}> {
     static get defaultProps(): ButtonCloseProps {
@@ -37,6 +35,7 @@ export class ButtonClose extends React.Component<ButtonCloseProps, {}> {
             label: 'Close',
             labelColor: 'orange',
             labelOnLeft: true,
+            labelIsBold: false,
             float: 'none',
             tooltipText: null,
             tooltipOn: 'left',
@@ -55,6 +54,7 @@ export class ButtonClose extends React.Component<ButtonCloseProps, {}> {
                         ? {
                               onLeft: this.props.labelOnLeft!,
                               color: this.props.labelColor,
+                              isBold: this.props.labelIsBold,
                               text: this.props.label,
                           }
                         : undefined

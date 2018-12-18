@@ -20,6 +20,7 @@ interface ButtonDeleteProps {
     label?: string;
     labelOnLeft?: boolean;
     labelColor?: ButtonLabelColorPropType;
+    labelIsBold?: boolean;
     float?: ButtonFloatPropType;
     iconBackground?: ButtonIconColorPropType;
     loading?: boolean;
@@ -36,6 +37,7 @@ export class ButtonDelete extends React.Component<ButtonDeleteProps, {}> {
             label: 'Edit',
             labelOnLeft: true,
             labelColor: 'black',
+            labelIsBold: false,
             float: 'none',
             iconBackground: 'white',
             loading: false,
@@ -65,6 +67,7 @@ export class ButtonDelete extends React.Component<ButtonDeleteProps, {}> {
                               color: this.props.labelColor,
                               size: 'small',
                               onLeft: this.props.labelOnLeft,
+                              isBold: this.props.labelIsBold,
                           }
                         : undefined
                 }
