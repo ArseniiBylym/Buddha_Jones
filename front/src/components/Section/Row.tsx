@@ -15,34 +15,34 @@ interface RowProps {
     removeGutter?: boolean;
     doWrap?: boolean;
     justifyContent?:
-        | 'inherit'
-        | 'initial'
-        | 'flex-start'
-        | 'flex-end'
-        | 'center'
-        | 'space-around'
-        | 'space-between'
-        | null;
+    | 'inherit'
+    | 'initial'
+    | 'flex-start'
+    | 'flex-end'
+    | 'center'
+    | 'space-around'
+    | 'space-between'
+    | null;
     alignContent?:
-        | 'inherit'
-        | 'initial'
-        | 'flex-start'
-        | 'flex-end'
-        | 'center'
-        | 'space-around'
-        | 'space-between'
-        | 'stretch'
-        | null;
+    | 'inherit'
+    | 'initial'
+    | 'flex-start'
+    | 'flex-end'
+    | 'center'
+    | 'space-around'
+    | 'space-between'
+    | 'stretch'
+    | null;
     alignItems?:
-        | 'inherit'
-        | 'initial'
-        | 'stretch'
-        | 'baseline'
-        | 'center'
-        | 'center'
-        | 'flex-start'
-        | 'flex-end'
-        | null;
+    | 'inherit'
+    | 'initial'
+    | 'stretch'
+    | 'baseline'
+    | 'center'
+    | 'center'
+    | 'flex-start'
+    | 'flex-end'
+    | null;
 }
 
 @observer
@@ -76,12 +76,12 @@ export class Row extends React.Component<RowProps, {}> {
                     this.props.className
                 )}
                 style={{
-                    ...((this.props.justifyContent || this.props.alignContent || this.props.alignItems) && {
+                    ...((this.props.justifyContent || this.props.alignContent || this.props.alignItems) ? {
                         justifyContent: this.props.justifyContent || undefined,
                         alignContent: this.props.alignContent || undefined,
                         alignItems: this.props.alignItems || undefined,
-                    }),
-                    ...(this.props.style && this.props.style),
+                    } : {}),
+                    ...(this.props.style ? this.props.style : {}),
                 }}
             >
                 {this.props.children}

@@ -1,18 +1,23 @@
-import * as React from 'react';
-import * as classNames from 'classnames';
-import { inject, observer } from 'mobx-react';
-import { AppState } from 'store/AllStores';
-import { HeaderActions, ProjectsActions, ProjectPermissionsActions } from 'actions';
-import { ButtonAdd } from 'components/Button';
-import { Section, Row, Col } from 'components/Section';
-import { LoadingIndicator, LoadingShade, LoadingSpinner } from 'components/Loaders';
-import { ClientsFilter } from 'components/Buddha';
-import { Pagination } from 'components/Pagination';
 import { ProjectsListCard } from '.';
+import { HeaderActions, ProjectPermissionsActions, ProjectsActions } from 'actions';
 import { history } from 'App';
+import * as classNames from 'classnames';
+import { ClientsFilter } from 'components/Buddha';
+import { ButtonAdd } from 'components/Button';
 import { InputSearch } from 'components/Form';
+import { LoadingIndicator, LoadingShade, LoadingSpinner } from 'components/Loaders';
+import { Pagination } from 'components/Pagination';
+import { Col, Row, Section } from 'components/Section';
+import {
+    action,
+    computed,
+    observable,
+    reaction
+    } from 'mobx';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { AppState } from 'store/AllStores';
 import { UserPermissionKey } from 'types/projectPermissions';
-import { reaction, computed, action, observable } from 'mobx';
 
 // Styles
 const s = require('./ProjectsList.css');
@@ -24,7 +29,6 @@ interface ProjectsListProps {}
 @inject('store')
 @observer
 class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
-
     @observable private currentPage: number = 1;
 
     private isComponentMounted: boolean = false;
@@ -32,7 +36,7 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
     @computed
     private get userCanViewCampaignDescription(): boolean {
         if (this.props.store) {
-            const {loggedInUserPermissions} = this.props.store.projectPermissions;
+            const { loggedInUserPermissions } = this.props.store.projectPermissions;
 
             if (loggedInUserPermissions[UserPermissionKey.CampaignDescription]) {
                 return loggedInUserPermissions[UserPermissionKey.CampaignDescription].canView ? true : false;
@@ -58,12 +62,12 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
         }
 
         if (this.props.store) {
-            const {loggedInUserPermissions} = this.props.store.projectPermissions;
+            const { loggedInUserPermissions } = this.props.store.projectPermissions;
 
             this.setMainHeaderElements(
                 typeof loggedInUserPermissions[UserPermissionKey.ProjectCreate] !== 'undefined' &&
-                loggedInUserPermissions[UserPermissionKey.ProjectCreate].canView &&
-                loggedInUserPermissions[UserPermissionKey.ProjectCreate].canEdit
+                    loggedInUserPermissions[UserPermissionKey.ProjectCreate].canView &&
+                    loggedInUserPermissions[UserPermissionKey.ProjectCreate].canEdit
                     ? true
                     : false
             );
@@ -105,12 +109,12 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
             () => this.props.store!.projectPermissions.loadingCount,
             loadingCount => {
                 if (loadingCount <= 0 && this.isComponentMounted) {
-                    const {loggedInUserPermissions} = this.props.store!!.projectPermissions;
+                    const { loggedInUserPermissions } = this.props.store!!.projectPermissions;
 
                     this.setMainHeaderElements(
                         typeof loggedInUserPermissions[UserPermissionKey.ProjectCreate] !== 'undefined' &&
-                        loggedInUserPermissions[UserPermissionKey.ProjectCreate].canView &&
-                        loggedInUserPermissions[UserPermissionKey.ProjectCreate].canEdit
+                            loggedInUserPermissions[UserPermissionKey.ProjectCreate].canView &&
+                            loggedInUserPermissions[UserPermissionKey.ProjectCreate].canEdit
                             ? true
                             : false
                     );
@@ -124,15 +128,14 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                 if (this.isComponentMounted) {
                     this.setMainHeaderElements(
                         typeof loggedInUserPermissions[UserPermissionKey.ProjectCreate] !== 'undefined' &&
-                        loggedInUserPermissions[UserPermissionKey.ProjectCreate].canView &&
-                        loggedInUserPermissions[UserPermissionKey.ProjectCreate].canEdit
+                            loggedInUserPermissions[UserPermissionKey.ProjectCreate].canView &&
+                            loggedInUserPermissions[UserPermissionKey.ProjectCreate].canEdit
                             ? true
                             : false
                     );
                 }
             }
         );
-
     }
 
     public render() {
@@ -140,7 +143,7 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
             return null;
         }
 
-        const {projects, projectPermissions} = this.props.store;
+        const { projects, projectPermissions } = this.props.store;
 
         return (
             <div>
@@ -150,11 +153,11 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                     headerElements={[
                         ...(projects.updatingProjects
                             ? [
-                                {
-                                    key: 'updating-indicator',
-                                    element: <LoadingIndicator label="Refreshing"/>,
-                                },
-                            ]
+                                  {
+                                      key: 'updating-indicator',
+                                      element: <LoadingIndicator label="Refreshing" />,
+                                  },
+                              ]
                             : []),
                         ...[
                             {
@@ -167,7 +170,7 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                                         clientName={
                                             projects.filterByStudio !== null ? projects.filterByStudio.name : null
                                         }
-                                        src={'studios'}
+                                        source={'studios'}
                                     />
                                 ),
                             },
@@ -227,13 +230,13 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
                         />
                     )}
 
-                    {(projects.loadingProjects || projects.updatingProjects  || projectPermissions.loadingCount > 0) && (
+                    {(projects.loadingProjects || projects.updatingProjects || projectPermissions.loadingCount > 0) && (
                         <LoadingShade
                             background="rgba(247, 247, 247, 0.9)"
                             contentCentered={true}
                             contentCenteredToTop={true}
                         >
-                            <LoadingSpinner size={64}/>
+                            <LoadingSpinner size={64} />
                         </LoadingShade>
                     )}
                 </Section>
@@ -283,13 +286,13 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
         HeaderActions.setMainHeaderElements(
             userCanCreateNewProjects
                 ? [
-                    <ButtonAdd
-                        key="create"
-                        label="Define new project"
-                        onClick={this.handleCreateNewProject}
-                        isWhite={true}
-                    />,
-                ]
+                      <ButtonAdd
+                          key="create"
+                          label="Define new project"
+                          onClick={this.handleCreateNewProject}
+                          isWhite={true}
+                      />,
+                  ]
                 : []
         );
     };

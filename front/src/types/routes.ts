@@ -21,6 +21,7 @@ export enum RouteAccessKey {
     TimeEntry = 'time-entry',
     TimeApproval = 'time-approval',
     SpotSentByProducer = 'producer-spot-sent',
+    SpotBilling = 'spot-billing',
     StudioRateCard = 'studio-rate-card',
     ActivitiesDefinition = 'activities-definition',
     ProjectBoardPermission = 'project-board-permission',

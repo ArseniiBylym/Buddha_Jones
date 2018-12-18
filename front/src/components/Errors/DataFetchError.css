@@ -1,0 +1,23 @@
+.alert {
+  display: flex;
+  justify-content: flex-start;
+  align-content: flex-start;
+  align-items: flex-start;
+  font-size: 0.95rem;
+  color: #D75B2B;
+
+  &>strong {
+    font-weight: 400;
+    border-bottom: 1px solid transparent;
+  }
+
+  &>button {
+    display: flex;
+    margin-left: 4px;
+    font-size: inherit;
+
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+}

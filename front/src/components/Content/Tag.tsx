@@ -1,6 +1,6 @@
-import * as React from 'react';
 import * as classNames from 'classnames';
 import { observer } from 'mobx-react';
+import * as React from 'react';
 import { Button } from '../Button';
 import { IconEditPencilBlue, IconEllipsis } from '../Icons';
 
@@ -14,6 +14,7 @@ interface TagProps {
     onEditButtonClick?: (e: React.MouseEvent<HTMLElement>) => void;
     onEditButtonClickCapture?: (e: React.MouseEvent<HTMLElement>) => void;
     className?: string;
+    titleClassName?: string;
     editButtonLabel?: string;
     title: string | null;
     isTitleBold?: boolean;
@@ -36,6 +37,7 @@ export class Tag extends React.Component<TagProps, {}> {
             onEditButtonClick: undefined,
             onEditButtonClickCapture: undefined,
             className: undefined,
+            titleClassName: undefined,
             editButtonLabel: '',
             title: '',
             isTitleBold: true,
@@ -74,27 +76,33 @@ export class Tag extends React.Component<TagProps, {}> {
 
                 {this.props.title && (
                     <p
-                        className={classNames(s.title, {
-                            [s.bold]: this.props.isTitleBold,
-                            [s.dim]: this.props.isTitleDim,
-                        })}
+                        className={classNames(
+                            s.title,
+                            {
+                                [s.bold]: this.props.isTitleBold,
+                                [s.dim]: this.props.isTitleDim,
+                            },
+                            this.props.titleClassName
+                        )}
                     >
                         {this.props.title}
                     </p>
                 )}
 
                 {this.props.otherLabels &&
-                    this.props.otherLabels.map((label, labelIndex) => label !== null && label.text !== '' ? (
-                        <p
-                            key={label.text}
-                            className={classNames(s.label, {
-                                [s.bold]: label.isBold,
-                                [s.first]: labelIndex === 0,
-                            })}
-                        >
-                            {label.text}
-                        </p>
-                    ) : null)}
+                    this.props.otherLabels.map((label, labelIndex) =>
+                        label !== null && label.text !== '' ? (
+                            <p
+                                key={label.text}
+                                className={classNames(s.label, {
+                                    [s.bold]: label.isBold,
+                                    [s.first]: labelIndex === 0,
+                                })}
+                            >
+                                {label.text}
+                            </p>
+                        ) : null
+                    )}
 
                 {(typeof this.props.onEditButtonClick !== 'undefined' ||
                     typeof this.props.onEditButtonClickCapture !== 'undefined') && (

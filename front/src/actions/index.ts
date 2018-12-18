@@ -1,4 +1,5 @@
 // Exports
+export * from './FetchActions';
 export * from './WindowActions';
 export * from './UserActions';
 export * from './NotificationsActions';
