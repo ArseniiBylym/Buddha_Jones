@@ -10,7 +10,6 @@ import {
     ButtonIconColorPropType,
 } from '.';
 
-
 interface ButtonCloseProps {
     className?: string | null;
     labelClassName?: string | null;
