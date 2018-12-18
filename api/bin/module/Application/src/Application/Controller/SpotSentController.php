@@ -187,7 +187,7 @@ class SpotSentController extends CustomAbstractActionController
         $customerContact = $this->_commonRepo->filterPostData($data, 'customer_contact', 'json', $this->_commonRepo->filterPostData($existingData, 'customerContact', null, null), true);
         $specSheetFile = $this->_commonRepo->filterPostData($data, 'spec_sheet_file', 'json', null);
 
-        $spotSentType = $this->_commonRepo->filterPostData($data, 'spot_sent_type', 'int', $this->_commonRepo->filterPostData($existingData, 'spotSentType', 'int', 0), 1);
+        $spotSentType = $this->_commonRepo->filterPostData($data, 'spot_sent_type', 'int', $this->_commonRepo->filterPostData($existingData, 'spotSentType', 'int', 1), 1);
         
         // array to commaseparated string
         // $sentViaMethod = $this->arrayToCommaSeparated($sentViaMethod);
@@ -299,6 +299,7 @@ class SpotSentController extends CustomAbstractActionController
                 $sv['sent_via_method'] = is_array($sentViaMethod) ? $this->arrayToCommaSeparated($sentViaMethod) : $sentViaMethod;
                 $sv['has_graphics'] = $this->_commonRepo->filterPostData($sv, 'has_graphics', 'boolean', null, true);
                 $sv['is_pdf'] = $this->_commonRepo->filterPostData($sv, 'is_pdf', 'boolean', null, true);
+                $sv['spot_sent_type'] = $spotSentType;
 
                 $graphicsFiles = $this->_commonRepo->filterPostData($sv, 'graphics_file', 'array', array());
 
@@ -313,7 +314,6 @@ class SpotSentController extends CustomAbstractActionController
 
                     return $file;
                 }, $graphicsFiles);
-
             }
         }
 
@@ -390,7 +390,7 @@ class SpotSentController extends CustomAbstractActionController
                             if (empty($file['file_name'])) {
                                 continue;
                             }
-                            
+
                             $spotSentFile = new RediSpotSentFile();
                             $spotSentFile->setSpotSentId($spotSentId);
                             $spotSentFile->setFileName($file['file_name']);
@@ -671,6 +671,7 @@ class SpotSentController extends CustomAbstractActionController
                 'spotId' => $svd['spot_id'],
                 'versionId' => $svd['version_id'],
                 'spotResend' => $svd['spot_resend'],
+                'spotSentType' => $svd['spot_sent_type'],
             );
 
             $check = $this->_spotSentRepository->findOneBy($checkData);

@@ -278,7 +278,6 @@ class SpotRepository extends EntityRepository
 
         $result = $query->getArrayResult();
 
-        $methodes = $this->getSpotSentOption('sent_via_method');
         $finishingOptions = $this->getSpotSentOption('finishing_option');
         $audioOptions = $this->getSpotSentOption('audio_option');
         $delToClientOption = $this->getSpotSentOption('delivery_to_client_option');
@@ -290,6 +289,12 @@ class SpotRepository extends EntityRepository
         }
 
         foreach ($result as &$row) {
+            if (isset($row['spotSentType']) && $row['spotSentType'] == 2) {
+                $methodes = $this->getSpotSentOption('graphics_sent_via_method');
+            } else {
+                $methodes = $this->getSpotSentOption('sent_via_method');
+            }
+            
             unset($row['sortBy']);
 
             $row['requestId'] = (int)$row['requestId'];
