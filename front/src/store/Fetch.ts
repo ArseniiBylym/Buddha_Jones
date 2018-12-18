@@ -1,13 +1,10 @@
 import { observable } from 'mobx';
+import { CachedQueriesData } from 'types/fetch';
 
-export interface FetchData {
-    lastFetchTimeStamp: number;
-    expiresAtTimeStamp: number;
-    data: object;
-}
-
-export interface CachedQueriesData {
-    [cacheKey: string]: FetchData;
+export enum FetchQueryStatus {
+    Loading,
+    Error,
+    Success,
 }
 
 export class Fetch {

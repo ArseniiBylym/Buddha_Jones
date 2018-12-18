@@ -38,13 +38,17 @@ class SpotsToBillPage extends React.Component<SpotsToBillPageProps, {}> {
         return (
             <FetchQuery<SpotBillingApiResponse, SpotBillingApiQueryParams>
                 dataExpiresInMiliseconds={this.DATA_REFRESH_RATE_IN_MS}
-                apiEndpoint={APIPath.SPOTS_TO_BILL}
-                queryObject={{
-                    offset: 0,
-                    length: 999999999,
-                }}
+                getQueries={[
+                    {
+                        apiEndpoint: APIPath.SPOTS_TO_BILL,
+                        queryObject: {
+                            offset: 0,
+                            length: 999999999,
+                        },
+                    },
+                ]}
             >
-                {spotsToBillFromApi => (
+                {([spotsToBillFromApi]) => (
                     <React.Fragment>
                         <SpotsToBillFilters
                             onChangeSearch={this.changeSearch}
