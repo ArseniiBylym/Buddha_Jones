@@ -200,6 +200,7 @@ class SpotRepository extends EntityRepository
                 "projectId",
                 "statusId",
                 "spotSentDate",
+                "spotSentType",
                 "createdBy",
                 "createdAt",
                 "updatedBy",
@@ -246,6 +247,10 @@ class SpotRepository extends EntityRepository
             $dqlFilter[] = "sc.statusId = :status_id";
         }
 
+        if (!empty($filter['spot_sent_type'])) {
+            $dqlFilter[] = "sc.spotSentType = :spot_sent_type";
+        }
+
         if (count($dqlFilter)) {
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
@@ -274,6 +279,10 @@ class SpotRepository extends EntityRepository
 
         if (!empty($filter['status_id'])) {
             $query->setParameter("status_id", $filter['status_id']);
+        }
+
+        if (!empty($filter['spot_sent_type'])) {
+            $query->setParameter("spot_sent_type", $filter['spot_sent_type']);
         }
 
         $result = $query->getArrayResult();

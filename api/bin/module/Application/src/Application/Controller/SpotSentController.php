@@ -25,6 +25,7 @@ class SpotSentController extends CustomAbstractActionController
         $filter['offset'] = (int)trim($this->getRequest()->getQuery('offset', 0));
         $filter['length'] = (int)trim($this->getRequest()->getQuery('length', 10));
         $filter['sort'] = strtolower(trim($this->getRequest()->getQuery('sort', 'update')));
+        $filter['spot_sent_type'] = (int)trim($this->getRequest()->getQuery('spot_sent_type', 0));
 
         $data = $this->_spotRepo->searchSpotSent($filter);
         $totalCount = $this->_spotRepo->searchSpotSentCount($filter);
