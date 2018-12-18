@@ -318,9 +318,9 @@ class RediSpotSent
     /**
      * @var integer
      *
-     * @ORM\Column(name="graphics_only", type="smallint", nullable=true)
+     * @ORM\Column(name="spot_sent_type", type="smallint", nullable=true)
      */
-    private $graphicsOnly;
+    private $spotSentType;
 
     /**
      * @var integer
@@ -332,9 +332,9 @@ class RediSpotSent
     /**
      * @var integer
      *
-     * @ORM\Column(name="id_pdf", type="smallint", nullable=true)
+     * @ORM\Column(name="is_pdf", type="smallint", nullable=true)
      */
-    private $idPdf;
+    private $isPdf;
 
     /**
      * @var integer
@@ -1343,26 +1343,26 @@ class RediSpotSent
     }
 
     /**
-     * Set graphicsOnly
+     * Set spotSentType
      *
-     * @param integer $graphicsOnly
+     * @param integer $spotSentType
      * @return RediSpotSent
      */
-    public function setGraphicsOnly($graphicsOnly)
+    public function setSpotSentType($spotSentType)
     {
-        $this->graphicsOnly = $graphicsOnly;
+        $this->spotSentType = $spotSentType;
 
         return $this;
     }
 
     /**
-     * Get graphicsOnly
+     * Get spotSentType
      *
      * @return integer 
      */
-    public function getGraphicsOnly()
+    public function getSpotSentType()
     {
-        return $this->graphicsOnly;
+        return $this->spotSentType;
     }
 
     /**
@@ -1389,26 +1389,26 @@ class RediSpotSent
     }
 
     /**
-     * Set idPdf
+     * Set isPdf
      *
-     * @param integer $idPdf
+     * @param integer $isPdf
      * @return RediSpotSent
      */
-    public function setIdPdf($idPdf)
+    public function setIsPdf($isPdf)
     {
-        $this->idPdf = $idPdf;
+        $this->isPdf = $isPdf;
 
         return $this;
     }
 
     /**
-     * Get idPdf
+     * Get isPdf
      *
      * @return integer 
      */
-    public function getIdPdf()
+    public function getIsPdf()
     {
-        return $this->idPdf;
+        return $this->isPdf;
     }
 
     /**
