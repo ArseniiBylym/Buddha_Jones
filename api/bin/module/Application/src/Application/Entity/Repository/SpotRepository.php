@@ -294,7 +294,7 @@ class SpotRepository extends EntityRepository
             } else {
                 $methodes = $this->getSpotSentOption('sent_via_method');
             }
-            
+
             unset($row['sortBy']);
 
             $row['requestId'] = (int)$row['requestId'];

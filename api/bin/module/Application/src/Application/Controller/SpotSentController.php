@@ -114,6 +114,8 @@ class SpotSentController extends CustomAbstractActionController
         $spotSents = $this->_spotSentRepository->findBy(array('requestId' => $requestId));
 
         if (count($spotSents)) {
+            $this->_spotRepo->deleteSpotSentFileByRequestId($requestId);
+
             foreach ($spotSents as $spotSent) {
                 $this->_em->remove($spotSent);
             }
@@ -321,7 +323,6 @@ class SpotSentController extends CustomAbstractActionController
             $requestId = $requestId ? $requestId : $this->_spotRepo->getNextSpotSentRequestId();
             $now = new \DateTime('now');
             $spotSentIds = [];
-            $this->_spotRepo->deleteSpotSentFileByRequestId($requestId);
             $validate = $this->validateData($requestId, $spotVersionData);
 
             if ($validate['result']) {
