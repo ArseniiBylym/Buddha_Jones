@@ -318,16 +318,30 @@ class RediSpotSent
     /**
      * @var integer
      *
-     * @ORM\Column(name="created_by", type="integer", nullable=true)
+     * @ORM\Column(name="spot_sent_type", type="smallint", nullable=true)
      */
-    private $createdBy;
+    private $spotSentType;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="updated_by", type="integer", nullable=true)
+     * @ORM\Column(name="has_graphics", type="smallint", nullable=true)
      */
-    private $updatedBy;
+    private $hasGraphics;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="is_pdf", type="smallint", nullable=true)
+     */
+    private $isPdf;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="created_by", type="integer", nullable=true)
+     */
+    private $createdBy;
 
     /**
      * @var \DateTime
@@ -335,6 +349,13 @@ class RediSpotSent
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private $createdAt;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="updated_by", type="integer", nullable=true)
+     */
+    private $updatedBy;
 
     /**
      * @var \DateTime
@@ -1322,6 +1343,75 @@ class RediSpotSent
     }
 
     /**
+     * Set spotSentType
+     *
+     * @param integer $spotSentType
+     * @return RediSpotSent
+     */
+    public function setSpotSentType($spotSentType)
+    {
+        $this->spotSentType = $spotSentType;
+
+        return $this;
+    }
+
+    /**
+     * Get spotSentType
+     *
+     * @return integer 
+     */
+    public function getSpotSentType()
+    {
+        return $this->spotSentType;
+    }
+
+    /**
+     * Set hasGraphics
+     *
+     * @param integer $hasGraphics
+     * @return RediSpotSent
+     */
+    public function setHasGraphics($hasGraphics)
+    {
+        $this->hasGraphics = $hasGraphics;
+
+        return $this;
+    }
+
+    /**
+     * Get hasGraphics
+     *
+     * @return integer 
+     */
+    public function getHasGraphics()
+    {
+        return $this->hasGraphics;
+    }
+
+    /**
+     * Set isPdf
+     *
+     * @param integer $isPdf
+     * @return RediSpotSent
+     */
+    public function setIsPdf($isPdf)
+    {
+        $this->isPdf = $isPdf;
+
+        return $this;
+    }
+
+    /**
+     * Get isPdf
+     *
+     * @return integer 
+     */
+    public function getIsPdf()
+    {
+        return $this->isPdf;
+    }
+
+    /**
      * Set createdBy
      *
      * @param integer $createdBy
@@ -1345,29 +1435,6 @@ class RediSpotSent
     }
 
     /**
-     * Set updatedBy
-     *
-     * @param integer $updatedBy
-     * @return RediSpotSent
-     */
-    public function setUpdatedBy($updatedBy)
-    {
-        $this->updatedBy = $updatedBy;
-
-        return $this;
-    }
-
-    /**
-     * Get updatedBy
-     *
-     * @return integer 
-     */
-    public function getUpdatedBy()
-    {
-        return $this->updatedBy;
-    }
-
-    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
@@ -1388,6 +1455,29 @@ class RediSpotSent
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * Set updatedBy
+     *
+     * @param integer $updatedBy
+     * @return RediSpotSent
+     */
+    public function setUpdatedBy($updatedBy)
+    {
+        $this->updatedBy = $updatedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedBy
+     *
+     * @return integer 
+     */
+    public function getUpdatedBy()
+    {
+        return $this->updatedBy;
     }
 
     /**

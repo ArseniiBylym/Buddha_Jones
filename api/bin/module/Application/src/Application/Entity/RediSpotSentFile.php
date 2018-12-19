@@ -42,6 +42,20 @@ class RediSpotSentFile
      */
     private $fileDescription;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="resend", type="smallint", nullable=true)
+     */
+    private $resend;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="creative_user_id", type="string", length=50, nullable=true)
+     */
+    private $creativeUserId;
+
 
 
     /**
@@ -121,5 +135,51 @@ class RediSpotSentFile
     public function getFileDescription()
     {
         return $this->fileDescription;
+    }
+
+    /**
+     * Set resend
+     *
+     * @param integer $resend
+     * @return RediSpotSentFile
+     */
+    public function setResend($resend)
+    {
+        $this->resend = $resend;
+
+        return $this;
+    }
+
+    /**
+     * Get resend
+     *
+     * @return integer 
+     */
+    public function getResend()
+    {
+        return $this->resend;
+    }
+
+    /**
+     * Set creativeUserId
+     *
+     * @param string $creativeUserId
+     * @return RediSpotSentFile
+     */
+    public function setCreativeUserId($creativeUserId)
+    {
+        $this->creativeUserId = $creativeUserId;
+
+        return $this;
+    }
+
+    /**
+     * Get creativeUserId
+     *
+     * @return string 
+     */
+    public function getCreativeUserId()
+    {
+        return $this->creativeUserId;
     }
 }

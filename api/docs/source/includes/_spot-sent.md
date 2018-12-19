@@ -622,6 +622,7 @@ false | status | string | null | Status id
 false | length | int | null | Limit number of returned results
 false | offset | int | null | Offset returned results
 false | sort | string | 'update' | By default it will sort by updated date DESC. send sort=priority to sort to show draft first and it will order by updated date after status
+false | spot_sent_type | string | null | send 1/2 . 1= AV, 2=graphics only
 
 ## Get Single Spot Sent 
 
@@ -882,6 +883,7 @@ false | customer_contact | string| null | customer contact ids json encoded arra
 false | internal_note | string| null | internal note
 false | studio_note | string| null |  studio note
 false | spot_sent_date | date| null | spot sent date
+false | spot_sent_type | date| 1 | spot sent type. send 1/2 (1=AV, 2=graphicsonly)
 
 
 
@@ -897,7 +899,11 @@ false | version_id | int| null | Version Id
 false | spot_resend | int | 0 | send 0/1
 false | prod_accept | int | 0 | send 0/1
 false | finish_accept | int | 0 | send 0/1
+false | has_graphics | int | 0 | send 0/1
+false | is_pdf | int | 0 | send 0/1
 false | editors | JSON encoded array | null | list of editor ids (Like: [12,4,5,3,4])
+false | sent_via_method | JSON encoded array | null | list of method ids (Like: [12,4,5,3,4]). for graphics only spot sent- send value from 'graphics_sent_via_method', and for av send values from 'sent_vai_method'
+false | graphics_file | JSON encoded array | null | list of files (like: [{"file_name":"abc1.jpg","file_description":"some desc112","resend":1},{"file_name":"def3.jpg"}]}])
 
 ### sample spot version data
 
@@ -991,6 +997,8 @@ false | customer_contact | string| null | customer contact ids json encoded arra
 false | internal_note | string| null | internal note
 false | studio_note | string| null |  studio note
 false | spot_sent_date | date| null | spot sent date
+false | spot_sent_type | date| null | spot sent type. send 1/2 (1=AV, 2=graphicsonly)
+
 
 **In update send all data, full dataset is requred as prevoius entry will be deleted and new entry will be created in db**
 

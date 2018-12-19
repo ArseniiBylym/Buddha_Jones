@@ -188,6 +188,7 @@ class SpotRepository extends EntityRepository
                 "statusId",
                 // "editor",
                 "customerContact",
+                "spotSentType",
                 "createdBy",
                 "updatedBy",
                 "createdAt",
@@ -199,6 +200,7 @@ class SpotRepository extends EntityRepository
                 "projectId",
                 "statusId",
                 "spotSentDate",
+                "spotSentType",
                 "createdBy",
                 "createdAt",
                 "updatedBy",
@@ -245,6 +247,10 @@ class SpotRepository extends EntityRepository
             $dqlFilter[] = "sc.statusId = :status_id";
         }
 
+        if (!empty($filter['spot_sent_type'])) {
+            $dqlFilter[] = "sc.spotSentType = :spot_sent_type";
+        }
+
         if (count($dqlFilter)) {
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
@@ -275,9 +281,12 @@ class SpotRepository extends EntityRepository
             $query->setParameter("status_id", $filter['status_id']);
         }
 
+        if (!empty($filter['spot_sent_type'])) {
+            $query->setParameter("spot_sent_type", $filter['spot_sent_type']);
+        }
+
         $result = $query->getArrayResult();
 
-        $methodes = $this->getSpotSentOption('sent_via_method');
         $finishingOptions = $this->getSpotSentOption('finishing_option');
         $audioOptions = $this->getSpotSentOption('audio_option');
         $delToClientOption = $this->getSpotSentOption('delivery_to_client_option');
@@ -289,6 +298,12 @@ class SpotRepository extends EntityRepository
         }
 
         foreach ($result as &$row) {
+            if (isset($row['spotSentType']) && $row['spotSentType'] == 2) {
+                $methodes = $this->getSpotSentOption('graphics_sent_via_method');
+            } else {
+                $methodes = $this->getSpotSentOption('sent_via_method');
+            }
+
             unset($row['sortBy']);
 
             $row['requestId'] = (int)$row['requestId'];
@@ -296,6 +311,8 @@ class SpotRepository extends EntityRepository
             $row['statusId'] = (int)$row['statusId'];
             $row['createdByUser'] = trim($row['createdByFirstName'] . ' ' . $row['createdByLastName']);
             $row['updatedByUser'] = trim($row['updatedByFirstName'] . ' ' . $row['updatedByLastName']);
+            $row['spotSentType'] = (int)$row['spotSentType'];
+
             $row['statusName'] = (!empty($row['statusId'])
                 && !empty($allStatusArray[$row['statusId']]['name']))
                 ? $allStatusArray[$row['statusId']]['name']
@@ -319,6 +336,9 @@ class SpotRepository extends EntityRepository
                     && !empty($allStatusArray[$spotDataRow['lineStatusId']]['name']))
                     ? $allStatusArray[$spotDataRow['lineStatusId']]['name']
                     : null;
+                $spotDataRow['graphicsFile'] = $this->getSpotSendFiles($spotDataRow['spotSentId']);
+
+                unset($spotDataRow['spotSentId']);
             }
 
             if (!empty($filter['details'])) {
@@ -490,6 +510,7 @@ class SpotRepository extends EntityRepository
     public function getSpotVersionDataByRequestId($requestId)
     {
         $dql = "SELECT 
+                    sc.id AS spotSentId,
                     sc.campaignId,
                     ca.campaignName,
                     sc.projectCampaignId,
@@ -506,7 +527,9 @@ class SpotRepository extends EntityRepository
                     sc.lineStatusId,
                     sc.editor,
                     s.trtId,
-                    trt.runtime
+                    trt.runtime,
+                    sc.hasGraphics,
+                    sc.isPdf
                 FROM \Application\Entity\RediSpotSent sc
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id = sc.campaignId
@@ -664,6 +687,37 @@ class SpotRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         return $result;
+    }
+
+    public function getSpotSendFiles($spotSentId)
+    {
+        $dql = "SELECT 
+                  s.fileName, s.fileDescription, s.resend, s.creativeUserId
+                FROM \Application\Entity\RediSpotSentFile s
+                WHERE s.spotSentId=:spot_sent_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter("spot_sent_id", $spotSentId);
+
+        $result = $query->getArrayResult();
+
+        return $result;
+    }
+
+    public function deleteSpotSentFileByRequestId($requestId) {
+        $dql1 = "DELETE
+                FROM \Application\Entity\RediSpotSentFile s
+                WHERE s.spotSentId IN (
+                  SELECT 
+                    ss.id 
+                  FROM \Application\Entity\RediSpotSent ss
+                  WHERE ss.requestId=:request_id
+                )";
+
+        $query1 = $this->getEntityManager()->createQuery($dql1);
+        $query1->setParameter("request_id", $requestId);
+
+        $query1->execute();
     }
 
     public function clearSpotSentSpotVersion($spotSentId)
