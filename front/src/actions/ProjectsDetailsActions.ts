@@ -891,11 +891,13 @@ export class ProjectDetailsActionsClass {
     @action
     public changeProjectCampaignCustomer = async (
         projectCampaignId: number,
-        customerId: number
+        customerId: number,
+        approvedByBilling: boolean,
     ): Promise<boolean> => {
         try {
             await API.putData(APIPath.PROJECT_CAMPAIGN + '/' + projectCampaignId, {
-                customer_id: customerId
+                customer_id: customerId,
+                approved_by_billing: approvedByBilling ? 1 : 0
             });
 
             return true;

@@ -36,6 +36,7 @@
     }
     
     .campaignName {
+        width: 400px;
         display: flex;
         justify-content: flex-start;
         align-content: center;
@@ -58,6 +59,15 @@
                 opacity: 0;
             }
         }
+    }
+    .campaignIsApproved{
+        display: inline-block;
+        width: 270px;
+        padding-right: 10px;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: flex-start;
     }
     
     .campaignRemoveButtonContainer {

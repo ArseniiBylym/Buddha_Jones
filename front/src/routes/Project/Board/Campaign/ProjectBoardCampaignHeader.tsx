@@ -15,6 +15,7 @@ import { NewCustomerForm } from '../CustomerSelector/CustomerForm';
 import { CustomerSelector } from '../CustomerSelector';
 import { ClientForStudio } from '../../../../types/clients';
 import { ClientsActions } from '../../../../actions';
+import { Checkmark } from '../../../../components/Form';
 
 interface Props {
     innerRef?: (ref: HTMLDivElement) => void;
@@ -23,6 +24,7 @@ interface Props {
     isExpanded: boolean;
     isFixed: boolean;
     fixedWidth: number;
+    approvedByBilling: boolean;
     projectId: number;
     campaign: CampaignDetails;
     userCanViewNotes: boolean;
@@ -33,6 +35,7 @@ interface Props {
 @observer
 export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyStoreState, {}> {
     @observable public removing: 'default' | 'saving' | 'success' | 'error' = 'default';
+    @observable private approvedByBilling: boolean = false;
     @observable private isEditMode: boolean = false;
     @observable private isCustomerFormShow: boolean = false;
     @observable private customerSelectorOptions: ClientForStudio[] = [];
@@ -77,7 +80,14 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
                                     </Paragraph>
                                 )}
                         </Col>
-
+                        <Col className={styles.campaignIsApproved}>
+                            <span style={{paddingRight: '10px'}}>Is approved:</span>
+                            <Checkmark
+                            onClick={this.handleProjectBoardPermissionToggle}
+                            checked={this.approvedByBilling}
+                            type={'no-icon'}
+                            />
+                        </Col> 
                         <Col className={styles.campaignRemoveButtonContainer}>
                             {
                                 !this.isEditMode &&
@@ -100,6 +110,7 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
                                     options={this.customerSelectorOptions as Array<{ id: number; name: string }>}
                                     optionsLoading={this.customerSelectorOptionsLoading}
                                     value={this.props.campaign.clientSelected}
+                                    approvedByBilling={this.approvedByBilling}
                                     projectCampaignId={this.props.campaign.projectCampaignId}
                                     onToggleEditModeButton={this.onCustomerSelectorEditModeToggleHandler}
                                     isCustomerFormShow={this.isCustomerFormShow}
@@ -216,11 +227,26 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
         );
     }
 
+    public componentDidMount(): void {
+        this.setInitialLocalState(this.props);
+    }
+
+    @action
+    private setInitialLocalState = (props:any) => {
+        this.approvedByBilling = props.approvedByBilling;
+    };
+
     @action
     private onCustomerSelectorEditModeToggleHandler = (): void => {
         this.getOptionsForCustomerSelectors();
         this.isEditMode = !this.isEditMode;
         this.isCustomerFormShow = false;
+    };
+
+    @action
+    private handleProjectBoardPermissionToggle = () => {
+        if(!this.isEditMode) return 
+        this.approvedByBilling = !this.approvedByBilling;
     };
 
     @action
