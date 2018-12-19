@@ -341,6 +341,7 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                 <AnimateHeight height={(this.campaignIsExpanded) ? 'auto' : 0} duration={500}>
                     {!this.isVersionStatusFilterApplied &&
                     <>
+                    
                         {/* <ProjectBoardCampaignChannel
                             userCanView={this.userCanViewCampaignChannel}
                             userCanEdit={this.userCanEditCampaignChannel}
