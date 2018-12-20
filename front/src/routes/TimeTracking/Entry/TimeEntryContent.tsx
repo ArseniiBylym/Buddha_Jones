@@ -232,7 +232,7 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                         <TableCell colSpan={4} align="right">
                             <ButtonAdd
                                 onClick={this.handleFileAdd}
-                                label="Add file"
+                                label="Add file names"
                                 labelOnLeft={true}
                                 float="right"
                             />

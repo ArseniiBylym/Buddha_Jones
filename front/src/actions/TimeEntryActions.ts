@@ -453,6 +453,8 @@ export class TimeEntryActionsClass {
         if (TimeEntryStore.values) {
             TimeEntryStore.values.isModified = true;
             if (index === null) {
+                if(TimeEntryStore.values.files.length > 0 && 
+                    TimeEntryStore.values.files[TimeEntryStore.values.files.length -1].filename === '') return
                 TimeEntryStore.values.files.push({
                     filename: details.filename || '',
                     description: details.description || '',
@@ -478,6 +480,8 @@ export class TimeEntryActionsClass {
     public setFileDetailsArray = (filesArr) => {
         if (TimeEntryStore.values) {
             TimeEntryStore.values.isModified = true;
+            if(TimeEntryStore.values.files.length > 0 && 
+                TimeEntryStore.values.files[TimeEntryStore.values.files.length -1].filename === '') return
             filesArr.forEach((item, i) => {
                 if (TimeEntryStore.values) {
                     TimeEntryStore.values.files.push({
