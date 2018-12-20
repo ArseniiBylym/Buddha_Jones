@@ -98,7 +98,6 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
     private editorDropdown: DropdownContainer | null = null;
 
     public render() {
-        console.log('this.projectPermissions.loggedInUserPermissions=', this.projectPermissions && this.projectPermissions.loggedInUserPermissions);
         return (
             <Card
                 title={'#' + (this.props.spotIndex + 1)}

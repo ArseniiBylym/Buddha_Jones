@@ -263,7 +263,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     <Section title="Spots">
                         {(this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).map(
                             (spot: SpotSentVersionForSubmit, spotIndex: number) => {
-                                console.log('spot=', spot);
                                 return (
                                     <ProducerSpotSentFormSpotCard
                                         key={spotIndex}
