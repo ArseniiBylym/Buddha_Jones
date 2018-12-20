@@ -16,6 +16,7 @@ import { TableRow, Table, TableCell } from 'components/Table';
 import { DurationPicker } from 'components/Calendar';
 import { BottomBar } from 'components/Layout';
 import { TimeEntryUserWithType } from 'types/timeEntry';
+import TextAreaFile from '../../../components/Form/TextAreaFile';
 
 enum SubmittingStatus {
     none,
@@ -232,6 +233,7 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                         </TableCell>
                     </TableRow>
                 </Table>
+                <TextAreaFile addHandler={this.handleFilesArrayAdd}></TextAreaFile>
             </Section>
         );
     }
@@ -457,6 +459,10 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
     private handleFileAdd = () => {
         TimeEntryActions.setFileDetails({}, null);
     };
+
+    private handleFilesArrayAdd = (arr) => {
+        TimeEntryActions.setFileDetailsArray(arr)
+    }
 
     private handleFileRemove = (fileIndex: number) => () => {
         TimeEntryActions.removeFile(fileIndex);

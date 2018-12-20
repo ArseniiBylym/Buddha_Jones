@@ -475,6 +475,22 @@ export class TimeEntryActionsClass {
     };
 
     @action
+    public setFileDetailsArray = (filesArr) => {
+        if (TimeEntryStore.values) {
+            TimeEntryStore.values.isModified = true;
+            filesArr.forEach((item, i) => {
+                if (TimeEntryStore.values) {
+                    TimeEntryStore.values.files.push({
+                        filename: item || '',
+                        description: '',
+                        durationInMinutes:  60,
+                    });
+                }
+            })
+        }
+    }
+
+    @action
     public removeFile = (index: number) => {
         if (TimeEntryStore.values) {
             TimeEntryStore.values.isModified = true;
