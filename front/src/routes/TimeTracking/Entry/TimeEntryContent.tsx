@@ -16,6 +16,7 @@ import { TableRow, Table, TableCell } from 'components/Table';
 import { DurationPicker } from 'components/Calendar';
 import { BottomBar } from 'components/Layout';
 import { TimeEntryUserWithType } from 'types/timeEntry';
+import TextAreaFile from '../../../components/Form/TextAreaFile';
 
 enum SubmittingStatus {
     none,
@@ -44,6 +45,12 @@ type ComponentProps = Props & AppOnlyStoreState;
 @inject('store')
 @observer
 export class TimeEntryContent extends React.Component<ComponentProps, {}> {
+
+    state = {
+        textareaValue: '',
+        textareaEmpty: true
+    }
+
     private realTimeValidation: boolean = false;
     private activityDropdown: DropdownContainer | null = null;
 
@@ -225,13 +232,19 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                         <TableCell colSpan={4} align="right">
                             <ButtonAdd
                                 onClick={this.handleFileAdd}
-                                label="Add file"
+                                label="Add file names"
                                 labelOnLeft={true}
                                 float="right"
                             />
                         </TableCell>
                     </TableRow>
                 </Table>
+                <TextAreaFile 
+                    config={this.state} 
+                    textareaOnFocusHandler={this.textareaOnFocusHandler} 
+                    textareaOnBlurHandler={this.textareaOnBlurHandler}
+                    textareaOnChangeHandler={this.textareaOnChangeHandler}>
+                </TextAreaFile>
             </Section>
         );
     }
@@ -455,8 +468,41 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
     };
 
     private handleFileAdd = () => {
-        TimeEntryActions.setFileDetails({}, null);
+        if(this.state.textareaValue){
+            const arr: string[] | null = this.state.textareaValue.match(/[^\r\n]+/g)
+            if(arr) {
+                TimeEntryActions.setFileDetailsArray(arr)
+                this.setState({
+                    textareaValue: '',
+                    textareaEmpty: true,
+                })
+            }
+        } else {
+            TimeEntryActions.setFileDetails({}, null);
+        }
     };
+
+    textareaOnChangeHandler = e => {
+        this.setState({
+            textareaValue: e.target.value,
+        })
+    }
+
+    textareaOnBlurHandler = () => {
+        if(!this.state.textareaValue) {
+            this.setState({
+                textareaEmpty: true
+            })
+        }
+    }
+
+    textareaOnFocusHandler = () => {
+        if(this.state.textareaEmpty) {
+            this.setState({
+                textareaEmpty: false
+            })
+        }
+    }
 
     private handleFileRemove = (fileIndex: number) => () => {
         TimeEntryActions.removeFile(fileIndex);
