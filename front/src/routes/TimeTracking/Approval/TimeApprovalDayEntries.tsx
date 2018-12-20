@@ -33,11 +33,12 @@ export class TimeApprovalDayEntries extends React.Component<TimeApprovalDayEntri
 
         return (
             <div>
-                {this.props.entries.map(entry => {
+                {this.props.entries.map((entry, i) => {
                     totalBilledDayMinutesAfterEntry +=
                         entry.activityId !== TIME_ENTRY_LUNCH_BREAK_ACTIVITY_ID ? entry.durationInMinutes : 0;
 
                     return (
+                        <React.Fragment>
                         <TimeApprovalDayEntry
                             key={entry.entryId}
                             entry={entry}
@@ -45,7 +46,9 @@ export class TimeApprovalDayEntries extends React.Component<TimeApprovalDayEntri
                             now={this.props.now}
                             isEditable={this.props.areEditable ? true : false}
                             totalDayMinutesAfterEntry={totalBilledDayMinutesAfterEntry}
-                        />
+                            />
+                            <hr/>
+                        </React.Fragment>
                     );
                 })}
             </div>

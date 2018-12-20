@@ -164,7 +164,8 @@ export class TimeApprovalDayEntry extends React.Component<TimeApprovalDayEntryPr
                                 <Tag
                                     key={key + '-' + tag.id}
                                     className={s.tag}
-                                    title={key === 'projectCampaign' ? 'Campaign' : capitalize(key)}
+                                    // title={key === 'projectCampaign' ? 'Campaign' : capitalize(key)}
+                                    title=''
                                     isTitleDim={true}
                                     isTitleBold={false}
                                     otherLabels={[
