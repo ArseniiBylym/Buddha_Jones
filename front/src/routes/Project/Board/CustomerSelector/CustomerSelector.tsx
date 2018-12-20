@@ -12,6 +12,7 @@ import { ClientForStudio } from '../../../../types/clients';
 interface Props {
     label?: string;
     value: ClientForStudio;
+    approvedByBilling: boolean; 
     options: ProjectBoardCampaignCustomerSelectorOption[];
     optionsLoading?: boolean;
     onChange?: ((option: { id: number; name: string } | null) => void) | null;
@@ -162,7 +163,8 @@ export class CustomerSelector extends React.Component<Props, {}> {
                 this.status = Status.saving;
                 await ProjectsDetailsActions.changeProjectCampaignCustomer(
                     this.props.projectCampaignId,
-                    this.valueSelected.id
+                    this.valueSelected.id, 
+                    this.props.approvedByBilling,
                 );
                 if (this.props.onChange) {
                     this.props.onChange(this.valueSelected as { id: number; name: string });

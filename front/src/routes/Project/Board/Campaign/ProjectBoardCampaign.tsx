@@ -331,6 +331,7 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                     onClientChange={this.props.onClientChange}
                     campaign={this.props.campaign}
                     isExpanded={this.campaignIsExpanded}
+                    approvedByBilling={this.props.campaign.approvedByBilling}
                     isFixed={this.props.isHeaderFixed}
                     fixedWidth={this.containerWidth}
                     userCanViewNotes={this.userCanViewCampaignDescription}
@@ -340,7 +341,8 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                 <AnimateHeight height={(this.campaignIsExpanded) ? 'auto' : 0} duration={500}>
                     {!this.isVersionStatusFilterApplied &&
                     <>
-                        <ProjectBoardCampaignChannel
+                    
+                        {/* <ProjectBoardCampaignChannel
                             userCanView={this.userCanViewCampaignChannel}
                             userCanEdit={this.userCanEditCampaignChannel}
                             campaignId={this.props.campaign.campaignId}
@@ -349,7 +351,7 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                             approvedByBilling={this.props.campaign.approvedByBilling}
                             channelId={this.props.campaign.channelId}
                             channelName={this.props.campaign.channelName}
-                        />
+                        /> */}
 
                         <ProjectBoardCampaignDescription
                             userCanView={this.userCanViewCampaignDescription}
