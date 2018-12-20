@@ -127,7 +127,11 @@ export class DateHandler {
         if (typeof dateObj === 'string') {
             return parseDate(dateObj);
         } else if (typeof dateObj === 'object' && typeof dateObj.date !== 'undefined') {
-            return parseDate(dateObj.date);
+            if (dateObj.timezone === 'US/Eastern' && dateObj.timezone_type === 3) {
+                return parseDate(dateObj.date.replace(' ', 'T') + '-09:00');
+            } else {
+                return parseDate(dateObj.date);
+            }
         } else {
             return new Date();
         }
