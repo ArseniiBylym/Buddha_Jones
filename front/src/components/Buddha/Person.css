@@ -1,144 +1,129 @@
 :global(.person) {
-  justify-content: flex-start;
-
-  & :global(.col) {
-    padding-left: 4px;
-    padding-right: 4px;
-
-    &:first-child {
-      padding-left: 0;
-    }
-
-    &:last-child {
-      padding-right: 0;
-    }
-
-    &:global(.personLabel) {
-      display: flex;
-      justify-content: flex-end;
-      align-content: center;
-      align-items: center;
-
-      &:last-child {
-        justify-content: flex-start;
-      }
-
-      &:global(.personLabelNoPadding) {
-        padding-left: 0;
-        padding-right: 0;
-      }
-
-      & > p {
-        font-size: 0.75em;
-        font-weight: 600;
-        color: #7E756D;
-      }
-    }
-
-    &:global(.personName) {
-      display: flex;
-      justify-content: flex-start;
-      align-content: center;
-      align-items: center;
-
-      & > * {
-        font-size: 0.95em;
-      }
-
-      & > label {
-        display: block;
-        margin-top: 4px;
-      }
-
-      & > p {
-        display: flex;
-        justify-content: flex-start;
-        align-content: center;
-        align-items: center;
-      }
-
-      & :global(.personCloseIcon) {
-        display: flex;
-        justify-content: center;
-        align-content: center;
-        align-items: center;
-        float: right;
-        position: relative;
-        top: -2px;
-        margin-left: 6px;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background: #CEC7C0;
-        border: 1px solid #CEC7C0;
-        transition: 300ms all 0ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
-      }
-    }
-
-    &:global(.personImage) {
-      display: flex;
-      justify-content: flex-start;
-      align-content: center;
-      align-items: center;
-
-      & span {
-        overflow: hidden;
-        display: block;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        border: 4px solid #D2CBC6;
-        background: url("../../assets/images/account/empty-user-profile-picture.png") center no-repeat;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-      }
-    }
-  }
-
-  &:global(.personClickable) {
-    cursor: pointer;
-  }
-
-  &:global(.smallImage) {
+    justify-content: flex-start;
 
     & :global(.col) {
+        padding-left: 4px;
+        padding-right: 4px;
 
-      &:global(.personImage) {
-
-        & span {
-          width: 21px;
-          height: 21px;
-          border-width: 2px;
+        &:first-child {
+            padding-left: 0;
         }
-      }
-    }
-  }
 
-  &:global(.darkImage) {
-
-    & :global(.col) {
-
-      &:global(.personImage) {
-
-        & span {
-          border-color: color(#D2CBC6 lightness(-36%));
+        &:last-child {
+            padding-right: 0;
         }
-      }
-    }
-  }
 
-  &:hover {
+        &:global(.personLabel) {
+            display: flex;
+            justify-content: flex-end;
+            align-content: center;
+            align-items: center;
 
-    & :global(.col) {
+            &:last-child {
+                justify-content: flex-start;
+            }
 
-      &:global(.personName) {
-
-        & :global(.personCloseIcon) {
-          background: #FFFFFF;
-          border-color: #D75B2B;
+            &:global(.personLabelNoPadding) {
+                padding-left: 0;
+                padding-right: 0;
+            }
         }
-      }
+
+        &:global(.personName) {
+            display: flex;
+            justify-content: flex-start;
+            align-content: center;
+            align-items: center;
+
+            & > * {
+                font-size: 0.95em;
+            }
+
+            & > label {
+                display: block;
+                margin-top: 4px;
+            }
+
+            & > p {
+                display: flex;
+                justify-content: flex-start;
+                align-content: center;
+                align-items: center;
+            }
+
+            & :global(.personCloseIcon) {
+                display: flex;
+                justify-content: center;
+                align-content: center;
+                align-items: center;
+                float: right;
+                position: relative;
+                top: -2px;
+                margin-left: 6px;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                background: #cec7c0;
+                border: 1px solid #cec7c0;
+                transition: 300ms all 0ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
+            }
+        }
+
+        &:global(.personImage) {
+            display: flex;
+            justify-content: flex-start;
+            align-content: center;
+            align-items: center;
+
+            & span {
+                overflow: hidden;
+                display: block;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                border: 4px solid #d2cbc6;
+                background: url('../../assets/images/account/empty-user-profile-picture.png') center no-repeat;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+            }
+        }
     }
-  }
+
+    &:global(.personClickable) {
+        cursor: pointer;
+    }
+
+    &:global(.smallImage) {
+        & :global(.col) {
+            &:global(.personImage) {
+                & span {
+                    width: 21px;
+                    height: 21px;
+                    border-width: 2px;
+                }
+            }
+        }
+    }
+
+    &:global(.darkImage) {
+        & :global(.col) {
+            &:global(.personImage) {
+                & span {
+                    border-color: color(#d2cbc6 lightness(-36%));
+                }
+            }
+        }
+    }
+
+    &:hover {
+        & :global(.col) {
+            &:global(.personName) {
+                & :global(.personCloseIcon) {
+                    background: #ffffff;
+                    border-color: #d75b2b;
+                }
+            }
+        }
+    }
 }
