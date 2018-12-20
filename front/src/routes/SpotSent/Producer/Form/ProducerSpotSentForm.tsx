@@ -89,6 +89,8 @@ export interface SpotSentVersionForSubmit {
     finish_request: 0 | 1;
     line_status_id: number | null;
     sent_via_method: number[] | null;
+    finish_accept?: 0 | 1;
+    prod_accept?: 0 | 1;
 }
 
 // Styles
@@ -261,6 +263,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     <Section title="Spots">
                         {(this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).map(
                             (spot: SpotSentVersionForSubmit, spotIndex: number) => {
+                                console.log('spot=', spot);
                                 return (
                                     <ProducerSpotSentFormSpotCard
                                         key={spotIndex}
@@ -287,7 +290,9 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                             } : null,
                                             version: (spot.version_id) ? {
                                                 id: spot.version_id as number,
-                                                name: spot.version_name as string
+                                                name: spot.version_name as string,
+                                                finishAccept: spot.finish_accept === 1,
+                                                prodAccept: spot.prod_accept === 1,
                                             } : null,
                                             isResend: (spot.spot_resend === 1) ? true : false,
                                             isFinishingRequest: (spot.finish_request === 1) ? true : false,
@@ -296,6 +301,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                         }}
                                         spotIndex={spotIndex}
                                         forUserId={this.props.store!.user.data!.id}
+                                        handleFinishAccept={this.handleFinishAccept(spotIndex)}
+                                        handleProdAccept={this.handleProdAccept(spotIndex)}
                                     />
                                 );
                             }
@@ -783,6 +790,20 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     };
 
     @action
+    private handleFinishAccept = (spotIndex: number) => (checked: boolean) => {
+        const currentVersion = this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit;
+        currentVersion.finish_accept = checked ? 1 : 0;
+        (this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).splice(spotIndex, 1, currentVersion);
+    };
+
+    @action
+    private handleProdAccept = (spotIndex: number) => (checked: boolean) => {
+        const currentVersion = this.spotSentValues.spot_version[spotIndex] as SpotSentVersionForSubmit;
+        currentVersion.prod_accept = checked ? 1 : 0;
+        (this.spotSentValues.spot_version as SpotSentVersionForSubmit[]).splice(spotIndex, 1, currentVersion);
+    };
+
+    @action
     private handleFinalToggle = (checked: boolean) => {
         this.spotSentValues.status = (checked) ? 2 : 1;
     };
@@ -841,7 +862,9 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             spot_resend: 0,
             finish_request: 0,
             line_status_id: null,
-            sent_via_method: []
+            sent_via_method: [],
+            finish_accept: 0,
+            prod_accept: 0,
         };
     }
 

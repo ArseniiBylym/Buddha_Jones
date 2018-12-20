@@ -49,6 +49,8 @@ export interface ProjectPickerGroupValues {
     id: number;
     name: string;
     campaignId?: number | null;
+    finishAccept?: boolean;
+    prodAccept?: boolean;
 }
 
 interface Props {

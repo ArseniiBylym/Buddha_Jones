@@ -137,6 +137,8 @@ export interface SpotSentDetailsSpotDataFromApi {
     editor: number[];
     trtId?: number;
     runtime?: number;
+    finishAccept?: 0 | 1;
+    prodAccept?: 0 | 1;
 }
 
 export interface SpotSentAllSpotsSentSpotDataFromApi {
