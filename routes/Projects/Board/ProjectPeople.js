@@ -93,6 +93,7 @@ class ProjectPeople extends React.Component {
                 });
             })
             .catch(error => {
+                // TODO fix this kind of error handling all over the project
                 setTimeout(() => {
                     if (this.componentIsMounted) {
                         this.fetchUserRoles();
@@ -116,6 +117,7 @@ class ProjectPeople extends React.Component {
                 });
             })
             .catch(error => {
+                // TODO fix this kind of error handling all over the project
                 setTimeout(() => {
                     if (this.componentIsMounted) {
                         this.fetchUserTypes();

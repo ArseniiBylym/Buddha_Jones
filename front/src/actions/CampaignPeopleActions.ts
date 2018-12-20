@@ -36,6 +36,7 @@ export class CampaignPeopleActionsClass {
             return true;
         } catch (error) {
             setTimeout(() => {
+                // TODO fix this kind of error handlings all over the project
                 this.fetchEditorsFromProjectCampaign(projectCampaignId);
             }, 1024);
 

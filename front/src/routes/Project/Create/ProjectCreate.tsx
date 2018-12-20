@@ -193,6 +193,7 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
                 );
             })
             .catch(() => {
+                // TODO fix this kind of error handling all over the project
                 if (this.uploadRetries > 5) {
                     this.isUploading = false;
                     this.uploadRetries = 0;

@@ -112,6 +112,7 @@ export class SpotSentActionsClass {
                     project_id: response.projectId,
                     project_name: response.projectName,
                     spot_version: response.spotData.map((spot: SpotSentDetailsSpotDataFromApi) => {
+                        console.log('spot=', spot);
                         return {
                             campaign_id: spot.campaignId,
                             campaign_name: spot.campaignName,
@@ -124,6 +125,8 @@ export class SpotSentActionsClass {
                             spot_resend: spot.spotResend,
                             finish_request: spot.finishRequest,
                             line_status_id: spot.lineStatusId,
+                            finish_accept: spot.finishAccept,
+                            prod_accept: spot.prodAccept,
                             sent_via_method: (spot.sentViaMethod) ? spot.sentViaMethod.split(',').map((method: string) => {
                                 return parseInt(method, 0);
                             }) : null

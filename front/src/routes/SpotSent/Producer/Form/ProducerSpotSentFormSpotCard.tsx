@@ -12,6 +12,8 @@ import { action, computed } from 'mobx';
 import { LoadingIndicator } from 'components/Loaders';
 import { SpotSentStore } from '../../../../store/AllStores';
 import { SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
+import { ProjectPermissions } from '../../../../store';
+import { UserPermissionKey } from '../../../../types/projectPermissions';
 
 // Styles
 const s = require('./ProducerSpotSentForm.css');
@@ -25,6 +27,8 @@ interface ProducerSpotSentFormSpotCardProps {
     onSentViaMethodChange: (method: number) => void;
     onEditorAdd: (id: number) => void;
     onEditorRemove: (editorIndex: number) => void;
+    handleFinishAccept: (checked: boolean) => void;
+    handleProdAccept: (checked: boolean) => void;
     project: ProjectPickerGroupValues | null;
     clientId: number | null;
     spot: SpotSentSpot;
@@ -84,9 +88,17 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
         }, []);
     }
 
+    private get projectPermissions(): ProjectPermissions | null {
+        if (this.props.store) {
+            return this.props.store.projectPermissions;
+        }
+        return null;
+    }
+
     private editorDropdown: DropdownContainer | null = null;
 
     public render() {
+        console.log('this.projectPermissions.loggedInUserPermissions=', this.projectPermissions && this.projectPermissions.loggedInUserPermissions);
         return (
             <Card
                 title={'#' + (this.props.spotIndex + 1)}
@@ -224,6 +236,39 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                     ))}
 
                 </Section>
+                {
+                    this.projectPermissions && this.projectPermissions.loggedInUserPermissions[UserPermissionKey.SpotSentFinishProdAccept] &&
+                    this.projectPermissions && this.projectPermissions.loggedInUserPermissions[UserPermissionKey.SpotSentFinishProdAccept].canEdit &&
+                    <Section>
+                        <div className={s.acceptButtonsContainer}>
+                            {
+                                this.props.spot.isFinishingRequest &&
+                                this.props.spot.version &&
+                                this.props.spot.version.finishAccept !== undefined &&
+                                <Checkmark
+                                    key={'finish-accept'}
+                                    onClick={this.props.handleFinishAccept}
+                                    checked={this.props.spot.version.finishAccept}
+                                    label={'Finish Accept'}
+                                    type={'no-icon'}
+                                    labelOnLeft={true}
+                                />
+                            }
+                            {
+                                this.props.spot.version &&
+                                this.props.spot.version.prodAccept !== undefined &&
+                                <Checkmark
+                                    key={'prod-accept'}
+                                    onClick={this.props.handleProdAccept}
+                                    checked={this.props.spot.version.prodAccept}
+                                    label={'Production Accept'}
+                                    type={'no-icon'}
+                                    labelOnLeft={true}
+                                />
+                            }
+                        </div>
+                    </Section>
+                }
             </Card>
         );
     }

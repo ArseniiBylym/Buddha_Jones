@@ -25,6 +25,7 @@ export class UserLogout extends React.Component<UserLogoutProps, {}> {
             await UserActions.logout();
             this.loggingOut = false;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.logOut();
             }, 512);
