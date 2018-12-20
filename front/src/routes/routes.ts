@@ -129,7 +129,7 @@ export const routes: Route[] = [
         key: 'bill-spot-form',
         accessKey: RouteAccessKey.SpotBilling,
         name: 'Bill spot form',
-        path: '/portal/bill-spot-form/:id?',
+        path: '/portal/bill-spot-form/:id',
         exact: false,
         allowAllUsers: true,
     },
