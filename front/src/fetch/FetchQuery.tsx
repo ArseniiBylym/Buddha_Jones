@@ -1,13 +1,13 @@
 import { FetchActions } from 'actions';
 import _isEqual from 'lodash-es/isEqual';
-import { computed, get, has } from 'mobx';
+import { computed, get } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { FetchQueryStatus } from 'store';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { FetchData } from 'types/fetch';
 
-interface FetchQueryChildrenProps<R> {
+export interface FetchQueryChildrenProps<R> {
     loading: boolean;
     fetchError: boolean;
     retry: () => void;
