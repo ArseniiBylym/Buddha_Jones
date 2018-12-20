@@ -112,7 +112,6 @@ export class SpotSentActionsClass {
                     project_id: response.projectId,
                     project_name: response.projectName,
                     spot_version: response.spotData.map((spot: SpotSentDetailsSpotDataFromApi) => {
-                        console.log('spot=', spot);
                         return {
                             campaign_id: spot.campaignId,
                             campaign_name: spot.campaignName,
