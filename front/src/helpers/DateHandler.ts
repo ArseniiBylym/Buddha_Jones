@@ -1,10 +1,12 @@
-import * as dateDifferenceInMilliseconds from 'date-fns/difference_in_milliseconds';
-import * as dateDistanceInWords from 'date-fns/distance_in_words';
-import * as dateFormat from 'date-fns/format';
-import * as dateGetHours from 'date-fns/get_hours';
-import * as dateGeMinutes from 'date-fns/get_minutes';
-import padStart from 'lodash-es/padStart';
 import { unformat } from 'accounting';
+import * as datesDifferenceInMilliseconds from 'date-fns/difference_in_milliseconds';
+import * as datesDistanceInWords from 'date-fns/distance_in_words';
+import * as formatDate from 'date-fns/format';
+import * as getHoursFromDate from 'date-fns/get_hours';
+import * as getMinutesFromDate from 'date-fns/get_minutes';
+import * as parseDate from 'date-fns/parse';
+import padStart from 'lodash-es/padStart';
+import { DateObjectFromApi } from 'types/api';
 
 export class DateHandler {
     static printAsTimeAgoFromNow = (
@@ -13,7 +15,7 @@ export class DateHandler {
         newerThanMinuteAsJustNow: boolean = false
     ) => {
         const now: Date = new Date();
-        const differenceInMilliseconds = dateDifferenceInMilliseconds(now, date);
+        const differenceInMilliseconds = datesDifferenceInMilliseconds(now, date);
         const differenceInSeconds = Math.floor(differenceInMilliseconds / 1000);
 
         if (newerThanMinuteAsJustNow && differenceInSeconds <= 60) {
@@ -21,10 +23,10 @@ export class DateHandler {
         }
 
         if (olderThanDayAsFullDate && differenceInSeconds > 86400) {
-            return dateFormat(date, 'MM/DD/YYYY hh:mm a');
+            return formatDate(date, 'MM/DD/YYYY hh:mm a');
         }
 
-        return dateDistanceInWords(date, now, { includeSeconds: false });
+        return datesDistanceInWords(date, now, { includeSeconds: false });
     };
 
     static convertTotalMinutesToTimeLabel = (totalMinutes: number = 0): { value: number; label: string } => {
@@ -83,7 +85,7 @@ export class DateHandler {
     };
 
     static getTotalMinutesFromDateTime = (date: Date): number => {
-        return dateGetHours(date) * 60 + dateGeMinutes(date);
+        return getHoursFromDate(date) * 60 + getMinutesFromDate(date);
     };
 
     static convertHoursNumberToHM = (hours: number): string => {
@@ -92,7 +94,7 @@ export class DateHandler {
 
     static convertHoursNumberToTotalMinutes = (hours: number): number => {
         return hours * 60;
-    }
+    };
 
     static convertTotalMinutesToHM = (totalMinutes: number, ensureTimesHaveTwoCharacters: boolean = false): string => {
         const hoursDotMinutes = DateHandler.convertTotalMinutesToHoursDotMinutes(totalMinutes);
@@ -119,5 +121,15 @@ export class DateHandler {
         const durationHours = unformat(splitDuration[0]);
         const durationMinutes = splitDuration.length >= 2 ? unformat(splitDuration[1]) : 0;
         return durationHours * 60 + durationMinutes;
+    };
+
+    static parseDateStringAsDateObject = (dateObj: DateObjectFromApi | string): Date => {
+        if (typeof dateObj === 'string') {
+            return parseDate(dateObj);
+        } else if (typeof dateObj === 'object' && typeof dateObj.date !== 'undefined') {
+            return parseDate(dateObj.date);
+        } else {
+            return new Date();
+        }
     };
 }
