@@ -13,7 +13,6 @@ import { ProjectBoardCampaignMisc } from './Misc';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { UserPermission, UserPermissionKey } from 'types/projectPermissions';
 import { ProjectsVersionsStore } from '../../../../store/AllStores';
-import { ProjectBoardCampaignChannel } from './Channel';
 import { ProjectBoardCampaignStudioContacts } from './StudioContacts/ProjectBoardCampaignStudioContacts';
 import { ProjectsCampaignsSpotsActions } from '../../../../actions';
 
@@ -54,23 +53,23 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
         return {};
     }
 
-    @computed
-    private get userCanViewCampaignChannel(): boolean {
-        if (this.userPermissions[UserPermissionKey.CampaignChannel]) {
-            return this.userPermissions[UserPermissionKey.CampaignChannel].canView;
-        }
+    // @computed
+    // private get userCanViewCampaignChannel(): boolean {
+    //     if (this.userPermissions[UserPermissionKey.CampaignChannel]) {
+    //         return this.userPermissions[UserPermissionKey.CampaignChannel].canView;
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
-    @computed
-    private get userCanEditCampaignChannel(): boolean {
-        if (this.userPermissions[UserPermissionKey.CampaignChannel]) {
-            return this.userPermissions[UserPermissionKey.CampaignChannel].canEdit;
-        }
+    // @computed
+    // private get userCanEditCampaignChannel(): boolean {
+    //     if (this.userPermissions[UserPermissionKey.CampaignChannel]) {
+    //         return this.userPermissions[UserPermissionKey.CampaignChannel].canEdit;
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
     @computed
     private get userCanViewCampaignDescription(): boolean {

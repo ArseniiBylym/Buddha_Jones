@@ -83,9 +83,9 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
                         <Col className={styles.campaignIsApproved}>
                             <span style={{paddingRight: '10px'}}>Is approved:</span>
                             <Checkmark
-                            onClick={this.handleProjectBoardPermissionToggle}
-                            checked={this.approvedByBilling}
-                            type={'no-icon'}
+                                onClick={this.handleProjectBoardPermissionToggle}
+                                checked={this.approvedByBilling}
+                                type={'no-icon'}
                             />
                         </Col> 
                         <Col className={styles.campaignRemoveButtonContainer}>
@@ -232,7 +232,7 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
     }
 
     @action
-    private setInitialLocalState = (props:any) => {
+    private setInitialLocalState = (props: any) => {
         this.approvedByBilling = props.approvedByBilling;
     };
 
@@ -245,7 +245,10 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
 
     @action
     private handleProjectBoardPermissionToggle = () => {
-        if(!this.isEditMode) return 
+        if (!this.isEditMode) {
+            return;
+        }
+
         this.approvedByBilling = !this.approvedByBilling;
     };
 

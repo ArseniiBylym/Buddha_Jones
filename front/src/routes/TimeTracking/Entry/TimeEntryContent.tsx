@@ -48,8 +48,8 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
 
     state = {
         textareaValue: '',
-        textareaEmpty: true
-    }
+        textareaEmpty: true,
+    };
 
     private realTimeValidation: boolean = false;
     private activityDropdown: DropdownContainer | null = null;
@@ -243,8 +243,8 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                     config={this.state} 
                     textareaOnFocusHandler={this.textareaOnFocusHandler} 
                     textareaOnBlurHandler={this.textareaOnBlurHandler}
-                    textareaOnChangeHandler={this.textareaOnChangeHandler}>
-                </TextAreaFile>
+                    textareaOnChangeHandler={this.textareaOnChangeHandler}
+                />
             </Section>
         );
     }
@@ -468,14 +468,14 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
     };
 
     private handleFileAdd = () => {
-        if(this.state.textareaValue){
-            const arr: string[] | null = this.state.textareaValue.match(/[^\r\n]+/g)
-            if(arr) {
-                TimeEntryActions.setFileDetailsArray(arr)
+        if (this.state.textareaValue) {
+            const arr: string[] | null = this.state.textareaValue.match(/[^\r\n]+/g);
+            if (arr) {
+                TimeEntryActions.setFileDetailsArray(arr);
                 this.setState({
                     textareaValue: '',
                     textareaEmpty: true,
-                })
+                });
             }
         } else {
             TimeEntryActions.setFileDetails({}, null);
@@ -485,22 +485,22 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
     textareaOnChangeHandler = e => {
         this.setState({
             textareaValue: e.target.value,
-        })
+        });
     }
 
     textareaOnBlurHandler = () => {
-        if(!this.state.textareaValue) {
+        if (!this.state.textareaValue) {
             this.setState({
                 textareaEmpty: true
-            })
+            });
         }
     }
 
     textareaOnFocusHandler = () => {
-        if(this.state.textareaEmpty) {
+        if (this.state.textareaEmpty) {
             this.setState({
                 textareaEmpty: false
-            })
+            });
         }
     }
 
