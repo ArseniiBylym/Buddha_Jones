@@ -117,7 +117,6 @@ export interface AppState {
     readonly history?: H.History;
     readonly location?: H.Location;
     readonly match?: match<string>;
-    readonly params?: { [param: string]: string };
 }
 
 export interface AppOnlyStoreState {
