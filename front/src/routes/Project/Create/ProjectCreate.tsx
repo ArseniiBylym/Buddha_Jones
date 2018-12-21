@@ -21,6 +21,7 @@ const s = require('./ProjectCreate.css');
 export default class ProjectCreatePage extends React.Component<AppState, {}> {
     @observable private name: string = '';
     @observable private codeName: string = '';
+    @observable private prefix: string = '';
     @observable private studio: { id: number; name: string } | null = null;
     @observable private releaseDate: Date | null = null;
     @observable private notes: string = '';
@@ -64,13 +65,23 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
                         </Col>
                     </Row>
                     <Row className={classNames(s.row, s.codeNameAndReleaseDateRow)}>
-                        <Col className={s.size8Col} size={8}>
+                        <Col className={s.size8Col} size={4}>
                             <Input
                                 className={s.nameFieldGroup}
                                 fieldClassName={s.name}
                                 onChange={this.handleProjectNameChange('codeName')}
                                 value={this.codeName}
                                 label="Project code name"
+                                type="text"
+                            />
+                        </Col>
+                        <Col className={s.size8Col} size={4}>
+                            <Input
+                                className={s.nameFieldGroup}
+                                fieldClassName={s.name}
+                                onChange={this.handleProjectNameChange('prefix')}
+                                value={this.prefix}
+                                label="Project prefix"
                                 type="text"
                             />
                         </Col>
@@ -140,7 +151,7 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
         this.releaseDate = date;
     };
 
-    private handleProjectNameChange = (whichName: 'name' | 'codeName') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    private handleProjectNameChange = (whichName: 'name' | 'codeName' | 'prefix') => (e: React.ChangeEvent<HTMLInputElement>) => {
         this[whichName] = e.target.value;
     };
 
@@ -153,6 +164,7 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
             id: 0,
             name: this.name.trim(),
             codeName: this.codeName.trim(),
+            prefix: this.prefix.trim(),
             studioId: this.studio !== null ? this.studio.id : null,
             studioName: this.studio !== null ? this.studio.name : null,
             releaseDate: this.releaseDate !== null ? dateFormat(this.releaseDate, 'YYYY-MM-DD') : null,
@@ -161,6 +173,15 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
 
         if (projectData.name.length === 0 && projectData.codeName.length === 0) {
             NotificationsActions.AlertUser('Project name or code name is required');
+            return;
+        }
+        if (projectData.prefix && projectData.prefix.length === 0 ) {
+            NotificationsActions.AlertUser('Project prefix is required');
+            return;
+        }
+        
+        if (projectData.prefix && (projectData.prefix.length < 3 || projectData.prefix.length > 10)) {
+            NotificationsActions.AlertUser('Project prefix lenght should be from 3 to 10');
             return;
         }
 

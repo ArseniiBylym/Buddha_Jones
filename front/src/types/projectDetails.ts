@@ -5,6 +5,7 @@ import { ClientContact } from './clients';
 export interface ProjectCreateData {
     id: number;
     name: string;
+    prefix?: string;
     codeName: string;
     releaseDate: string | null;
     studioId: number | null;
@@ -16,6 +17,7 @@ export interface ProjectDetails {
     loading: boolean;
     projectId: number;
     projectName: string | null;
+    projectPrefix?: string | null; 
     projectCodeName: string | null;
     clientId: number;
     clientName: string;
@@ -147,6 +149,7 @@ export interface ProjectHistory {
 }
 
 export interface ProjectDetailsFromApi {
+    projectPrefix?: string;
     id: number;
     customerId: number;
     customerName: string;

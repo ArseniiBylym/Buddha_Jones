@@ -179,9 +179,9 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                     </Row>
 
                     <Row className={s.spotDetailsContainer}>
-                        <Col>
+                        <Col className={s.spotDetailsContainerWrapper}>
                             {!this.isEditFormVisible && (
-                                <div className={s.spotDetails}>
+                                <div className={s.spotDetailsLeft}>
                                     {spot.trtId &&
                                     <Paragraph className={s.noMargin}>
                                         <span>TRT: </span>
@@ -212,6 +212,10 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                                             <strong>{dateFormat(spot.v1ClientDeadline, 'MM/DD/YYYY')}</strong>
                                         </Paragraph>
                                     )}
+                                </div>
+                            )}
+                            {!this.isEditFormVisible && (
+                                <div className={s.spotDetailsRight}>
 
                                     {this.props.userCanViewNumberOfRevisionsAndVersions &&
                                     spot.numberOfRevisions !== 0 && (

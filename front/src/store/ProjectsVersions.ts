@@ -15,7 +15,7 @@ export class ProjectVersions {
 
     @observable public filterVersionStatus: ProjectVersionStatus = {
         id: null,
-        name: 'No status'
+        name: 'All status'
     };
 
     @computed
