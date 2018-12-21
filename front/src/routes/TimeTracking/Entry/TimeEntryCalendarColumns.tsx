@@ -2,10 +2,10 @@ import * as React from 'react';
 import * as classNames from 'classnames';
 import * as dateFormat from 'date-fns/format';
 import * as dateGetDayOfWeek from 'date-fns/get_day';
-import * as dateGetDayOfTheMonth from 'date-fns/get_date';
+// import * as dateGetDayOfTheMonth from 'date-fns/get_date';
 import * as dateAreTwoDatesTheSameDay from 'date-fns/is_same_day';
 import * as dateIsAfter from 'date-fns/is_after';
-import padStart from 'lodash-es/padStart';
+// import padStart from 'lodash-es/padStart';
 import { observer, inject } from 'mobx-react';
 import { TimeEntryCalendarColumnsEntries } from '.';
 import { AppOnlyStoreState } from 'store/AllStores';
@@ -66,7 +66,7 @@ export class TimeEntryCalendarColumns extends React.Component<TimeEntryCalendarC
                                 })}
                             >
                                 <p>{dateFormat(day.date, 'dddd')}</p>
-                                <span>{padStart(dateGetDayOfTheMonth(day.date).toString(), 2, '0')}</span>
+                                {/* <span>{padStart(dateGetDayOfTheMonth(day.date).toString(), 2, '0')}</span> */}
                                 <hr/>
 
                                 {day.isDayLoading && (

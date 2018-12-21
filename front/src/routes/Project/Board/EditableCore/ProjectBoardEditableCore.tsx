@@ -17,9 +17,11 @@ interface ProjectBoardEditableCoreProps {
     editing: boolean;
     userCanEditProjectName: boolean;
     userCanEditProjectCodeName: boolean;
+    userCanEditProjectPrefix?: boolean;
     userCanEditProjectReleaseDate: boolean;
     projectId: number;
     projectName: string | null;
+    projectPrefix?: string | null;
     projectCodeName: string | null;
     projectReleaseDate: Date | null;
 }
@@ -31,6 +33,7 @@ export class ProjectBoardEditableCore extends React.Component<ProjectBoardEditab
 
     @observable private wereChangesMade: boolean = false;
     @observable private projectName: string = '';
+    @observable private projectPrefix: string = '';
     @observable private projectCodeName: string = '';
     @observable private projectReleaseDate: Date | null = null;
     @observable private status: 'default' | 'saving' | 'success' | 'error' = 'default';
@@ -99,14 +102,33 @@ export class ProjectBoardEditableCore extends React.Component<ProjectBoardEditab
                                 />
                             </Col>
                         )}
-
+                        {true && (
+                            <Col
+                                size={
+                                    this.props.userCanEditProjectName &&
+                                    this.props.projectCodeName &&
+                                    this.props.userCanEditProjectReleaseDate
+                                        ? 2
+                                        : this.props.userCanEditProjectName || this.props.userCanEditProjectReleaseDate
+                                            ? 6
+                                            : 12
+                                }
+                            >
+                                <Paragraph>Project prefix</Paragraph>
+                                <Input
+                                    onChange={this.handleProjectNameOrCodeNameChange('prefix')}
+                                    value={this.projectPrefix}
+                                    label=""
+                                />
+                            </Col>
+                        )}
                         {this.props.userCanEditProjectReleaseDate && (
                             <Col
                                 size={
                                     this.props.userCanEditProjectName &&
                                     this.props.userCanEditProjectCodeName &&
                                     this.props.userCanEditProjectReleaseDate
-                                        ? 4
+                                        ? 2
                                         : this.props.userCanEditProjectName || this.props.projectCodeName
                                             ? 6
                                             : 12
@@ -116,6 +138,7 @@ export class ProjectBoardEditableCore extends React.Component<ProjectBoardEditab
                                 <DatePicker
                                     onChange={this.handleProjectReleaseDateChange}
                                     type="field"
+                                    align="right"
                                     value={this.projectReleaseDate}
                                     noValueText="Unknown"
                                     label=""
@@ -147,12 +170,13 @@ export class ProjectBoardEditableCore extends React.Component<ProjectBoardEditab
         ) : null;
     }
 
-    private handleProjectNameOrCodeNameChange = (type: 'name' | 'code') => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { value } = e.target;
+    private handleProjectNameOrCodeNameChange = (type: 'name' | 'code' | 'prefix') => (e: React.ChangeEvent<HTMLInputElement>) => {        const { value } = e.target;
         if (type === 'code') {
             this.projectCodeName = value;
-        } else {
+        } else  if (type === 'name') {
             this.projectName = value;
+        } else if (type === 'prefix') {
+            this.projectPrefix = value;
         }
         this.wereChangesMade = true;
     };
@@ -179,6 +203,10 @@ export class ProjectBoardEditableCore extends React.Component<ProjectBoardEditab
                 NotificationsActions.AlertUser('Project requires name or code name', null, 15);
                 return false;
             }
+            if (this.projectPrefix.trim() === '' ) {
+                NotificationsActions.AlertUser('Project prefix is required', null, 15);
+                return false;
+            }
 
             this.status = 'saving';
 
@@ -198,6 +226,7 @@ export class ProjectBoardEditableCore extends React.Component<ProjectBoardEditab
                           releaseDate: this.projectReleaseDate,
                       }
                     : {}),
+                    ...{prefix: this.projectPrefix},
             });
 
             this.props.onEditingEnd();
@@ -223,5 +252,6 @@ export class ProjectBoardEditableCore extends React.Component<ProjectBoardEditab
         this.projectName = props.projectName || '';
         this.projectCodeName = props.projectCodeName || '';
         this.projectReleaseDate = props.projectReleaseDate || null;
+        this.projectPrefix = props.projectPrefix || '';
     };
 }

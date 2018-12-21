@@ -27,7 +27,7 @@ export class ProjectDetailsActionsClass {
     fetchProjectDetails = async (
         projectId: number,
         projectData: {
-            projectName?: string; projectCodeName?: string; clientId?: number; clientName?: string; studioId?: number; studioName?: string
+            projectName?: string; projectPrefix?: string; projectCodeName?: string; clientId?: number; clientName?: string; studioId?: number; studioName?: string
         } = {}
     ): Promise<boolean> => {
         try {
@@ -44,6 +44,10 @@ export class ProjectDetailsActionsClass {
                     projectName:
                         typeof projectData.projectName !== 'undefined' && projectData.projectName
                             ? projectData.projectName
+                            : '',
+                    projectPrefix:
+                        typeof projectData.projectPrefix !== 'undefined' && projectData.projectPrefix
+                            ? projectData.projectPrefix
                             : '',
                     projectCodeName:
                         typeof projectData.projectCodeName !== 'undefined' && projectData.projectCodeName
@@ -81,6 +85,8 @@ export class ProjectDetailsActionsClass {
 
                 // Set flat data
                 ProjectsDetailsStore.fetchedProjects[projectIdMatch].projectId = project.id;
+                ProjectsDetailsStore.fetchedProjects[projectIdMatch].projectPrefix =
+                typeof project.projectPrefix !== 'undefined' && project.projectPrefix ? project.projectPrefix : null;
                 ProjectsDetailsStore.fetchedProjects[projectIdMatch].projectName =
                     typeof project.projectName !== 'undefined' && project.projectName ? project.projectName : null;
                 ProjectsDetailsStore.fetchedProjects[projectIdMatch].projectCodeName =
@@ -217,6 +223,7 @@ export class ProjectDetailsActionsClass {
         values: {
             name?: string;
             codeName?: string;
+            prefix?: string;
             releaseDate?: Date | null;
         }
     ): Promise<boolean> => {
@@ -229,6 +236,7 @@ export class ProjectDetailsActionsClass {
                         }
                         : {}),
                     ...(values.codeName ? { project_code: values.codeName.trim() } : {}),
+                    ...(values.prefix ? {project_prefix: values.prefix.trim() } : {}),
                     ...(values.releaseDate
                         ? {
                             project_release:
@@ -242,7 +250,9 @@ export class ProjectDetailsActionsClass {
                     if (values.name) {
                         ProjectsDetailsStore.fetchedProjects[projectMatchId].projectName = values.name.trim();
                     }
-
+                    if (values.prefix) {
+                        ProjectsDetailsStore.fetchedProjects[projectMatchId].projectPrefix = values.prefix.trim();
+                    }
                     if (values.codeName) {
                         ProjectsDetailsStore.fetchedProjects[projectMatchId].projectCodeName = values.codeName.trim();
                     }

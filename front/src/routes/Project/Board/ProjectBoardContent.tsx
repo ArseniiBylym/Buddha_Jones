@@ -213,6 +213,7 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                         editing={this.editingProjectCore}
                         projectId={project.projectId}
                         projectName={project.projectName}
+                        projectPrefix={project.projectPrefix}
                         projectCodeName={project.projectCodeName}
                         projectReleaseDate={project.projectReleaseDate}
                     />

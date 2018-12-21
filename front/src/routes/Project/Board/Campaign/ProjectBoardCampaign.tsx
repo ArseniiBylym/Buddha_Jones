@@ -13,6 +13,7 @@ import { ProjectBoardCampaignMisc } from './Misc';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { UserPermission, UserPermissionKey } from 'types/projectPermissions';
 import { ProjectsVersionsStore } from '../../../../store/AllStores';
+// import { ProjectBoardCampaignChannel } from './Channel';
 import { ProjectBoardCampaignStudioContacts } from './StudioContacts/ProjectBoardCampaignStudioContacts';
 import { ProjectsCampaignsSpotsActions } from '../../../../actions';
 
