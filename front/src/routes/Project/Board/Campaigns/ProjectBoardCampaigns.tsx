@@ -302,7 +302,7 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
 
     private handleDropVersionStatusFilter = (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault();
-        ProjectsVersionsActions.changeFilterVersionStatus({id: null, name: 'No status'});
+        ProjectsVersionsActions.changeFilterVersionStatus({id: null, name: 'All status'});
     };
 
     @action

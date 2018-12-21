@@ -3,18 +3,18 @@ import * as styles from './TextAreaFile.scss';
 import { observer } from 'mobx-react'; 
 import * as classNames from 'classnames';
 
-interface TextAreaFileProps{
+interface TextAreaFileProps {
     config: {
         textareaValue: string,
         textareaEmpty: boolean,
-    },
-    textareaOnFocusHandler: () => void,
-    textareaOnBlurHandler: () => void,
-    textareaOnChangeHandler: (e: any) => void,
+    };
+    textareaOnFocusHandler: () => void;
+    textareaOnBlurHandler: () => void;
+    textareaOnChangeHandler: (e: any) => void;
 }
 
 @observer
-class TextAreaFile extends React.Component<TextAreaFileProps, {}>{
+class TextAreaFile extends React.Component<TextAreaFileProps, {}> {
 
     render() {
         return(
@@ -25,11 +25,10 @@ class TextAreaFile extends React.Component<TextAreaFileProps, {}>{
                     onBlur={this.props.textareaOnBlurHandler}
                     onChange={this.props.textareaOnChangeHandler} 
                     className={classNames(styles.textArea, {[styles.textArea__empty]: this.props.config.textareaEmpty})}
-                >
-                </textarea>
+                />
             </div>
-        )
+        );
     }
 }
 
-export default TextAreaFile
+export default TextAreaFile;

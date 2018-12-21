@@ -151,24 +151,24 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
         return this.props.spots
             .filter((spot: SpotDetails) => {
                 return !spot.hidden;
-            })
-            .filter((_spot, spotIndex) => {
-                    return spotIndex % 2 <= 0;
-                }
-            );
+            });
+            // .filter((_spot, spotIndex) => {
+            //         return spotIndex % 2 <= 0;
+            //     }
+            // );
     }
 
-    @computed
-    private get spotsFromColumn2(): SpotDetails[] {
-        return this.props.spots
-            .filter((spot: SpotDetails) => {
-                return !spot.hidden;
-            })
-            .filter((_spot, spotIndex) => {
-                    return spotIndex % 2 > 0;
-                }
-            );
-    }
+    // @computed
+    // private get spotsFromColumn2(): SpotDetails[] {
+    //     return this.props.spots
+    //         .filter((spot: SpotDetails) => {
+    //             return !spot.hidden;
+    //         })
+    //         .filter((_spot, spotIndex) => {
+    //                 return spotIndex % 2 > 0;
+    //             }
+    //         );
+    // }
 
     private spotForm: HTMLDivElement | null = null;
 
@@ -231,16 +231,10 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
     private renderExpandedSpots() {
         return (
             <div className={s.spotsContainer}>
-                <div className={s.spotsColumn1}>
+                <div className={s.spotsColumn3}>
                     {this.spotsFromColumn1.map((spot, spotIndex) =>
                         this.renderSpot(spot, spotIndex + 1 < this.spotsFromColumn1.length, false)
                     )}
-                </div>
-                <div className={s.spotsColumn2}>
-                    {this.spotsFromColumn2.map((spot, spotIndex) =>
-                        this.renderSpot(spot, true, spotIndex + 1 >= this.spotsFromColumn2.length)
-                    )}
-
                     {(this.props.userCanCreateNewSpot &&
                         this.addingNewSpotFormVisible && (
                             <div className={s.createNewSpotFormContainer}>

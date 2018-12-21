@@ -138,6 +138,7 @@ export class ProjectBoardEditableCore extends React.Component<ProjectBoardEditab
                                 <DatePicker
                                     onChange={this.handleProjectReleaseDateChange}
                                     type="field"
+                                    align="right"
                                     value={this.projectReleaseDate}
                                     noValueText="Unknown"
                                     label=""
