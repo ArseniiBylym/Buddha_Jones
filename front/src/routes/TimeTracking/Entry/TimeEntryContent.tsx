@@ -48,7 +48,7 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
 
     state = {
         textareaValue: '',
-        textareaEmpty: true
+        textareaEmpty: true,
     };
 
     private realTimeValidation: boolean = false;

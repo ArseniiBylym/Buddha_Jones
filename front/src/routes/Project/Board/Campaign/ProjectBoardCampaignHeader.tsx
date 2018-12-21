@@ -246,8 +246,9 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
     @action
     private handleProjectBoardPermissionToggle = () => {
         if (!this.isEditMode) {
-            return ;
+            return;
         }
+
         this.approvedByBilling = !this.approvedByBilling;
     };
 
