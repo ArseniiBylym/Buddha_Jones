@@ -7,7 +7,7 @@ import { DateHandler } from 'helpers/DateHandler';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { TimeEntryActions } from 'actions';
 import { Tooltip } from 'components/Content';
-import {formatDate} from '../../../helpers/formatDate'
+import { formatDate } from '../../../helpers/formatDate';
 
 // Styles
 const s = require('./TimeEntryCalendarColumns.css');
@@ -45,7 +45,6 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
                     })}
                 >
                     {day.timeEntries.map((entry) => {
-                        console.log(entry)
                         // Add hours
                         hoursCount += entry.hours;
 

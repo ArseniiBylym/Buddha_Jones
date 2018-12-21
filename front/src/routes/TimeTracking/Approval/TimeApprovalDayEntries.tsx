@@ -38,7 +38,7 @@ export class TimeApprovalDayEntries extends React.Component<TimeApprovalDayEntri
                         entry.activityId !== TIME_ENTRY_LUNCH_BREAK_ACTIVITY_ID ? entry.durationInMinutes : 0;
 
                     return (
-                        <React.Fragment>
+                        <React.Fragment key={i}>
                         <TimeApprovalDayEntry
                             key={entry.entryId}
                             entry={entry}
@@ -46,8 +46,8 @@ export class TimeApprovalDayEntries extends React.Component<TimeApprovalDayEntri
                             now={this.props.now}
                             isEditable={this.props.areEditable ? true : false}
                             totalDayMinutesAfterEntry={totalBilledDayMinutesAfterEntry}
-                            />
-                            <hr/>
+                        />
+                        <hr/>
                         </React.Fragment>
                     );
                 })}

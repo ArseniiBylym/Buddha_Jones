@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as classNames from 'classnames';
 import * as dateFormat from 'date-fns/format';
 import * as dateAddMinutes from 'date-fns/add_minutes';
-import capitalize from 'lodash-es/capitalize';
+// import capitalize from 'lodash-es/capitalize';
 import { observer } from 'mobx-react';
 import { DateHandler } from 'helpers/DateHandler';
 import { TimeApprovalEntry } from 'types/timeApproval';
@@ -165,7 +165,7 @@ export class TimeApprovalDayEntry extends React.Component<TimeApprovalDayEntryPr
                                     key={key + '-' + tag.id}
                                     className={s.tag}
                                     // title={key === 'projectCampaign' ? 'Campaign' : capitalize(key)}
-                                    title=''
+                                    title=""
                                     isTitleDim={true}
                                     isTitleBold={false}
                                     otherLabels={[
