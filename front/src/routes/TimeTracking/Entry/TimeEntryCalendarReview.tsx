@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { computed, observable } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { TimeApprovalDayEntries, TimeApprovalDaySummary } from '../Approval';
 import { TimeApprovalEntry, TimeApprovalDayHoursSummary } from 'types/timeApproval';
@@ -12,6 +12,7 @@ import {
 } from 'types/timeEntry';
 import { Paragraph } from 'components/Content';
 import { ButtonSend } from 'components/Button';
+import { Modal } from '../../../components/Modals/index';
 
 // Styles
 const s = require('./TimeEntryCalendarReview.css');
@@ -28,6 +29,12 @@ interface TimeEntryCalendarReviewProps {
 export class TimeEntryCalendarReview extends React.Component<TimeEntryCalendarReviewProps, {}> {
     @observable private submittingForReview: boolean = false;
     @observable private submitError: boolean = false;
+    @observable private modalShow: boolean = false;
+
+    @action
+    private modalShowSwitch = () => {
+        this.modalShow = !this.modalShow;
+    }
 
     @computed
     private get OVERTIME_AFTER_X_MINUTES(): number {
@@ -123,7 +130,7 @@ export class TimeEntryCalendarReview extends React.Component<TimeEntryCalendarRe
                     </div>
                     <div>
                         <ButtonSend
-                            onClick={this.handleSubmitDayForReview}
+                            onClick={this.modalShowSwitch}
                             label={
                                 !this.submitError
                                     ? 'Submit day for review'
@@ -134,8 +141,36 @@ export class TimeEntryCalendarReview extends React.Component<TimeEntryCalendarRe
                         />
                     </div>
                 </div>
+                <Modal
+                    show={this.modalShow}
+                    title="Confirm"
+                    closeButton={false}
+                    type="alert"
+                    text="Time once submitted for review cannot be changed"
+                    actions={[
+                        {
+                            onClick: () => { this.modalButtonHandler(true); },
+                            closeOnClick: false,
+                            label: 'Confirm',
+                            type: 'default',
+                        },
+                        {
+                            onClick: () => { this.modalButtonHandler(false); },
+                            closeOnClick: false,
+                            label: 'Reject',
+                            type: 'alert',
+                        },
+                    ]}
+                />
             </div>
         );
+    }
+
+    private modalButtonHandler = (value: boolean) => {
+        this.modalShowSwitch();
+        if (value) {
+            this.handleSubmitDayForReview();
+        }
     }
 
     private handleAddNewEntryAction = () => {
