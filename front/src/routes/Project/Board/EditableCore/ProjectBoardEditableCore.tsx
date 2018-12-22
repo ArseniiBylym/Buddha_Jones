@@ -90,7 +90,7 @@ export class ProjectBoardEditableCore extends React.Component<ProjectBoardEditab
                                     this.props.userCanEditProjectReleaseDate
                                         ? 2
                                         : this.props.userCanEditProjectName || this.props.userCanEditProjectReleaseDate
-                                            ? 3
+                                            ? 2
                                             : 12
                                 }
                             >
@@ -102,7 +102,7 @@ export class ProjectBoardEditableCore extends React.Component<ProjectBoardEditab
                                 />
                             </Col>
                         )}
-                        {true && this.projectPrefix && (
+                        {true && (
                             <Col
                                 size={
                                     this.props.userCanEditProjectName &&
@@ -110,14 +110,14 @@ export class ProjectBoardEditableCore extends React.Component<ProjectBoardEditab
                                     this.props.userCanEditProjectReleaseDate
                                         ? 2
                                         : this.props.userCanEditProjectName || this.props.userCanEditProjectReleaseDate
-                                            ? 3
+                                            ? 2
                                             : 12
                                 }
                             >
                                 <Paragraph>Project prefix</Paragraph>
                                 <Input
                                     onChange={this.handleProjectNameOrCodeNameChange('prefix')}
-                                    value={this.projectPrefix}
+                                    value={this.projectPrefix ? this.projectPrefix : ''}
                                     label=""
                                 />
                             </Col>
@@ -130,7 +130,7 @@ export class ProjectBoardEditableCore extends React.Component<ProjectBoardEditab
                                     this.props.userCanEditProjectReleaseDate
                                         ? 2
                                         : this.props.userCanEditProjectName || this.props.projectCodeName
-                                            ? 3
+                                            ? 2
                                             : 12
                                 }
                             >
