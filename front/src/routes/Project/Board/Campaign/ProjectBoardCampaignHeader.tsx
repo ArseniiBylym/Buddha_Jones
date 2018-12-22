@@ -49,7 +49,6 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
     public render() {
         let userType: number = 0;
         if (this.props.store && this.props.store.user && this.props.store.user.data) {
-            console.log(this.props.store.user.data.typeId);
             userType = this.props.store.user.data.typeId;
         }
         return (

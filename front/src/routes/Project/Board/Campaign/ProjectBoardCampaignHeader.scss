@@ -70,12 +70,14 @@
         justify-content: flex-start;
     }
     .pendingLabel{
-        color: rgb(126, 117, 109);
-        font-size: 14px;
-        transform: translateY(-10px);
-        border: 1px solid rgb(126, 117, 109);
+        background-color: #d8c6b8;
+        color: Sienna;
+        font-size: 12px;
+        font-weight: 600;
+        transform: translateY(-15px);
+        // border: 1px solid rgb(126, 117, 109);
         border-radius: 3px;
-        padding: 0 5px;
+        padding: 0 3px;
         margin-left: 10px;
         
     }

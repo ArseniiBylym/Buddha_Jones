@@ -394,6 +394,7 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                             userCanView={this.userCanViewCreativeTeam}
                             userCanEdit={this.userCanEditCreativeTeam}
                             type="creative"
+                            withAnimation={true}
                             projectId={this.props.projectId}
                             projectCampaignId={this.props.campaign.projectCampaignId}
                             campaignId={this.props.campaign.campaignId}
