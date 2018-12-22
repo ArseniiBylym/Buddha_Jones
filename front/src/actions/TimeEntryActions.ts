@@ -642,11 +642,18 @@ export class TimeEntryActionsClass {
     @action
     public setEntryStartTime = (totalMinutes: number) => {
         if (TimeEntryStore.values !== null) {
+            const delta = totalMinutes - TimeEntryStore.values.startTimeInMinutes;
+            const newEndTime = TimeEntryStore.values.endTimeInMinutes + delta;
+
             if (totalMinutes >= TimeEntryStore.values.endTimeInMinutes) {
                 this.showErrorMessage(`Start time cannot be after end time`);
+            } else if ( newEndTime > 1440 ) {
+                this.showErrorMessage(`End time cannot be after end of the day`);
             } else {
+                
                 TimeEntryStore.values.isModified = true;
                 TimeEntryStore.values.startTimeInMinutes = totalMinutes;
+                TimeEntryStore.values.endTimeInMinutes = newEndTime;
             }
         }
     };
@@ -654,10 +661,17 @@ export class TimeEntryActionsClass {
     @action
     public setEntryEndTime = (totalMinutes: number) => {
         if (TimeEntryStore.values !== null) {
+            const delta = totalMinutes - TimeEntryStore.values.endTimeInMinutes;
+            const newStartTime = TimeEntryStore.values.startTimeInMinutes + delta;
+
             if (totalMinutes <= TimeEntryStore.values.startTimeInMinutes) {
                 this.showErrorMessage(`End time cannot be before start time`);
+            } else if (newStartTime < 0) {
+                this.showErrorMessage(`Start time cannot be less than start of the day`);
             } else {
+                
                 TimeEntryStore.values.isModified = true;
+                TimeEntryStore.values.startTimeInMinutes = newStartTime;
                 TimeEntryStore.values.endTimeInMinutes = totalMinutes;
             }
         }
