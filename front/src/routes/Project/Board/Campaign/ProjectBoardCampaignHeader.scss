@@ -69,6 +69,16 @@
         align-items: center;
         justify-content: flex-start;
     }
+    .pendingLabel{
+        color: rgb(126, 117, 109);
+        font-size: 14px;
+        transform: translateY(-10px);
+        border: 1px solid rgb(126, 117, 109);
+        border-radius: 3px;
+        padding: 0 5px;
+        margin-left: 10px;
+        
+    }
     
     .campaignRemoveButtonContainer {
         display: flex;
