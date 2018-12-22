@@ -645,9 +645,9 @@ export class TimeEntryActionsClass {
             const delta = totalMinutes - TimeEntryStore.values.startTimeInMinutes;
             const newEndTime = TimeEntryStore.values.endTimeInMinutes + delta;
 
-            if (totalMinutes >= TimeEntryStore.values.endTimeInMinutes) {
-                this.showErrorMessage(`Start time cannot be after end time`);
-            } else if ( newEndTime > 1440 ) {
+            // if (totalMinutes >= TimeEntryStore.values.endTimeInMinutes) {
+                // this.showErrorMessage(`Start time cannot be after end time`);
+            if ( newEndTime > 1440 ) {
                 this.showErrorMessage(`End time cannot be after end of the day`);
             } else {
                 
