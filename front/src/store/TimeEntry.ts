@@ -121,6 +121,20 @@ export class TimeEntry {
         }
     }
 
+    // public changeStartTimeReaction = reaction (
+    //         () => {
+    //             if (this.values) {
+    //                 return this.values.startTimeInMinutes;
+    //             } else {
+    //                 return null;
+    //             }
+    //         },
+    //         minutes => {
+    //             if (this.values && minutes) {
+    //             }
+    //         }
+    // );
+
     @computed
     public get endTimeInMinutes(): number {
         return this.values ? this.values.endTimeInMinutes : 0;

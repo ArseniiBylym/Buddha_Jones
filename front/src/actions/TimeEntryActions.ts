@@ -642,32 +642,44 @@ export class TimeEntryActionsClass {
     @action
     public setEntryStartTime = (totalMinutes: number) => {
         if (TimeEntryStore.values !== null) {
-            if (totalMinutes >= TimeEntryStore.values.endTimeInMinutes) {
-                this.showErrorMessage(`Start time cannot be after end time`);
-            } else {
+            const delta = totalMinutes - TimeEntryStore.values.startTimeInMinutes;
+            let newEndTime = TimeEntryStore.values.endTimeInMinutes + delta;
+
+            if ( newEndTime > 1440 ) {
+                newEndTime -= 720;
+                totalMinutes -= 720;
+            }
                 TimeEntryStore.values.isModified = true;
                 TimeEntryStore.values.startTimeInMinutes = totalMinutes;
-            }
+                TimeEntryStore.values.endTimeInMinutes = newEndTime;
         }
     };
 
     @action
     public setEntryEndTime = (totalMinutes: number) => {
         if (TimeEntryStore.values !== null) {
-            if (totalMinutes <= TimeEntryStore.values.startTimeInMinutes) {
-                this.showErrorMessage(`End time cannot be before start time`);
-            } else {
-                TimeEntryStore.values.isModified = true;
-                TimeEntryStore.values.endTimeInMinutes = totalMinutes;
+            const delta = totalMinutes - TimeEntryStore.values.endTimeInMinutes;
+            let newStartTime = TimeEntryStore.values.startTimeInMinutes + delta;
+
+            if (newStartTime < 0) {
+                newStartTime += 720;
+                totalMinutes += 720;
             }
+                TimeEntryStore.values.isModified = true;
+                TimeEntryStore.values.startTimeInMinutes = newStartTime;
+                TimeEntryStore.values.endTimeInMinutes = totalMinutes;
         }
     };
 
     @action
     public setEntryDuration = (duration: number) => {
         if (TimeEntryStore.values !== null) {
-            TimeEntryStore.values.isModified = true;
-            TimeEntryStore.values.endTimeInMinutes = TimeEntryStore.values.startTimeInMinutes + duration;
+            if (TimeEntryStore.values.startTimeInMinutes + duration > 1440) {
+                this.showErrorMessage(`End time cannot be after end of the day`);
+            } else {
+                TimeEntryStore.values.isModified = true;
+                TimeEntryStore.values.endTimeInMinutes = TimeEntryStore.values.startTimeInMinutes + duration;
+            }
         }
     };
 

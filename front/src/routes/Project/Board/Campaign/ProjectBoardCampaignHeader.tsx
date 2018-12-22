@@ -47,6 +47,10 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
     }
 
     public render() {
+        let userType: number = 0;
+        if (this.props.store && this.props.store.user && this.props.store.user.data) {
+            userType = this.props.store.user.data.typeId;
+        }
         return (
             <Row
                 innerRef={this.referenceHeaderContainer}
@@ -78,16 +82,20 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
                                     <Paragraph type="dim">
                                         {truncate(this.props.campaign.notes, { length: 64 })}
                                     </Paragraph>
-                                )}
+                                )
+                            }
+                            {userType !== 24 && !this.approvedByBilling && <span className={styles.pendingLabel}>pending</span>}
                         </Col>
-                        <Col className={styles.campaignIsApproved}>
-                            <span style={{paddingRight: '10px'}}>Is approved:</span>
-                            <Checkmark
-                                onClick={this.handleProjectBoardPermissionToggle}
-                                checked={this.approvedByBilling}
-                                type={'no-icon'}
-                            />
-                        </Col> 
+                        {userType === 24 &&
+                            <Col className={styles.campaignIsApproved}>
+                                <span style={{paddingRight: '10px'}}>Is approved:</span>
+                                <Checkmark
+                                    onClick={this.handleProjectBoardPermissionToggle}
+                                    checked={this.approvedByBilling}
+                                    type={'no-icon'}
+                                />
+                            </Col> 
+                        }
                         <Col className={styles.campaignRemoveButtonContainer}>
                             {
                                 !this.isEditMode &&

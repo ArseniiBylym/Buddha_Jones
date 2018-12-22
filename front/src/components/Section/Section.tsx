@@ -20,6 +20,7 @@ interface Props {
     noSeparator?: boolean;
     removeTitleGutter?: boolean;
     removeTitleMargins?: boolean;
+    collapseButton?: JSX.Element | null;
     headerElements?: SectionElement[];
 }
 
@@ -51,12 +52,13 @@ export class Section extends React.Component<Props, {}> {
                         removeMargins={this.props.removeTitleMargins}
                     >
                         {(this.props.title || this.props.subTitle) && (
-                            <Col className={'sectionHeaderTitle'}>
+                            <Col className={classNames('sectionHeaderTitle', {'withFlex': !!this.props.collapseButton})}>
                                 <h3>
                                     <strong>{this.props.title}</strong>
                                     {this.props.title && this.props.subTitle && <em> — </em>}
                                     <span>{this.props.subTitle + ':'}</span>
                                 </h3>
+                                {this.props.collapseButton}
                             </Col>
                         )}
 

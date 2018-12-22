@@ -13,7 +13,7 @@ import { Paragraph } from 'components/Content';
 import { ButtonSend, ButtonAdd, ButtonClose } from 'components/Button';
 import { ProjectPicker, ProjectPickerValues } from 'components/Buddha';
 import { TableRow, Table, TableCell } from 'components/Table';
-import { DurationPicker } from 'components/Calendar';
+// import { DurationPicker } from 'components/Calendar';
 import { BottomBar } from 'components/Layout';
 import { TimeEntryUserWithType } from 'types/timeEntry';
 import TextAreaFile from '../../../components/Form/TextAreaFile';
@@ -178,10 +178,11 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                     header={[
                         { title: 'Filename', align: 'left' },
                         { title: 'Description', align: 'left' },
-                        { title: 'Duration', align: 'center' },
+                        // { title: 'Duration', align: 'center' },
                         { title: 'Remove', align: 'right' },
                     ]}
-                    columnsWidths={['200px', '366px', '128px', '92px']}
+                    // columnsWidths={['200px', '366px', '128px', '92px']}
+                    columnsWidths={['200px', '494px', '92px']}
                 >
                     {timeEntry.values &&
                     timeEntry.values.files.map((file, fileIndex) => (
@@ -202,14 +203,14 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                                     onChange={this.handleFileChangeText('description', fileIndex)}
                                 />
                             </TableCell>
-                            <TableCell>
+                            {/* <TableCell>
                                 <DurationPicker
                                     className={styles.fileDuration}
                                     onChange={this.handleFileWorkDurationChange(fileIndex)}
                                     totalMinutesValue={file.durationInMinutes}
                                     increments={timeEntry.durationIncrements}
                                 />
-                            </TableCell>
+                            </TableCell> */}
                             <TableCell align="right">
                                 <ButtonClose
                                     onClick={this.handleFileRemove(fileIndex)}
@@ -458,14 +459,14 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
         );
     };
 
-    private handleFileWorkDurationChange = (fileIndex: number) => (totalTimeInMinutes: number) => {
-        TimeEntryActions.setFileDetails(
-            {
-                durationInMinutes: totalTimeInMinutes,
-            },
-            fileIndex
-        );
-    };
+    // private handleFileWorkDurationChange = (fileIndex: number) => (totalTimeInMinutes: number) => {
+    //     TimeEntryActions.setFileDetails(
+    //         {
+    //             durationInMinutes: totalTimeInMinutes,
+    //         },
+    //         fileIndex
+    //     );
+    // };
 
     private handleFileAdd = () => {
         if (this.state.textareaValue) {

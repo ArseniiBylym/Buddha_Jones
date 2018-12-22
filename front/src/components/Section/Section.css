@@ -29,6 +29,12 @@
   }
 }
 
+:global(.withFlex){
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+
 :global(.sectionElements) {
   text-align: right;
 

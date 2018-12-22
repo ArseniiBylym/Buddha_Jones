@@ -300,24 +300,21 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                                 />
                             )}
 
-                            {this.props.showSeparator && <hr className={s.endSeparator}/>}
                         </Col>
                     </Row>
 
                     <Row className={s.campaignSpotVersions}>
                         {this.props.userCanViewNumberOfRevisionsAndVersions &&
                         spot.versions.length > 0 && (
-                            <React.Fragment>
-                                <Button
-                                    onClick={this.handleVersionExpandOrCollapse}
-                                    label={ProjectBoardSpot.getVersionNameButtonLabel()}
-                                    icon={this.getVersionNameButtonIcon()}
-                                />
-
-                                <hr className={s.separator}/>
-                            </React.Fragment>
+                            <Button
+                                onClick={this.handleVersionExpandOrCollapse}
+                                label={ProjectBoardSpot.getVersionNameButtonLabel()}
+                                icon={this.getVersionNameButtonIcon()}
+                            />
                         )}
                     </Row>
+
+                    {this.props.showSeparator && <hr className={s.endSeparator}/>}
 
                     <AnimateHeight height={(this.isVersionsVisible) ? 'auto' : 0} duration={500}>
                         {this.props.userCanViewNumberOfRevisionsAndVersions &&
