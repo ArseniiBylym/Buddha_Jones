@@ -116,10 +116,29 @@ export class TimeEntry {
     }
 
     public set startTimeInMinutes(time: number) {
+        console.log('time - ', time);
         if (this.values) {
+            console.log('start time -', this.values.startTimeInMinutes);
+            console.log('end time -', this.values.endTimeInMinutes);
             this.values.startTimeInMinutes = time;
         }
     }
+
+    public changeStartTimeReaction = reaction (
+            () => {
+                if (this.values) {
+                    return this.values.startTimeInMinutes;
+                } else {
+                    return null;
+                }
+            },
+            minutes => {
+                if (this.values && minutes) {
+                    console.log(minutes) 
+                    this.values.endTimeInMinutes = this.values.startTimeInMinutes + 180;
+                }
+            }
+    );
 
     @computed
     public get endTimeInMinutes(): number {
