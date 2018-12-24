@@ -978,4 +978,110 @@ class SpotRepository extends EntityRepository
 
         return $maxRequestId;
     }
+
+    public function getSpotSentListTree() {
+        $dql = "SELECT 
+                    ss.projectId,
+                    p.projectName,
+                    std.id AS studioId,
+                    std.studioName,
+                    ss.campaignId,
+                    c.campaignName,
+                    cu.id AS customerId,
+                    cu.customerName,
+                    ss.projectCampaignId,
+                    ss.spotId,
+                    s.spotName,
+                    ss.versionId,
+                    v.versionName,
+                    ss.id AS spotSentId,
+                    ss.requestId AS spotSentRequestId
+                FROM \Application\Entity\RediSpotSent ss
+                LEFT JOIN \Application\Entity\RediProject p 
+                    WITH p.id = ss.projectId
+                LEFT JOIN \Application\Entity\RediCampaign c 
+                    WITH c.id = ss.campaignId
+                LEFT JOIN \Application\Entity\RediSpot s 
+                    WITH s.id = ss.spotId
+                LEFT JOIN \Application\Entity\RediVersion v 
+                    WITH v.id = ss.versionId
+                LEFT JOIN \Application\Entity\RediStudio std
+                    WITH p.studioId = std.id
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
+                    WITH ss.projectCampaignId = ptc.id
+                LEFT JOIN \Application\Entity\RediCustomer cu
+                    WITH cu.id = ptc.customerId
+                WHERE ss.billId IS NULL
+                    AND ss.projectId IS NOT NULL
+                    AND ss.campaignId IS NOT NULL
+                GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId
+                ORDER BY p.projectName ASC , c.campaignName ASC";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getArrayResult();
+
+
+        $response = array();
+
+        foreach ($result as $row) {
+            if (empty($response[$row['projectId']])) {
+                $response[$row['projectId']] = array(
+                    'projectId' => (int)$row['projectId'],
+                    'projectName' => $row['projectName'],
+                    'studioId' => (int)$row['studioId'],
+                    'studioName' => $row['studioName'],
+                    'campaign' => array(),
+                );
+            }
+
+            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']])) {
+                $response[$row['projectId']]['campaign'][$row['campaignId']] = array(
+                    'campaignId' => (int)$row['campaignId'],
+                    'campaignName' => $row['campaignName'],
+                    'projectCampaignId' => (int)$row['projectCampaignId'],
+                    'customerId' => (int)$row['customerId'],
+                    'customerName' => $row['customerName'],
+                    'spot' => array(),
+                );
+            }
+
+            if (empty($row['spotId'])) {
+                continue;
+            }
+
+            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']])) {
+                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']] = array(
+                    'spotId' => (int)$row['spotId'],
+                    'spotName' => $row['spotName'],
+                    'spotSentId' => (int)$row['spotSentId'],
+                    'spotSentRequestId' => (int)$row['spotSentRequestId'],
+                    'version' => array(),
+                );
+            }
+
+            if (empty($row['versionId'])) {
+                continue;
+            }
+
+            $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']]['version'][] = array(
+                'versionId' => $row['versionId'],
+                'versionName' => $row['versionName'],
+            );
+        }
+
+        $response = array_values(array_map(function ($project) {
+            $project['campaign'] = array_values(array_map(function ($campaign) {
+                $campaign['spot'] = array_values(array_map(function ($spot) {
+                    $spot['version'] = array_values($spot['version']);
+                    return $spot;
+                }, $campaign['spot']));
+
+                return $campaign;
+            }, $project['campaign']));
+
+            return $project;
+        }, $response));
+
+        return $response;
+    }
 }
