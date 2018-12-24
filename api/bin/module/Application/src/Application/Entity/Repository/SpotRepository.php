@@ -704,7 +704,8 @@ class SpotRepository extends EntityRepository
         return $result;
     }
 
-    public function deleteSpotSentFileByRequestId($requestId) {
+    public function deleteSpotSentFileByRequestId($requestId)
+    {
         $dql1 = "DELETE
                 FROM \Application\Entity\RediSpotSentFile s
                 WHERE s.spotSentId IN (
@@ -848,7 +849,7 @@ class SpotRepository extends EntityRepository
         return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
     }
 
-    public function getSpotSentOption($key = null)
+    public function getSpotSentOption($key = null, $asIdHash = false)
     {
         $dql = "SELECT 
                   sso.value
@@ -873,7 +874,24 @@ class SpotRepository extends EntityRepository
             }
         }
 
+        if ($asIdHash) {
+            $response = $this->getSpotSentOptionAsIdHash($response);
+        }
+
         return $response;
+    }
+
+    public function getSpotSentOptionAsIdHash($arr)
+    {
+        $result = array();
+
+        foreach ($arr as $row) {
+            if (!empty($row['id'])) {
+                $result[$row['id']] = $row;
+            }
+        }
+
+        return $result;
     }
 
     public function getAllFinishingHouse()
@@ -979,7 +997,8 @@ class SpotRepository extends EntityRepository
         return $maxRequestId;
     }
 
-    public function getSpotSentListTree() {
+    public function getSpotSentListTree()
+    {
         $dql = "SELECT 
                     ss.projectId,
                     p.projectName,
@@ -995,7 +1014,14 @@ class SpotRepository extends EntityRepository
                     ss.versionId,
                     v.versionName,
                     ss.id AS spotSentId,
-                    ss.requestId AS spotSentRequestId
+                    ss.requestId AS spotSentRequestId,
+                    ss.spotSentDate,
+                    ss.lineStatusId AS spotLineStatusId,
+                    ss.graphicsStatusId,
+                    s.trtId,
+                    trt.runtime,
+                    ss.hasGraphics,
+                    ss.resend
                 FROM \Application\Entity\RediSpotSent ss
                 LEFT JOIN \Application\Entity\RediProject p 
                     WITH p.id = ss.projectId
@@ -1011,6 +1037,8 @@ class SpotRepository extends EntityRepository
                     WITH ss.projectCampaignId = ptc.id
                 LEFT JOIN \Application\Entity\RediCustomer cu
                     WITH cu.id = ptc.customerId
+                LEFT JOIN \Application\Entity\RediTrt trt
+                    WITH trt.id = s.trtId
                 WHERE ss.billId IS NULL
                     AND ss.projectId IS NOT NULL
                     AND ss.campaignId IS NOT NULL
@@ -1019,9 +1047,11 @@ class SpotRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery($dql);
         $result = $query->getArrayResult();
-
-
         $response = array();
+
+        $statusOptions = $this->getSpotSentOption('status', true);
+        $graphicsStatusOptions = $this->getSpotSentOption('graphics_status', true);
+        $userRepo = new UsersRepository($this->_entityManager);
 
         foreach ($result as $row) {
             if (empty($response[$row['projectId']])) {
@@ -1050,29 +1080,64 @@ class SpotRepository extends EntityRepository
             }
 
             if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']])) {
+                $status = (!empty($statusOptions[$row['spotLineStatusId']])) ? $statusOptions[$row['spotLineStatusId']]['name'] : null;
+                $graphicsStatus = (!empty($graphicsStatusOptions[$row['graphicsStatusId']])) ? $graphicsStatusOptions[$row['graphicsStatusId']]['name'] : null;
+
+                if ($row['hasGraphics'] === null) {
+                    if ($row['graphicsStatusId'] == 2) {
+                        $graphicsStatus = 'EDL Requested';
+                    }
+
+                    if ($row['graphicsStatusId'] == 3) {
+                        $graphicsStatus = 'EDL Exported';
+                    }
+                } else {
+                    if ($row['hasGraphics'] === 0 && $row['graphicsStatusId'] == 4) {
+                        $graphicsStatus = 'No Graphics';
+                    }
+
+                    if ($row['hasGraphics'] === 1) {
+                        if ($row['resend'] == 0 && $row['graphicsStatusId'] == 4) {
+                            $graphicsStatus = 'Ready to Bill';
+                        }
+
+                        if ($row['hasGraphics'] === 1 && $row['resend'] == 1 && $row['graphicsStatusId'] == 4) {
+                            $graphicsStatus = 'All Resend';
+                        }
+                    }
+                }
+
                 $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']] = array(
                     'spotId' => (int)$row['spotId'],
                     'spotName' => $row['spotName'],
-                    'spotSentId' => (int)$row['spotSentId'],
+                    // 'spotSentId' => (int)$row['spotSentId'],
                     'spotSentRequestId' => (int)$row['spotSentRequestId'],
-                    'version' => array(),
+                    'spotLineStatusId' => $row['spotLineStatusId'],
+                    'spotLineStatus' => $status,
+                    'graphicsStatusId' => $row['graphicsStatusId'],
+                    'graphicsStatus' => $graphicsStatus,
+                    'spotSentDate' => $row['spotSentDate'],
+                    'trtId' => $row['trtId'],
+                    'runtime' => $row['runtime'],
+                    'versionId' => $row['versionId'],
+                    'versionName' => $row['versionName'],
+                    'producers' => $userRepo->getCreativeUsersFromProjectCampaignByRole($row['projectCampaignId'], array(1, 2, 3)),
                 );
             }
 
-            if (empty($row['versionId'])) {
-                continue;
-            }
+            // if (empty($row['versionId'])) {
+            //     continue;
+            // }
 
-            $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']]['version'][] = array(
-                'versionId' => $row['versionId'],
-                'versionName' => $row['versionName'],
-            );
+            // $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']]['version'][] = array(
+                
+            // );
         }
 
         $response = array_values(array_map(function ($project) {
             $project['campaign'] = array_values(array_map(function ($campaign) {
                 $campaign['spot'] = array_values(array_map(function ($spot) {
-                    $spot['version'] = array_values($spot['version']);
+                    // $spot['version'] = array_values($spot['version']);
                     return $spot;
                 }, $campaign['spot']));
 
