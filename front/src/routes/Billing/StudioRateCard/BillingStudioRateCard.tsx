@@ -174,7 +174,6 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
                     )}
                     {!this.addNew && !this.getStudioRateCardData.rateCard.loading && this.getStudioRateCardData.selectedRateCardId !== null && (
                         <ButtonAdd
-                            className={styles.rateCardAddButton}
                             label="New Activity"
                             labelOnLeft={true}
                             float="right"
