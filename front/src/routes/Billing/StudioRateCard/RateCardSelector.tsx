@@ -64,19 +64,6 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
                     </DropdownContainer>
                 }
                 {
-                    !this.getStudioRateCardData.rateCardTypes.loading && <ButtonAdd
-                        className={styles.rateCardAddButton}
-                        label=""
-                        labelOnLeft={true}
-                        float="left"
-                        isWhite={true}
-                        labelSize="small"
-                        labelColor="black"
-                        onClick={this.handleAddNewRate}
-                        adding={false}
-                    />
-                }
-                {
                     this.getStudioRateCardData.selectedRateCardLabel !== '' && <ButtonEdit
                         onClick={this.handleRateAdd}
                         label=""
@@ -92,6 +79,19 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
                         labelOnLeft={false}
                         float="right"
                         iconBackground="none"
+                    />
+                }
+                {
+                    !this.getStudioRateCardData.rateCardTypes.loading && <ButtonAdd
+                        className={styles.rateCardAddButton}
+                        label=""
+                        labelOnLeft={true}
+                        float="left"
+                        isWhite={true}
+                        labelSize="small"
+                        labelColor="black"
+                        onClick={this.handleAddNewRate}
+                        adding={false}
                     />
                 }
                 <AddRateModal
@@ -123,13 +123,13 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
     };
 
     private handleRateAdd = () => {
-        this.isModalOpened = true;
         this.modalMode = 'edit';
+        this.isModalOpened = true;
     };
 
     private handleAddNewRate = () => {
-        this.isModalOpened = true;
         this.modalMode = 'new';
+        this.isModalOpened = true;
     };
 
     private closeModal = () => {
