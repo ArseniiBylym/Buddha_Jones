@@ -1,15 +1,26 @@
 import { API, APIPath } from '../fetch';
 import { action } from 'mobx';
 import { SpotSentStore } from '../store/AllStores';
+import { CampaignPeopleActions } from 'actions';
 import {
     FinishingHouseOptionsFromApi,
     SpotSentAllSpotsSentFromApi,
     SpotSentAllSpotsSentSpotData,
-    SpotSentAllSpotsSentSpotDataFromApi, SpotSentDetailsFromApi, SpotSentDetailsSpotDataFromApi, SpotSentFromApi,
-    SpotSentOptionsFromApi
+    SpotSentAllSpotsSentSpotDataFromApi,
+    SpotSentDetailsFromApi,
+    SpotSentDetailsSpotDataFromApi,
+    SpotSentFromApi,
+    SpotSentOptionsFromApi,
 } from '../types/spotSent';
 import { DateHandler } from '../helpers/DateHandler';
-import { SpotSentValueForSubmit } from '../routes/SpotSent/Producer/Form/ProducerSpotSentForm';
+import { ProjectPickerSections } from '../components/Buddha';
+import { ClientContact } from '../types/clients';
+import {
+    SpotSentValueForSubmit,
+    SpotSentValueParentChildForSubmit,
+    SpotSentVersionForSubmit
+} from '../types/spotSentForm';
+import { ToggleSideContent } from '../components/Form';
 
 export class SpotSentActionsClass {
 
@@ -258,4 +269,256 @@ export class SpotSentActionsClass {
         }
     };
 
+    @action
+    public handleDateChange = (date: Date | null) => {
+        if (date !== null) {
+            SpotSentStore.spotSentDetails.deadline = date;
+        }
+    };
+
+    @action
+    public handleProjectChange = (values, isEditMode: boolean) => {
+        if (values && values.project && values.project.id && values.project.name) {
+            SpotSentStore.spotSentDetails.project_id = values.project.id;
+            SpotSentStore.spotSentDetails.project_name = values.project.name;
+            if (!isEditMode) {
+                SpotSentStore.spotSentDetails.spot_version = [this.defaultSpotElement];
+            }
+        } else {
+            SpotSentStore.spotSentDetails.project_id = null;
+            SpotSentStore.spotSentDetails.project_name = null;
+        }
+    };
+
+    @action
+    public handleSpotResendToggle = (spotIndex: number, checked: boolean) => {
+        (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_resend = checked ? 1 : 0;
+    };
+
+    @action
+    public handleFinishingRequestToggle = (spotIndex: number, checked: boolean) => {
+        (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).finish_request = checked ? 1 : 0;
+    };
+
+    @action
+    public handleSentToAdd = (customer: ClientContact): void => {
+        if (customer && customer.id && SpotSentStore.spotSentDetails.customer_contact) {
+            (SpotSentStore.spotSentDetails.customer_contact as ClientContact[]).push(customer);
+        }
+    };
+
+    @action
+    public handleSentToRemove = (index: number): void => {
+        if (index > -1 && SpotSentStore.spotSentDetails.customer_contact && SpotSentStore.spotSentDetails.customer_contact[index]) {
+            (SpotSentStore.spotSentDetails.customer_contact as ClientContact[]).splice(index, 1);
+        }
+    };
+
+    @action
+    public handleSpotRemove = (currentSpotIndex: number) => {
+        SpotSentStore.spotSentDetails.spot_version = [
+            ...(SpotSentStore.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).slice(0, currentSpotIndex),
+            ...(SpotSentStore.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).slice(currentSpotIndex + 1)
+        ];
+    };
+
+    @action
+    public handleCreateSpot = () => {
+        (SpotSentStore.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).push(this.defaultSpotElement);
+    };
+
+    @action
+    public handleSpotChange = (spotIndex: number, values, type?: ProjectPickerSections) => {
+        if (type) {
+            switch (type) {
+                case ProjectPickerSections.projectCampaign:
+                    if (values && values.projectCampaign) {
+                        if (values.projectCampaign.campaignId) {
+                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).campaign_id = values.projectCampaign.campaignId;
+                        }
+                        if (values.projectCampaign.id) {
+                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).project_campaign_id = values.projectCampaign.id;
+                        }
+                        if (values.projectCampaign.name) {
+                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).campaign_name = values.projectCampaign.name;
+                        }
+                        CampaignPeopleActions.fetchEditorsFromProjectCampaign(values.projectCampaign.id);
+                    }
+                    break;
+                case ProjectPickerSections.spot:
+                    if (values && values.spot) {
+                        if (values.spot.id) {
+                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_id = values.spot.id;
+                        }
+                        if (values.spot.name) {
+                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_name = values.spot.name;
+                        }
+                    }
+                    break;
+                case ProjectPickerSections.version:
+                    if (values && values.version) {
+                        if (values.version.id) {
+                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = values.version.id;
+                        }
+                        if (values.version.name) {
+                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = values.version.name;
+                        }
+                    }
+                    break;
+                case ProjectPickerSections.clear:
+                    this.dropSpotVersion(spotIndex);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    @action
+    public dropSpotVersion = (ind: number) => {
+        (SpotSentStore.spotSentDetails.spot_version[ind] as SpotSentVersionForSubmit).project_campaign_id = null;
+        (SpotSentStore.spotSentDetails.spot_version[ind] as SpotSentVersionForSubmit).campaign_id = null;
+        (SpotSentStore.spotSentDetails.spot_version[ind] as SpotSentVersionForSubmit).campaign_name = '';
+        (SpotSentStore.spotSentDetails.spot_version[ind] as SpotSentVersionForSubmit).spot_id = null;
+        (SpotSentStore.spotSentDetails.spot_version[ind] as SpotSentVersionForSubmit).spot_name = '';
+        (SpotSentStore.spotSentDetails.spot_version[ind] as SpotSentVersionForSubmit).version_id = null;
+        (SpotSentStore.spotSentDetails.spot_version[ind] as SpotSentVersionForSubmit).version_name = '';
+        (SpotSentStore.spotSentDetails.spot_version[ind] as SpotSentVersionForSubmit).editors = [];
+    };
+
+    @action
+    public handleSentViaMethodsChange = (spotIndex: number, method: number) => {
+        const sentViaMethod: number[] = ((SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).sent_via_method as number[]);
+        if (sentViaMethod.includes(method)) {
+            const i: number = sentViaMethod.indexOf(method);
+            if (i !== -1) {
+                ((SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).sent_via_method as number[]).splice(i, 1);
+            }
+        } else if (!sentViaMethod.includes(method)) {
+            ((SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).sent_via_method as number[]).push(method);
+        }
+    };
+
+    @action
+    public handleSpotAddingEditor = (spotIndex: number, userId: number) => {
+        if ((SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).editors.indexOf(userId) === -1) {
+            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).editors.push(userId);
+        }
+    };
+
+    @action
+    public handleSpotRemovingEditor = (spotIndex: number, editorIndex: number) => {
+        if (editorIndex > -1 && (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).editors[editorIndex]) {
+            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).editors.splice(editorIndex, 1);
+        }
+    };
+
+    @action
+    public handleFinishAccept = (spotIndex: number, checked: boolean) => () => {
+        const currentVersion = SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit;
+        currentVersion.finish_accept = checked ? 1 : 0;
+        (SpotSentStore.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).splice(spotIndex, 1, currentVersion);
+    };
+
+    @action
+    public handleProdAccept = (spotIndex: number, checked: boolean) => {
+        const currentVersion = SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit;
+        currentVersion.prod_accept = checked ? 1 : 0;
+        (SpotSentStore.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).splice(spotIndex, 1, currentVersion);
+    };
+
+    @action
+    public handleFinalToggle = (checked: boolean) => {
+        SpotSentStore.spotSentDetails.status = (checked) ? 2 : 1;
+    };
+
+    @action
+    public handleTextChange = (param: string, e) => {
+        SpotSentStore.spotSentDetails[param] = e.target.value;
+    };
+
+    @action
+    public resetFinishRequestForm = (): void => {
+        SpotSentStore.spotSentDetails.full_lock = 0;
+        SpotSentStore.spotSentDetails.notes = '';
+        SpotSentStore.spotSentDetails.finishing_house = null;
+        SpotSentStore.spotSentDetails.finishing_house_name = null;
+        SpotSentStore.spotSentDetails.deadline = null;
+        SpotSentStore.spotSentDetails.gfx_finish = 0;
+        SpotSentStore.spotSentDetails.music_cue_sheet = 0;
+        SpotSentStore.spotSentDetails.audio_prep = 0;
+        SpotSentStore.spotSentDetails.video_prep = 0;
+        SpotSentStore.spotSentDetails.graphics_finish = 0;
+        SpotSentStore.spotSentDetails.framerate = null;
+        SpotSentStore.spotSentDetails.framerate_note = '';
+        SpotSentStore.spotSentDetails.raster_size = null;
+        SpotSentStore.spotSentDetails.raster_size_note = '';
+        SpotSentStore.spotSentDetails.spec_note = '';
+        SpotSentStore.spotSentDetails.spec_sheet_file = null;
+        SpotSentStore.spotSentDetails.tag_chart = '';
+        SpotSentStore.spotSentDetails.delivery_to_client = null;
+        SpotSentStore.spotSentDetails.delivery_note = '';
+        SpotSentStore.spotSentDetails.audio = [];
+        SpotSentStore.spotSentDetails.audio_note = '';
+        SpotSentStore.spotSentDetails.customer_contact = [];
+    };
+
+    @action
+    public handleTogglingRequest = (_isSetToRight: boolean, selectedSideContent: ToggleSideContent) => {
+        SpotSentStore.spotSentDetails.finish_option = {
+            parent: (selectedSideContent.value as number),
+            child: 1
+        };
+        this.resetFinishRequestForm();
+    };
+
+    @action
+    public handleExistingFinishingHouseSelected = (finishingHouse: { id: number; name: string }) => {
+        SpotSentStore.spotSentDetails.finishing_house = finishingHouse.id;
+        SpotSentStore.spotSentDetails.finishing_house_name = finishingHouse.name;
+    };
+
+    @action
+    public handleFinishingTypeCheckmarkSelect = (param: string): void => {
+        if (SpotSentStore.spotSentDetails[param] === 0) {
+            SpotSentStore.spotSentDetails[param] = 1;
+        } else {
+            SpotSentStore.spotSentDetails[param] = 0;
+        }
+    };
+
+    @action
+    public handleFinishingTypeChildSelect = (finishingOptionChildId: number | null): void => {
+        if (SpotSentStore.spotSentDetails.finish_option) {
+            (SpotSentStore.spotSentDetails.finish_option as SpotSentValueParentChildForSubmit).child = finishingOptionChildId as number;
+        }
+    };
+
+    @action
+    public handleAudioCheck = (audio) => {
+        if (SpotSentStore.spotSentDetails.audio && SpotSentStore.spotSentDetails.audio.includes(audio.id)) {
+            let i: number = SpotSentStore.spotSentDetails.audio.indexOf(audio.id);
+            if (i !== -1) {
+                SpotSentStore.spotSentDetails.audio.splice(i, 1);
+            }
+        } else if (SpotSentStore.spotSentDetails.audio && !SpotSentStore.spotSentDetails.audio.includes(audio.id)) {
+            SpotSentStore.spotSentDetails.audio.push(audio.id);
+        }
+    }
+
+    private get defaultSpotElement(): SpotSentVersionForSubmit {
+        return {
+            campaign_id: null,
+            project_campaign_id: null,
+            spot_id: null,
+            version_id: null,
+            editors: [],
+            spot_resend: 0,
+            finish_request: 0,
+            line_status_id: null,
+            sent_via_method: [],
+            finish_accept: 0,
+            prod_accept: 0,
+        };
+    }
 }

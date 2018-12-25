@@ -42,6 +42,6 @@ export const ProjectPermissionsActions = new ProjectPermissionsActionsClass();
 export const ActivitiesActions = new ActivitiesActionsClass();
 export const TimeEntryActions = new TimeEntryActionsClass();
 export const TimeApprovalActions = new TimeApprovalActionsClass();
-export const SpotSentActions = new SpotSentActionsClass();
 export const ChannelsActions = new ChannelsActionsClass();
 export const StudioRateCardActions = new StudioRateCardActionsClass();
+export const SpotSentActions = new SpotSentActionsClass();
