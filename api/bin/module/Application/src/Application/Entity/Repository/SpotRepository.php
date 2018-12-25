@@ -189,6 +189,7 @@ class SpotRepository extends EntityRepository
                 // "editor",
                 "customerContact",
                 "spotSentType",
+                "allGraphicsResend",
                 "createdBy",
                 "updatedBy",
                 "createdAt",
@@ -511,6 +512,7 @@ class SpotRepository extends EntityRepository
     {
         $dql = "SELECT 
                     sc.id AS spotSentId,
+                    sc.requestId,
                     sc.campaignId,
                     ca.campaignName,
                     sc.projectCampaignId,
@@ -525,6 +527,7 @@ class SpotRepository extends EntityRepository
                     sc.prodAccept,
                     sc.finishAccept,
                     sc.lineStatusId,
+                    sc.graphicsStatusId,
                     sc.editor,
                     s.trtId,
                     trt.runtime,
@@ -546,14 +549,16 @@ class SpotRepository extends EntityRepository
 
         $result = $query->getArrayResult();
 
-        foreach ($result as &$row) {
+        $result = array_map(function($row) {
             $row['campaignId'] = (int)$row['campaignId'];
             $row['projectCampaignId'] = (int)$row['projectCampaignId'];
             $row['spotId'] = (int)$row['spotId'];
             $row['versionId'] = (int)$row['versionId'];
             $row['spotVersionId'] = (int)$row['spotVersionId'];
             $row['lineStatusId'] = (int)$row['lineStatusId'];
-        }
+
+            return $row;
+        }, $result);
 
         return $result;
     }
@@ -1097,11 +1102,11 @@ class SpotRepository extends EntityRepository
                     }
 
                     if ($row['hasGraphics'] === 1) {
-                        if ($row['resend'] == 0 && $row['graphicsStatusId'] == 4) {
+                        if ($row['all_graphics_resend'] == 0 && $row['graphicsStatusId'] == 4) {
                             $graphicsStatus = 'Ready to Bill';
                         }
 
-                        if ($row['hasGraphics'] === 1 && $row['resend'] == 1 && $row['graphicsStatusId'] == 4) {
+                        if ($row['all_graphics_resend'] == 1 && $row['graphicsStatusId'] == 4) {
                             $graphicsStatus = 'All Resend';
                         }
                     }
