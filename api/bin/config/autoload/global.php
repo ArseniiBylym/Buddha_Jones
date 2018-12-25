@@ -45,9 +45,16 @@ return array(
     ),
    
     'directory_path' => array(
-        'profile_image' => getcwd() . '/public/thumb/profile_image/',
-        'temp_profile_image' => getcwd() . '/data/temp_profile_image/',
-        'spot_sent_spec_sheet' => getcwd() . '/public/spec_sheet/',
+        'profile_image' => getcwd() . '/public/file/thumb/profile_image/',
+        'temp_profile_image' => getcwd() . '/data/file/temp_profile_image/',
+        'spot_sent_spec_sheet' => getcwd() . '/public/file/spec_sheet/',
+        'ratecard' => getcwd() . '/public/file/ratecard/',
+    ),
+    'file_path_suffix' => array(
+        'profile_image' => 'file/thumb/profile_image/',
+        'temp_profile_image' => 'file/temp_profile_image/',
+        'spot_sent_spec_sheet' => 'file/spec_sheet/',
+        'ratecard' => 'file/ratecard/',
     ),
     'site_url' => 'http://buddhajonesapi.localhost/',
     'email' => array(

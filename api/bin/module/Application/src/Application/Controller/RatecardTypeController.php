@@ -61,6 +61,7 @@ class RatecardTypeController extends CustomAbstractActionController
             $studioId = $this->_commonRepo->filterPostData($data, 'studio_id', 'int');
             $ratecardName = $this->_commonRepo->filterPostData($data, 'ratecard_name', 'string');
             $ratecardNote = $this->_commonRepo->filterPostData($data, 'ratecard_note', 'string');
+            $file = $this->_commonRepo->filterPostData($data, 'file', 'string');
 
             if ($studioId && $ratecardName) {
                 $studio = $this->_studioRepository->find($studioId);
@@ -79,8 +80,12 @@ class RatecardTypeController extends CustomAbstractActionController
                     $this->_em->persist($ratecardType);
                     $this->_em->flush();
 
-                // insert rows in studioRateCard for existing activity 
+                    // insert rows in studioRateCard for existing activity 
                     $this->_activityRepo->populateStudioRatecardByRatecard($ratecardType->getRatecardId());
+
+                    if ($file) {
+                        $this->_saveRatecardFile($ratecardType->getRatecardId(), $file);
+                    }
 
                     $data = $this->_activityRepo->getRatecardType($studioId);
 
@@ -110,6 +115,7 @@ class RatecardTypeController extends CustomAbstractActionController
         $studioId = $this->_commonRepo->filterPostData($data, 'studio_id', 'int');
         $ratecardName = $this->_commonRepo->filterPostData($data, 'ratecard_name', 'string');
         $ratecardNote = $this->_commonRepo->filterPostData($data, 'ratecard_note', 'string');
+        $file = $this->_commonRepo->filterPostData($data, 'file', 'string');
 
         try {
             $ratecardType = $this->_ratecardTypeRepository->find($id);
@@ -136,8 +142,13 @@ class RatecardTypeController extends CustomAbstractActionController
                 $ratecardType->setRatecardNote($ratecardNote);
             }
 
+
             $this->_em->persist($ratecardType);
             $this->_em->flush();
+
+            if ($file) {
+                $this->_saveRatecardFile($id, $file);
+            }
 
             $data = $this->_activityRepo->getRatecardType($ratecardType->getStudioId());
 
@@ -195,4 +206,42 @@ class RatecardTypeController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
+    private function _saveRatecardFile($ratecardId, $file) {
+        if (!$ratecardId || !$file) {
+            return;
+        }
+
+        $ratecard = $this->_ratecardTypeRepository->find($ratecardId);
+
+        if (!$ratecard) {
+            return;
+        }
+
+        $fileDecoded = $this->_commonRepo->base64DecodeFile($file);
+
+        if (empty($fileDecoded['extension'])) {
+            return;
+        }
+
+        // remove if there any any existing file
+        if ($ratecard->getFile()) {
+            if (file_exists($this->_ratecardFilePath . $ratecard->getFile())) {
+                unlink($this->_ratecardFilePath . $ratecard->getFile());
+            }
+        }
+
+        $fileName = md5($ratecardId) . $fileDecoded['extension'];
+        
+        if (file_exists($this->_ratecardFilePath . $fileName)) {
+            unlink($this->_ratecardFilePath . $fileName);
+        }
+
+        // write to file
+        file_put_contents($this->_ratecardFilePath . $fileName, $fileDecoded['data']);
+
+        // save file name in db
+        $ratecard->setFile($fileName);
+        $this->_em->persist($ratecard);
+        $this->_em->flush();
+    }
 }
