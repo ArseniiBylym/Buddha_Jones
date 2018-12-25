@@ -339,6 +339,20 @@ class RediSpotSent
     /**
      * @var integer
      *
+     * @ORM\Column(name="resend", type="smallint", nullable=true)
+     */
+    private $resend;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="graphics_status_id", type="integer", nullable=true)
+     */
+    private $graphicsStatusId;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="created_by", type="integer", nullable=true)
      */
     private $createdBy;
@@ -1409,6 +1423,52 @@ class RediSpotSent
     public function getIsPdf()
     {
         return $this->isPdf;
+    }
+
+    /**
+     * Set resend
+     *
+     * @param integer $resend
+     * @return RediSpotSent
+     */
+    public function setResend($resend)
+    {
+        $this->resend = $resend;
+
+        return $this;
+    }
+
+    /**
+     * Get resend
+     *
+     * @return integer 
+     */
+    public function getResend()
+    {
+        return $this->resend;
+    }
+
+    /**
+     * Set graphicsStatusId
+     *
+     * @param integer $graphicsStatusId
+     * @return RediSpotSent
+     */
+    public function setGraphicsStatusId($graphicsStatusId)
+    {
+        $this->graphicsStatusId = $graphicsStatusId;
+
+        return $this;
+    }
+
+    /**
+     * Get graphicsStatusId
+     *
+     * @return integer 
+     */
+    public function getGraphicsStatusId()
+    {
+        return $this->graphicsStatusId;
     }
 
     /**

@@ -25,6 +25,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_user_type_id;
     protected $_profileImagePath;
     protected $_tempProfileImagePath;
+    protected $_ratecardFilePath;
     protected $_siteUrl;
     protected $_user_permission;
     protected $_config;
@@ -119,6 +120,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $config = $this->getServiceLocator()->get('Config');
         $this->_config = $config;
         $this->_profileImagePath = $config['directory_path']['profile_image'];
+        $this->_ratecardFilePath = $config['directory_path']['ratecard'];
         $this->_tempProfileImagePath = $config['directory_path']['temp_profile_image'];
         $this->_siteUrl = $config['site_url'];
         $jwtSecret = $config['jwt_config']['jwt_secret'];

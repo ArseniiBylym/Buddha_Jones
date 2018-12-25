@@ -195,6 +195,7 @@ return array(
             'Application\Controller\SpotSent'                                       => 'Application\Controller\SpotSentController',
             'Application\Controller\SpotSentValidate'                               => 'Application\Controller\SpotSentValidateController',
             'Application\Controller\SpotSentOptions'                                => 'Application\Controller\SpotSentOptionsController',
+            'Application\Controller\SpotSentList'                                   => 'Application\Controller\SpotSentListController',
             'Application\Controller\SpotVersionEditor'                              => 'Application\Controller\SpotVersionEditorController',
             'Application\Controller\Staff'                                          => 'Application\Controller\StaffController',
             'Application\Controller\Status'                                         => 'Application\Controller\StatusController',

@@ -42,6 +42,13 @@ class RediRatecardType
      */
     private $ratecardNote;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="file", type="string", length=150, nullable=true)
+     */
+    private $file;
+
 
 
     /**
@@ -121,5 +128,28 @@ class RediRatecardType
     public function getRatecardNote()
     {
         return $this->ratecardNote;
+    }
+
+    /**
+     * Set file
+     *
+     * @param string $file
+     * @return RediRatecardType
+     */
+    public function setFile($file)
+    {
+        $this->file = $file;
+
+        return $this;
+    }
+
+    /**
+     * Get file
+     *
+     * @return string 
+     */
+    public function getFile()
+    {
+        return $this->file;
     }
 }
