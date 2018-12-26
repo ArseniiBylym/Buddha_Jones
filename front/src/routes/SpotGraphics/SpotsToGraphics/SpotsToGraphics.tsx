@@ -6,8 +6,9 @@ import * as React from 'react';
 import { AppState } from 'store/AllStores';
 import { SpotGraphicsApiQueryParams, SpotGraphicsApiResponse } from 'types/spotsToGraphics';
 import { SpotsToGrapnicsFilters, SpotToGraphicsProducerOption } from './SpotsToGraphicsFilters';
+// import { truncate } from 'fs';
 
-const s = require('./SpotsToGraphics.scss');
+// const s = require('./SpotsToGraphics.scss');
 
 interface SpotsToGraphicsProps extends AppState {}
 
@@ -28,6 +29,24 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
         HeaderActions.replaceMainHeaderContent({
             title: 'Spots ready for graphics',
         });
+    }
+
+    formatSpotsList = (data: any) => {
+        let arr: any[] = [];
+        data.forEach((project, i) => {
+            project.campaign.forEach((elem, j) => {
+                let spot = {
+                    projectName: project.projectName,
+                    studioName: project.studioName,
+                    ...elem,
+                };
+                arr.push(spot);
+            });
+        });
+        return {
+            spots: arr,
+            len: arr.length,
+        };
     }
 
     public render() {
@@ -53,12 +72,14 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
                             retryFetch={spotsToGraphicsFromApi.retry}
                             totalCountResponse={
                                 spotsToGraphicsFromApi.response && spotsToGraphicsFromApi.response.data.length
-                                    ? spotsToGraphicsFromApi.response.data[0].campaign.length
+                                    // ? spotsToGraphicsFromApi.response.data[0].campaign.length
+                                    ? this.formatSpotsList(spotsToGraphicsFromApi.response.data).len
+                                    // ? spotsToGraphicsFromApi.response.data.length
                                     : 0
                             }
                             spotsResponse={
                                 spotsToGraphicsFromApi.response && spotsToGraphicsFromApi.response.data
-                                    ? spotsToGraphicsFromApi.response.data[0].campaign
+                                    ? this.formatSpotsList(spotsToGraphicsFromApi.response.data).spots
                                     : []
                             }
                         />
@@ -87,12 +108,10 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
         // } else {
         //     this.selectedSpots = [...this.selectedSpots.slice(0, index), ...this.selectedSpots.slice(index + 1)];
         // }
-        console.log(spotId);
     };
 
-    private openNewBill = () => {
-        // TODO
-    };
+    // private openNewBill = () => {
+    // };
 }
 
 export default SpotsToGraphics;

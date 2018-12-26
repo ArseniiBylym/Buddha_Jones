@@ -7,7 +7,7 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 // import { SpotToGraphicsFromApi, SpotToGraphicsProducer } from 'types/spotsToGraphics';
-import { SpotProjectCampaignGroup } from './SpotsToGraphics';
+// import { SpotProjectCampaignGroup } from './SpotsToGraphics';
 
 const s = require('./SpotsToGraphicsGrid.css');
 
@@ -16,26 +16,26 @@ interface SpotsToGraphicsGridProps {
     fetchError: boolean;
     retryFetch: () => void;
     onSpotSelectionToggle: (spotId: number, projectCampaignId: number) => void;
-    // selectedSpots: any[];
     spots: {
         list: any[];
         count: number;
     };
+    producerId: number | null;
 }
 
-interface ProjectCampaignCard {
-    projectName: string;
-    studioName: string;
-    campaingnName: string;
-    customerName: string;
-    spots: {
-        id: number;
-        name: string;
-        date: string;
-        runtime: string;
-        status: string;
-    }[];
-}
+// interface ProjectCampaignCard {
+//     projectName: string;
+//     studioName: string;
+//     campaingnName: string;
+//     customerName: string;
+//     spots: {
+//         id: number;
+//         name: string;
+//         date: string;
+//         runtime: string;
+//         status: string;
+//     }[];
+// }
 
 @observer
 export class SpotsToGraphicsGrid extends React.Component<SpotsToGraphicsGridProps, {}> {
@@ -44,12 +44,12 @@ export class SpotsToGraphicsGrid extends React.Component<SpotsToGraphicsGridProp
         let cardsList: any[] = [];
         if (this.props.spots) {
 
-
         this.props.spots.list.forEach((item, i) => {
-            console.log(item);
-           let obj: {campaignName: string, customerName: string, spots?: any[]} = {
+           let obj: {campaignName: string, customerName: string, projectName: string, studioName: string, spots?: any[]} = {
                 campaignName: item.campaignName,
                 customerName: item.customerName,
+                projectName: item.projectName,
+                studioName: item.studioName,
            };
 
            let spots: any[] = [];
@@ -72,29 +72,6 @@ export class SpotsToGraphicsGrid extends React.Component<SpotsToGraphicsGridProp
         });
     }
         return cardsList;
-
-        // return this.props.spots.list.reduce((cards: ProjectCampaignCard[], spot) => {
-        //     let index = cards.findIndex(c => c.projectCampaignId === spot.projectCampaignId);
-        //     if (index === -1) {
-        //         index = cards.length;
-
-        //         cards.push({
-                  
-        //             projectName: spot.projectName,
-        //             studioId: spot.studioId,
-        //             studioName: spot.studioName,
-        //             // producers: spot.producers,
-        //             spots: [],
-        //         });
-        //     }
-
-        //     cards[index].spots.push({
-        //         id: spot.spotId,
-        //         name: spot.spotName,
-        //     });
-
-        //     return cards;
-        // }, []);
     }
 
     public render() {
@@ -112,8 +89,6 @@ export class SpotsToGraphicsGrid extends React.Component<SpotsToGraphicsGridProp
             );
         }
 
-        console.log(this.props.spots.list);
-        console.log(this.projectCampaignCards);
         return (
             <div className={s.grid}>
                 {this.projectCampaignCards.map((projectCampaign, i) => (
@@ -126,11 +101,10 @@ export class SpotsToGraphicsGrid extends React.Component<SpotsToGraphicsGridProp
                         <React.Fragment>
                             <div className={s.content}>
                                 <div className={s.headline}>
-                                    <h3>{projectCampaign.campaignName}</h3>
-                                    {/* <h4>
-                                        {projectCampaign.campaignName +
-                                            (projectCampaign.campaignNote ? ' - ' + projectCampaign.campaignNote : '')}
-                                    </h4> */}
+                                    <h3>{projectCampaign.projectName}</h3>
+                                    <h4>
+                                        {projectCampaign.campaignName}
+                                    </h4>
                                 </div>
 
                                 <div className={s.spots}>
@@ -167,29 +141,10 @@ export class SpotsToGraphicsGrid extends React.Component<SpotsToGraphicsGridProp
                                 </div>
                             </div>
 
-                            {/* {projectCampaign.producers && projectCampaign.producers.length > 0 && (
-                                <div className={s.producers}>
-                                    {projectCampaign.producers.map(producer => {
-                                        const fullName = [producer.firstName, producer.lastName]
-                                            .filter(p => p !== null)
-                                            .join(' ');
-
-                                        return (
-                                            <p key={producer.userId}>
-                                                <span>
-                                                    {(producer.creativeRoleName || producer.creativeRoleId) + ': '}
-                                                </span>
-                                                <strong>{fullName}</strong>
-                                            </p>
-                                        );
-                                    })}
-                                </div>
-                            )} */}
-
                             <div className={s.summary}>
                                 <p>
                                     <span>Studio </span>
-                                    <strong>{projectCampaign.customerName}</strong>
+                                    <strong>{projectCampaign.studioName}</strong>
                                 </p>
                                 <p>
                                     <span>Client </span>

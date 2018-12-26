@@ -53,12 +53,13 @@
 
     & > .spots {
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
         flex-flow: column nowrap;
         width: 100%;
         box-sizing: border-box;
         padding: 10px;
         background-color: white;
+        flex-grow: 1;
 
         &  > .spots__header{
             width: 100%;
@@ -66,11 +67,17 @@
             flex-flow: row nowrap;
 
             & > p{
-                width: 33.33%;
+                width: 50%;
                 color: #968069;
                 font-weight: 300;
                 font-size: .8em;
                 text-align: center;
+            }
+            & > p:first-child{
+                width: 25%;
+            }
+            & > p:last-child{
+                width: 25%;
             }
 
         }
@@ -85,8 +92,16 @@
             padding: 5px 0;
 
             & > div{
-                width: 33.33%;
-                
+                width: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            & > div:first-child{
+                width: 25%;
+            }
+            & > div:last-child{
+                width: 25%;
             }
         }
         

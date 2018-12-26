@@ -6,7 +6,7 @@ import {
     } from 'components/Form';
 import { LoadingIndicator } from 'components/Loaders';
 import { Section } from 'components/Section';
-import { SearchHandler } from 'helpers/SearchHandler';
+// import { SearchHandler } from 'helpers/SearchHandler';
 import _debounce from 'lodash-es/debounce';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
@@ -14,6 +14,7 @@ import * as React from 'react';
 import { SpotToGraphicsFromApi, SpotToGraphicsProducer } from 'types/spotsToGraphics';
 import { SpotProjectCampaignGroup } from './SpotsToGraphics';
 import { SpotsToGraphicsGrid } from './SpotsToGraphicsGrid';
+// import { concat } from 'lodash-es';
 
 export interface SpotToGraphicsProducerOption {
     id: number;
@@ -38,43 +39,30 @@ interface SpotsToGrapnicsFiltersProps {
 export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFiltersProps, {}> {
     private producerDropdown: DropdownContainer | null = null;
 
-    // @computed
-    // private get spotsList() {
-
-    // }
-
     @computed
     private get spots(): { count: number; list: SpotToGraphicsFromApi[] } {
+
         const query = this.props.search.toLowerCase().trim();
-        const producerId: number | null = this.props.producer ? this.props.producer.id : null;
+        // const producerId = this.props.producer && this.props.producer.id; 
+        let list: any[] = [];
 
-        const list = this.props.spotsResponse.reduce((spots: SpotToGraphicsFromApi[], spot) => {
-            let queryMatch: boolean = false;
-            let producerMatch: boolean = false;
+        list = this.props.spotsResponse.filter(() => {
+            return true;
+        });
 
-            if (query === '') {
-                queryMatch = true;
-            } else {
-                queryMatch =
-                    SearchHandler.searchPhraseInString(spot.spotName, query, true, false) ||
-                    SearchHandler.searchPhraseInString(spot.campaignName, query, true, true) ||
-                    SearchHandler.searchPhraseInString(spot.projectCampaignName || '', query, true, false) ||
-                    SearchHandler.searchPhraseInString(spot.projectName, query, true, true) ||
-                    SearchHandler.searchPhraseInString(spot.studioName, query, true, true);
-            }
-
-            if (producerId === null || (producerId && spot.producers.findIndex(p => p.userId === producerId) !== -1)) {
-                producerMatch = true;
-            }
-
-            if (queryMatch && producerMatch) {
-                spots.push(spot);
-            }
-            console.log(spots);
-            return spots;
-        }, []);
-
-        console.log(list, list.length);
+        if (query)  {
+            list = list.filter((item, i) => {
+                if (item.campaignName.indexOf(query) !== -1 ||
+                    item.customerName.indexOf(query) !== -1 ||
+                    item.projectName.indexOf(query) !== -1 ||
+                    item.studioName.indexOf(query) !== -1
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+        }
 
         return {
             count: list.length,
@@ -82,55 +70,45 @@ export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFilte
         };
     }
 
-    componentDidMount = () => {
-        console.log(this.props.spotsResponse);
-    }
-    componentDidUpdate = () => {
-        console.log(this.props.spotsResponse);
-    }
-
     @computed
     private get allProducers(): SpotToGraphicsProducer[] {
-        let producersIds: number[] = [];
+        let producersList: any[] = [];
 
-        let producersList: SpotToGraphicsProducer[] = [];
+        if (this.props.spotsResponse && this.props.spotsResponse.length > 0) {
+            this.props.spotsResponse.forEach((project, i) => {
+                let spots = project.spot.filter((spot, j) => {
+                    return !!spot;
+                });
 
-        if (this.props.spotsResponse.length > 0) {
-
-            this.props.spotsResponse.forEach((item, i) => {
-                if (item.campaing && item.campaign.length > 0) {
-                    item.campaing.forEach((item1: any, i1) => {
-                        item1.sport.forEach((item2: any, i2) => {
-                            item2.producers.forEach((item3, i3) => {
-                                producersList.push(item3);
-                            });
-                        });
+                spots.forEach((elem) => {
+                    let producers = elem.producers.filter((producer) => {
+                        return !!producer;
                     });
-                } 
+
+                    producersList.push(...producers);
+                });
             });
-            
-            return producersList;
-        } else {
-            return [];
         }
-        // return this.props.spotsResponse.reduce((producers: SpotToGraphicsProducer[], spot) => {
+        let obj = {};
 
-        //     let producersList: SpotToGraphicsProducer[] = [];
+        producersList.forEach((elem, i) => {
+           if (!obj[elem.userId]) {
+                obj[elem.userId] = elem;
+           }
+        });
 
-        //     spot.producers.forEach(producer => {
-        //         const match = producersIds.indexOf(producer.userId) !== -1;
-        //         if (!match) {
-        //             producersIds.push(producer.userId);
-        //             producers.push(producer);
-        //         }
-        //     });
+        let newProducersList: any[] = [];
 
-        //     return producersList;
-        // }, []);
+        for (let key in obj) {
+            if (obj[key]) {
+                newProducersList.push(obj[key]);
+            }
+        }
+
+        return newProducersList;
     }
 
     public render() {
-        console.log(this.props.spotsResponse);
         const { search, producer, loading, fetchError } = this.props;
         return (
             <Section
@@ -186,6 +164,7 @@ export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFilte
                     retryFetch={this.props.retryFetch}
                     onSpotSelectionToggle={this.props.onSpotSelectionToggle}
                     spots={this.spots}
+                    producerId={this.props.producer && this.props.producer.id}
                 />
             </Section>
         );
