@@ -88,6 +88,7 @@ Required | Parameter | Type | Default | Description
 **true** | studio_id | int | null | studio id
 **true** | ratecard_name | string | null | ratecard name
 false | ratecard_note | string | null | note
+false | file | string (Base 64 encoded file) | null | Base 64 encoded file
 
 
 
@@ -139,6 +140,7 @@ Required | Parameter | Type | Default | Description
 false | studio_id | int | null | studio id
 false | ratecard_name | string | null | ratecard name
 false | ratecard_note | string | null | note
+false | file | string (Base 64 encoded file) | null | Base 64 encoded file
 
 
 ## Delete Ratecard type

@@ -14,9 +14,12 @@ use Zend\Config\Config;
 class ActivityRepository extends EntityRepository
 {
     private $_className = "\Application\Entity\RediActivity";
+    private $_config;
 
     public function __construct(EntityManager $entityManager)
     {
+        $this->_config = new \Zend\Config\Config(include getcwd() . '/config/autoload/global.php');
+
         $classMetaData = $entityManager->getClassMetadata($this->_className);
         parent::__construct($entityManager, $classMetaData);
     }
@@ -348,6 +351,8 @@ class ActivityRepository extends EntityRepository
 
     public function getRatecardType($studioId)
     {
+        $fileUrl = $this->_config['site_url'] . $this->_config['file_path_suffix']['ratecard'];
+
         $dql = "SELECT 
                     rct
                 FROM \Application\Entity\RediRatecardType rct
@@ -358,9 +363,10 @@ class ActivityRepository extends EntityRepository
         $query->setParameter('studio_id', $studioId);
         $data = $query->getArrayResult();
 
-        $data = array_map(function ($rc) {
+        $data = array_map(function ($rc) use ($fileUrl) {
             $rc['ratecardId'] = (int)$rc['ratecardId'];
             $rc['studioId'] = (int)$rc['studioId'];
+            $rc['file'] = (!empty($rc['file'])) ? $fileUrl . $rc['file'] : null;
 
             return $rc;
         }, $data);
