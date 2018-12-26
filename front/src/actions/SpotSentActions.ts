@@ -414,7 +414,7 @@ export class SpotSentActionsClass {
     };
 
     @action
-    public handleFinishAccept = (spotIndex: number, checked: boolean) => () => {
+    public handleFinishAccept = (spotIndex: number, checked: boolean) => {
         const currentVersion = SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit;
         currentVersion.finish_accept = checked ? 1 : 0;
         (SpotSentStore.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).splice(spotIndex, 1, currentVersion);

@@ -1,25 +1,24 @@
 import * as React from 'react';
 import { observer, inject } from 'mobx-react';
-import { observable, computed, action } from 'mobx';
 import { HeaderActions, CampaignPeopleActions, SpotSentActions } from 'actions';
 import { ProducerSpotSentFormProject } from './ProducerSpotSentFormProject';
-import { ProjectPickerSections, ProjectPickerValues } from 'components/Buddha';
-import { ButtonBack, ButtonAdd, ButtonSend } from 'components/Button';
+import { ProjectPickerValues } from 'components/Buddha';
+import { ButtonBack, ButtonAdd } from 'components/Button';
 import { history } from 'App';
 import AnimateHeight from 'react-animate-height';
 import { Section } from 'components/Section';
 import { Paragraph } from 'components/Content';
-import { ProducerSpotSentFormSpotCard } from '.';
-import { Checkmark, TextArea } from 'components/Form';
+import { TextArea } from 'components/Form';
 import { ClientContact } from 'types/clients';
 import { LoadingSpinner } from 'components/Loaders';
 import { AppState } from '../../../../store/AllStores';
-import { match } from 'react-router';
-import * as dateFormat from 'date-fns/format';
 import { ProducerSpotSentFormSentTo } from './SentTo/ProducerSpotSentFormSentTo';
 import { RemoveConfirmationModal } from '../../../../components/RemoveConfiramtionModal';
-import { SpotSentValueForSubmit, SpotSentVersionForSubmit } from '../../../../types/spotSentForm';
+import { SpotSentVersionForSubmit } from '../../../../types/spotSentForm';
 import ProducerSpotSentFormFinishRequest from './ProducerSpotSentFormFinishRequest';
+import { ProducerSpotSentFormSpotCard } from './ProducerSpotSentFormSpotCard';
+import FormJsonSection from './FormJsonSection';
+import FormSendSection from './FormSendSection';
 
 // Styles
 const s = require('./ProducerSpotSentForm.css');
@@ -28,26 +27,35 @@ const s = require('./ProducerSpotSentForm.css');
 interface ProducerSpotSentFormProps {
 }
 
+// Props
+interface ProducerSpotSentFormState {
+    currentSpotIndex: number;
+    isRemoveConfirmationModalActive: boolean;
+}
+
 // Types
 type ProducerSpotSentFormPropsTypes = ProducerSpotSentFormProps & AppState;
 
 // Component
 @inject('store')
 @observer
-class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsTypes, {}> {
-    @observable private currentSpotIndex: number = 0;
-    @observable private isRemoveConfirmationModalActive: boolean = false;
-    @observable private showJson: boolean = false;
+class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsTypes, ProducerSpotSentFormState> {
+    constructor(props: ProducerSpotSentFormPropsTypes) {
+        super(props);
 
-    @computed
-    private get isFinishingTypeSectionOpen(): boolean {
-        if (!this.props.store) {
-            return false;
-        }
-        return (this.props.store.spotSent.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).some(spot => spot.finish_request === 1);
+        this.state = {
+            currentSpotIndex: 0,
+            isRemoveConfirmationModalActive: false,
+        };
     }
 
-    @computed
+    private get isFinishingTypeSectionOpen(): boolean {
+        if (this.props.store && (this.props.store.spotSent.spotSentDetails.spot_version instanceof Array)) {
+            return (this.props.store.spotSent.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).some(spot => spot.finish_request === 1);
+        }
+        return false;
+    }
+
     private get essentialDataIsLoading(): boolean {
         if (!this.props.store || !this.props.store.spotSent) {
             return true;
@@ -60,7 +68,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
     }
 
-    @computed
     private get assignedCustomers(): ClientContact[] {
         if (this.props.store) {
             const {
@@ -77,7 +84,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     public componentDidMount() {
 
         // Fetch spot sent options
-        this.fetchSpotSentOptions();
+        SpotSentActions.fetchSpotSentOptions();
 
         // Load Spot Sent details if router has ID
         if (this.isEditMode) {
@@ -102,29 +109,26 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         return (
             <>
                 <RemoveConfirmationModal
-                    isActive={this.isRemoveConfirmationModalActive}
+                    isActive={this.state.isRemoveConfirmationModalActive}
                     onConfirmationModalClose={this.handleClosingSpotDeleteConfirmation}
                     onConfirmationSuccess={this.handleSpotRemove}
                     confirmationMessage={'Are you sure you want to delete this entry?'}
                 />
 
-                {this.essentialDataIsLoading &&
-                <>
-                    {this.getLoadingSpinner()}
-                </>
-                }
-                {!this.essentialDataIsLoading &&
-                <ProducerSpotSentFormProject
-                    onProjectChange={this.handleProjectChange}
-                    onDateChange={SpotSentActions.handleDateChange}
-                    project={(spotSentDetails.project_id) ? {
-                        id: spotSentDetails.project_id as number,
-                        name: spotSentDetails.project_name as string
-                    } : null}
-                    clientId={null}
-                    date={spotSentDetails.spot_sent_date as Date}
-                    isClosedWhenInit={this.isEditMode}
-                />
+                {this.essentialDataIsLoading && this.getLoadingSpinner()}
+                {
+                    !this.essentialDataIsLoading &&
+                    <ProducerSpotSentFormProject
+                        onProjectChange={this.handleProjectChange}
+                        onDateChange={SpotSentActions.handleDateChange}
+                        project={(spotSentDetails.project_id) ? {
+                            id: spotSentDetails.project_id as number,
+                            name: spotSentDetails.project_name as string
+                        } : null}
+                        clientId={null}
+                        date={spotSentDetails.spot_sent_date as Date}
+                        isClosedWhenInit={this.isEditMode}
+                    />
                 }
 
                 <AnimateHeight
@@ -137,13 +141,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 return (
                                     <ProducerSpotSentFormSpotCard
                                         key={spotIndex}
-                                        onSpotResendToggle={this.handleSpotResendToggle(spotIndex)}
-                                        onSpotRemove={this.onOpenRemoveConfirmationModalHandler(spotIndex)}
-                                        onSpotChange={this.handleSpotChange(spotIndex)}
-                                        onFinishingRequestToggle={this.handleFinishingRequestToggle(spotIndex)}
-                                        onSentViaMethodChange={this.handleSentViaMethodsChange(spotIndex)}
-                                        onEditorAdd={this.handleSpotAddingEditor(spotIndex)}
-                                        onEditorRemove={this.handleSpotRemovingEditor(spotIndex)}
+                                        onSpotRemove={this.onOpenRemoveConfirmationModalHandler}
                                         project={{
                                             id: spotSentDetails.project_id as number,
                                             name: spotSentDetails.project_name as string
@@ -171,8 +169,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                         }}
                                         spotIndex={spotIndex}
                                         forUserId={this.props.store!.user.data!.id}
-                                        handleFinishAccept={this.handleFinishAccept(spotIndex)}
-                                        handleProdAccept={this.handleProdAccept(spotIndex)}
                                     />
                                 );
                             }
@@ -224,135 +220,41 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     >
                         <ProducerSpotSentFormFinishRequest/>
                     </AnimateHeight>
-
-                    <Section>
-                        <div className={s.summary}>
-                            <Checkmark
-                                onClick={SpotSentActions.handleFinalToggle}
-                                checked={spotSentDetails.status === 2}
-                                label="Ready to be sent"
-                                labelOnLeft={true}
-                                type={'no-icon'}
-                            />
-
-                            <ButtonSend
-                                onClick={this.handleSubmit}
-                                label={this.saveButtonText}
-                                iconColor="orange"
-                            />
-                        </div>
-                    </Section>
+                    <FormSendSection {...this.props}/>
                 </AnimateHeight>
-                <Section>
-                    <button
-                        onClick={() => {
-                            this.showJson = !this.showJson;
-                        }}
-                    >
-                        Show/Hide JSON
-                    </button>
-                </Section>
-                {this.showJson &&
-                <Section>
-                        <pre>
-                            {JSON.stringify(spotSentDetails.spot_version instanceof Array, null, 2)}
-                        </pre>
-                    <pre>
-                            {JSON.stringify(spotSentDetails, null, 2)}
-                        </pre>
-                </Section>
-                }
+                <FormJsonSection spotSentDetails={spotSentDetails}/>
             </>
         );
     }
-
-    private handleClosingSpotDeleteConfirmation = (): void => {
-        this.isRemoveConfirmationModalActive = false;
-    };
-
-    @action
-    private onOpenRemoveConfirmationModalHandler = (spotIndex: number) => (): void => {
-        this.isRemoveConfirmationModalActive = true;
-        this.currentSpotIndex = spotIndex;
-    };
 
     private getLoadingSpinner = (): JSX.Element => <LoadingSpinner className={s.loadingSpinner} size={64}/>;
 
     private handleBackButtonClick = () => history.push('/portal/studio/producer-spot-sent-list');
 
-    private fetchSpotSentOptions = () => SpotSentActions.fetchSpotSentOptions();
+    private handleClosingSpotDeleteConfirmation = () => this.setState({
+        isRemoveConfirmationModalActive: false,
+    });
+
+    private onOpenRemoveConfirmationModalHandler = (spotIndex: number) => this.setState({
+        isRemoveConfirmationModalActive: true,
+        currentSpotIndex: spotIndex,
+    });
 
     private handleProjectChange = (values: ProjectPickerValues | null) => SpotSentActions.handleProjectChange(values, this.isEditMode);
-
-    private handleSpotResendToggle = (spotIndex: number) => (checked: boolean) => SpotSentActions.handleSpotResendToggle(spotIndex, checked);
 
     private handleSentToAdd = (customer: ClientContact): void => SpotSentActions.handleSentToAdd(customer);
 
     private handleSentToRemove = (index: number): void => SpotSentActions.handleSentToRemove(index);
 
     private handleSpotRemove = () => {
-        SpotSentActions.handleSpotRemove(this.currentSpotIndex);
-        this.isRemoveConfirmationModalActive = false;
+        SpotSentActions.handleSpotRemove(this.state.currentSpotIndex);
+        this.setState({
+            isRemoveConfirmationModalActive: false,
+        });
     };
 
     private handleCreateSpot = () => SpotSentActions.handleCreateSpot();
 
-    private handleFinishingRequestToggle = (spotIndex: number) =>
-        (checked: boolean) =>
-            SpotSentActions.handleFinishingRequestToggle(spotIndex, checked);
-
-    private handleSpotChange = (spotIndex: number) =>
-        (values: ProjectPickerValues | null, type?: ProjectPickerSections) =>
-            SpotSentActions.handleSpotChange(spotIndex, values, type);
-
-    private handleSentViaMethodsChange = (spotIndex: number) =>
-        (method: number) =>
-            SpotSentActions.handleSentViaMethodsChange(spotIndex, method);
-
-    private handleSpotAddingEditor = (spotIndex: number) =>
-        (userId: number) =>
-            SpotSentActions.handleSpotAddingEditor(spotIndex, userId);
-
-    private handleSpotRemovingEditor = (spotIndex: number) =>
-        (editorIndex: number) =>
-            SpotSentActions.handleSpotRemovingEditor(spotIndex, editorIndex);
-
-    private handleFinishAccept = (spotIndex: number) =>
-        (checked: boolean) =>
-            SpotSentActions.handleFinishAccept(spotIndex, checked);
-
-    private handleProdAccept = (spotIndex: number) =>
-        (checked: boolean) =>
-            SpotSentActions.handleProdAccept(spotIndex, checked);
-
-    private handleSubmit = async () => {
-        try {
-            let data: SpotSentValueForSubmit = this.props.store!.spotSent.spotSentDetails;
-            (data.spot_version as string) = JSON.stringify((data.spot_version as SpotSentVersionForSubmit[]).map((spot: SpotSentVersionForSubmit) => {
-                delete spot.campaign_name;
-                delete spot.spot_name;
-                delete spot.version_name;
-                return spot;
-            }));
-            (data.finish_option as string) = JSON.stringify(data.finish_option);
-            (data.delivery_to_client as string) = JSON.stringify(data.delivery_to_client);
-            (data.customer_contact as string) = JSON.stringify((data.customer_contact as ClientContact[]).map(contact => {
-                return contact.id;
-            }));
-            delete data.finishing_house_name;
-            data.deadline = (data.deadline) ? dateFormat(data.deadline, 'YYYY-MM-DD') : null;
-            if (this.isEditMode) {
-                await SpotSentActions.updateSpotSent((this.props.match as match<string>).params['id'], data);
-            } else {
-                await SpotSentActions.createNewSpotSent(data);
-            }
-            history.push('/portal/studio/producer-spot-sent-list');
-        } catch (error) {
-            throw error;
-        }
-    };
-
-    @action
     private setHeaderAndInitialData = async (): Promise<boolean> => {
         try {
             if (!this.props.match) {
@@ -392,14 +294,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     private get isEditMode(): boolean {
         return (this.props.match && this.props.match.params['id'] && this.props.match.params['id'] !== 'create');
-    }
-
-    private get saveButtonText(): string {
-        if (this.props.store && this.props.store.spotSent.spotSentDetails.status === 2) {
-            return 'Upload and send';
-        } else {
-            return 'Save draft';
-        }
     }
 
     private fetchSpotSentDetails = async (id: number): Promise<boolean> => {
