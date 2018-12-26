@@ -488,6 +488,17 @@ export class TimeEntryActionsClass {
             TimeEntryStore.values.isModified = true;
             if (TimeEntryStore.values.files.length > 0 && 
                 TimeEntryStore.values.files[TimeEntryStore.values.files.length - 1].filename === '') {
+                    TimeEntryStore.values.files[TimeEntryStore.values.files.length - 1].filename = filesArr[0];
+                    filesArr = filesArr.slice(1);
+                    filesArr.forEach((item, i) => {
+                        if (TimeEntryStore.values) {
+                            TimeEntryStore.values.files.push({
+                                filename: item || '',
+                                description: '',
+                                durationInMinutes:  60,
+                            });
+                        }
+                    });
                     return;
                 }
             filesArr.forEach((item, i) => {
