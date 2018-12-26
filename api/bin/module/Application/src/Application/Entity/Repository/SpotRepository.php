@@ -531,7 +531,7 @@ class SpotRepository extends EntityRepository
                     sc.editor,
                     s.trtId,
                     trt.runtime,
-                    sc.hasGraphics,
+                    sc.noGraphics,
                     sc.isPdf
                 FROM \Application\Entity\RediSpotSent sc
                 LEFT JOIN \Application\Entity\RediCampaign ca
@@ -549,7 +549,7 @@ class SpotRepository extends EntityRepository
 
         $result = $query->getArrayResult();
 
-        $result = array_map(function($row) {
+        $result = array_map(function ($row) {
             $row['campaignId'] = (int)$row['campaignId'];
             $row['projectCampaignId'] = (int)$row['projectCampaignId'];
             $row['spotId'] = (int)$row['spotId'];
@@ -697,7 +697,7 @@ class SpotRepository extends EntityRepository
     public function getSpotSendFiles($spotSentId)
     {
         $dql = "SELECT 
-                  s.fileName, s.fileDescription, s.resend, s.creativeUserId
+                  s.spotSentId, s.fileName, s.fileDescription, s.resend, s.creativeUserId
                 FROM \Application\Entity\RediSpotSentFile s
                 WHERE s.spotSentId=:spot_sent_id";
 
@@ -1002,7 +1002,7 @@ class SpotRepository extends EntityRepository
         return $maxRequestId;
     }
 
-    public function getSpotSentListTree()
+    public function getSpotSentListTree($filter = array())
     {
         $dql = "SELECT 
                     ss.projectId,
@@ -1025,8 +1025,8 @@ class SpotRepository extends EntityRepository
                     ss.graphicsStatusId,
                     s.trtId,
                     trt.runtime,
-                    ss.hasGraphics,
-                    ss.resend
+                    ss.noGraphics,
+                    ss.allGraphicsResend
                 FROM \Application\Entity\RediSpotSent ss
                 LEFT JOIN \Application\Entity\RediProject p 
                     WITH p.id = ss.projectId
@@ -1047,10 +1047,26 @@ class SpotRepository extends EntityRepository
                 WHERE ss.billId IS NULL
                     AND ss.projectId IS NOT NULL
                     AND ss.campaignId IS NOT NULL
-                GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId
+                ";
+
+        $dqlFilter = [];
+
+        if (!empty($filter['current_user_id'])) {
+            $dqlFilter[] = " ((ss.createdBy= :current_user_id AND ss.lineStatusId <= 1) OR ss.lineStatusId > 1) ";
+        }
+        if (count($dqlFilter)) {
+            $dql .= " AND " . implode(" AND ", $dqlFilter);
+        }
+
+        $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId
                 ORDER BY p.projectName ASC , c.campaignName ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
+
+        if (!empty($filter['current_user_id'])) {
+            $query->setParameter("current_user_id", $filter['current_user_id']);
+        }
+
         $result = $query->getArrayResult();
         $response = array();
 
@@ -1088,7 +1104,7 @@ class SpotRepository extends EntityRepository
                 $status = (!empty($statusOptions[$row['spotLineStatusId']])) ? $statusOptions[$row['spotLineStatusId']]['name'] : null;
                 $graphicsStatus = (!empty($graphicsStatusOptions[$row['graphicsStatusId']])) ? $graphicsStatusOptions[$row['graphicsStatusId']]['name'] : null;
 
-                if ($row['hasGraphics'] === null) {
+                if ($row['noGraphics'] === null) {
                     if ($row['graphicsStatusId'] == 2) {
                         $graphicsStatus = 'EDL Requested';
                     }
@@ -1097,11 +1113,11 @@ class SpotRepository extends EntityRepository
                         $graphicsStatus = 'EDL Exported';
                     }
                 } else {
-                    if ($row['hasGraphics'] === 0 && $row['graphicsStatusId'] == 4) {
+                    if ($row['noGraphics'] === 1 && $row['graphicsStatusId'] == 4) {
                         $graphicsStatus = 'No Graphics';
                     }
 
-                    if ($row['hasGraphics'] === 1) {
+                    if ($row['noGraphics'] === 0) {
                         if ($row['all_graphics_resend'] == 0 && $row['graphicsStatusId'] == 4) {
                             $graphicsStatus = 'Ready to Bill';
                         }

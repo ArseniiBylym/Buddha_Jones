@@ -126,6 +126,11 @@ class CommonRepository extends EntityRepository
 
     public function base64DecodeFile($data)
     {
+
+        if ($this->getBase64FileSize($data) > 10) {
+            return false;
+        }
+
         if (preg_match('/^data\:([a-zA-Z]+\/[a-zA-Z\.-]+);base64\,([a-zA-Z0-9\+\/]+\=*)$/', $data, $matches)) {
             return [
                 'mime' => $matches[1],
@@ -134,6 +139,20 @@ class CommonRepository extends EntityRepository
             ];
         }
         return false;
+    }
+
+    public function getBase64FileSize($base64String){ 
+        //return memory size in B, KB, MB
+        try{
+            $size_in_bytes = (int) (strlen(rtrim($base64String, '=')) * 3 / 4);
+            $size_in_kb    = $size_in_bytes / 1024;
+            $size_in_mb    = $size_in_kb / 1024;
+    
+            return $size_in_mb;
+        }
+        catch(Exception $e){
+            return $e;
+        }
     }
 
     public function filterPostData($data, $key, $type = 'string', $defaultVal = null, $allowNull = false)

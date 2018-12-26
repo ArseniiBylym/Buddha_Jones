@@ -325,9 +325,9 @@ class RediSpotSent
     /**
      * @var integer
      *
-     * @ORM\Column(name="has_graphics", type="smallint", nullable=true)
+     * @ORM\Column(name="no_graphics", type="smallint", nullable=true)
      */
-    private $hasGraphics;
+    private $noGraphics;
 
     /**
      * @var integer
@@ -1380,26 +1380,26 @@ class RediSpotSent
     }
 
     /**
-     * Set hasGraphics
+     * Set noGraphics
      *
-     * @param integer $hasGraphics
+     * @param integer $noGraphics
      * @return RediSpotSent
      */
-    public function setHasGraphics($hasGraphics)
+    public function setNoGraphics($noGraphics)
     {
-        $this->hasGraphics = $hasGraphics;
+        $this->noGraphics = $noGraphics;
 
         return $this;
     }
 
     /**
-     * Get hasGraphics
+     * Get noGraphics
      *
      * @return integer 
      */
-    public function getHasGraphics()
+    public function getNoGraphics()
     {
-        return $this->hasGraphics;
+        return $this->noGraphics;
     }
 
     /**

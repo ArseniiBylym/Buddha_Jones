@@ -899,7 +899,7 @@ false | version_id | int| null | Version Id
 false | spot_resend | int | 0 | send 0/1
 false | prod_accept | int | 0 | send 0/1
 false | finish_accept | int | 0 | send 0/1
-false | has_graphics | int | 0 | send 0/1
+false | no_graphics | int | null | send 0/1/null
 false | is_pdf | int | 0 | send 0/1
 false | editors | JSON encoded array | null | list of editor ids (Like: [12,4,5,3,4])
 false | sent_via_method | JSON encoded array | null | list of method ids (Like: [12,4,5,3,4]). for graphics only spot sent- send value from 'graphics_sent_via_method', and for av send values from 'sent_vai_method'
