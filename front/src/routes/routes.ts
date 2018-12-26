@@ -8,6 +8,7 @@ import { DashboardAsync } from './Dashboard';
 import { ProjectCreateAsync, ProjectsBoardAsync } from './Project';
 import { ProjectsListAsync } from './Projects';
 import { SpotsToBillAsync } from './SpotBilling/SpotsToBill/SpotsToBillAsync';
+import { SpotsToGraphicsAsync } from './SpotGraphics/SpotsToGraphics/SpotsToGraphicsAsync';
 import { ProducerSpotSentFormAsync, ProducerSpotSentListAsync } from './SpotSent';
 import { NewClientRequestListAsync } from './StudioClient/NewClientRequest/List';
 import { TimeEntryAsync } from './TimeTracking';
@@ -120,6 +121,17 @@ export const routes: Route[] = [
         name: 'Spots to bill',
         path: '/portal/spots-to-bill',
         entry: '/portal/spots-to-bill',
+        exact: true,
+        allowAllUsers: true,
+    },
+    {
+        component: SpotsToGraphicsAsync,
+        key: 'spots-to-graphics',
+        accessKey: RouteAccessKey.SpotBilling,
+        group: studioGroup,
+        name: 'Spots to graphics',
+        path: '/portal/spots-to-graphics',
+        entry: '/portal/spots-to-graphics',
         exact: true,
         allowAllUsers: true,
     },
