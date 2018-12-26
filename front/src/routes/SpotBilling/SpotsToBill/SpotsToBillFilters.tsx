@@ -92,7 +92,6 @@ export class SpotsToBillFilters extends React.Component<SpotsToBillFiltersProps,
     }
 
     public render() {
-        console.log(this.props.spotsResponse);
         const { search, producer, loading, fetchError } = this.props;
         return (
             <Section
