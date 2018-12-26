@@ -6,7 +6,9 @@
         "start": "node scripts/start.js",
         "build": "node scripts/build.js",
         "test": "node scripts/test.js --env=jsdom",
-        "deploy-dev": "node scripts/deploy-dev.js"
+        "deploy-dev": "node scripts/deploy-dev.js",
+        "lint": "./node_modules/tslint/bin/tslint -p tsconfig.json -c tslint.json",
+        "lint:fix": "./node_modules/tslint/bin/tslint -p tsconfig.json -c tslint.json --fix"
     },
     "dependencies": {
         "accounting": "^0.4.1",

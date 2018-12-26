@@ -33,9 +33,9 @@ class AddRateModal extends React.Component<Props & AppState, {}> {
     };
 
     public componentWillReceiveProps (nextProps: Props): void {
-        if (nextProps.isOpen && !this.props.isOpen) {
+        if ((nextProps.isOpen && !this.props.isOpen) || (nextProps.mode && !this.props.mode)) {
             this.setState({
-                inputValue: this.props.mode === 'edit' ? this.props.label : '',
+                inputValue: nextProps.mode === 'edit' ? nextProps.label : '',
                 touched: false
             });
         }
