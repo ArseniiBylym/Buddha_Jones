@@ -20,6 +20,7 @@ export enum APIPath {
     SPOT_SENT                               = '/spot-sent',
     SPOT_SENT_OPTIONS                       = '/spot-sent-options',
     SPOTS_TO_BILL                           = '/spot-billing',
+    SPOTS_TO_GRAPHICS                       = '/spot-sent-list',
     FINISHING_HOUSE                         = '/finishing-house',
     VERSION                                 = '/version',
     VERSION_STATUS                          = '/version-status',

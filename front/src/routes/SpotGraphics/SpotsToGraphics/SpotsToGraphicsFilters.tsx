@@ -11,39 +11,44 @@ import _debounce from 'lodash-es/debounce';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { SpotToBillFromApi, SpotToBillProducer } from 'types/spotsToBill';
-import { SpotProjectCampaignGroup } from './SpotsToBill';
-import { SpotsToBillGrid } from './SpotsToBillGrid';
+import { SpotToGraphicsFromApi, SpotToGraphicsProducer } from 'types/spotsToGraphics';
+import { SpotProjectCampaignGroup } from './SpotsToGraphics';
+import { SpotsToGraphicsGrid } from './SpotsToGraphicsGrid';
 
-export interface SpotToBillProducerOption {
+export interface SpotToGraphicsProducerOption {
     id: number;
     name: string;
 }
 
-interface SpotsToBillFiltersProps {
+interface SpotsToGrapnicsFiltersProps {
     onChangeSearch: (search: string) => void;
-    onChangeProducer: (producer: SpotToBillProducerOption | null) => void;
+    onChangeProducer: (producer: SpotToGraphicsProducerOption | null) => void;
     onSpotSelectionToggle: (spotId: number, projectCampaignId: number) => void;
-    selectedSpots: SpotProjectCampaignGroup[];
+    selectedSpots?: SpotProjectCampaignGroup[];
     search: string;
-    producer: SpotToBillProducerOption | null;
+    producer: SpotToGraphicsProducerOption | null;
     loading: boolean;
     fetchError: boolean;
     retryFetch: () => void;
     totalCountResponse: number;
-    spotsResponse: SpotToBillFromApi[];
+    spotsResponse: any[];
 }
 
 @observer
-export class SpotsToBillFilters extends React.Component<SpotsToBillFiltersProps, {}> {
+export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFiltersProps, {}> {
     private producerDropdown: DropdownContainer | null = null;
 
+    // @computed
+    // private get spotsList() {
+
+    // }
+
     @computed
-    private get spots(): { count: number; list: SpotToBillFromApi[] } {
+    private get spots(): { count: number; list: SpotToGraphicsFromApi[] } {
         const query = this.props.search.toLowerCase().trim();
         const producerId: number | null = this.props.producer ? this.props.producer.id : null;
 
-        const list = this.props.spotsResponse.reduce((spots: SpotToBillFromApi[], spot) => {
+        const list = this.props.spotsResponse.reduce((spots: SpotToGraphicsFromApi[], spot) => {
             let queryMatch: boolean = false;
             let producerMatch: boolean = false;
 
@@ -65,9 +70,11 @@ export class SpotsToBillFilters extends React.Component<SpotsToBillFiltersProps,
             if (queryMatch && producerMatch) {
                 spots.push(spot);
             }
-
+            console.log(spots);
             return spots;
         }, []);
+
+        console.log(list, list.length);
 
         return {
             count: list.length,
@@ -75,20 +82,51 @@ export class SpotsToBillFilters extends React.Component<SpotsToBillFiltersProps,
         };
     }
 
+    componentDidMount = () => {
+        console.log(this.props.spotsResponse);
+    }
+    componentDidUpdate = () => {
+        console.log(this.props.spotsResponse);
+    }
+
     @computed
-    private get allProducers(): SpotToBillProducer[] {
+    private get allProducers(): SpotToGraphicsProducer[] {
         let producersIds: number[] = [];
 
-        return this.props.spotsResponse.reduce((producers: SpotToBillProducer[], spot) => {
-            spot.producers.forEach(producer => {
-                const match = producersIds.indexOf(producer.userId) !== -1;
-                if (!match) {
-                    producersIds.push(producer.userId);
-                    producers.push(producer);
-                }
+        let producersList: SpotToGraphicsProducer[] = [];
+
+        if (this.props.spotsResponse.length > 0) {
+
+            this.props.spotsResponse.forEach((item, i) => {
+                if (item.campaing && item.campaign.length > 0) {
+                    item.campaing.forEach((item1: any, i1) => {
+                        item1.sport.forEach((item2: any, i2) => {
+                            item2.producers.forEach((item3, i3) => {
+                                producersList.push(item3);
+                            });
+                        });
+                    });
+                } 
             });
-            return producers;
-        }, []);
+            
+            return producersList;
+        } else {
+            return [];
+        }
+        // return this.props.spotsResponse.reduce((producers: SpotToGraphicsProducer[], spot) => {
+
+        //     let producersList: SpotToGraphicsProducer[] = [];
+
+        //     spot.producers.forEach(producer => {
+        //         const match = producersIds.indexOf(producer.userId) !== -1;
+        //         if (!match) {
+        //             producersIds.push(producer.userId);
+        //             producers.push(producer);
+        //         }
+        //     });
+
+        //     return producersList;
+        // }, []);
     }
 
     public render() {
@@ -142,12 +180,11 @@ export class SpotsToBillFilters extends React.Component<SpotsToBillFiltersProps,
                     },
                 ]}
             >
-                <SpotsToBillGrid
+                <SpotsToGraphicsGrid
                     loading={loading}
                     fetchError={fetchError}
                     retryFetch={this.props.retryFetch}
                     onSpotSelectionToggle={this.props.onSpotSelectionToggle}
-                    selectedSpots={this.props.selectedSpots}
                     spots={this.spots}
                 />
             </Section>
