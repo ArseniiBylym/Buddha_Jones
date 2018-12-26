@@ -3,8 +3,7 @@ import { inject, observer } from 'mobx-react';
 import { HeaderActions, SpotSentActions } from 'actions';
 import { ButtonAdd, ButtonEdit } from 'components/Button';
 import { history } from 'App';
-import { computed } from 'mobx';
-import { SpotSentStore } from '../../../../store/AllStores';
+import { AppStoreState } from '../../../../store/AllStores';
 import { Col, Row, Section } from '../../../../components/Section';
 import { LoadingSpinner } from '../../../../components/Loaders';
 import { Table, TableCell, TableRow } from '../../../../components/Table';
@@ -18,16 +17,18 @@ require('./ProducerSpotSentList.css');
 
 // Props
 interface ProducerSpotSentListProps {
+    store: AppStoreState;
 }
 
 // Component
 @inject('store')
 @observer
 class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}> {
-
-    @computed
     private get essentialDataIsLoading(): boolean {
-        return SpotSentStore.spotSentAllSpotsLoading;
+        if (!this.props.store || !this.props.store.spotSent) {
+            return true;
+        }
+        return this.props.store.spotSent.spotSentAllSpotsLoading;
     }
 
     public componentDidMount() {
@@ -48,7 +49,7 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
             <>
                 {this.getTableWithLoadingSpinner()}
             </>
-        ) : (SpotSentStore.spotSentAllSpots && SpotSentStore.spotSentAllSpots.length > 0) ? (
+        ) : (this.props.store.spotSent.spotSentAllSpots && this.props.store.spotSent.spotSentAllSpots.length > 0) ? (
             <Section
                 noSeparator={true}
                 title="Spots sent"
@@ -74,20 +75,28 @@ class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}
         );
     }
 
-    private getTableWithData(): JSX.Element {
-        if (SpotSentStore.spotSentAllSpots && SpotSentStore.spotSentAllSpots.length > 0) {
+    private getTableWithData(): JSX.Element | null {
+        if (!this.props.store || !this.props.store.spotSent) {
+            return null;
+        }
+        const {
+            spotSent: {
+                spotSentAllSpots
+            }
+        } = this.props.store;
+        if (spotSentAllSpots && spotSentAllSpots.length > 0) {
             let tableHeaders: Array<{
                 title: string;
                 align?: 'left' | 'center' | 'right';
             }> = [];
-            let spotTitles: string[] = Object.keys(SpotSentStore.spotSentAllSpots[0]);
+            let spotTitles: string[] = Object.keys(spotSentAllSpots[0]);
             spotTitles.map((objectKey: string, ind: number) => {
                 tableHeaders.push({
-                    title: (SpotSentStore.spotSentAllSpots) ? SpotSentStore.spotSentAllSpots[0][objectKey].title : 'N/A',
+                    title: (spotSentAllSpots) ? spotSentAllSpots[0][objectKey].title : 'N/A',
                     align: (ind === 0) ? 'left' : (ind === (spotTitles.length - 1)) ? 'right' : 'center'
                 });
             });
-            let tableRowsArr: JSX.Element[] = SpotSentStore.spotSentAllSpots.map((spot: SpotSentAllSpotsSentSpotData, index: number) => {
+            let tableRowsArr: JSX.Element[] = spotSentAllSpots.map((spot: SpotSentAllSpotsSentSpotData, index: number) => {
                 let tableCellsArr: JSX.Element[] = Object.keys(spot).map((objectKey: string, ind: number) => {
                     let checkMark: JSX.Element = (
                         <Checkmark
