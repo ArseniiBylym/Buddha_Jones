@@ -61,6 +61,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_graphicsRequestFinishingRepository;
     protected $_graphicsRequestStatusRepository;
     protected $_outsideCostRepository;
+    protected $_moduleRespsitory;
     protected $_notificationRepository;
     protected $_notificationUserRepository;
     protected $_projectRepository;
@@ -83,6 +84,8 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_statusRepository;
     protected $_studioRepository;
     protected $_studioRateCardRepository;
+    protected $_subModuleRepository;
+    protected $_subModuleAccessRepository;
     protected $_timeEntryRepository;
     protected $_timeEntryFileRepository;
     protected $_timeEntryStatusRepository;
@@ -104,6 +107,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_customerRepo;
     protected $_estimateRepo;
     protected $_graphicsRequestRepo;
+    protected $_moduleRepo;
     protected $_notificationRepo;
     protected $_projectRepo;
     protected $_projectCampaignRepo;
@@ -155,6 +159,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_graphicsRequestFinishingRepository = $this->_em->getRepository('Application\Entity\RediGraphicsRequestFinishing');
         $this->_graphicsRequestStatusRepository = $this->_em->getRepository('Application\Entity\RediGraphicsRequestStatus');
         $this->_outsideCostRepository = $this->_em->getRepository('Application\Entity\RediOutsideCost');
+        $this->_moduleRepository = $this->_em->getRepository('Application\Entity\RediModule');
         $this->_notificationRepository = $this->_em->getRepository('Application\Entity\RediNotification');
         $this->_notificationUserRepository = $this->_em->getRepository('Application\Entity\RediNotificationUser');
         $this->_projectRepository = $this->_em->getRepository('Application\Entity\RediProject');
@@ -177,6 +182,8 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_statusRepository = $this->_em->getRepository('Application\Entity\RediStatus');
         $this->_studioRepository = $this->_em->getRepository('Application\Entity\RediStudio');
         $this->_studioRatecardRepository = $this->_em->getRepository('Application\Entity\RediStudioRatecard');
+        $this->_subModuleRepository = $this->_em->getRepository('Application\Entity\RediSubModule');
+        $this->_subModuleAccessRepository = $this->_em->getRepository('Application\Entity\RediSubModuleAccess');
         $this->_timeEntryRepository = $this->_em->getRepository('Application\Entity\RediTimeEntry');
         $this->_timeEntryStatusRepository = $this->_em->getRepository('Application\Entity\RediTimeEntryStatus');
         // $this->_timeEntryBillStatusRepository = $this->_em->getRepository('Application\Entity\RediTimeEntryBillStatus');
@@ -199,6 +206,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_customerRepo = $this->getServiceLocator()->get('Application\Entity\Repository\CustomerRepository');
         $this->_estimateRepo = $this->getServiceLocator()->get('Application\Entity\Repository\EstimateRepository');
         $this->_graphicsRequestRepo = $this->getServiceLocator()->get('Application\Entity\Repository\GraphicsRequestRepository');
+        $this->_moduleRepo = $this->getServiceLocator()->get('Application\Entity\Repository\ModuleRepository');
         $this->_notificationRepo = $this->getServiceLocator()->get('Application\Entity\Repository\NotificationRepository');
         $this->_projectRepo = $this->getServiceLocator()->get('Application\Entity\Repository\ProjectRepository');
         $this->_projectCampaignRepo = $this->getServiceLocator()->get('Application\Entity\Repository\ProjectCampaignRepository');
