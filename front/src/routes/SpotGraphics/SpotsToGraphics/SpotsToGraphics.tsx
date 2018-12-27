@@ -72,9 +72,7 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
                             retryFetch={spotsToGraphicsFromApi.retry}
                             totalCountResponse={
                                 spotsToGraphicsFromApi.response && spotsToGraphicsFromApi.response.data.length
-                                    // ? spotsToGraphicsFromApi.response.data[0].campaign.length
                                     ? this.formatSpotsList(spotsToGraphicsFromApi.response.data).len
-                                    // ? spotsToGraphicsFromApi.response.data.length
                                     : 0
                             }
                             spotsResponse={

@@ -112,7 +112,7 @@ export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFilte
         const { search, producer, loading, fetchError } = this.props;
         return (
             <Section
-                title="Billable spots"
+                title=""
                 noSeparator={true}
                 headerElements={[
                     ...(loading && this.props.totalCountResponse > 0
@@ -123,28 +123,28 @@ export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFilte
                               },
                           ]
                         : []),
-                    {
-                        key: 'filter-by-producer',
-                        element: (
-                            <DropdownContainer ref={this.referenceProducerDropdown} label="Producer" align="right">
-                                <OptionsList
-                                    onChange={this.handleProducerChange}
-                                    value={producer ? producer.id : null}
-                                    options={[
-                                        {
-                                            key: 'all',
-                                            value: null,
-                                            label: 'All producers',
-                                        },
-                                        ...this.allProducers.map(prod => ({
-                                            value: prod.userId,
-                                            label: [prod.firstName, prod.lastName].filter(n => n !== null).join(' '),
-                                        })),
-                                    ]}
-                                />
-                            </DropdownContainer>
-                        ),
-                    },
+                    // {
+                    //     key: 'filter-by-producer',
+                    //     element: (
+                    //         <DropdownContainer ref={this.referenceProducerDropdown} label="Producer" align="right">
+                    //             <OptionsList
+                    //                 onChange={this.handleProducerChange}
+                    //                 value={producer ? producer.id : null}
+                    //                 options={[
+                    //                     {
+                    //                         key: 'all',
+                    //                         value: null,
+                    //                         label: 'All producers',
+                    //                     },
+                    //                     ...this.allProducers.map(prod => ({
+                    //                         value: prod.userId,
+                    //                         label: [prod.firstName, prod.lastName].filter(n => n !== null).join(' '),
+                    //                     })),
+                    //                 ]}
+                    //             />
+                    //         </DropdownContainer>
+                    //     ),
+                    // },
                     {
                         key: 'filter-by-query',
                         element: (

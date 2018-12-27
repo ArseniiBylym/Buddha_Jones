@@ -1,44 +1,29 @@
-import * as classNames from 'classnames';
-import { Tag } from 'components/Content';
 import { DataFetchError } from 'components/Errors/DataFetchError';
 import { LoadingShade, LoadingSpinner } from 'components/Loaders';
 import { Card } from 'components/Section';
 import { computed } from 'mobx';
-import { observer } from 'mobx-react';
+import { observer, inject } from 'mobx-react';
 import * as React from 'react';
-// import { SpotToGraphicsFromApi, SpotToGraphicsProducer } from 'types/spotsToGraphics';
-// import { SpotProjectCampaignGroup } from './SpotsToGraphics';
+import * as moment from 'moment';
+import { SpotsToGraphicsModal } from './SpotsToGraphicsModal/SpotsToGraphicsModal';
 
 const s = require('./SpotsToGraphicsGrid.css');
 
-interface SpotsToGraphicsGridProps {
-    loading: boolean;
-    fetchError: boolean;
-    retryFetch: () => void;
-    onSpotSelectionToggle: (spotId: number, projectCampaignId: number) => void;
-    spots: {
-        list: any[];
-        count: number;
-    };
-    producerId: number | null;
-}
-
-// interface ProjectCampaignCard {
-//     projectName: string;
-//     studioName: string;
-//     campaingnName: string;
-//     customerName: string;
+// interface SpotsToGraphicsGridProps {
+//     loading: boolean;
+//     fetchError: boolean;
+//     retryFetch: () => void;
+//     onSpotSelectionToggle: (spotId: number, projectCampaignId: number) => void;
 //     spots: {
-//         id: number;
-//         name: string;
-//         date: string;
-//         runtime: string;
-//         status: string;
-//     }[];
+//         list: any[];
+//         count: number;
+//     };
+//     producerId: number | null;
 // }
 
+@inject('store')
 @observer
-export class SpotsToGraphicsGrid extends React.Component<SpotsToGraphicsGridProps, {}> {
+export class SpotsToGraphicsGrid extends React.Component<any, {}> {
     @computed
     private get projectCampaignCards(): any[] {
         let cardsList: any[] = [];
@@ -91,6 +76,7 @@ export class SpotsToGraphicsGrid extends React.Component<SpotsToGraphicsGridProp
 
         return (
             <div className={s.grid}>
+                <SpotsToGraphicsModal />
                 {this.projectCampaignCards.map((projectCampaign, i) => (
                     <Card
                         className={s.card}
@@ -110,27 +96,19 @@ export class SpotsToGraphicsGrid extends React.Component<SpotsToGraphicsGridProp
                                 <div className={s.spots}>
                                     {projectCampaign.spots && projectCampaign.spots.length > 0 && (
                                         <div className={s.spots__header}>
-                                            <p>Date spot sent</p>    
+                                            <p>Spot sent dt.</p>    
                                             <p>Spot name</p>    
                                             <p>Status</p>    
                                         </div>
                                     )}
                                     {projectCampaign.spots.map(spot => {
                                         return (
-                                                <div key={spot.spotId} className={s.spotTable__row}>
+                                                <div key={spot.spotId} onClick={this.handleSpotSelectionToggle(spot)} className={s.spotTable__row}>
                                                     <div className={s.spotDate}>
-                                                        {spot.date}
+                                                        {spot.date && moment(spot.date).format('DD/MM/YYYY')}
                                                     </div>
                                                     <div className={s.spotItem}>
-                                                        <Tag
-                                                            key={spot.spotId}
-                                                            className={classNames(s.tag )}
-                                                            titleClassName={s.tagTitle}
-                                                            onTagClick={this.handleSpotSelectionToggle(
-                                                                
-                                                            )}
-                                                            title={`${spot.spotName} ${spot.runtime}`}
-                                                        />
+                                                        {spot.spotName}{spot.runtime && ` (${spot.runtime})`}
                                                     </div>
                                                     <div className={s.spotStatus}>
                                                         {spot.graphicsStatus}
@@ -159,8 +137,8 @@ export class SpotsToGraphicsGrid extends React.Component<SpotsToGraphicsGridProp
         );
     }
 
-    private handleSpotSelectionToggle = () => e => {
-        // this.props.onSpotSelectionToggle(spotId, projectCampaignId);
-
+    private handleSpotSelectionToggle = (spot) => e => {
+        this.props.store.spotToGraphics.setCurrentSpot(spot);
+        this.props.store.spotToGraphics.toggleModal();
     };
 }

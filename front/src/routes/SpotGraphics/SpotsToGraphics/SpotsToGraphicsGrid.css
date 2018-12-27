@@ -71,7 +71,7 @@
                 color: #968069;
                 font-weight: 300;
                 font-size: .8em;
-                text-align: center;
+                /* text-align: center; */
             }
             & > p:first-child{
                 width: 25%;
@@ -90,18 +90,22 @@
             flex-flow: row nowrap;
             align-items: center;
             padding: 5px 0;
+            color: #5a4d3f;
+            font-size: .95em;
+            font-weight: 600;
+            cursor: pointer;
 
             & > div{
                 width: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
             }
             & > div:first-child{
                 width: 25%;
             }
             & > div:last-child{
                 width: 25%;
+            }
+            &:hover{
+                background-color: #e9e0d7;
             }
         }
         
