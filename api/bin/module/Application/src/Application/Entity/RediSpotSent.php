@@ -325,9 +325,9 @@ class RediSpotSent
     /**
      * @var integer
      *
-     * @ORM\Column(name="has_graphics", type="smallint", nullable=true)
+     * @ORM\Column(name="no_graphics", type="smallint", nullable=true)
      */
-    private $hasGraphics;
+    private $noGraphics;
 
     /**
      * @var integer
@@ -339,9 +339,9 @@ class RediSpotSent
     /**
      * @var integer
      *
-     * @ORM\Column(name="resend", type="smallint", nullable=true)
+     * @ORM\Column(name="all_graphics_resend", type="smallint", nullable=true)
      */
-    private $resend;
+    private $allGraphicsResend;
 
     /**
      * @var integer
@@ -1380,26 +1380,26 @@ class RediSpotSent
     }
 
     /**
-     * Set hasGraphics
+     * Set noGraphics
      *
-     * @param integer $hasGraphics
+     * @param integer $noGraphics
      * @return RediSpotSent
      */
-    public function setHasGraphics($hasGraphics)
+    public function setNoGraphics($noGraphics)
     {
-        $this->hasGraphics = $hasGraphics;
+        $this->noGraphics = $noGraphics;
 
         return $this;
     }
 
     /**
-     * Get hasGraphics
+     * Get noGraphics
      *
      * @return integer 
      */
-    public function getHasGraphics()
+    public function getNoGraphics()
     {
-        return $this->hasGraphics;
+        return $this->noGraphics;
     }
 
     /**
@@ -1426,26 +1426,26 @@ class RediSpotSent
     }
 
     /**
-     * Set resend
+     * Set allGraphicsResend
      *
-     * @param integer $resend
+     * @param integer $allGraphicsResend
      * @return RediSpotSent
      */
-    public function setResend($resend)
+    public function setAllGraphicsResend($allGraphicsResend)
     {
-        $this->resend = $resend;
+        $this->allGraphicsResend = $allGraphicsResend;
 
         return $this;
     }
 
     /**
-     * Get resend
+     * Get allGraphicsResend
      *
      * @return integer 
      */
-    public function getResend()
+    public function getAllGraphicsResend()
     {
-        return $this->resend;
+        return $this->allGraphicsResend;
     }
 
     /**

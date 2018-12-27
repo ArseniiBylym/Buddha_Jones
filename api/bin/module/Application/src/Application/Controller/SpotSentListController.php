@@ -12,33 +12,19 @@ use Application\Entity\RediCcStatementLine;
 
 class SpotSentListController extends CustomAbstractActionController
 {
-    public function getList() {
+    public function getList()
+    {
+        $filter['current_user_id'] = $this->_user_id;
+
         $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
-        $filter['studio_id'] = (int)$this->getRequest()->getQuery('studio_id', 0);
-        // $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
-        // $length = (int)trim($this->getRequest()->getQuery('length', 10));
 
-            $data = $this->_spotRepo->getSpotSentListTree();
+        $data = $this->_spotRepo->getSpotSentListTree($filter);
 
-            //     $spot['producers'] = $this->_usersRepo->getCreativeUsersFromProjectCampaignByRole(
-            //         $spot['projectCampaignId'],
-            //         array(1, 2, 3)
-            //     );
-            // }
-
-            $response = array(
-                'status' => 1,
-                'message' => 'Request Successful',
-                // 'length' => $length,
-                // 'offset' => $offset,
-                // 'total_count' => $totalCount,
-                // 'object_count' => count($data),
-                'data' => $data,
-            );
-
-        if ($response['status'] == 0) {
-            $this->getResponse()->setStatusCode(400);
-        }
+        $response = array(
+            'status' => 1,
+            'message' => 'Request Successful',
+            'data' => $data,
+        );
 
         return new JsonModel($response);
     }

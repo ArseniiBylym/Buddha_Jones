@@ -292,7 +292,14 @@ class SpotSentController extends CustomAbstractActionController
                 $sv['finish_accept'] = (!empty($sv['finish_accept'])) ? 1 : 0;
                 $sv['prod_accept'] = (!empty($sv['prod_accept'])) ? 1 : 0;
                 $sv['line_status_id'] = $this->_commonRepo->filterPostData($sv, 'line_status_id', 'int', 1);
-                
+                $sv['graphics_status_id'] = $this->_commonRepo->filterPostData($sv, 'graphics_status_id', 'int', null);
+
+                if ($sv['line_status_id'] < 4) {
+                    $sv['graphics_status_id'] = null;
+                } else if ($sv['line_status_id'] == 4 && !$sv['graphics_status_id']) {
+                    $sv['graphics_status_id'] = 1;
+                }
+
                 $sentViaMethod = $this->_commonRepo->filterPostData($sv, 'sent_via_method', 'array', array());
 
                 if (!$sentViaMethod) {
@@ -300,7 +307,7 @@ class SpotSentController extends CustomAbstractActionController
                 }
 
                 $sv['sent_via_method'] = is_array($sentViaMethod) ? $this->arrayToCommaSeparated($sentViaMethod) : $sentViaMethod;
-                $sv['has_graphics'] = $this->_commonRepo->filterPostData($sv, 'has_graphics', 'boolean', null, true);
+                $sv['no_graphics'] = $this->_commonRepo->filterPostData($sv, 'no_graphics', 'boolean', null, true);
                 $sv['is_pdf'] = $this->_commonRepo->filterPostData($sv, 'is_pdf', 'boolean', null, true);
                 $sv['spot_sent_type'] = $spotSentType;
 
@@ -309,8 +316,8 @@ class SpotSentController extends CustomAbstractActionController
                 if (!$graphicsFiles) {
                     $graphicsFiles = $this->_commonRepo->filterPostData($sv, 'graphics_file');
                 }
-                
-                $sv['graphics_file'] = array_map(function($file) {
+
+                $sv['graphics_file'] = array_map(function ($file) {
                     $file['file_name'] = (!empty($file['file_name'])) ? $file['file_name'] : null;
                     $file['file_description'] = (!empty($file['file_description'])) ? $file['file_description'] : null;
                     $file['resend'] = (!empty($file['resend'])) ? $file['resend'] : null;
@@ -368,8 +375,9 @@ class SpotSentController extends CustomAbstractActionController
                     $spotSent->setSpotResend($svd['spot_resend']);
                     $spotSent->setFinishRequest($svd['finish_request']);
                     $spotSent->setLineStatusId($svd['line_status_id']);
+                    $spotSent->setGraphicsStatusId($svd['graphics_status_id']);
                     $spotSent->setSentViaMethod($svd['sent_via_method']);
-                    $spotSent->setHasGraphics($svd['has_graphics']);
+                    $spotSent->setNoGraphics($svd['no_graphics']);
                     $spotSent->setIsPdf($svd['is_pdf']);
 
                     if ($isUpdate) {
@@ -388,7 +396,7 @@ class SpotSentController extends CustomAbstractActionController
                     $spotSentId = $spotSent->getId();
 
                     if ($svd['graphics_file']) {
-                        foreach($svd['graphics_file'] as $file) {
+                        foreach ($svd['graphics_file'] as $file) {
                             if (empty($file['file_name'])) {
                                 continue;
                             }
@@ -471,6 +479,8 @@ class SpotSentController extends CustomAbstractActionController
                         }
                     }
                 }
+
+                $this->spotSentSubmissionPostProcess($requestId);
 
                 $response = array(
                     'status' => 1,
@@ -689,5 +699,35 @@ class SpotSentController extends CustomAbstractActionController
         return array(
             "result" => true,
         );
+    }
+
+    public function spotSentSubmissionPostProcess($requestId)
+    {
+        $data = $this->getSingle($requestId);
+
+        if (!$data) {
+            return;
+        }
+
+        // update all graphics resend field
+        $graphicsFilesArr = array_column($data['spotData'], 'graphicsFile');
+
+        if ($graphicsFilesArr) {
+            foreach ($graphicsFilesArr as $graphicsFiles) {
+                if (!empty($graphicsFiles[0]['spotSentId'])) {
+                    $spotSentId = (int)$graphicsFiles[0]['spotSentId'];
+                    $hasNull = array_intersect(array(0, null), array_column($graphicsFiles, 'resend'));
+                    $resend = $hasNull ? 0 : 1;
+                    $spotSentRow = $this->_spotSentRepository->find($spotSentId);
+
+                    if ($spotSentRow) {
+                        $spotSentRow->setAllGraphicsResend($resend);
+                        $this->_em->persist($spotSentRow);
+                    }
+                }
+            }
+
+            $this->_em->flush();
+        }
     }
 }

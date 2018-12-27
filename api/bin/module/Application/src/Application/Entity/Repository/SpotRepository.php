@@ -189,6 +189,7 @@ class SpotRepository extends EntityRepository
                 // "editor",
                 "customerContact",
                 "spotSentType",
+                "allGraphicsResend",
                 "createdBy",
                 "updatedBy",
                 "createdAt",
@@ -511,6 +512,7 @@ class SpotRepository extends EntityRepository
     {
         $dql = "SELECT 
                     sc.id AS spotSentId,
+                    sc.requestId,
                     sc.campaignId,
                     ca.campaignName,
                     sc.projectCampaignId,
@@ -525,10 +527,11 @@ class SpotRepository extends EntityRepository
                     sc.prodAccept,
                     sc.finishAccept,
                     sc.lineStatusId,
+                    sc.graphicsStatusId,
                     sc.editor,
                     s.trtId,
                     trt.runtime,
-                    sc.hasGraphics,
+                    sc.noGraphics,
                     sc.isPdf
                 FROM \Application\Entity\RediSpotSent sc
                 LEFT JOIN \Application\Entity\RediCampaign ca
@@ -546,14 +549,16 @@ class SpotRepository extends EntityRepository
 
         $result = $query->getArrayResult();
 
-        foreach ($result as &$row) {
+        $result = array_map(function ($row) {
             $row['campaignId'] = (int)$row['campaignId'];
             $row['projectCampaignId'] = (int)$row['projectCampaignId'];
             $row['spotId'] = (int)$row['spotId'];
             $row['versionId'] = (int)$row['versionId'];
             $row['spotVersionId'] = (int)$row['spotVersionId'];
             $row['lineStatusId'] = (int)$row['lineStatusId'];
-        }
+
+            return $row;
+        }, $result);
 
         return $result;
     }
@@ -692,7 +697,7 @@ class SpotRepository extends EntityRepository
     public function getSpotSendFiles($spotSentId)
     {
         $dql = "SELECT 
-                  s.fileName, s.fileDescription, s.resend, s.creativeUserId
+                  s.spotSentId, s.fileName, s.fileDescription, s.resend, s.creativeUserId
                 FROM \Application\Entity\RediSpotSentFile s
                 WHERE s.spotSentId=:spot_sent_id";
 
@@ -997,7 +1002,7 @@ class SpotRepository extends EntityRepository
         return $maxRequestId;
     }
 
-    public function getSpotSentListTree()
+    public function getSpotSentListTree($filter = array())
     {
         $dql = "SELECT 
                     ss.projectId,
@@ -1020,8 +1025,8 @@ class SpotRepository extends EntityRepository
                     ss.graphicsStatusId,
                     s.trtId,
                     trt.runtime,
-                    ss.hasGraphics,
-                    ss.resend
+                    ss.noGraphics,
+                    ss.allGraphicsResend
                 FROM \Application\Entity\RediSpotSent ss
                 LEFT JOIN \Application\Entity\RediProject p 
                     WITH p.id = ss.projectId
@@ -1042,15 +1047,80 @@ class SpotRepository extends EntityRepository
                 WHERE ss.billId IS NULL
                     AND ss.projectId IS NOT NULL
                     AND ss.campaignId IS NOT NULL
-                GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId
+                ";
+
+        $dqlFilter = [];
+
+        if (!empty($filter['current_user_id'])) {
+            $dqlFilter[] = " ((ss.createdBy= :current_user_id AND ss.lineStatusId <= 1) OR ss.lineStatusId > 1) ";
+        }
+
+        if (!empty($filter['spot_sent_id'])) {
+            $dqlFilter[] = " (ss.id = :spot_sent_id) ";
+        }
+
+        if (count($dqlFilter)) {
+            $dql .= " AND " . implode(" AND ", $dqlFilter);
+        }
+
+        $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId
                 ORDER BY p.projectName ASC , c.campaignName ASC";
 
+
         $query = $this->getEntityManager()->createQuery($dql);
+
+        if (!empty($filter['current_user_id'])) {
+            $query->setParameter("current_user_id", $filter['current_user_id']);
+        }
+
+        if (!empty($filter['spot_sent_id'])) {
+            $query->setParameter("spot_sent_id", $filter['spot_sent_id']);
+        }
+
         $result = $query->getArrayResult();
-        $response = array();
 
         $statusOptions = $this->getSpotSentOption('status', true);
         $graphicsStatusOptions = $this->getSpotSentOption('graphics_status', true);
+
+        // update status
+        $result = array_map(function ($ssRow) use ($statusOptions, $graphicsStatusOptions) {
+            $ssRow['spotLineStatus'] = (!empty($statusOptions[$ssRow['spotLineStatusId']])) ? $statusOptions[$ssRow['spotLineStatusId']]['name'] : null;
+            $graphicsStatus = (!empty($graphicsStatusOptions[$ssRow['graphicsStatusId']])) ? $graphicsStatusOptions[$ssRow['graphicsStatusId']]['name'] : null;
+
+            if ($ssRow['noGraphics'] === null) {
+                if ($ssRow['graphicsStatusId'] == 2) {
+                    $graphicsStatus = 'EDL Requested';
+                }
+
+                if ($ssRow['graphicsStatusId'] == 3) {
+                    $graphicsStatus = 'EDL Exported';
+                }
+            } else {
+                if ($ssRow['noGraphics'] === 1 && $ssRow['graphicsStatusId'] == 4) {
+                    $graphicsStatus = 'No Graphics';
+                }
+
+                if ($ssRow['noGraphics'] === 0) {
+                    if ($ssRow['all_graphics_resend'] == 0 && $ssRow['graphicsStatusId'] == 4) {
+                        $graphicsStatus = 'Ready to Bill';
+                    }
+
+                    if ($ssRow['all_graphics_resend'] == 1 && $ssRow['graphicsStatusId'] == 4) {
+                        $graphicsStatus = 'All Resend';
+                    }
+                }
+            }
+
+            $ssRow['graphicsStatus'] = $graphicsStatus;
+
+            return $ssRow;
+        }, $result);
+
+        if (!empty($filter['return_flat_result'])) {
+            return $result;
+        }
+
+        $response = array();
         $userRepo = new UsersRepository($this->_entityManager);
 
         foreach ($result as $row) {
@@ -1080,42 +1150,42 @@ class SpotRepository extends EntityRepository
             }
 
             if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']])) {
-                $status = (!empty($statusOptions[$row['spotLineStatusId']])) ? $statusOptions[$row['spotLineStatusId']]['name'] : null;
-                $graphicsStatus = (!empty($graphicsStatusOptions[$row['graphicsStatusId']])) ? $graphicsStatusOptions[$row['graphicsStatusId']]['name'] : null;
+                // $status = (!empty($statusOptions[$row['spotLineStatusId']])) ? $statusOptions[$row['spotLineStatusId']]['name'] : null;
+                // $graphicsStatus = (!empty($graphicsStatusOptions[$row['graphicsStatusId']])) ? $graphicsStatusOptions[$row['graphicsStatusId']]['name'] : null;
 
-                if ($row['hasGraphics'] === null) {
-                    if ($row['graphicsStatusId'] == 2) {
-                        $graphicsStatus = 'EDL Requested';
-                    }
+                // if ($row['noGraphics'] === null) {
+                //     if ($row['graphicsStatusId'] == 2) {
+                //         $graphicsStatus = 'EDL Requested';
+                //     }
 
-                    if ($row['graphicsStatusId'] == 3) {
-                        $graphicsStatus = 'EDL Exported';
-                    }
-                } else {
-                    if ($row['hasGraphics'] === 0 && $row['graphicsStatusId'] == 4) {
-                        $graphicsStatus = 'No Graphics';
-                    }
+                //     if ($row['graphicsStatusId'] == 3) {
+                //         $graphicsStatus = 'EDL Exported';
+                //     }
+                // } else {
+                //     if ($row['noGraphics'] === 1 && $row['graphicsStatusId'] == 4) {
+                //         $graphicsStatus = 'No Graphics';
+                //     }
 
-                    if ($row['hasGraphics'] === 1) {
-                        if ($row['resend'] == 0 && $row['graphicsStatusId'] == 4) {
-                            $graphicsStatus = 'Ready to Bill';
-                        }
+                //     if ($row['noGraphics'] === 0) {
+                //         if ($row['all_graphics_resend'] == 0 && $row['graphicsStatusId'] == 4) {
+                //             $graphicsStatus = 'Ready to Bill';
+                //         }
 
-                        if ($row['hasGraphics'] === 1 && $row['resend'] == 1 && $row['graphicsStatusId'] == 4) {
-                            $graphicsStatus = 'All Resend';
-                        }
-                    }
-                }
+                //         if ($row['all_graphics_resend'] == 1 && $row['graphicsStatusId'] == 4) {
+                //             $graphicsStatus = 'All Resend';
+                //         }
+                //     }
+                // }
 
                 $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']] = array(
                     'spotId' => (int)$row['spotId'],
                     'spotName' => $row['spotName'],
-                    // 'spotSentId' => (int)$row['spotSentId'],
+                    'spotSentId' => (int)$row['spotSentId'],
                     'spotSentRequestId' => (int)$row['spotSentRequestId'],
                     'spotLineStatusId' => $row['spotLineStatusId'],
-                    'spotLineStatus' => $status,
+                    'spotLineStatus' => $row['spotLineStatus'],
                     'graphicsStatusId' => $row['graphicsStatusId'],
-                    'graphicsStatus' => $graphicsStatus,
+                    'graphicsStatus' => $row['graphicsStatus'],
                     'spotSentDate' => $row['spotSentDate'],
                     'trtId' => $row['trtId'],
                     'runtime' => $row['runtime'],
@@ -1124,14 +1194,6 @@ class SpotRepository extends EntityRepository
                     'producers' => $userRepo->getCreativeUsersFromProjectCampaignByRole($row['projectCampaignId'], array(1, 2, 3)),
                 );
             }
-
-            // if (empty($row['versionId'])) {
-            //     continue;
-            // }
-
-            // $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']]['version'][] = array(
-                
-            // );
         }
 
         $response = array_values(array_map(function ($project) {
@@ -1148,5 +1210,32 @@ class SpotRepository extends EntityRepository
         }, $response));
 
         return $response;
+    }
+
+    public function getSpotSentForGraphicsById($spotSentId)
+    {
+        $data = $this->getSpotSentListTree(array(
+            'spot_sent_id' => $spotSentId,
+            'return_flat_result' => true,
+        ));
+
+        $data = (isset($data[0]) ? $data[0] : null);
+
+        if ($data) {
+            $data['graphicsFile'] = $this->getSpotSendFiles($spotSentId);
+
+            unset($data["projectId"]);
+            unset($data["studioId"]);
+            unset($data["campaignId"]);
+            unset($data["customerId"]);
+            unset($data["projectCampaignId"]);
+            unset($data["spotId"]);
+            unset($data["versionId"]);
+            unset($data["spotSentRequestId"]);
+            unset($data["trtId"]);
+            unset($data["allGraphicsResend"]);
+
+            return $data;
+        }
     }
 }
