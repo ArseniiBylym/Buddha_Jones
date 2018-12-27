@@ -49,6 +49,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                     date: spot.spotSentDate && spot.spotSentDate.date || '',
                     runtime: spot.runtime,
                     graphicsStatus: spot.graphicsStatus,
+                    versionName: spot.versionName
                };
                spots.push(spotItem);
            });
@@ -97,7 +98,8 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                     {projectCampaign.spots && projectCampaign.spots.length > 0 && (
                                         <div className={s.spots__header}>
                                             <p>Spot sent dt.</p>    
-                                            <p>Spot name</p>    
+                                            <p>Spot name</p>   
+                                            <p>Ver.</p>   
                                             <p>Status</p>    
                                         </div>
                                     )}
@@ -109,6 +111,9 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                                     </div>
                                                     <div className={s.spotItem}>
                                                         {spot.spotName}{spot.runtime && ` (${spot.runtime})`}
+                                                    </div>
+                                                    <div className={s.spotStatus}>
+                                                        {spot.versionName}
                                                     </div>
                                                     <div className={s.spotStatus}>
                                                         {spot.graphicsStatus}

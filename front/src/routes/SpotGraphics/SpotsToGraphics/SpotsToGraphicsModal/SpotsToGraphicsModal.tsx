@@ -2,7 +2,6 @@ import * as React from 'react';
 import { observable, action } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { Modal } from 'components/Modals';
-import { DatePicker } from 'components/Calendar/DatePicker';
 import { TableRow, Table, TableCell } from 'components/Table';
 import { Input } from 'components/Form';
 import { ButtonAdd, ButtonClose } from 'components/Button';
@@ -10,6 +9,7 @@ import { Section } from 'components/Section';
 import { Paragraph } from 'components/Content';
 import { IconTickBlue, IconTickWhite, IconArrowLeftYellow } from 'components/Icons';
 import TextAreaFile from 'components/Form/TextAreaFile';
+import * as moment from 'moment';
 
 const s = require('./SpotsToGraphicsModal.css');
 
@@ -20,6 +20,7 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
     state = {
         textareaValue: '',
         textareaEmpty: true,
+        isFilesFill: false 
     };
 
     @observable private withGraphics: boolean = false;
@@ -65,19 +66,17 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                 >
                     <div className={s.SpotToGraphicsModal}>
                         <div className={s.header}>
-                                <h2 className={s.header__spotName}>{spotToGraphics.currentSpot.spotName}</h2>
+                                <h2 className={s.header__spotName}>
+                                    {spotToGraphics.currentSpot.spotName}
+                                    {spotToGraphics.currentSpot.runtime && ` (${spotToGraphics.currentSpot.runtime})`}
+                                </h2>
                                 <IconArrowLeftYellow marginLeftAuto={true} marginRight={10} width={12} height={9} />
                                 <div className={s.header_backButton} onClick={this.handleModalClose}>Back to spot sent list</div>
                         </div>
                         <div className={s.content}>
                             <div className={s.dateSelect}>
                                 <div className={s.dateSelect__item}>
-                                    Spot sent date
-                                    <DatePicker 
-                                        onChange={this.changeDateHandler}
-                                        align="right"
-                                        value={null}
-                                    />
+                                    Spot sent date: {spotToGraphics.currentSpot.date && moment(spotToGraphics.currentSpot.date).format('DD/MM/YYYY')}
                                 </div>
                             </div>
                             <div className={s.labels}></div>
@@ -91,7 +90,6 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                                 </div>
                             </div>
                             {this.getFilesWorkOnSection()}
-                            
                         </div>
                     </div>
                 </Modal>
@@ -128,10 +126,6 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
         }
     }
 
-    private changeDateHandler = (date) => {
-        this.props.store.spotToGraphics.setDate(date);
-    }
-
     private handleFileAdd = () => {
         if (this.state.textareaValue) {
             const arr: string[] | null = this.state.textareaValue.match(/[^\r\n]+/g);
@@ -149,6 +143,16 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
 
     private handleFileChangeName = (index: number) => e => {
         this.props.store.spotToGraphics.setFileName(index, e.target.value);
+
+        if (this.props.store.spotToGraphics.isFilesEmpty) {
+            this.setState({
+                isFilesFill: false,
+            });
+        } else  {
+            this.setState({
+                isFilesFill: true,
+            });
+        }
     }
 
     private handleFileChangeDescription = (index: number) => e => {
@@ -160,6 +164,11 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
     }
 
     private handleFileRemove = (fileIndex: number) => () => {
+        if (this.props.store.spotToGraphics.files.length === 1 && !this.withGraphics) {
+            this.setState({
+                isFilesFill: false
+            });
+        }
         this.props.store.spotToGraphics.removeFileItem(fileIndex);
     };
 
@@ -269,9 +278,9 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                 <div className={s.buttonSend__container}>
                     <div 
                         onClick={this.sendHandler}
-                        className={s.buttonSend__item}
+                        className={this.state.isFilesFill || this.withGraphics ? s.buttonSend__itemGreen : s.buttonSend__item}
                     >
-                        {this.withGraphics ? 'Save' : 'Request EDL'}
+                        {this.state.isFilesFill || this.withGraphics ? 'Save' : 'Request EDL'}
                     </div>
                 </div>
                 <Modal

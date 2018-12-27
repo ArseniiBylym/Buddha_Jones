@@ -67,17 +67,13 @@
             flex-flow: row nowrap;
 
             & > p{
-                width: 50%;
+                width: 15%;
                 color: #968069;
                 font-weight: 300;
                 font-size: .8em;
-                /* text-align: center; */
             }
-            & > p:first-child{
-                width: 25%;
-            }
-            & > p:last-child{
-                width: 25%;
+            & > p:nth-child(2) {
+                width: 55%;
             }
 
         }
@@ -96,13 +92,10 @@
             cursor: pointer;
 
             & > div{
-                width: 50%;
+                width: 15%;
             }
-            & > div:first-child{
-                width: 25%;
-            }
-            & > div:last-child{
-                width: 25%;
+            & > div:nth-child(2) {
+                width: 55%;
             }
             &:hover{
                 background-color: #e9e0d7;

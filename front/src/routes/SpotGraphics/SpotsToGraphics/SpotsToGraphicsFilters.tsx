@@ -1,7 +1,6 @@
 import {
     DropdownContainer,
     InputSearch,
-    OptionsList,
     OptionsListOptionProp
     } from 'components/Form';
 import { LoadingIndicator } from 'components/Loaders';

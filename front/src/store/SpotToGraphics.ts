@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { observable, action, computed, reaction } from 'mobx';
 
 export class SpotToGraphics {
     @observable public isModalOpen: boolean = false;  // change it before commit 
@@ -10,6 +10,15 @@ export class SpotToGraphics {
     @action 
     public setDate = (date) => {
         this.date = date;
+    }
+
+    @computed
+    public get isFilesEmpty (): boolean {
+        if (this.files.length === 0 || (this.files.length === 1 && this.files[0].name === '')) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @action
@@ -27,7 +36,7 @@ export class SpotToGraphics {
 
     @action
     public addFileArray = (files: string[]) => {
-        if (this.files[this.files.length - 1].name === '') {
+        if (this.files.length > 0 && this.files[this.files.length - 1].name === '') {
             this.files[this.files.length - 1].name = files[0];
             if (files.length > 1) {
                 let newFilesList = files.splice(0, 1);
