@@ -141,6 +141,7 @@ false | studio_id | int | null | studio id
 false | ratecard_name | string | null | ratecard name
 false | ratecard_note | string | null | note
 false | file | string (Base 64 encoded file) | null | Base 64 encoded file
+false | delete_file | int | null | sent 1 for deleting file
 
 
 ## Delete Ratecard type

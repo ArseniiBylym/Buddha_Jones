@@ -116,6 +116,7 @@ class RatecardTypeController extends CustomAbstractActionController
         $ratecardName = $this->_commonRepo->filterPostData($data, 'ratecard_name', 'string');
         $ratecardNote = $this->_commonRepo->filterPostData($data, 'ratecard_note', 'string');
         $file = $this->_commonRepo->filterPostData($data, 'file', 'string');
+        $deleteFile = $this->_commonRepo->filterPostData($data, 'delete_file', 'int');
 
         try {
             $ratecardType = $this->_ratecardTypeRepository->find($id);
@@ -142,11 +143,14 @@ class RatecardTypeController extends CustomAbstractActionController
                 $ratecardType->setRatecardNote($ratecardNote);
             }
 
+            if($deleteFile) {
+                $ratecardType->setFile(null);
+            }
 
             $this->_em->persist($ratecardType);
             $this->_em->flush();
 
-            if ($file) {
+            if (!$deleteFile && $file) {
                 $this->_saveRatecardFile($id, $file);
             }
 
