@@ -5,15 +5,22 @@
 }
 .header{
     background-color: #3e99b9;
-    padding: 40px;
+    padding: 30px;
+    /* display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: space-between; */
+
+}
+.header__spotDetails{
+    color: white;
+    font-size: 16px;
+}
+.header__mainInfo{
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
     justify-content: space-between;
-
-    & > .spotName{
-
-    }
 }
 .header_backButton{
     cursor: pointer;

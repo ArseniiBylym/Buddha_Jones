@@ -4,6 +4,7 @@ import { Card } from 'components/Section';
 import { computed } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import * as React from 'react';
+import { history } from 'App';
 import * as moment from 'moment';
 import { SpotsToGraphicsModal } from './SpotsToGraphicsModal/SpotsToGraphicsModal';
 
@@ -30,11 +31,13 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
         if (this.props.spots) {
 
         this.props.spots.list.forEach((item, i) => {
-           let obj: {campaignName: string, customerName: string, projectName: string, studioName: string, spots?: any[]} = {
+           let obj: {campaignName: string, customerName: string, projectName: string, studioName: string, studioId: number, projectId: number, spots?: any[]} = {
                 campaignName: item.campaignName,
                 customerName: item.customerName,
                 projectName: item.projectName,
                 studioName: item.studioName,
+                studioId: item.studioId,
+                projectId: item.projectId
            };
 
            let spots: any[] = [];
@@ -48,7 +51,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                     spotName: spot.spotName,
                     date: spot.spotSentDate && spot.spotSentDate.date || '',
                     runtime: spot.runtime,
-                    graphicsStatus: spot.graphicsStatus,
+                    spotLineStatus: spot.spotLineStatus,
                     versionName: spot.versionName,
                     spotSentId: spot.spotSentId
                };
@@ -90,7 +93,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                         <React.Fragment>
                             <div className={s.content}>
                                 <div className={s.headline}>
-                                    <h3>{projectCampaign.projectName}</h3>
+                                    <h3 onClick={this.handleProjectClick(projectCampaign)}>{projectCampaign.projectName}</h3>
                                     <h4>
                                         {projectCampaign.campaignName}
                                     </h4>
@@ -118,7 +121,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                                         {spot.versionName}
                                                     </div>
                                                     <div className={s.spotStatus}>
-                                                        {spot.graphicsStatus}
+                                                        {spot.spotLineStatus}
                                                     </div>
                                                 </div>
                                         );
@@ -143,6 +146,51 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
             </div>
         );
     }
+
+    private handleProjectClick = (project) => e => {
+        let path = '/portal/project/' +
+            project.studioId +
+            project.studioName +
+            project.projectId +
+            project.projectName + '1';
+
+        history.push(path);
+    }
+
+    // private handleProjectClick = () => {
+        
+    //         this.props.onProjectClick(
+    //             this.props.project.studioId,
+    //             this.props.project.studioName,
+    //             this.props.project.id,
+    //             this.props.project.name
+    //         );
+    // };
+
+    // private handleProjectClick = (
+    //     studioId: number,
+    //     studioName: string,
+    //     projectId: number,
+    //     projectName: string,
+    //     projectCampaignId?: number
+    // ) => {
+    //     let path =
+    //         '/portal/project/' +
+    //         studioId +
+    //         '/' +
+    //         studioName +
+    //         '/' +
+    //         projectId +
+    //         '/' +
+    //         projectName +
+    //         '/' +
+    //         (typeof this.props.match !== 'undefined' ? this.props.match.params['pageId'] : '1');
+
+    //     if (typeof projectCampaignId !== 'undefined') {
+    //         path += '?projectCampaignId=' + projectCampaignId;
+    //     }
+    //     history.push(path);
+    // };
 
     private handleSpotSelectionToggle = (spot) => e => {
             this.props.store.spotToGraphics.getSpotFromApi(spot.spotSentId);

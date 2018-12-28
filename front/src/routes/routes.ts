@@ -98,7 +98,7 @@ export const routes: Route[] = [
         key: 'producer-spot-sent-list',
         accessKey: RouteAccessKey.SpotSentByProducer,
         group: studioGroup,
-        name: 'Spot sent',
+        name: 'Spot sent request',
         path: '/portal/studio/producer-spot-sent-list',
         entry: '/portal/studio/producer-spot-sent-list',
         exact: true,

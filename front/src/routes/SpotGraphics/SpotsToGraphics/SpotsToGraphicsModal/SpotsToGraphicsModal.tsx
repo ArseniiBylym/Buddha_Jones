@@ -9,7 +9,7 @@ import { Section } from 'components/Section';
 import { Paragraph } from 'components/Content';
 import { IconTickBlue, IconTickWhite, IconArrowLeftYellow } from 'components/Icons';
 import TextAreaFile from 'components/Form/TextAreaFile';
-import * as moment from 'moment';
+// import * as moment from 'moment';
 
 const s = require('./SpotsToGraphicsModal.css');
 
@@ -71,26 +71,33 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                 >
                     <div className={s.SpotToGraphicsModal}>
                         <div className={s.header}>
-                                <h2 className={s.header__spotName}>
-                                    {spotToGraphics.fetchedSpot.spotName}
-                                    {spotToGraphics.fetchedSpot.runtime && ` (${spotToGraphics.fetchedSpot.runtime})`}
-                                </h2>
-                                <IconArrowLeftYellow marginLeftAuto={true} marginRight={10} width={12} height={9} />
-                                <div className={s.header_backButton} onClick={this.handleModalClose}>Back to spot sent list</div>
+                                <div className={s.header__spotDetails}>
+                                    <span>{spotToGraphics.fetchedSpot.projectName ? spotToGraphics.fetchedSpot.projectName : null}</span>
+                                    {` - `}
+                                    <span>{spotToGraphics.fetchedSpot.campaignName ? spotToGraphics.fetchedSpot.campaignName : null}</span>
+                                </div>
+                                <div className={s.header__mainInfo}>
+                                    <h2 className={s.header__spotName}>
+                                        {spotToGraphics.fetchedSpot.spotName}
+                                        {spotToGraphics.fetchedSpot.runtime && ` (${spotToGraphics.fetchedSpot.runtime})`}
+                                    </h2>
+                                    <IconArrowLeftYellow marginLeftAuto={true} marginRight={10} width={12} height={9} />
+                                    <div className={s.header_backButton} onClick={this.handleModalClose}>Back to spot sent list</div>
+                                </div>
                         </div>
                         <div className={s.content}>
-                            <div className={s.dateSelect}>
+                            {/* <div className={s.dateSelect}>
                                 <div className={s.dateSelect__item}>
                                     Spot sent date: {spotToGraphics.fetchedSpot.spotSentDate && moment(spotToGraphics.fetchedSpot.spotSentDate).format('DD/MM/YYYY')}
                                 </div>
-                            </div>
-                            <div className={s.labels}>
+                            </div> */}
+                            {/* <div className={s.labels}>
                                 {spotToGraphics.fetchedSpot.projectName && <div className={s.label__item}>{spotToGraphics.fetchedSpot.projectName}</div>}
                                 {spotToGraphics.fetchedSpot.campaignName && <div className={s.label__item}>{spotToGraphics.fetchedSpot.campaignName}</div>}
                                 {spotToGraphics.fetchedSpot.spotName && <div className={s.label__item}>{spotToGraphics.fetchedSpot.spotName}</div>}
                                 {spotToGraphics.fetchedSpot.versionName && <div className={s.label__item}>{spotToGraphics.fetchedSpot.versionName}</div>}
                             </div>
-                            <hr /> 
+                            <hr />  */}
                             <div className={s.noGraphicsContainer} onClick={this.withGraphicsTogle}>
                                 <div className={s.noGraphicsContainer__wrapper}>
                                     <div className={s.noGraphicsCheckbox}>
