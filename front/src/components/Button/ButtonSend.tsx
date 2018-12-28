@@ -20,6 +20,7 @@ interface ButtonSendProps {
     labelColor?: ButtonLabelColorPropType;
     labelOnLeft?: boolean;
     saving?: boolean;
+    labelSize?: 'small' | 'large';
 }
 
 // Component
@@ -36,6 +37,7 @@ export class ButtonSend extends React.Component<ButtonSendProps, {}> {
             labelColor: 'blue',
             labelOnLeft: true,
             saving: false,
+            labelSize: 'small'
         };
     }
 
@@ -51,7 +53,8 @@ export class ButtonSend extends React.Component<ButtonSendProps, {}> {
                               text: this.props.label,
                               color: this.props.labelColor,
                               onLeft: this.props.labelOnLeft,
-                              size: 'small',
+                            //   size: 'small',
+                              size: this.props.labelSize,
                           }
                         : undefined
                 }

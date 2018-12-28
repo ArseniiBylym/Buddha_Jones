@@ -70,25 +70,22 @@
     flex-flow: row nowrap;
     align-items: center;
     justify-content: flex-end;
+    padding: 10px;
 }
 .buttonSend__item{
-    margin: 10px 20px 0 auto; 
+    /* margin: 10px 20px 0 auto;  */
+    margin: 9px 0;
     padding: 5px;
     background-color: #e8dfd7;
     width: 100px;
     text-align: center;
     cursor: pointer;
+    /* display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: flex-end; */
 }
-.buttonSend__itemGreen{
-    margin: 10px 20px 0 auto; 
-    padding: 5px;
-    background-color: #e8dfd7;
-    width: 100px;
-    text-align: center;
-    cursor: pointer;
-    color: white;
-    background-color: #46ad68;
-}
+
 .modalsConfirmButtons__container{
     display: flex;
     flex-flow: row nowrap;
@@ -117,4 +114,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+.fileCheckbox__label{
+    margin-right: 30px;
+    margin-left: 10px;
+    cursor: pointer;
 }

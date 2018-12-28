@@ -4,7 +4,7 @@ import { observer, inject } from 'mobx-react';
 import { Modal } from 'components/Modals';
 import { TableRow, Table, TableCell } from 'components/Table';
 import { Input } from 'components/Form';
-import { ButtonAdd, ButtonClose } from 'components/Button';
+import { ButtonAdd, ButtonClose, ButtonSave, ButtonSend } from 'components/Button';
 import { Section } from 'components/Section';
 import { Paragraph } from 'components/Content';
 import { IconTickBlue, IconTickWhite, IconArrowLeftYellow } from 'components/Icons';
@@ -20,11 +20,16 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
     state = {
         textareaValue: '',
         textareaEmpty: true,
-        isFilesFill: false 
     };
 
     @observable private withGraphics: boolean = false;
     @observable private modalConfirmOpen: boolean = false;
+    @observable private completedCheckbox: boolean = false;
+
+    @action
+    private completedCheckboxToggle = () => {
+        this.completedCheckbox = !this.completedCheckbox;
+    }
 
     @action
     private modalConfirmToggle = () => {
@@ -48,6 +53,9 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
 
         const { spotToGraphics } = this.props.store;
         
+        // if (!spotToGraphics.fetchedSpot) {
+        //     return null;
+        // }
         if (!spotToGraphics.currentSpot) {
             return null;
         }
@@ -143,16 +151,6 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
 
     private handleFileChangeName = (index: number) => e => {
         this.props.store.spotToGraphics.setFileName(index, e.target.value);
-
-        if (this.props.store.spotToGraphics.isFilesEmpty) {
-            this.setState({
-                isFilesFill: false,
-            });
-        } else  {
-            this.setState({
-                isFilesFill: true,
-            });
-        }
     }
 
     private handleFileChangeDescription = (index: number) => e => {
@@ -164,11 +162,6 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
     }
 
     private handleFileRemove = (fileIndex: number) => () => {
-        if (this.props.store.spotToGraphics.files.length === 1 && !this.withGraphics) {
-            this.setState({
-                isFilesFill: false
-            });
-        }
         this.props.store.spotToGraphics.removeFileItem(fileIndex);
     };
 
@@ -276,12 +269,18 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                     textareaOnChangeHandler={this.textareaOnChangeHandler}
                 />
                 <div className={s.buttonSend__container}>
-                    <div 
-                        onClick={this.sendHandler}
-                        className={this.state.isFilesFill || this.withGraphics ? s.buttonSend__itemGreen : s.buttonSend__item}
-                    >
-                        {this.state.isFilesFill || this.withGraphics ? 'Save' : 'Request EDL'}
-                    </div>
+                     {!this.props.store.spotToGraphics.isFilesEmpty || this.withGraphics ?
+                        <div className={s.fileCheckbox}>
+                            <div onClick={this.completedCheckboxToggle} className={this.completedCheckbox ? s.fileCheckbox__fill : s.fileCheckbox__empty}>
+                                {this.completedCheckbox && <IconTickWhite />} 
+                            </div>
+                        </div> : null
+                    }
+                    {!this.props.store.spotToGraphics.isFilesEmpty || this.withGraphics ? <div onClick={this.completedCheckboxToggle} className={s.fileCheckbox__label}>Completed</div> : null}
+                    {!this.props.store.spotToGraphics.isFilesEmpty || this.withGraphics 
+                        ? <ButtonSend onClick={this.sendHandler} label="Save" labelSize="large" iconColor="green" labelColor="green"/>
+                        : <div onClick={this.sendHandler} className={s.buttonSend__item}>Request EDL</div>
+                    }
                 </div>
                 <Modal
                     show={this.modalConfirmOpen}

@@ -1,4 +1,5 @@
 import { observable, action, computed, reaction } from 'mobx';
+import { API, APIPath } from 'fetch';
 
 export class SpotToGraphics {
     @observable public isModalOpen: boolean = false;  // change it before commit 
@@ -6,6 +7,7 @@ export class SpotToGraphics {
 
     @observable public date: any = '';
     @observable public files: any[] = [];
+    @observable public fetchedSpot: any = '';
 
     @action 
     public setDate = (date) => {
@@ -18,6 +20,34 @@ export class SpotToGraphics {
             return true;
         } else {
             return false;
+        }
+    }
+    
+    // @action
+    // public fetchStudiosInitialsLetters = async (): Promise<string[]> => {
+    //     try {
+    //         StudiosStore.existingClientsInitials.loading = true;
+
+    //         const response = (await API.getData(APIPath.STUDIO_FIRST_LETTERS)) as string[];
+    //         StudiosStore.existingClientsInitials.letters = response;
+
+    //         return response;
+    //     } catch (error) {
+    //         throw error;
+    //     } finally {
+    //         StudiosStore.existingClientsInitials.loading = false;
+    //     }
+    // };
+
+    @action
+    public getSpotFromApi = async (id: number) => {
+        try {
+            const response = (await API.getData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + `/${id}/offset=0&length=999999999`)) as string[];
+            this.fetchedSpot = response;
+            console.log(response);
+            return response;
+        } catch (error) {
+            throw error;
         }
     }
 
