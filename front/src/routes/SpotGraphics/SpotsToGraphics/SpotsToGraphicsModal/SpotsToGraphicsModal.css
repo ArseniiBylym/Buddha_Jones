@@ -38,6 +38,16 @@
     padding: 20px;
     background-color: #e8dfd7;
     margin-top: 20px;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+.label__item{
+    padding: 5px;
+    border: 2px solid #5a4d3f;
+    margin: 0 5px;
+    font-size: .8em;
 }
 .noGraphicsContainer{
     display: flex;

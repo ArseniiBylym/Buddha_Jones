@@ -4,7 +4,7 @@ import { observer, inject } from 'mobx-react';
 import { Modal } from 'components/Modals';
 import { TableRow, Table, TableCell } from 'components/Table';
 import { Input } from 'components/Form';
-import { ButtonAdd, ButtonClose, ButtonSave, ButtonSend } from 'components/Button';
+import { ButtonAdd, ButtonClose, ButtonSend } from 'components/Button';
 import { Section } from 'components/Section';
 import { Paragraph } from 'components/Content';
 import { IconTickBlue, IconTickWhite, IconArrowLeftYellow } from 'components/Icons';
@@ -53,10 +53,7 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
 
         const { spotToGraphics } = this.props.store;
         
-        // if (!spotToGraphics.fetchedSpot) {
-        //     return null;
-        // }
-        if (!spotToGraphics.currentSpot) {
+        if (!spotToGraphics.fetchedSpot) {
             return null;
         }
 
@@ -75,8 +72,8 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                     <div className={s.SpotToGraphicsModal}>
                         <div className={s.header}>
                                 <h2 className={s.header__spotName}>
-                                    {spotToGraphics.currentSpot.spotName}
-                                    {spotToGraphics.currentSpot.runtime && ` (${spotToGraphics.currentSpot.runtime})`}
+                                    {spotToGraphics.fetchedSpot.spotName}
+                                    {spotToGraphics.fetchedSpot.runtime && ` (${spotToGraphics.fetchedSpot.runtime})`}
                                 </h2>
                                 <IconArrowLeftYellow marginLeftAuto={true} marginRight={10} width={12} height={9} />
                                 <div className={s.header_backButton} onClick={this.handleModalClose}>Back to spot sent list</div>
@@ -84,10 +81,15 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                         <div className={s.content}>
                             <div className={s.dateSelect}>
                                 <div className={s.dateSelect__item}>
-                                    Spot sent date: {spotToGraphics.currentSpot.date && moment(spotToGraphics.currentSpot.date).format('DD/MM/YYYY')}
+                                    Spot sent date: {spotToGraphics.fetchedSpot.spotSentDate && moment(spotToGraphics.fetchedSpot.spotSentDate).format('DD/MM/YYYY')}
                                 </div>
                             </div>
-                            <div className={s.labels}></div>
+                            <div className={s.labels}>
+                                {spotToGraphics.fetchedSpot.projectName && <div className={s.label__item}>{spotToGraphics.fetchedSpot.projectName}</div>}
+                                {spotToGraphics.fetchedSpot.campaignName && <div className={s.label__item}>{spotToGraphics.fetchedSpot.campaignName}</div>}
+                                {spotToGraphics.fetchedSpot.spotName && <div className={s.label__item}>{spotToGraphics.fetchedSpot.spotName}</div>}
+                                {spotToGraphics.fetchedSpot.versionName && <div className={s.label__item}>{spotToGraphics.fetchedSpot.versionName}</div>}
+                            </div>
                             <hr /> 
                             <div className={s.noGraphicsContainer} onClick={this.withGraphicsTogle}>
                                 <div className={s.noGraphicsContainer__wrapper}>
@@ -158,7 +160,7 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
     }
 
     private handleFileChangeResend = (index: number) => e => {
-        this.props.store.spotToGraphics.setFileResend(index, e.target.value);
+        this.props.store.spotToGraphics.setFileResend(index);
     }
 
     private handleFileRemove = (fileIndex: number) => () => {
@@ -193,6 +195,10 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
         }
 
         const { spotToGraphics } = this.props.store;
+        let spotName = `${spotToGraphics.fetchedSpot.spotName}`;
+        if (spotToGraphics.fetchedSpot.runtime) {
+            spotName += ` (${spotToGraphics.fetchedSpot.runtime})`;
+        }
 
         return (
             <Section title="Files worked on">
@@ -207,13 +213,13 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                     columnsWidths={['200px', '366px', '110px', '110px']}
                 >
                     {spotToGraphics &&
-                    spotToGraphics.files.map((file, fileIndex) => (
+                    spotToGraphics.fetchedSpot.graphicsFile.map((file, fileIndex) => (
                         <TableRow key={fileIndex}>
                             <TableCell>
                                 <Input
                                     maxWidth={200}
                                     label="Filename"
-                                    value={file.name}
+                                    value={file.fileName}
                                     onChange={this.handleFileChangeName(fileIndex)}
                                 />
                             </TableCell>
@@ -221,14 +227,14 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                                 <Input
                                     minWidth={320}
                                     label="Description (optional)"
-                                    value={file.description}
+                                    value={file.fileDescription}
                                     onChange={this.handleFileChangeDescription(fileIndex)}
                                 />
                             </TableCell>
                             <TableCell>
                                 <div className={s.fileCheckbox}>
-                                    <div onClick={this.handleFileChangeResend(fileIndex)} className={file.resend ? s.fileCheckbox__fill : s.fileCheckbox__empty}>
-                                        {file.resend && <IconTickWhite />}
+                                    <div onClick={this.handleFileChangeResend(fileIndex)} className={file.resend === 1 ? s.fileCheckbox__fill : s.fileCheckbox__empty}>
+                                        {file.resend === 1 && <IconTickWhite />}
                                     </div>
                                 </div>
                             </TableCell>
@@ -243,7 +249,7 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                         </TableRow>
                     ))}
 
-                    {(spotToGraphics === null || spotToGraphics.files.length <= 0) && (
+                    {(spotToGraphics === null || spotToGraphics.fetchedSpot.graphicsFile.length <= 0) && (
                         <TableRow key="no-files">
                             <TableCell colSpan={4}>
                                 <Paragraph type="alert">Files are required</Paragraph>
@@ -269,35 +275,35 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                     textareaOnChangeHandler={this.textareaOnChangeHandler}
                 />
                 <div className={s.buttonSend__container}>
-                     {!this.props.store.spotToGraphics.isFilesEmpty || this.withGraphics ?
+                     {!spotToGraphics.isFilesEmpty || this.withGraphics ?
                         <div className={s.fileCheckbox}>
                             <div onClick={this.completedCheckboxToggle} className={this.completedCheckbox ? s.fileCheckbox__fill : s.fileCheckbox__empty}>
                                 {this.completedCheckbox && <IconTickWhite />} 
                             </div>
                         </div> : null
                     }
-                    {!this.props.store.spotToGraphics.isFilesEmpty || this.withGraphics ? <div onClick={this.completedCheckboxToggle} className={s.fileCheckbox__label}>Completed</div> : null}
-                    {!this.props.store.spotToGraphics.isFilesEmpty || this.withGraphics 
+                    {!spotToGraphics.isFilesEmpty || this.withGraphics ? <div onClick={this.completedCheckboxToggle} className={s.fileCheckbox__label}>Completed</div> : null}
+                    {!spotToGraphics.isFilesEmpty || this.withGraphics 
                         ? <ButtonSend onClick={this.sendHandler} label="Save" labelSize="large" iconColor="green" labelColor="green"/>
                         : <div onClick={this.sendHandler} className={s.buttonSend__item}>Request EDL</div>
                     }
                 </div>
                 <Modal
                     show={this.modalConfirmOpen}
-                    title="You are requesting EDL, please confirm"
+                    title={`You are requesting EDL for Spot ${spotName} `}
                     closeButton={false}
                     type="alert"
                     actions={[
                         {
                             onClick: () => { this.modalButtonHandler(true); },
                             closeOnClick: false,
-                            label: 'YES',
+                            label: 'Confirm',
                             type: 'default',
                         },
                         {
                             onClick: () => { this.modalButtonHandler(false); },
                             closeOnClick: false,
-                            label: 'NO',
+                            label: 'Cancel',
                             type: 'alert',
                         },
                     ]}

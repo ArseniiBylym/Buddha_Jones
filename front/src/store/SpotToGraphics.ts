@@ -1,50 +1,28 @@
-import { observable, action, computed, reaction } from 'mobx';
+import { observable, action, computed } from 'mobx';
 import { API, APIPath } from 'fetch';
 
 export class SpotToGraphics {
     @observable public isModalOpen: boolean = false;  // change it before commit 
-    @observable public currentSpot: any = {};
-
-    @observable public date: any = '';
-    @observable public files: any[] = [];
     @observable public fetchedSpot: any = '';
-
-    @action 
-    public setDate = (date) => {
-        this.date = date;
-    }
+    @observable public pending: boolean = false;
 
     @computed
     public get isFilesEmpty (): boolean {
-        if (this.files.length === 0 || (this.files.length === 1 && this.files[0].name === '')) {
+        if (this.fetchedSpot.graphicsFile.length === 0 || (this.fetchedSpot.graphicsFile.length === 1 && this.fetchedSpot.graphicsFile[0].fileName === '')) {
             return true;
         } else {
             return false;
         }
     }
     
-    // @action
-    // public fetchStudiosInitialsLetters = async (): Promise<string[]> => {
-    //     try {
-    //         StudiosStore.existingClientsInitials.loading = true;
-
-    //         const response = (await API.getData(APIPath.STUDIO_FIRST_LETTERS)) as string[];
-    //         StudiosStore.existingClientsInitials.letters = response;
-
-    //         return response;
-    //     } catch (error) {
-    //         throw error;
-    //     } finally {
-    //         StudiosStore.existingClientsInitials.loading = false;
-    //     }
-    // };
-
     @action
     public getSpotFromApi = async (id: number) => {
+        this.pending = true;
         try {
             const response = (await API.getData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + `/${id}/offset=0&length=999999999`)) as string[];
             this.fetchedSpot = response;
-            console.log(response);
+            this.pending = false;
+            this.isModalOpen = true;
             return response;
         } catch (error) {
             throw error;
@@ -52,56 +30,59 @@ export class SpotToGraphics {
     }
 
     @action
-    public addFileItem = (name: string, description: string, resend: boolean) => {
-        this.files.push({name: name, description: description, resend: resend});
+    public addFileItem = (name: string, description: string, resend: number, creativeUserId: any = null) => {
+        this.fetchedSpot.graphicsFile.push({spotSentId: this.fetchedSpot.spotSentId, fileName: name, fileDescription: description, resend: resend, creativeUserId: creativeUserId});
     }
 
     @action
     public addEmptyFileItem = () => {
-        if (this.files.length > 0 && this.files[this.files.length - 1].name === '' ) {
+        if (this.fetchedSpot.graphicsFile.length > 0 && this.fetchedSpot.graphicsFile[this.fetchedSpot.graphicsFile.length - 1].fileName === '' ) {
             return;
         }
-        this.files.push({name: '', description: '', resend: false});
+        this.fetchedSpot.graphicsFile.push({spotSentId: this.fetchedSpot.spotSentId, fileName: '', fileDescription: '', resend: 0, creativeUserId: null});
     }
 
     @action
-    public addFileArray = (files: string[]) => {
-        if (this.files.length > 0 && this.files[this.files.length - 1].name === '') {
-            this.files[this.files.length - 1].name = files[0];
+    public addFileArray = ( files: string[]) => {
+        const filesList = this.fetchedSpot.graphicsFile;
+        if (filesList.length > 0 && filesList[filesList.length - 1].fileName === '') {
+            filesList[filesList.length - 1].fileName = files[0];
             if (files.length > 1) {
-                let newFilesList = files.splice(0, 1);
-                newFilesList.forEach((item, i) => {
-                    this.addFileItem(item, '', false);
+                files.forEach((item, i) => {
+                    if ( i === 0 ) {
+                        return;
+                    }
+                    this.addFileItem(item, '', 0, null);
                 });
             }
         } else {
             files.forEach((item, i) => {
-                this.addFileItem(item, '', false);
+                this.addFileItem(item, '', 0, null);
             });
         }
     }
 
     @action
     public removeFileItem = (index: number) => {
-        let list = this.files.slice().filter((item, i) => {
+        let list = this.fetchedSpot.graphicsFile.slice().filter((item, i) => {
             return index !== i;
         });
-        this.files = list;
+        this.fetchedSpot.graphicsFile = list;
     }
 
     @action
     public setFileName = (index: number, value: string) => {
-        this.files[index].name = value;
+        this.fetchedSpot.graphicsFile[index].fileName = value;
     }
 
     @action
     public setFileDescription = (index: number, value: string) => {
-        this.files[index].description = value;
+        this.fetchedSpot.graphicsFile[index].fileDescription = value;
     }
 
     @action
-    public setFileResend = (index: number, value: string) => {
-        this.files[index].resend = !this.files[index].resend;
+    public setFileResend = (index: number) => {
+        this.fetchedSpot.graphicsFile[index].resend = this.fetchedSpot.graphicsFile[index].resend === 0 ? 1 : 0;
     }
 
     @action
@@ -109,14 +90,9 @@ export class SpotToGraphics {
         this.isModalOpen = !this.isModalOpen;
     }
 
-    @action
-    public setCurrentSpot = (spot: any) => {
-        this.currentSpot = spot;
-    } 
-
     @action 
     public clearStorage = () => {
-        this.files = [];
+        this.fetchedSpot.graphicsFile = [];
     }
 
     @action

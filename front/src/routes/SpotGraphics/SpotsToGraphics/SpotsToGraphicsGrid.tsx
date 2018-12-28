@@ -63,12 +63,13 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
 
     public render() {
         const { fetchError, loading, retryFetch } = this.props;
+        const { spotToGraphics } = this.props.store;
 
         if (fetchError) {
             return <DataFetchError errorLabel="Could not load spots" onRefetch={retryFetch} />;
         }
 
-        if (loading && this.props.spots.count <= 0) {
+        if (loading && this.props.spots.count <= 0 || spotToGraphics.pending) {
             return (
                 <LoadingShade isStatic={true} contentCentered={true} background="transparent">
                     <LoadingSpinner />
@@ -144,8 +145,8 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
     }
 
     private handleSpotSelectionToggle = (spot) => e => {
-        this.props.store.spotToGraphics.getSpotFromApi(spot.spotSentId);
-        this.props.store.spotToGraphics.setCurrentSpot(spot);
-        this.props.store.spotToGraphics.toggleModal();
+            this.props.store.spotToGraphics.getSpotFromApi(spot.spotSentId);
+            // this.props.store.spotToGraphics.toggleModal();
+            // this.props.store.spotToGraphics.setCurrentSpot(spot);
     };
 }
