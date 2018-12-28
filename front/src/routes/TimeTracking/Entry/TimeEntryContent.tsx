@@ -82,8 +82,8 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                 return 'Files are required';
             case SubmittingStatus.errorFilesNamesRequired:
                 return 'All files need a filename';
-            case SubmittingStatus.errorFilesDurationWrong:
-                return 'Files work time does not match entry duration';
+            // case SubmittingStatus.errorFilesDurationWrong:
+            //     return 'Files work time does not match entry duration';
             case SubmittingStatus.errorProjectRequired:
                 return 'Project and campaign are required';
             case SubmittingStatus.errorVersionRequired:

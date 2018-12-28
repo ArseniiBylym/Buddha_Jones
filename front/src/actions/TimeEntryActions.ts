@@ -656,7 +656,16 @@ export class TimeEntryActionsClass {
             const delta = totalMinutes - TimeEntryStore.values.startTimeInMinutes;
             let newEndTime = TimeEntryStore.values.endTimeInMinutes + delta;
 
+            // if ( totalMinutes > 1440) {
+            //     return;
+            // }
+            // if ( totalMinutes > 1440 + 720 || totalMinutes < 0) {
+            //     return;
+            // }
             if ( newEndTime > 1440 ) {
+                // let diff = Math.floor(newEndTime / 1440);
+                // newEndTime -= diff * 1440;
+                // totalMinutes -= diff * 1440; 
                 newEndTime -= 720;
                 totalMinutes -= 720;
             }
