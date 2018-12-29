@@ -6,5 +6,6 @@ export * from './ButtonClose';
 export * from './ButtonSave';
 export * from './ButtonSend';
 export * from './ButtonAdd';
+export * from './ButtonArrow';
 export * from './ButtonDelete';
 export * from './LinkButton';

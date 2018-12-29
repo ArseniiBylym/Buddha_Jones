@@ -1,78 +1,85 @@
 :global .iconCheckmarkGreen {
-  background: url(./../../assets/images/form/checkmark-circle-green.svg) 0 0 no-repeat;
-  background-size: 22px 22px;
-  width: 22px;
-  height: 22px;
+    background: url(./../../assets/images/form/checkmark-circle-green.svg) 0 0 no-repeat;
+    background-size: 22px 22px;
+    width: 22px;
+    height: 22px;
 }
 
 :global .iconPlusBlue {
-  background: url(./../../assets/images/counter/counter-plus-blue.svg) 0 0 no-repeat;
-  background-size: 10px 10px;
-  width: 10px;
-  height: 10px;
+    background: url(./../../assets/images/counter/counter-plus-blue.svg) 0 0 no-repeat;
+    background-size: 10px 10px;
+    width: 10px;
+    height: 10px;
 }
 
 :global .iconPlusWhite {
-  background: url(./../../assets/images/counter/counter-plus-white.svg) 0 0 no-repeat;
-  background-size: 10px 10px;
-  width: 10px;
-  height: 10px;
+    background: url(./../../assets/images/counter/counter-plus-white.svg) 0 0 no-repeat;
+    background-size: 10px 10px;
+    width: 10px;
+    height: 10px;
 }
 
 :global .iconMinusWhite {
-  background: url(./../../assets/images/counter/counter-minus-white.svg) 0 0 no-repeat;
-  background-size: 10px 10px;
-  width: 10px;
-  height: 10px;
+    background: url(./../../assets/images/counter/counter-minus-white.svg) 0 0 no-repeat;
+    background-size: 10px 10px;
+    width: 10px;
+    height: 10px;
 }
 
 :global .iconArrowLeft {
-  background: url(./../../assets/images/pagination/arrow-left.svg) 0 0 no-repeat;
-  background-size: 15px 11px;
-  width: 15px;
-  height: 11px;
+    background: url(./../../assets/images/pagination/arrow-left.svg) 0 0 no-repeat;
+    background-size: 15px 11px;
+    width: 15px;
+    height: 11px;
 }
 
 :global .iconArrowLeftYellow {
-  background: url(./../../assets/images/pagination/arrow-left-yellow.svg) 0 0 no-repeat;
-  background-size: 15px 11px;
-  width: 15px;
-  height: 11px;
+    background: url(./../../assets/images/pagination/arrow-left-yellow.svg) 0 0 no-repeat;
+    background-size: 15px 11px;
+    width: 15px;
+    height: 11px;
 }
 
 :global .iconArrowRight {
-  background: url(./../../assets/images/pagination/arrow-right.svg) 0 0 no-repeat;
-  background-size: 15px 11px;
-  width: 15px;
-  height: 11px;
+    background: url(./../../assets/images/pagination/arrow-right.svg) 0 0 no-repeat;
+    background-size: 15px 11px;
+    width: 15px;
+    height: 11px;
 }
 
 :global .iconArrowRightYellow {
-  background: url(./../../assets/images/pagination/arrow-right-yellow.svg) 0 0 no-repeat;
-  background-size: 15px 11px;
-  width: 15px;
-  height: 11px;
+    background: url(./../../assets/images/pagination/arrow-right-yellow.svg) 0 0 no-repeat;
+    background-size: 15px 11px;
+    width: 15px;
+    height: 11px;
 }
 
 :global .iconArrowTopBlue {
-  background: url('./../../assets/images/pagination/arrow-top-blue.svg') 0 0 no-repeat;
-  background-size: 12px 16px;
-  width: 12px;
-  height: 16px;
+    background: url('./../../assets/images/pagination/arrow-top-blue.svg') 0 0 no-repeat;
+    background-size: 12px 16px;
+    width: 12px;
+    height: 16px;
+}
+
+:global .iconArrowRightWhite {
+    background: url('./../../assets/images/pagination/arrow-right-white.svg') 0 0 no-repeat;
+    background-size: 11px 15px;
+    width: 15px;
+    height: 11px;
 }
 
 :global .iconClose {
-  background: url('./../../assets/images/actions/close-icon.svg') 0 0 no-repeat;
-  background-size: 12px 12px;
-  width: 12px;
-  height: 12px;
+    background: url('./../../assets/images/actions/close-icon.svg') 0 0 no-repeat;
+    background-size: 12px 12px;
+    width: 12px;
+    height: 12px;
 }
 
 :global .iconEditPencilBlue {
-  background: url(./../../assets/images/form/edit-pencil-blue.svg) 0 0 no-repeat;
-  background-size: 18px 18px;
-  width: 18px;
-  height: 18px;
+    background: url(./../../assets/images/form/edit-pencil-blue.svg) 0 0 no-repeat;
+    background-size: 18px 18px;
+    width: 18px;
+    height: 18px;
 }
 
 :global .iconRemoveBlue {
@@ -83,113 +90,113 @@
 }
 
 :global .iconHamburgerMenu {
-  background: url('./../../assets/images/navigation/hamburger-menu.svg') 0 0 no-repeat;
-  background-size: 18px 12px;
-  width: 18px;
-  height: 12px;
+    background: url('./../../assets/images/navigation/hamburger-menu.svg') 0 0 no-repeat;
+    background-size: 18px 12px;
+    width: 18px;
+    height: 12px;
 }
 
 :global .iconDropdownArrow {
-  background: url(./../../assets/images/form/dropdown-arrow.svg) 0 0 no-repeat;
-  background-size: 11px 8px;
-  width: 11px;
-  height: 11px;
+    background: url(./../../assets/images/form/dropdown-arrow.svg) 0 0 no-repeat;
+    background-size: 11px 8px;
+    width: 11px;
+    height: 11px;
 }
 
 :global .iconDropdownArrowYellow {
-  background: url(./../../assets/images/form/dropdown-arrow-yellow.svg) 0 0 no-repeat;
-  background-size: 11px 8px;
-  width: 11px;
-  height: 11px;
+    background: url(./../../assets/images/form/dropdown-arrow-yellow.svg) 0 0 no-repeat;
+    background-size: 11px 8px;
+    width: 11px;
+    height: 11px;
 }
 
 :global .iconEllipsis {
-  background: url(./../../assets/images/pagination/ellipsis.svg) 0 0 no-repeat;
-  background-size: 15px 11px;
-  width: 15px;
-  height: 11px;
+    background: url(./../../assets/images/pagination/ellipsis.svg) 0 0 no-repeat;
+    background-size: 15px 11px;
+    width: 15px;
+    height: 11px;
 }
 
 :global .iconTickBlue {
-  background: url(./../../assets/images/form/tick-blue.svg) 0 0 no-repeat;
-  background-size: 12px 9px;
-  width: 12px;
-  height: 9px;
+    background: url(./../../assets/images/form/tick-blue.svg) 0 0 no-repeat;
+    background-size: 12px 9px;
+    width: 12px;
+    height: 9px;
 }
 
 :global .iconTickGreen {
-  background: url(./../../assets/images/form/tick-green.svg) 0 0 no-repeat;
-  background-size: 12px 9px;
-  width: 12px;
-  height: 9px;
+    background: url(./../../assets/images/form/tick-green.svg) 0 0 no-repeat;
+    background-size: 12px 9px;
+    width: 12px;
+    height: 9px;
 }
 
 :global .iconTickWhite {
-  background: url(./../../assets/images/form/tick-white.svg) 0 0 no-repeat;
-  background-size: 12px 9px;
-  width: 12px;
-  height: 9px;
+    background: url(./../../assets/images/form/tick-white.svg) 0 0 no-repeat;
+    background-size: 12px 9px;
+    width: 12px;
+    height: 9px;
 }
 
 :global .iconSendSubmit {
-  background: url(./../../assets/images/form/send-icon.svg) 0 0 no-repeat;
-  background-size: 25px 26px;
-  width: 25px;
-  height: 26px;
+    background: url(./../../assets/images/form/send-icon.svg) 0 0 no-repeat;
+    background-size: 25px 26px;
+    width: 25px;
+    height: 26px;
 }
 
 :global .iconSearchLoupe {
-  background: url(./../../assets/images/form/search-loupe.svg) 0 0 no-repeat;
-  background-size: 13px 13px;
-  width: 13px;
-  height: 13px;
+    background: url(./../../assets/images/form/search-loupe.svg) 0 0 no-repeat;
+    background-size: 13px 13px;
+    width: 13px;
+    height: 13px;
 }
 
 :global .iconChatBubbleWhiteIcon {
-  background: url(./../../assets/images/comments/chat-bubble-white-icon.svg) 0 0 no-repeat;
-  background-size: 30px 25px;
-  width: 30px;
-  height: 25px;
+    background: url(./../../assets/images/comments/chat-bubble-white-icon.svg) 0 0 no-repeat;
+    background-size: 30px 25px;
+    width: 30px;
+    height: 25px;
 }
 
 :global .iconLightbulb {
-  background: url(./../../assets/images/account/lightbulb-icon.svg) 0 0 no-repeat;
-  background-size: 49px 64px;
-  width: 49px;
-  height: 64px;
+    background: url(./../../assets/images/account/lightbulb-icon.svg) 0 0 no-repeat;
+    background-size: 49px 64px;
+    width: 49px;
+    height: 64px;
 }
 
 :global .iconEmail {
-  background: url(./../../assets/images/account/email-icon.svg) 0 0 no-repeat;
-  background-size: 24px 18px;
-  width: 24px;
-  height: 18px;
+    background: url(./../../assets/images/account/email-icon.svg) 0 0 no-repeat;
+    background-size: 24px 18px;
+    width: 24px;
+    height: 18px;
 }
 
 :global .iconPhone {
-  background: url(./../../assets/images/account/phone-icon.svg) 0 0 no-repeat;
-  background-size: 24px 24px;
-  width: 24px;
-  height: 24px;
+    background: url(./../../assets/images/account/phone-icon.svg) 0 0 no-repeat;
+    background-size: 24px 24px;
+    width: 24px;
+    height: 24px;
 }
 
 :global .iconBriefcase {
-  background: url(./../../assets/images/account/briefcase-icon.svg) 0 0 no-repeat;
-  background-size: 24px 22px;
-  width: 24px;
-  height: 22px;
+    background: url(./../../assets/images/account/briefcase-icon.svg) 0 0 no-repeat;
+    background-size: 24px 22px;
+    width: 24px;
+    height: 22px;
 }
 
 :global(.iconLockWhite) {
-  background: url("./../../assets/images/account/lock-white-icon.svg") 0 0 no-repeat;
-  background-size: 15px 24px;
-  width: 15px;
-  height: 24px;
+    background: url('./../../assets/images/account/lock-white-icon.svg') 0 0 no-repeat;
+    background-size: 15px 24px;
+    width: 15px;
+    height: 24px;
 }
 
 :global(.iconInformationBlue) {
-  background: url("./../../assets/images/actions//information-icon.svg") 0 0 no-repeat;
-  background-size: 10px 22px;
-  width: 10px;
-  height: 22px;
+    background: url('./../../assets/images/actions//information-icon.svg') 0 0 no-repeat;
+    background-size: 10px 22px;
+    width: 10px;
+    height: 22px;
 }
