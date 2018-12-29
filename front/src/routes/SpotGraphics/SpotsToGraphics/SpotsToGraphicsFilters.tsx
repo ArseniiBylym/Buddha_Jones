@@ -48,6 +48,7 @@ export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFilte
         list = this.props.spotsResponse.filter(() => {
             return true;
         });
+        console.log(list);
 
         if (query)  {
             list = list.filter((item, i) => {

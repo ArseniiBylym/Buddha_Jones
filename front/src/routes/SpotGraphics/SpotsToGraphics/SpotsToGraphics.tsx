@@ -32,12 +32,15 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
     }
 
     formatSpotsList = (data: any) => {
+        console.log(data);
         let arr: any[] = [];
         data.forEach((project, i) => {
             project.campaign.forEach((elem, j) => {
                 let spot = {
                     projectName: project.projectName,
                     studioName: project.studioName,
+                    projectId: project.projectId,
+                    studioId: project.studioId,
                     ...elem,
                 };
                 arr.push(spot);

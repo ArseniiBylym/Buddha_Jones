@@ -31,13 +31,14 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
         if (this.props.spots) {
 
         this.props.spots.list.forEach((item, i) => {
-           let obj: {campaignName: string, customerName: string, projectName: string, studioName: string, studioId: number, projectId: number, spots?: any[]} = {
+           let obj: {campaignName: string, customerName: string, projectName: string, studioName: string, studioId: number, projectId: number, projectCampaignId: number, spots?: any[]} = {
                 campaignName: item.campaignName,
                 customerName: item.customerName,
                 projectName: item.projectName,
                 studioName: item.studioName,
                 studioId: item.studioId,
-                projectId: item.projectId
+                projectId: item.projectId,
+                projectCampaignId: item.projectCampaignId
            };
 
            let spots: any[] = [];
@@ -57,6 +58,34 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                };
                spots.push(spotItem);
            });
+
+           spots.sort((a: any, b: any): any => {
+               if (a.spotName > b.spotName) {
+                   return 1; 
+               }
+               if (a.spotName < b.spotName) {
+                   return -1;
+               }
+               if (a.spotName === b.spotName) {
+                    if (a.versionName > b.versionName) {
+                        return 1;
+                    }
+                    if (a.versionName < b.versionName) {
+                        return -1;
+                    }
+                    if (a.versionName === b.versionName) {
+                        if (a.date > b.date) {
+                            return 1;
+                        }
+                        if (a.date < b.date) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    }
+               }
+           });
+           
            obj.spots = spots;
            cardsList.push(obj);
         });
@@ -94,7 +123,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                             <div className={s.content}>
                                 <div className={s.headline}>
                                     <h3 onClick={this.handleProjectClick(projectCampaign)}>{projectCampaign.projectName}</h3>
-                                    <h4>
+                                    <h4 onClick={this.handleCampaignClick(projectCampaign)}>
                                         {projectCampaign.campaignName}
                                     </h4>
                                 </div>
@@ -148,14 +177,29 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
     }
 
     private handleProjectClick = (project) => e => {
+        console.log(project);
         let path = '/portal/project/' +
-            project.studioId +
-            project.studioName +
-            project.projectId +
-            project.projectName + '1';
+            project.studioId + '/' +
+            project.studioName + '/' +
+            project.projectId + '/' +
+            project.projectName + '/1';
 
         history.push(path);
     }
+
+    private handleCampaignClick = (project) => e => {
+        console.log(project);
+        let path = '/portal/project/' +
+            project.studioId + '/' +
+            project.studioName + '/' +
+            project.projectId + '/' +
+            project.projectName + '/1' +
+            '?projectCampaignId=' +
+            project.projectCampaignId;
+
+        history.push(path);
+    }
+
 
     // private handleProjectClick = () => {
         
