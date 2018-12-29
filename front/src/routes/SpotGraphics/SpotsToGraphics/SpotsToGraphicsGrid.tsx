@@ -85,7 +85,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                     }
                }
            });
-           
+
            obj.spots = spots;
            cardsList.push(obj);
         });
@@ -138,22 +138,26 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                         </div>
                                     )}
                                     {projectCampaign.spots.map(spot => {
-                                        return (
+                                        // if (this.props.query && spot.spotName.toLowerCase().indexOf(this.props.query) === -1) {
+                                        //     return (null);
+                                        // } else {
+                                            return (
                                                 <div key={spot.spotId} onClick={this.handleSpotSelectionToggle(spot)} className={s.spotTable__row}>
-                                                    <div className={s.spotDate}>
-                                                        {spot.date && moment(spot.date).format('DD/MM/YYYY')}
-                                                    </div>
-                                                    <div className={s.spotItem}>
-                                                        {spot.spotName}{spot.runtime && ` (${spot.runtime})`}
-                                                    </div>
-                                                    <div className={s.spotStatus}>
-                                                        {spot.versionName}
-                                                    </div>
-                                                    <div className={s.spotStatus}>
-                                                        {spot.spotLineStatus}
-                                                    </div>
+                                                <div className={s.spotDate}>
+                                                {spot.date && moment(spot.date).format('DD/MM/YYYY')}
                                                 </div>
-                                        );
+                                                <div className={s.spotItem}>
+                                                {spot.spotName}{spot.runtime && ` (${spot.runtime})`}
+                                                </div>
+                                                <div className={s.spotStatus}>
+                                                {spot.versionName}
+                                                </div>
+                                                <div className={s.spotStatus}>
+                                                {spot.spotLineStatus}
+                                                </div>
+                                                </div>
+                                            );
+                                        // }
                                     })}
                                 </div>
                             </div>
@@ -177,7 +181,6 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
     }
 
     private handleProjectClick = (project) => e => {
-        console.log(project);
         let path = '/portal/project/' +
             project.studioId + '/' +
             project.studioName + '/' +
@@ -188,7 +191,6 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
     }
 
     private handleCampaignClick = (project) => e => {
-        console.log(project);
         let path = '/portal/project/' +
             project.studioId + '/' +
             project.studioName + '/' +
@@ -199,42 +201,6 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
 
         history.push(path);
     }
-
-
-    // private handleProjectClick = () => {
-        
-    //         this.props.onProjectClick(
-    //             this.props.project.studioId,
-    //             this.props.project.studioName,
-    //             this.props.project.id,
-    //             this.props.project.name
-    //         );
-    // };
-
-    // private handleProjectClick = (
-    //     studioId: number,
-    //     studioName: string,
-    //     projectId: number,
-    //     projectName: string,
-    //     projectCampaignId?: number
-    // ) => {
-    //     let path =
-    //         '/portal/project/' +
-    //         studioId +
-    //         '/' +
-    //         studioName +
-    //         '/' +
-    //         projectId +
-    //         '/' +
-    //         projectName +
-    //         '/' +
-    //         (typeof this.props.match !== 'undefined' ? this.props.match.params['pageId'] : '1');
-
-    //     if (typeof projectCampaignId !== 'undefined') {
-    //         path += '?projectCampaignId=' + projectCampaignId;
-    //     }
-    //     history.push(path);
-    // };
 
     private handleSpotSelectionToggle = (spot) => e => {
             this.props.store.spotToGraphics.getSpotFromApi(spot.spotSentId);
