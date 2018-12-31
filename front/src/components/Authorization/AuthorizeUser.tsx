@@ -30,7 +30,7 @@ export class AuthorizeUser extends React.Component<AuthorizeUserProps, {}> {
                 if (this.props.location.pathname !== nextProps.location.pathname) {
                     const isRouteAllowed = this.validateRoute(nextProps.location.pathname);
                     if (typeof this.props.history !== 'undefined' && isRouteAllowed === false) {
-                        this.props.history.push('/not-allowed');
+                        // this.props.history.push('/not-allowed');
                     }
                 }
             }

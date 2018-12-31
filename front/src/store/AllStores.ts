@@ -27,6 +27,7 @@ import {
     SpotsToBillFromApi,
     Channels,
     StudioRateCard,
+    SpotToGraphics
 } from './index';
 
 // Construct individual stores
@@ -54,6 +55,7 @@ export const SpotSentStore = new SpotSent();
 export const SpotsToBillFromApiStore = new SpotsToBillFromApi();
 export const ChannelsStore = new Channels();
 export const StudioRateCardStore = new StudioRateCard();
+export const SpotToGraphicsStore = new SpotToGraphics();
 
 // Define combined store's interface
 export interface AppStoreState {
@@ -81,6 +83,7 @@ export interface AppStoreState {
     spotsToBillFromApi: SpotsToBillFromApi;
     channels: Channels;
     studioRateCard: StudioRateCard;
+    spotToGraphics: SpotToGraphics;
 }
 
 // Initialize combined stores
@@ -109,6 +112,7 @@ export const store: AppStoreState = {
     spotsToBillFromApi: SpotsToBillFromApiStore,
     channels: ChannelsStore,
     studioRateCard: StudioRateCardStore,
+    spotToGraphics: SpotToGraphicsStore,
 };
 
 // App interface
