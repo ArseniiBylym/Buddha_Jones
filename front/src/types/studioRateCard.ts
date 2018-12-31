@@ -17,6 +17,7 @@ export interface RateCardType {
     studioId: number;
     ratecardName: string;
     ratecardNote: string;
+    file: string | null;
 }
 
 export interface StudioRateCard {
@@ -24,6 +25,7 @@ export interface StudioRateCard {
     selectedRateCardId: number | null;
     selectedRateCardLabel: string;
     selectedRateCardNote: string;
+    selectedRateCardFile: string | null;
     name: string;
     loading: boolean;
     rateCard: {

@@ -39,6 +39,15 @@ export const IconClose: React.SFC<IconProps> = observer(props => {
 export const IconEditPencilBlue: React.SFC<IconProps> = observer(props => {
     return <Icon {...props} iconName="iconEditPencilBlue" />;
 });
+export const IconAttach: React.SFC<IconProps> = observer(props => {
+    return <Icon {...props} iconName="iconAttach" />;
+});
+export const IconPdf: React.SFC<IconProps> = observer(props => {
+    return <Icon {...props} iconName="iconPdf" />;
+});
+export const IconRemoveAttachment: React.SFC<IconProps> = observer(props => {
+    return <Icon {...props} iconName="iconRemoveAttachment" />;
+});
 export const IconHamburgerMenu: React.SFC<IconProps> = observer(props => {
     return <Icon {...props} iconName="iconHamburgerMenu" />;
 });
