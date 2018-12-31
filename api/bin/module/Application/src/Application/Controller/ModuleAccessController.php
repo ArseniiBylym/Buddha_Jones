@@ -13,29 +13,26 @@ class ModuleAccessController extends CustomAbstractActionController
 {
     public function getList()
     {
-        $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
-        $filter['type_id'] = (array)json_decode(trim($this->getRequest()->getQuery('type_id', '')), true);
-        $filter['user_type_id'] = (array)json_decode(trim($this->getRequest()->getQuery('user_type_id', '')), true);
-        $filter['customer_id'] = (int)trim($this->getRequest()->getQuery('customer_id', 0));
-        $filter['project_campaign_required'] = trim($this->getRequest()->getQuery('project_campaign_required', null));
-        $filter['project_campaign_spot_version_required'] = trim($this->getRequest()->getQuery('project_campaign_spot_version_required', null));
-        $filter['allowed_in_future'] = trim($this->getRequest()->getQuery('allowed_in_future', null));
+        $filter['user_id'] = (int)trim($this->getRequest()->getQuery('user_id', ''));
+        $filter['user_type_id'] = (int)trim($this->getRequest()->getQuery('user_type_id', ''));
 
-        if($filter['customer_id']) {
-            $data = $this->_activityRepo->searchWithPrice($filter);
+
+        if (!empty($filter['user_id']) || !empty($filter['user_type_id'])) {
+            $filter['return_full_data'] = true;
+
+            $data = $this->_moduleRepo->getSubModuleAccess($filter);
+
+            $response = array(
+                'status' => 1,
+                'message' => 'Request successful',
+                'data' => $data
+            );
         } else {
-            $data = $this->_activityRepo->search($filter);
+            $response = array(
+                'status' => 0,
+                'message' => 'Send required parameter (user_id or user_type_id)',
+            );
         }
-
-        $totalCount = $this->_activityRepo->searchCount($filter);
-
-        $response = array(
-            'status' => 1,
-            'message' => 'Request successful',
-            'total_count' => $totalCount,
-            'object_count' => count($data),
-            'data' => $data
-        );
 
         return new JsonModel($response);
     }
@@ -53,7 +50,7 @@ class ModuleAccessController extends CustomAbstractActionController
         $filesIncluded = (int)isset($data['files_included']) ? trim($data['files_included']) : 0;
         $allowedInFuture = (int)isset($data['allowed_in_future']) ? trim($data['allowed_in_future']) : 0;
 
-        if ($name && count($typeId) && (!in_array(2, $typeId) || $descriptionRequired!==null)) {
+        if ($name && count($typeId) && (!in_array(2, $typeId) || $descriptionRequired !== null)) {
             $checkActivity = $this->_activityRepository->findOneBy(array('name' => $name));
 
             if (!$checkActivity) {
@@ -73,7 +70,7 @@ class ModuleAccessController extends CustomAbstractActionController
 
                 $activityId = $activity->getId();
 
-                foreach($userTypeId as $userType) {
+                foreach ($userTypeId as $userType) {
                     $activityUserType = new RediActivityToUserType();
                     $activityUserType->setActivityId($activityId);
                     $activityUserType->setUserTypeId($userType);
@@ -128,53 +125,53 @@ class ModuleAccessController extends CustomAbstractActionController
 
         $activity = $this->_activityRepository->find($id);
 
-        if($activity) {
+        if ($activity) {
             if ($typeId || $name) {
                 if ($name) {
                     $checkActivity = $this->_activityRepository->findOneBy(array('name' => $name));
 
-                    if(!$checkActivity) {
+                    if (!$checkActivity) {
                         $activity->setName($name);
                     }
                 }
 
-                if($billable !== null) {
+                if ($billable !== null) {
                     $activity->setBillable($billable);
                 }
 
-                if($status!==null) {
+                if ($status !== null) {
                     $activity->setStatus($status);
                 }
 
-                if($projectCampaignRequired !== null) {
+                if ($projectCampaignRequired !== null) {
                     $activity->setProjectCampaignRequired($projectCampaignRequired);
                 }
 
-                if($projectCampaignSpotVersionRequired !== null) {
+                if ($projectCampaignSpotVersionRequired !== null) {
                     $activity->setProjectCampaignSpotVersionRequired($projectCampaignSpotVersionRequired);
                 }
 
-                if($filesIncluded !== null) {
+                if ($filesIncluded !== null) {
                     $activity->setFilesIncluded($filesIncluded);
                 }
 
-                if(count($typeId)) {
+                if (count($typeId)) {
                     $activity->setTypeId($typeId[0]);
                 }
 
                 if ($descriptionRequired !== null) {
-                    $descriptionRequired = $descriptionRequired? 1 : 0;
+                    $descriptionRequired = $descriptionRequired ? 1 : 0;
                     $activity->setDescriptionRequired($descriptionRequired);
                 }
 
-                if($allowedInFuture !== null) {
+                if ($allowedInFuture !== null) {
                     $activity->setAllowedInFuture($allowedInFuture);
                 }
 
                 $this->_em->persist($activity);
                 $this->_em->flush();
 
-                if(count($userTypeId)) {
+                if (count($userTypeId)) {
                     $existingUserType = $this->_activityToUserTypeRepository->findBy(array('activityId' => $activity->getId()));
 
                     foreach ($existingUserType as $userType) {
@@ -220,11 +217,12 @@ class ModuleAccessController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    private function getSingle($id) {
+    private function getSingle($id)
+    {
         $filter['customer_id'] = (int)trim($this->getRequest()->getQuery('customer_id', 0));
         $filter['id'] = (int)trim($this->getRequest()->getQuery('id', 0));
 
-        if($filter['customer_id']) {
+        if ($filter['customer_id']) {
             $data = $this->_activityRepo->searchWithPrice($filter);
         } else {
             $data = $this->_activityRepo->search($filter);

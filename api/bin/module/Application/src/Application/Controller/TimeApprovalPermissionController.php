@@ -43,12 +43,12 @@ class TimeApprovalPermissionController extends CustomAbstractActionController
     public function update($submittingUserTypeId, $data)
     {
         $submittingUserTypeId = (int)(isset($submittingUserTypeId) ? $submittingUserTypeId : 0);
-        $approversUserTypeIds = (array)(isset($data['approversUserTypeIds']) ? $data['approversUserTypeIds'] : []);
+        $approversUserTypeIds = (array)json_decode(trim(isset($data['approver_user_type_id']) ? $data['approver_user_type_id'] : ''), true);
 
         if ($this->_user_type_id == 100 && $submittingUserTypeId) {
             $this->_timeEntryRepo->deleteSubmitterTimeApprovalPermission($submittingUserTypeId);
 
-            if ($approversUserTypeIds && count($approversUserTypeIds) > 0) {
+            if ($approversUserTypeIds) {
                 foreach ($approversUserTypeIds as $approverUserTypeId) {
                     $permission = new RediUserTypeTimeApprovalPermission();
                     $permission->setApproverUserTypeId($approverUserTypeId);
