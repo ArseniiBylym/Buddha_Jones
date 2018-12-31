@@ -28,6 +28,8 @@ export enum APIPath {
     TIME_ENTRY_OF_USER                      = '/time-entry-of-user',
     TIME_ENTRY_SUBMIT_FOR_REVIEW            = '/time-entry-submit-for-review',
     TIME_ENTRY_APPROVE                      = '/time-entry-approve',
+    TIME_ENTRY_PERMISSION                   = '/time-entry-permission',
+    TIME_APPROVAL_PERMISSION                = '/time-approval-permission',
     ACTIVITY                                = '/activity',
     ACTIVITY_LEVEL                          = '/activity-level',
     COMMENT                                 = '/comment',

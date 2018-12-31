@@ -23,3 +23,5 @@ export * from './SpotSent';
 export * from './SpotsToBillFromApi';
 export * from './Channels';
 export * from './StudioRateCard';
+export * from './TimeEntryPermissions';
+export * from './TimeApprovalPermissions';

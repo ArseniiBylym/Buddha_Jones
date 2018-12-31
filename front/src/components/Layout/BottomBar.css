@@ -33,4 +33,5 @@
 
 .inner {
   padding: 16px 64px;
+    overflow: hidden;
 }
