@@ -1,20 +1,12 @@
-import {
-    DropdownContainer,
-    InputSearch,
-    OptionsList,
-    OptionsListOptionProp
-    } from 'components/Form';
+import { InputSearch } from 'components/Form';
 import { LoadingIndicator } from 'components/Loaders';
 import { Section } from 'components/Section';
-// import { SearchHandler } from 'helpers/SearchHandler';
-import _debounce from 'lodash-es/debounce';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { SpotToGraphicsFromApi, SpotToGraphicsProducer } from 'types/spotsToGraphics';
+import { SpotToGraphicsFromApi } from 'types/spotsToGraphics';
 import { SpotProjectCampaignGroup } from './SpotsToGraphics';
 import { SpotsToGraphicsGrid } from './SpotsToGraphicsGrid';
-// import { concat } from 'lodash-es';
 
 export interface SpotToGraphicsProducerOption {
     id: number;
@@ -37,13 +29,11 @@ interface SpotsToGrapnicsFiltersProps {
 
 @observer
 export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFiltersProps, {}> {
-    private producerDropdown: DropdownContainer | null = null;
 
     @computed
     private get spots(): { count: number; list: SpotToGraphicsFromApi[] } {
 
         const query = this.props.search.toLowerCase().trim();
-        // const producerId = this.props.producer && this.props.producer.id; 
         let list: any[] = [];
 
         list = this.props.spotsResponse.filter(() => {
@@ -52,10 +42,10 @@ export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFilte
 
         if (query)  {
             list = list.filter((item, i) => {
-                if (item.campaignName.indexOf(query) !== -1 ||
-                    item.customerName.indexOf(query) !== -1 ||
-                    item.projectName.indexOf(query) !== -1 ||
-                    item.studioName.indexOf(query) !== -1
+                if (item.projectName.toLowerCase().indexOf(query) !== -1 ||
+                    item.studioName.toLowerCase().indexOf(query) !== -1 ||
+                    item.campaignName.toLowerCase().indexOf(query) !== -1 ||
+                    this.spotNameMatch(item, query)
                 ) {
                     return true;
                 } else {
@@ -70,49 +60,17 @@ export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFilte
         };
     }
 
-    @computed
-    private get allProducers(): SpotToGraphicsProducer[] {
-        let producersList: any[] = [];
-
-        if (this.props.spotsResponse && this.props.spotsResponse.length > 0) {
-            this.props.spotsResponse.forEach((project, i) => {
-                let spots = project.spot.filter((spot, j) => {
-                    return !!spot;
-                });
-
-                spots.forEach((elem) => {
-                    let producers = elem.producers.filter((producer) => {
-                        return !!producer;
-                    });
-
-                    producersList.push(...producers);
-                });
-            });
-        }
-        let obj = {};
-
-        producersList.forEach((elem, i) => {
-           if (!obj[elem.userId]) {
-                obj[elem.userId] = elem;
-           }
+    public spotNameMatch = (elem: any, query) => {
+        return elem.spot.some(spot => {
+            return spot.spotName.toLowerCase().indexOf(query) !== -1;
         });
-
-        let newProducersList: any[] = [];
-
-        for (let key in obj) {
-            if (obj[key]) {
-                newProducersList.push(obj[key]);
-            }
-        }
-
-        return newProducersList;
     }
 
     public render() {
-        const { search, producer, loading, fetchError } = this.props;
+        const { search, loading, fetchError } = this.props;
         return (
             <Section
-                title="Billable spots"
+                title=""
                 noSeparator={true}
                 headerElements={[
                     ...(loading && this.props.totalCountResponse > 0
@@ -123,28 +81,6 @@ export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFilte
                               },
                           ]
                         : []),
-                    {
-                        key: 'filter-by-producer',
-                        element: (
-                            <DropdownContainer ref={this.referenceProducerDropdown} label="Producer" align="right">
-                                <OptionsList
-                                    onChange={this.handleProducerChange}
-                                    value={producer ? producer.id : null}
-                                    options={[
-                                        {
-                                            key: 'all',
-                                            value: null,
-                                            label: 'All producers',
-                                        },
-                                        ...this.allProducers.map(prod => ({
-                                            value: prod.userId,
-                                            label: [prod.firstName, prod.lastName].filter(n => n !== null).join(' '),
-                                        })),
-                                    ]}
-                                />
-                            </DropdownContainer>
-                        ),
-                    },
                     {
                         key: 'filter-by-query',
                         element: (
@@ -165,22 +101,14 @@ export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFilte
                     onSpotSelectionToggle={this.props.onSpotSelectionToggle}
                     spots={this.spots}
                     producerId={this.props.producer && this.props.producer.id}
+                    query={this.props.search.toLowerCase().trim()}
                 />
             </Section>
         );
     }
 
-    private referenceProducerDropdown = (ref: DropdownContainer) => (this.producerDropdown = ref);
-
     private handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         this.props.onChangeSearch(e.target.value);
     };
 
-    private handleProducerChange = (option: OptionsListOptionProp) => {
-        this.props.onChangeProducer(option ? { id: option.value as number, name: option.label } : null);
-
-        if (this.producerDropdown) {
-            this.producerDropdown.closeDropdown();
-        }
-    };
 }

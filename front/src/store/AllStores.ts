@@ -27,6 +27,7 @@ import {
     SpotsToBillFromApi,
     Channels,
     StudioRateCard,
+    SpotToGraphics,
     TimeEntryPermissions,
     TimeApprovalPermissions,
 } from './index';
@@ -58,6 +59,7 @@ export const ChannelsStore = new Channels();
 export const StudioRateCardStore = new StudioRateCard();
 export const TimeEntryPermissionsStore = new TimeEntryPermissions();
 export const TimeApprovalPermissionsStore = new TimeApprovalPermissions();
+export const SpotToGraphicsStore = new SpotToGraphics();
 
 // Define combined store's interface
 export interface AppStoreState {
@@ -87,6 +89,7 @@ export interface AppStoreState {
     studioRateCard: StudioRateCard;
     timeApprovalPermissions: TimeApprovalPermissions;
     timeEntryPermissions: TimeEntryPermissions;
+    spotToGraphics: SpotToGraphics;
 }
 
 // Initialize combined stores
@@ -117,6 +120,7 @@ export const store: AppStoreState = {
     studioRateCard: StudioRateCardStore,
     timeEntryPermissions: TimeEntryPermissionsStore,
     timeApprovalPermissions: TimeApprovalPermissionsStore,
+    spotToGraphics: SpotToGraphicsStore,
 };
 
 // App interface

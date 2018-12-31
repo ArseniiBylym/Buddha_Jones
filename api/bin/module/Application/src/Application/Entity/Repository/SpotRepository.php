@@ -1101,11 +1101,11 @@ class SpotRepository extends EntityRepository
                 }
 
                 if ($ssRow['noGraphics'] === 0) {
-                    if ($ssRow['all_graphics_resend'] == 0 && $ssRow['graphicsStatusId'] == 4) {
+                    if ($ssRow['allGraphicsResend'] == 0 && $ssRow['graphicsStatusId'] == 4) {
                         $graphicsStatus = 'Ready to Bill';
                     }
 
-                    if ($ssRow['all_graphics_resend'] == 1 && $ssRow['graphicsStatusId'] == 4) {
+                    if ($ssRow['allGraphicsResend'] == 1 && $ssRow['graphicsStatusId'] == 4) {
                         $graphicsStatus = 'All Resend';
                     }
                 }
@@ -1150,33 +1150,6 @@ class SpotRepository extends EntityRepository
             }
 
             if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']])) {
-                // $status = (!empty($statusOptions[$row['spotLineStatusId']])) ? $statusOptions[$row['spotLineStatusId']]['name'] : null;
-                // $graphicsStatus = (!empty($graphicsStatusOptions[$row['graphicsStatusId']])) ? $graphicsStatusOptions[$row['graphicsStatusId']]['name'] : null;
-
-                // if ($row['noGraphics'] === null) {
-                //     if ($row['graphicsStatusId'] == 2) {
-                //         $graphicsStatus = 'EDL Requested';
-                //     }
-
-                //     if ($row['graphicsStatusId'] == 3) {
-                //         $graphicsStatus = 'EDL Exported';
-                //     }
-                // } else {
-                //     if ($row['noGraphics'] === 1 && $row['graphicsStatusId'] == 4) {
-                //         $graphicsStatus = 'No Graphics';
-                //     }
-
-                //     if ($row['noGraphics'] === 0) {
-                //         if ($row['all_graphics_resend'] == 0 && $row['graphicsStatusId'] == 4) {
-                //             $graphicsStatus = 'Ready to Bill';
-                //         }
-
-                //         if ($row['all_graphics_resend'] == 1 && $row['graphicsStatusId'] == 4) {
-                //             $graphicsStatus = 'All Resend';
-                //         }
-                //     }
-                // }
-
                 $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']] = array(
                     'spotId' => (int)$row['spotId'],
                     'spotName' => $row['spotName'],

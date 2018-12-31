@@ -34,9 +34,16 @@ class ModuleRepository extends EntityRepository
         $subModules = $this->getAllSubModule();
 
         $modules = array_map(function($module) use ($subModules) {
-            $module['subModule'] = array_filter($subModules, function($subModule) use ($module){
+            $subModuleArr = array_filter($subModules, function($subModule) use ($module){
                 return ($subModule['moduleId'] == $module['id']);
             });
+
+            $subModuleArr = array_map(function($subModule) {
+                unset($subModule['moduleId']);
+                return $subModule;
+            }, $subModuleArr);
+
+            $module['subModule'] = $subModuleArr;
 
             return $module;
         }, $modules);
@@ -108,5 +115,58 @@ class ModuleRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         return $result;
+    }
+
+    public function getSubModuleAccess($filter =  array()) {
+        $dql = "SELECT 
+                  sma
+                FROM 
+                    \Application\Entity\RediSubModuleAccess sma
+                    LEFT JOIN \Application\Entity\RediUser u
+                        WITH u.typeId = sma.userTypeId";
+
+        $dqlFilter = [];
+
+        if (!empty($filter['user_id'])) {
+            $dqlFilter[] = " u.id = :user_id";
+        }
+
+        if (!empty($filter['user_type_id'])) {
+            $dqlFilter[] = " sma.userTypeId = :user_type_id";
+        }
+
+        if ($dqlFilter) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
+        }
+
+        $query = $this->getEntityManager()->createQuery($dql);
+
+        if (!empty($filter['user_id'])) {
+            $query->setParameter('user_id', $filter['user_id']);
+        }
+
+        if (!empty($filter['user_type_id'])) {
+            $query->setParameter('user_type_id', $filter['user_type_id']);
+        }
+
+        $result = $query->getArrayResult();
+
+        if (empty($filter['return_full_data'])) {
+            return $result;
+        }
+
+        // $filter['return_full_data'] is true
+        $response = $this->getModuleTree();
+        $result = array_column($result, 'subModuleId');
+
+        $response = array_map(function($module) use ($result){
+            $module['subModule'] = array_map(function($subModule) use ($result) {
+                $subModule['canAccess'] = (bool)(in_array($subModule['id'], $result));
+                return $subModule;
+            }, $module['subModule']);
+
+            return $module;
+        }, $response);
+        return $response;
     }
 }

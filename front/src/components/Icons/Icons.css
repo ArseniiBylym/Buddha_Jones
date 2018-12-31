@@ -75,6 +75,27 @@
   height: 18px;
 }
 
+:global .iconAttach {
+    background: url(./../../assets/images/form/attach_icon.svg) 0 0 no-repeat;
+    background-size: 18px 18px;
+    width: 18px;
+    height: 18px;
+}
+
+:global .iconPdf {
+    background: url(./../../assets/images/form/pdf_icon.svg) 0 0 no-repeat;
+    background-size: 18px 18px;
+    width: 18px;
+    height: 18px;
+}
+
+:global .iconRemoveAttachment {
+    background: url(./../../assets/images/form/remove_attachment_icon.svg) 0 0 no-repeat;
+    background-size: 18px 18px;
+    width: 18px;
+    height: 18px;
+}
+
 :global .iconRemoveBlue {
     background: url(./../../assets/images/form/delete-icon.svg) 0 0 no-repeat;
     background-size: 18px 18px;
@@ -188,8 +209,15 @@
 }
 
 :global(.iconInformationBlue) {
-  background: url("./../../assets/images/actions//information-icon.svg") 0 0 no-repeat;
+  background: url("./../../assets/images/actions/information-icon.svg") 0 0 no-repeat;
   background-size: 10px 22px;
   width: 10px;
   height: 22px;
+}
+
+:global(.iconInformationBlue) {
+    background: url("./../../assets/images/actions/information-icon.svg") 0 0 no-repeat;
+    background-size: 10px 22px;
+    width: 10px;
+    height: 22px;
 }

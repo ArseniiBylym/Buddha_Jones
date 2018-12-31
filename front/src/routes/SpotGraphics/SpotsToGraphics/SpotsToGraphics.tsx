@@ -38,6 +38,8 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
                 let spot = {
                     projectName: project.projectName,
                     studioName: project.studioName,
+                    projectId: project.projectId,
+                    studioId: project.studioId,
                     ...elem,
                 };
                 arr.push(spot);
@@ -72,9 +74,7 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
                             retryFetch={spotsToGraphicsFromApi.retry}
                             totalCountResponse={
                                 spotsToGraphicsFromApi.response && spotsToGraphicsFromApi.response.data.length
-                                    // ? spotsToGraphicsFromApi.response.data[0].campaign.length
                                     ? this.formatSpotsList(spotsToGraphicsFromApi.response.data).len
-                                    // ? spotsToGraphicsFromApi.response.data.length
                                     : 0
                             }
                             spotsResponse={

@@ -278,7 +278,6 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
         if (typeof projectCampaignId !== 'undefined') {
             path += '?projectCampaignId=' + projectCampaignId;
         }
-
         history.push(path);
     };
 

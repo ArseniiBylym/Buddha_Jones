@@ -41,6 +41,7 @@
             font-size: 1.5em;
             font-weight: 700;
             color: #0768d8;
+            cursor: pointer;
         }
 
         & h4 {
@@ -48,6 +49,7 @@
             font-size: 0.9em;
             font-weight: 600;
             text-transform: uppercase;
+            cursor: pointer;
         }
     }
 
@@ -67,17 +69,13 @@
             flex-flow: row nowrap;
 
             & > p{
-                width: 50%;
+                width: 15%;
                 color: #968069;
                 font-weight: 300;
                 font-size: .8em;
-                text-align: center;
             }
-            & > p:first-child{
-                width: 25%;
-            }
-            & > p:last-child{
-                width: 25%;
+            & > p:nth-child(2) {
+                width: 55%;
             }
 
         }
@@ -90,18 +88,19 @@
             flex-flow: row nowrap;
             align-items: center;
             padding: 5px 0;
+            color: #5a4d3f;
+            font-size: .95em;
+            font-weight: 600;
+            cursor: pointer;
 
             & > div{
-                width: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                width: 15%;
             }
-            & > div:first-child{
-                width: 25%;
+            & > div:nth-child(2) {
+                width: 55%;
             }
-            & > div:last-child{
-                width: 25%;
+            &:hover{
+                background-color: #e9e0d7;
             }
         }
         

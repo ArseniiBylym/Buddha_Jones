@@ -60,7 +60,7 @@ export class StudioRateCardActionsClass {
                 revision_inc: revisionInc,
                 note: note,
             })) as RateCard[];
-            
+
             const data: {
                 [key: number]: RateCard
             } = {};
@@ -259,6 +259,66 @@ export class StudioRateCardActionsClass {
         } finally {
             // Stop loading search results
             StudioRateCardStore.rateCardTypes.deleting = false;
+        }
+    }
+
+    @action
+    public modifyRateCardAttachment = async (attachment: string): Promise<boolean> => {
+        try {
+            StudioRateCardStore.rateCardTypes.saving = true;
+            const response = (await API.putData(`${APIPath.STUDIO_RATE_CARD_TYPE}/${StudioRateCardStore.selectedRateCardId}`, {
+                studio_id: StudioRateCardStore.id,
+                file: attachment,
+            })) as RateCardType[];
+
+            const data: {
+                [key: number]: RateCardType
+            } = {};
+
+            response.forEach((value) => {
+                data[value.ratecardId] = value;
+            });
+            StudioRateCardStore.rateCardTypes.data = data;
+            if (!StudioRateCardStore.selectedRateCardId && Object.keys(data).length > 0) {
+                StudioRateCardStore.selectedRateCardId = Number(Object.keys(data)[0]);
+            }
+
+            return true;
+        } catch (error) {
+            throw error;
+        } finally {
+            // Stop loading search results
+            StudioRateCardStore.rateCardTypes.saving = false;
+        }
+    }
+
+    @action
+    public removeRateCardAttachment = async (): Promise<boolean> => {
+        try {
+            StudioRateCardStore.rateCardTypes.saving = true;
+            const response = (await API.putData(`${APIPath.STUDIO_RATE_CARD_TYPE}/${StudioRateCardStore.selectedRateCardId}`, {
+                studio_id: StudioRateCardStore.id,
+                delete_file: 1,
+            })) as RateCardType[];
+
+            const data: {
+                [key: number]: RateCardType
+            } = {};
+
+            response.forEach((value) => {
+                data[value.ratecardId] = value;
+            });
+            StudioRateCardStore.rateCardTypes.data = data;
+            if (!StudioRateCardStore.selectedRateCardId && Object.keys(data).length > 0) {
+                StudioRateCardStore.selectedRateCardId = Number(Object.keys(data)[0]);
+            }
+
+            return true;
+        } catch (error) {
+            throw error;
+        } finally {
+            // Stop loading search results
+            StudioRateCardStore.rateCardTypes.saving = false;
         }
     }
 

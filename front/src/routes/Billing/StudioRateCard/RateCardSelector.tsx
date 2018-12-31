@@ -12,6 +12,8 @@ import { LoadingSpinner } from '../../../components/Loaders';
 import AddRateModal from './AddRateModal';
 import { RemoveConfirmationModal } from '../../../components/RemoveConfiramtionModal';
 import { history } from '../../../App';
+import { ButtonAttach } from '../../../components/Button/ButtonAttach';
+import { ButtonRemoveAttachment } from '../../../components/Button/ButtonRemoveAttachment';
 
 interface Props {
     match: match<MatchParams>;
@@ -32,6 +34,18 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
     private modalMode: 'new' | 'edit' = 'new';
     @observable
     private isDeleteModalOpened: boolean = false;
+    @observable
+    private isRemoveAttachmentModalOpened: boolean = false;
+    @observable
+    private isAddingAttachment: boolean = false;
+
+    private attachRef: any;
+
+    private reader = new FileReader();
+
+    public componentDidMount() {
+        this.reader.addEventListener('load', this.handleFileLoad);
+    }
 
     @computed
     private get getStudioRateCardData(): StudioRateCard {
@@ -64,22 +78,42 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
                     </DropdownContainer>
                 }
                 {
-                    this.getStudioRateCardData.selectedRateCardLabel !== '' && <ButtonEdit
-                        onClick={this.handleRateAdd}
-                        label=""
-                        labelOnLeft={false}
-                        float="right"
-                        iconBackground="none"
-                    />
-                }
-                {
-                    this.getStudioRateCardData.selectedRateCardLabel !== '' && <ButtonDelete
-                        onClick={this.openDeleteModal}
-                        label=""
-                        labelOnLeft={false}
-                        float="right"
-                        iconBackground="none"
-                    />
+                    this.getStudioRateCardData.selectedRateCardLabel !== '' &&
+                    <>
+                        <ButtonEdit
+                            onClick={this.handleRateAdd}
+                            label=""
+                            labelOnLeft={false}
+                            float="right"
+                            iconBackground="none"
+                        />
+                        <ButtonDelete
+                            onClick={this.openDeleteModal}
+                            label=""
+                            labelOnLeft={false}
+                            float="right"
+                            iconBackground="none"
+                        />
+                        <ButtonAttach
+                            onClick={this.handleAttachClick}
+                            label=""
+                            labelOnLeft={false}
+                            float="right"
+                            iconBackground="none"
+                            isLoading={this.isAddingAttachment}
+                            file={this.getStudioRateCardData.selectedRateCardFile}
+                        />
+                        {
+                            this.getStudioRateCardData.selectedRateCardFile &&
+                            <ButtonRemoveAttachment
+                                onClick={this.openRemoveAttachmentModal}
+                                label=""
+                                labelOnLeft={true}
+                                float="right"
+                                iconBackground="none"
+                            />
+                        }
+                    </>
                 }
                 {
                     !this.getStudioRateCardData.rateCardTypes.loading && <ButtonAdd
@@ -94,6 +128,13 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
                         adding={false}
                     />
                 }
+                <input
+                    ref={this.handlePdfFile}
+                    className={styles.attachPDF}
+                    onChange={this.handlePdfFileChange}
+                    accept=".pdf"
+                    type="file"
+                />
                 <AddRateModal
                     isOpen={this.isModalOpened}
                     onClose={this.closeModal}
@@ -111,8 +152,39 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
                     onConfirmationSuccess={this.deleteRateCard}
                     confirmationMessage="Are you sure you want to delete rate card?"
                 />
+                <RemoveConfirmationModal
+                    isActive={this.isRemoveAttachmentModalOpened}
+                    onConfirmationModalClose={this.closeRemoveAttachmentModal}
+                    isErrorRemovingEntry={false}
+                    isRemoving={this.getStudioRateCardData.rateCardTypes.saving}
+                    onConfirmationSuccess={this.handleDeleteAttachment}
+                    confirmationMessage="Are you sure you want to remove attachment?"
+                />
             </div>
         );
+    }
+
+    private handlePdfFile = (ref) => this.attachRef = ref;
+
+    private handlePdfFileChange = (e) => {
+        if (e.target.files.length > 0) {
+            const file = e.target.files.item(0);
+            this.reader.readAsDataURL(file);
+        }
+    }
+
+    private handleAttachClick = (e) => {
+        this.attachRef.click();
+    }
+
+    private handleFileLoad = () => {
+        this.addRateCardAttachment(this.reader.result as string);
+    }
+
+    private handleDeleteAttachment = () => {
+        StudioRateCardActions.removeRateCardAttachment().then(() => {
+            this.closeRemoveAttachmentModal();
+        });
     }
 
     private handleFilterChange = (data) => {
@@ -144,6 +216,14 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
         this.isDeleteModalOpened = false;
     };
 
+    private openRemoveAttachmentModal = () => {
+        this.isRemoveAttachmentModalOpened = true;
+    };
+
+    private closeRemoveAttachmentModal = () => {
+        this.isRemoveAttachmentModalOpened = false;
+    };
+
     private addRateCardType = (name: string) => {
         StudioRateCardActions.addRateCardType(name).then(() => {
             this.closeModal();
@@ -160,6 +240,13 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
     private deleteRateCard = () => {
         StudioRateCardActions.deleteRateCardType().then(() => {
             this.closeDeleteModal();
+        });
+    };
+
+    private addRateCardAttachment = (data: string) => {
+        this.isAddingAttachment = true;
+        StudioRateCardActions.modifyRateCardAttachment(data).then(() => {
+            this.isAddingAttachment = false;
         });
     };
 
