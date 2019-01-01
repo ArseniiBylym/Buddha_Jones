@@ -133,9 +133,14 @@ export class StudioRateCardActionsClass {
     };
 
     @action
-    public getStudioRateCardTypes = async (): Promise<boolean> => {
+    public getStudioRateCardTypes = async (selectedRateCardId?: number): Promise<boolean> => {
         try {
             StudioRateCardStore.rateCardTypes.loading = true;
+            if (selectedRateCardId) {
+                StudioRateCardStore.selectedRateCardId = selectedRateCardId;
+            } else {
+                StudioRateCardStore.selectedRateCardId = null;
+            }
             const response = (await API.getData(`${APIPath.STUDIO_RATE_CARD_TYPE}`, {
                 studio_id: StudioRateCardStore.id,
             }, false, true)) as {

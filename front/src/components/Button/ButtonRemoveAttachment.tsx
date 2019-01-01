@@ -50,7 +50,7 @@ export class ButtonRemoveAttachment extends React.Component<ButtonRemoveAttachme
                 icon={{
                     size: 'small',
                     background: this.props.iconBackground,
-                    element: <IconRemoveAttachment width={20} height={20} />,
+                    element: <IconRemoveAttachment width={12} height={12} />,
                 }}
             />
         );

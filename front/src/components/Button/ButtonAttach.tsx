@@ -5,6 +5,9 @@ import { Button, ButtonFloatPropType, ButtonOnClickPropType, ButtonIconColorProp
 import { IconAttach, IconPdf } from '../Icons';
 import { observer } from 'mobx-react';
 import { LoadingSpinner } from '../Loaders';
+import { ButtonRemoveAttachment } from './ButtonRemoveAttachment';
+
+import * as styles from './styles.scss';
 
 // Props
 interface ButtonEditProps {
@@ -17,6 +20,7 @@ interface ButtonEditProps {
     iconBackground?: ButtonIconColorPropType;
     file: string | null;
     isLoading: boolean;
+    onRemove?: () => void;
 }
 
 // Component
@@ -48,26 +52,36 @@ export class ButtonAttach extends React.Component<ButtonEditProps, {}> {
         }
         if (this.props.file) {
             return (
-                <Button
-                    className={this.props.className}
-                    onClick={this.handleFileClick}
-                    float={this.props.float}
-                    label={
-                        this.props.label
-                            ? {
-                                text: this.props.label,
-                                color: 'black',
-                                size: 'small',
-                                onLeft: this.props.labelOnLeft,
-                            }
-                            : undefined
-                    }
-                    icon={{
-                        size: 'small',
-                        background: this.props.iconBackground,
-                        element: <IconPdf width={20} height={20} />,
-                    }}
-                />
+                <div className={styles.buttonAttach}>
+                    <ButtonRemoveAttachment
+                        className={styles.buttonRemove}
+                        onClick={this.props.onRemove}
+                        label=""
+                        labelOnLeft={true}
+                        float="right"
+                        iconBackground="none"
+                    />
+                    <Button
+                        className={this.props.className}
+                        onClick={this.handleFileClick}
+                        float={this.props.float}
+                        label={
+                            this.props.label
+                                ? {
+                                    text: this.props.label,
+                                    color: 'black',
+                                    size: 'small',
+                                    onLeft: this.props.labelOnLeft,
+                                }
+                                : undefined
+                        }
+                        icon={{
+                            size: 'small',
+                            background: this.props.iconBackground,
+                            element: <IconPdf width={20} height={20} />,
+                        }}
+                    />
+                </div>
             );
         }
         return (
