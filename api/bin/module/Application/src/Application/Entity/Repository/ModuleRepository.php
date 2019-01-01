@@ -33,12 +33,12 @@ class ModuleRepository extends EntityRepository
         $modules = $this->getAllModule();
         $subModules = $this->getAllSubModule();
 
-        $modules = array_map(function($module) use ($subModules) {
-            $subModuleArr = array_filter($subModules, function($subModule) use ($module){
+        $modules = array_map(function ($module) use ($subModules) {
+            $subModuleArr = array_filter($subModules, function ($subModule) use ($module) {
                 return ($subModule['moduleId'] == $module['id']);
             });
 
-            $subModuleArr = array_map(function($subModule) {
+            $subModuleArr = array_map(function ($subModule) {
                 unset($subModule['moduleId']);
                 return $subModule;
             }, $subModuleArr);
@@ -117,7 +117,8 @@ class ModuleRepository extends EntityRepository
         return $result;
     }
 
-    public function getSubModuleAccess($filter =  array()) {
+    public function getSubModuleAccess($filter = array())
+    {
         $dql = "SELECT 
                   sma
                 FROM 
@@ -159,8 +160,8 @@ class ModuleRepository extends EntityRepository
         $response = $this->getModuleTree();
         $result = array_column($result, 'subModuleId');
 
-        $response = array_map(function($module) use ($result){
-            $module['subModule'] = array_map(function($subModule) use ($result) {
+        $response = array_map(function ($module) use ($result) {
+            $module['subModule'] = array_map(function ($subModule) use ($result) {
                 $subModule['canAccess'] = (bool)(in_array($subModule['id'], $result));
                 return $subModule;
             }, $module['subModule']);
@@ -168,5 +169,52 @@ class ModuleRepository extends EntityRepository
             return $module;
         }, $response);
         return $response;
+    }
+
+    public function removeAccessByUserTypeId($userTypeId)
+    {
+        $dql = "DELETE
+                    FROM \Application\Entity\RediSubModuleAccess sma
+                    WHERE sma.userTypeId = :user_type_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_type_id', $userTypeId);
+        $query->execute();
+    }
+
+    public function checkUserSubModule($userTypeId, $subModuleId)
+    {
+        $dql = "SELECT 
+                  COUNT(sma) AS total_count
+                FROM 
+                    \Application\Entity\RediSubModuleAccess sma
+                WHERE 
+                    sma.userTypeId = :user_type_id
+                    AND sma.subModuleId = :sub_module_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('sub_module_id', $subModuleId);
+        $query->setParameter('user_type_id', $userTypeId);
+
+        $result = $query->getArrayResult();
+
+        return (bool)(isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
+    }
+
+    public function getUserSubModules($userTypeId)
+    {
+        $dql = "SELECT 
+                  sma
+                FROM 
+                    \Application\Entity\RediSubModuleAccess sma
+                WHERE 
+                    sma.userTypeId = :user_type_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('user_type_id', $userTypeId);
+        $result = $query->getArrayResult();
+
+        return array_column($result, 'sub_module_id');
+
     }
 }
