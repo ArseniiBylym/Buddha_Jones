@@ -1110,9 +1110,10 @@ class SpotRepository extends EntityRepository
 
         $statusOptions = $this->getSpotSentOption('status', true);
         $graphicsStatusOptions = $this->getSpotSentOption('graphics_status', true);
+        $userRepo = new UsersRepository($this->_entityManager);
 
         // update status
-        $result = array_map(function ($ssRow) use ($statusOptions, $graphicsStatusOptions) {
+        $result = array_map(function ($ssRow) use ($statusOptions, $graphicsStatusOptions, $userRepo) {
             $ssRow['spotLineStatus'] = (!empty($statusOptions[$ssRow['spotLineStatusId']])) ? $statusOptions[$ssRow['spotLineStatusId']]['name'] : null;
             $graphicsStatus = (!empty($graphicsStatusOptions[$ssRow['graphicsStatusId']])) ? $graphicsStatusOptions[$ssRow['graphicsStatusId']]['name'] : null;
 
@@ -1161,6 +1162,7 @@ class SpotRepository extends EntityRepository
             }
 
             $ssRow['graphicsStatus'] = $graphicsStatus;
+            $ssRow['producers'] = $userRepo->getCreativeUsersFromProjectCampaignByRole($ssRow['projectCampaignId'], array(1, 2, 3));
 
             return $ssRow;
         }, $result);
@@ -1170,7 +1172,6 @@ class SpotRepository extends EntityRepository
         }
 
         $response = array();
-        $userRepo = new UsersRepository($this->_entityManager);
 
         foreach ($result as $row) {
             if (empty($response[$row['projectId']])) {
@@ -1216,7 +1217,7 @@ class SpotRepository extends EntityRepository
                     'finishRequest' => (int)$row['finishRequest'],
                     'finishOption' => $row['finishOption'],
                     'finishingHouse' => $row['finishingHouse'],
-                    'producers' => $userRepo->getCreativeUsersFromProjectCampaignByRole($row['projectCampaignId'], array(1, 2, 3)),
+                    'producers' => $row['producers'],
                 );
             }
         }
@@ -1237,7 +1238,7 @@ class SpotRepository extends EntityRepository
         return $response;
     }
 
-    public function getSpotSentForGraphicsById($spotSentId)
+    public function getSpotSentTreeById($spotSentId)
     {
         $data = $this->getSpotSentListTree(array(
             'spot_sent_id' => $spotSentId,
@@ -1249,16 +1250,16 @@ class SpotRepository extends EntityRepository
         if ($data) {
             $data['graphicsFile'] = $this->getSpotSendFiles($spotSentId);
 
-            unset($data["projectId"]);
-            unset($data["studioId"]);
-            unset($data["campaignId"]);
-            unset($data["customerId"]);
-            unset($data["projectCampaignId"]);
-            unset($data["spotId"]);
-            unset($data["versionId"]);
-            unset($data["spotSentRequestId"]);
-            unset($data["trtId"]);
-            unset($data["allGraphicsResend"]);
+            // unset($data["projectId"]);
+            // unset($data["studioId"]);
+            // unset($data["campaignId"]);
+            // unset($data["customerId"]);
+            // unset($data["projectCampaignId"]);
+            // unset($data["spotId"]);
+            // unset($data["versionId"]);
+            // unset($data["spotSentRequestId"]);
+            // unset($data["trtId"]);
+            // unset($data["allGraphicsResend"]);
 
             return $data;
         }
