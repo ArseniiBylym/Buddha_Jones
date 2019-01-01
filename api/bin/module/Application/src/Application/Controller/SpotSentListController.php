@@ -149,6 +149,8 @@ class SpotSentListController extends CustomAbstractActionController
                 $this->_em->flush();
             }
 
+            $this->spotSentSubmissionPostProcess($id);
+
             $response = array(
                 'status' => 1,
                 'message' => 'Spot sent updated successfully.',
@@ -177,12 +179,16 @@ class SpotSentListController extends CustomAbstractActionController
         }
 
         // update all graphics resend field
-        $checkIfNotResend = $this->_spotSentFileRepository->findOneBy(array('spotSentId' => $spotSentId, 'resend' => array(0, null)));
+        $spotSentFiles = $this->_spotSentFileRepository->findBy(array('spotSentId' => $spotSentId));
+        $spotSentFiles = array_map(function($file) {
+            return $file->getResend();
+        }, $spotSentFiles);
 
-        if (!$checkIfNotResend) {
-            $spotSent->setAllGraphicsResend(1);
-            $this->_em->persist($spotSent);
-        }
+        $hasNull = array_intersect(array(0, null), $spotSentFiles);
+        $resend = (!$spotSentFiles || count($hasNull)) ? 0 : 1;
+
+        $spotSent->setAllGraphicsResend($resend);
+        $this->_em->persist($spotSent);
 
         $this->_em->flush();
     }

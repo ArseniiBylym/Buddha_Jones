@@ -178,7 +178,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         // $this->_spotSentToSpotVersionRepository = $this->_em->getRepository('Application\Entity\RediSpotSentToSpotVersion');
         $this->_spotSentOptionRepository = $this->_em->getRepository('Application\Entity\RediSpotSentOption');
         $this->_spotSentRepository = $this->_em->getRepository('Application\Entity\RediSpotSent');
-        $this->_spotSentfileRepository = $this->_em->getRepository('Application\Entity\RediSpotSentFile');
+        $this->_spotSentFileRepository = $this->_em->getRepository('Application\Entity\RediSpotSentFile');
         // $this->_spotSentToWorkStage = $this->_em->getRepository('Application\Entity\RediSpotSentToWorkStage');
         $this->_staffRepository = $this->_em->getRepository('Application\Entity\RediStaff');
         $this->_statusRepository = $this->_em->getRepository('Application\Entity\RediStatus');
