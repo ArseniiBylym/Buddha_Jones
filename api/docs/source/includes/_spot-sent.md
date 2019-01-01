@@ -917,7 +917,7 @@ campaign_id, spot_version_id, editors, spot_resend, finish_request, line_status_
 
 ## Update Spot Sent 
 
-Create a new spot sent entry.
+update a new spot sent entry.
 
 > Sample request
 

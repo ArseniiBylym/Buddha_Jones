@@ -11,16 +11,7 @@ class UserTypeController extends CustomAbstractActionController
 {
     public function getList()
     {
-        $userType = $this->_userTypeRepository->findAll();
-
-        $data = array();
-
-        foreach($userType as $row) {
-            $data[] = array(
-                'id' => $row->getId(),
-                'type_name' => $row->getTypeName()
-            );
-        }
+        $data = $this->_usersRepo->getAllUserType();
 
         $response = array(
             'status' => 1,

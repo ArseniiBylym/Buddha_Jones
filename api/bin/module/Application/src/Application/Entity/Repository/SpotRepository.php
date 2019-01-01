@@ -1027,7 +1027,11 @@ class SpotRepository extends EntityRepository
                     trt.runtime,
                     ss.noGraphics,
                     ss.allGraphicsResend,
-                    ss.finishRequest
+                    ss.finishRequest,
+                    ss.finishOption,
+                    fh.name AS finishingHouse,
+                    ss.allGraphicsResend,
+                    ss.isPdf
                 FROM \Application\Entity\RediSpotSent ss
                 LEFT JOIN \Application\Entity\RediProject p 
                     WITH p.id = ss.projectId
@@ -1045,6 +1049,8 @@ class SpotRepository extends EntityRepository
                     WITH cu.id = ptc.customerId
                 LEFT JOIN \Application\Entity\RediTrt trt
                     WITH trt.id = s.trtId
+                LEFT JOIN \Application\Entity\RediFinishingHouse fh
+                    WITH ss.finishingHouse = fh.id
                 WHERE ss.billId IS NULL
                     AND ss.projectId IS NOT NULL
                     AND ss.campaignId IS NOT NULL
@@ -1106,9 +1112,10 @@ class SpotRepository extends EntityRepository
 
         $statusOptions = $this->getSpotSentOption('status', true);
         $graphicsStatusOptions = $this->getSpotSentOption('graphics_status', true);
+        $userRepo = new UsersRepository($this->_entityManager);
 
         // update status
-        $result = array_map(function ($ssRow) use ($statusOptions, $graphicsStatusOptions) {
+        $result = array_map(function ($ssRow) use ($statusOptions, $graphicsStatusOptions, $userRepo) {
             $ssRow['spotLineStatus'] = (!empty($statusOptions[$ssRow['spotLineStatusId']])) ? $statusOptions[$ssRow['spotLineStatusId']]['name'] : null;
             $graphicsStatus = (!empty($graphicsStatusOptions[$ssRow['graphicsStatusId']])) ? $graphicsStatusOptions[$ssRow['graphicsStatusId']]['name'] : null;
 
@@ -1136,7 +1143,28 @@ class SpotRepository extends EntityRepository
                 }
             }
 
+            if (!empty($ssRow['finishOption'])) {
+                $finishingOptions = $this->getSpotSentOption('finishing_option');
+                $finishingOptionIds = explode(',', $ssRow['finishOption']);
+
+                if (count($finishingOptionIds)) {
+                    $finishingOptionIds = array_map('trim', $finishingOptionIds);
+
+                    if (count($finishingOptionIds) === 2) {
+                        $ssRow['finishOption'] = array_values(array_filter($finishingOptions, function ($option) use ($finishingOptionIds) {
+                            return $option['id'] == $finishingOptionIds[0];
+                        }));
+                        if (count($ssRow['finishOption'])) {
+                            $ssRow['finishOption'] = $ssRow['finishOption'][0]['name'];
+                        }
+                    } else {
+                        $ssRow['finishOption'] = null;
+                    }
+                }
+            }
+
             $ssRow['graphicsStatus'] = $graphicsStatus;
+            $ssRow['producers'] = $userRepo->getCreativeUsersFromProjectCampaignByRole($ssRow['projectCampaignId'], array(1, 2, 3));
 
             return $ssRow;
         }, $result);
@@ -1146,7 +1174,6 @@ class SpotRepository extends EntityRepository
         }
 
         $response = array();
-        $userRepo = new UsersRepository($this->_entityManager);
 
         foreach ($result as $row) {
             if (empty($response[$row['projectId']])) {
@@ -1190,7 +1217,11 @@ class SpotRepository extends EntityRepository
                     'versionId' => $row['versionId'],
                     'versionName' => $row['versionName'],
                     'finishRequest' => (int)$row['finishRequest'],
-                    'producers' => $userRepo->getCreativeUsersFromProjectCampaignByRole($row['projectCampaignId'], array(1, 2, 3)),
+                    'finishOption' => $row['finishOption'],
+                    'finishingHouse' => $row['finishingHouse'],
+                    'producers' => $row['producers'],
+                    'allGraphicsResend' => $row['allGraphicsResend'],
+                    'isPdf' => $row['isPdf'],
                 );
             }
         }
@@ -1211,7 +1242,7 @@ class SpotRepository extends EntityRepository
         return $response;
     }
 
-    public function getSpotSentForGraphicsById($spotSentId)
+    public function getSpotSentTreeById($spotSentId)
     {
         $data = $this->getSpotSentListTree(array(
             'spot_sent_id' => $spotSentId,
@@ -1223,16 +1254,16 @@ class SpotRepository extends EntityRepository
         if ($data) {
             $data['graphicsFile'] = $this->getSpotSendFiles($spotSentId);
 
-            unset($data["projectId"]);
-            unset($data["studioId"]);
-            unset($data["campaignId"]);
-            unset($data["customerId"]);
-            unset($data["projectCampaignId"]);
-            unset($data["spotId"]);
-            unset($data["versionId"]);
-            unset($data["spotSentRequestId"]);
-            unset($data["trtId"]);
-            unset($data["allGraphicsResend"]);
+            // unset($data["projectId"]);
+            // unset($data["studioId"]);
+            // unset($data["campaignId"]);
+            // unset($data["customerId"]);
+            // unset($data["projectCampaignId"]);
+            // unset($data["spotId"]);
+            // unset($data["versionId"]);
+            // unset($data["spotSentRequestId"]);
+            // unset($data["trtId"]);
+            // unset($data["allGraphicsResend"]);
 
             return $data;
         }

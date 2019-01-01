@@ -17,6 +17,9 @@ class LoginController extends AbstractRestfulController
     protected $_userRepository;
     protected $_userTypeRepository;
 
+    protected $_userRepo;
+    protected $_moduleRepo;
+
     private $_config;
 
     public function onDispatch(MvcEvent $e)
@@ -26,6 +29,7 @@ class LoginController extends AbstractRestfulController
         $this->_userTypeRepository = $this->_em->getRepository('Application\Entity\RediUserType');
 
         $this->_userRepo = $this->getServiceLocator()->get('Application\Entity\Repository\UsersRepository');
+        $this->_moduleRepo = $this->getServiceLocator()->get('Application\Entity\Repository\ModuleRepository');
 
         $this->_config = $this->getServiceLocator()->get('Config');
 
@@ -77,6 +81,7 @@ class LoginController extends AbstractRestfulController
                             'lastClockIn' => $this->_userRepo->getUserLastClockin($userId),
                             'pageAccess' => $this->_userRepo->getPageAccessOfUser($userType->getId()),
                             'projectPermissions' => $this->_userRepo->getUserTypeProjectPermission($userType->getId()),
+                            'moduleAccess' => $this->_moduleRepo->getSubModuleAccess(array('user_id' => $userId, 'return_full_data' => true)),
                         ));
 
                         $response = array(
@@ -165,6 +170,7 @@ class LoginController extends AbstractRestfulController
                         'token' => $jwtToken,
                         'pageAccess' => $this->_userRepo->getPageAccessOfUser($userType->getId()),
                         'projectPermissions' => $this->_userRepo->getUserTypeProjectPermission($userType->getId()),
+                        'moduleAccess' => $this->_moduleRepo->getSubModuleAccess(array('user_id' => $identity->getId(), 'return_full_data' => true)),
                     ));
 
                     // update last login

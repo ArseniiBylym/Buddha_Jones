@@ -641,7 +641,7 @@ class TimeEntryRepository extends EntityRepository
         return array_values($data);
     }
 
-    public function deleteApproverTimeApprovalPermission($approverIds)
+    public function deleteApproverTimeApprovalPermission($approverId)
     {
         $dql = "DELETE
                 FROM \Application\Entity\RediUserTypeTimeApprovalPermission a
@@ -649,7 +649,7 @@ class TimeEntryRepository extends EntityRepository
                 ";
 
         $query = $this->getEntityManager()->createQuery($dql);
-        $query->setParameter('approver_user_type_id', $approverIds);
+        $query->setParameter('approver_user_type_id', $approverId);
         $query->execute();
     }
 
