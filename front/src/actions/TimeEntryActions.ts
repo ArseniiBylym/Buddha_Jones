@@ -348,7 +348,7 @@ export class TimeEntryActionsClass {
             return true;
         } catch (error) {
             if (error.message === 'Request failed with status code 400') {
-                this.showErrorMessage('Time entry has overlap with existing time entry');
+                this.showErrorMessage('Time entry overlaps with an existing time entry');
             } 
             throw error;
         }

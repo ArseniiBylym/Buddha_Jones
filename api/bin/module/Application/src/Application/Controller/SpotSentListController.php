@@ -14,9 +14,27 @@ class SpotSentListController extends CustomAbstractActionController
 {
     public function getList()
     {
-        $filter['current_user_id'] = $this->_user_id;
+        $subModuleId = (int)trim($this->getRequest()->getQuery('sub_module_id', 0));
 
+        $filter['current_user_id'] = $this->_user_id;
         $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
+
+        $checkSubModuleAccess = $this->_moduleRepo->checkUserSubModule($this->_user_type_id, $subModuleId);
+
+        if ($subModuleId == 1) { // initiate
+            $filter['line_status_id'] = array(1);
+        } else if ($subModuleId == 2) { // post spot sent
+            $filter['line_status_id'] = array(2);
+        } else if ($subModuleId == 3) { // Spot sent for finish
+            $filter['line_status_id'] = array(3);
+        } else if ($subModuleId == 4) { // Spots for Graphics
+            $filter['graphics_status'] = array(1,3);
+        } else if ($subModuleId == 5) { // Spots for EDL
+            $filter['graphics_status'] = array(2);
+        } else if ($subModuleId == 6) { // Spot for Billing
+            $filter['line_status_id'] = array(4);
+            $filter['graphics_status_id'] = array(4);
+        }
 
         $data = $this->_spotRepo->getSpotSentListTree($filter);
 

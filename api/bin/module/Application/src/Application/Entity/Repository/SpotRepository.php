@@ -1026,7 +1026,8 @@ class SpotRepository extends EntityRepository
                     s.trtId,
                     trt.runtime,
                     ss.noGraphics,
-                    ss.allGraphicsResend
+                    ss.allGraphicsResend,
+                    ss.finishRequest
                 FROM \Application\Entity\RediSpotSent ss
                 LEFT JOIN \Application\Entity\RediProject p 
                     WITH p.id = ss.projectId
@@ -1059,6 +1060,22 @@ class SpotRepository extends EntityRepository
             $dqlFilter[] = " (ss.id = :spot_sent_id) ";
         }
 
+        if (!empty($filter['line_status_id'])) {
+            $dqlFilter[] = " (ss.lineStatusId IN (:line_status_id)) ";
+
+            if (!is_array($filter['line_status_id'])) {
+                $filter['line_status_id'] = (array)$filter['line_status_id'];
+            }
+        }
+
+        if (!empty($filter['graphics_status_id'])) {
+            $dqlFilter[] = " (ss.graphicsStatusId IN (:graphics_status_id)) ";
+
+            if (!is_array($filter['graphics_status_id'])) {
+                $filter['graphics_status_id'] = (array)$filter['graphics_status_id'];
+            }
+        }
+
         if (count($dqlFilter)) {
             $dql .= " AND " . implode(" AND ", $dqlFilter);
         }
@@ -1075,6 +1092,14 @@ class SpotRepository extends EntityRepository
 
         if (!empty($filter['spot_sent_id'])) {
             $query->setParameter("spot_sent_id", $filter['spot_sent_id']);
+        }
+
+        if (!empty($filter['line_status_id'])) {
+            $query->setParameter("line_status_id", $filter['line_status_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+        }
+
+        if (!empty($filter['graphics_status_id'])) {
+            $query->setParameter("graphics_status_id", $filter['graphics_status_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
         }
 
         $result = $query->getArrayResult();
@@ -1164,6 +1189,7 @@ class SpotRepository extends EntityRepository
                     'runtime' => $row['runtime'],
                     'versionId' => $row['versionId'],
                     'versionName' => $row['versionName'],
+                    'finishRequest' => (int)$row['finishRequest'],
                     'producers' => $userRepo->getCreativeUsersFromProjectCampaignByRole($row['projectCampaignId'], array(1, 2, 3)),
                 );
             }

@@ -169,7 +169,7 @@ class TimeEntryController extends CustomAbstractActionController
             } else {
                 $response = array(
                     'status' => 0,
-                    'message' => 'Time entry has overlap with existing time entry.'
+                    'message' => 'Time entry overlaps with an existing time entry.'
                 );
             }
         } else {
@@ -312,7 +312,7 @@ class TimeEntryController extends CustomAbstractActionController
                     } else {
                         $response = array(
                             'status' => 0,
-                            'message' => 'Time entry has overlap with existing time entry.'
+                            'message' => 'Time entry overlaps with an existing time entry.'
                         );
                     }
 
