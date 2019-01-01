@@ -1027,7 +1027,9 @@ class SpotRepository extends EntityRepository
                     trt.runtime,
                     ss.noGraphics,
                     ss.allGraphicsResend,
-                    ss.finishRequest
+                    ss.finishRequest,
+                    ss.finishOption,
+                    fh.name AS finishingHouse
                 FROM \Application\Entity\RediSpotSent ss
                 LEFT JOIN \Application\Entity\RediProject p 
                     WITH p.id = ss.projectId
@@ -1045,6 +1047,8 @@ class SpotRepository extends EntityRepository
                     WITH cu.id = ptc.customerId
                 LEFT JOIN \Application\Entity\RediTrt trt
                     WITH trt.id = s.trtId
+                LEFT JOIN \Application\Entity\RediFinishingHouse fh
+                    WITH ss.finishingHouse = fh.id
                 WHERE ss.billId IS NULL
                     AND ss.projectId IS NOT NULL
                     AND ss.campaignId IS NOT NULL
@@ -1136,6 +1140,26 @@ class SpotRepository extends EntityRepository
                 }
             }
 
+            if (!empty($ssRow['finishOption'])) {
+                $finishingOptions = $this->getSpotSentOption('finishing_option');
+                $finishingOptionIds = explode(',', $ssRow['finishOption']);
+
+                if (count($finishingOptionIds)) {
+                    $finishingOptionIds = array_map('trim', $finishingOptionIds);
+
+                    if (count($finishingOptionIds) === 2) {
+                        $ssRow['finishOption'] = array_values(array_filter($finishingOptions, function ($option) use ($finishingOptionIds) {
+                            return $option['id'] == $finishingOptionIds[0];
+                        }));
+                        if (count($ssRow['finishOption'])) {
+                            $ssRow['finishOption'] = $ssRow['finishOption'][0]['name'];
+                        }
+                    } else {
+                        $ssRow['finishOption'] = null;
+                    }
+                }
+            }
+
             $ssRow['graphicsStatus'] = $graphicsStatus;
 
             return $ssRow;
@@ -1190,6 +1214,8 @@ class SpotRepository extends EntityRepository
                     'versionId' => $row['versionId'],
                     'versionName' => $row['versionName'],
                     'finishRequest' => (int)$row['finishRequest'],
+                    'finishOption' => $row['finishOption'],
+                    'finishingHouse' => $row['finishingHouse'],
                     'producers' => $userRepo->getCreativeUsersFromProjectCampaignByRole($row['projectCampaignId'], array(1, 2, 3)),
                 );
             }
