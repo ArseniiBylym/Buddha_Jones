@@ -11,7 +11,6 @@ import { InputSearch, TextArea } from 'components/Form/index';
 import { LoadingSpinner } from 'components/Loaders';
 import { Section, SectionElement } from 'components/Section/index';
 import { Table } from 'components/Table';
-import { action, computed, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { match } from 'react-router';
@@ -28,22 +27,38 @@ interface Props {
     match: match<MatchParams>;
 }
 
+interface State {
+    searchString: string;
+    noteValue: string;
+    addNew: boolean;
+    isDeleteModalOpened: boolean;
+    deleteActivityIsPending: boolean;
+    noteEditMode: boolean;
+    noteSaving: boolean;
+    activityToDelete: number | null;
+}
+
 interface MatchParams {}
+
+type BillingStudioRateCardsProps = Props & AppState;
 
 @inject('store')
 @observer
-class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
-    @observable private searchString: string = '';
-    @observable private addNew: boolean = false;
-    @observable private isDeleteModalOpened: boolean = false;
-    @observable private deleteActivityIsPending: boolean = false;
-    @observable private activityToDelete: number | null = null;
+class BillingStudioRateCards extends React.Component<BillingStudioRateCardsProps, State> {
+    constructor(props: BillingStudioRateCardsProps) {
+        super(props);
 
-    @observable private noteEditMode: boolean = false;
-    @observable private noteSaving: boolean = false;
-    @observable private noteValue: string = '';
-
-    @computed
+        this.state = {
+            searchString: '',
+            noteValue: '',
+            addNew: false,
+            isDeleteModalOpened: false,
+            deleteActivityIsPending: false,
+            noteEditMode: false,
+            noteSaving: false,
+            activityToDelete: null,
+        };
+    }
     private get getStudioRateCardData(): StudioRateCard {
         return this.props.store!.studioRateCard;
     }
@@ -102,7 +117,7 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
                             columnsWidths={['35%', '10%', '2%', '18%', '10%', '10%', '5%', '10%']}
                         >
                             {this.getTableRows()}
-                            {this.addNew && (
+                            {this.state.addNew && (
                                 <BillingStudioRateCardRow
                                     card={{
                                         ratecardId: this.getStudioRateCardData.selectedRateCardId
@@ -130,10 +145,10 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
                         <div className={styles.rateCardNoteWrapper}>
                             <h3 className={styles.noteLabel}>Additional Rate Card Notes</h3>
                             <div className={styles.rateCardNote}>
-                                {this.noteEditMode ? (
+                                {this.state.noteEditMode ? (
                                     <TextArea
                                         label="Note"
-                                        value={this.noteValue}
+                                        value={this.state.noteValue}
                                         onChange={this.handleNoteChange}
                                         className={styles.noteTextAreaWrapperStyles}
                                         fieldClassName={styles.noteTextAreaStyles}
@@ -143,12 +158,12 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
                                 ) : (
                                     'No Notes Found'
                                 )}
-                                {this.noteEditMode ? (
+                                {this.state.noteEditMode ? (
                                     <div className={styles.rateCardNoteActions}>
                                         <ButtonSave
                                             label="Save"
                                             labelColor="green"
-                                            isSaving={this.noteSaving}
+                                            isSaving={this.state.noteSaving}
                                             savingLabel="Saving"
                                             onClick={this.handleSaveNote}
                                         />
@@ -172,7 +187,7 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
                             </div>
                         </div>
                     )}
-                    {!this.addNew && !this.getStudioRateCardData.rateCard.loading && this.getStudioRateCardData.selectedRateCardId !== null && (
+                    {!this.state.addNew && !this.getStudioRateCardData.rateCard.loading && this.getStudioRateCardData.selectedRateCardId !== null && (
                         <ButtonAdd
                             label="New Activity"
                             labelOnLeft={true}
@@ -185,10 +200,10 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
                         />
                     )}
                     <RemoveConfirmationModal
-                        isActive={this.isDeleteModalOpened}
+                        isActive={this.state.isDeleteModalOpened}
                         onConfirmationModalClose={this.closeDeleteActivityModal}
                         isErrorRemovingEntry={false}
-                        isRemoving={this.deleteActivityIsPending}
+                        isRemoving={this.state.deleteActivityIsPending}
                         onConfirmationSuccess={this.deleteActivity}
                         confirmationMessage="Are you sure you want to delete the activity?"
                     />
@@ -198,52 +213,68 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
     }
 
     private enterNoteEditMode = () => {
-        this.noteValue = this.getStudioRateCardData.selectedRateCardNote
-            ? this.getStudioRateCardData.selectedRateCardNote
-            : '';
-        this.noteEditMode = true;
+        this.setState({
+            noteValue: this.getStudioRateCardData.selectedRateCardNote ? this.getStudioRateCardData.selectedRateCardNote : '',
+            noteEditMode: true,
+        });
     };
 
     private exitNoteEditMode = () => {
-        this.noteEditMode = false;
+        this.setState({
+            noteEditMode: false,
+        });
     };
 
     private handleNoteChange = e => {
-        this.noteValue = e.target.value;
+        this.setState({
+            noteValue: e.target.value
+        });
     };
 
     private handleSaveNote = () => {
-        this.noteSaving = true;
-        StudioRateCardActions.saveRateCardType(this.getStudioRateCardData.selectedRateCardLabel, this.noteValue).then(
+        this.setState({
+            noteSaving: true,
+        });
+        StudioRateCardActions.saveRateCardType(this.getStudioRateCardData.selectedRateCardLabel, this.state.noteValue).then(
             () => {
-                this.noteSaving = false;
+                this.setState({
+                    noteSaving: false,
+                });
                 this.exitNoteEditMode();
             }
         );
     };
 
     private openDeleteActivityModal = (activityId: number) => {
-        this.activityToDelete = activityId;
-        this.isDeleteModalOpened = true;
+        this.setState({
+            activityToDelete: activityId,
+            isDeleteModalOpened: true,
+        });
     };
 
     private closeDeleteActivityModal = () => {
-        this.isDeleteModalOpened = false;
-        this.activityToDelete = null;
+        this.setState({
+            activityToDelete: null,
+            isDeleteModalOpened: false,
+        });
     };
 
     private handleAdd = () => {
-        this.addNew = true;
+        this.setState({
+            addNew: true,
+        });
     };
 
     private onSaveDone = () => {
-        this.addNew = false;
+        this.setState({
+            addNew: false,
+        });
     };
 
     private getTableRows(): JSX.Element[] {
         const { data } = this.getStudioRateCardData.rateCard;
         return Object.keys(data)
-            .filter(key => data[key].activityName.toLowerCase().indexOf(this.searchString.toLowerCase()) !== -1)
+            .filter(key => data[key].activityName.toLowerCase().indexOf(this.state.searchString.toLowerCase()) !== -1)
             .map(p => (
                 <BillingStudioRateCardRow card={data[p]} key={p} openDeleteModal={this.openDeleteActivityModal} />
             ));
@@ -262,7 +293,7 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
                     <InputSearch
                         onChange={this.onChangeSearchInputHandler}
                         label="Search Activities"
-                        value={this.searchString}
+                        value={this.state.searchString}
                     />
                 ),
             },
@@ -270,28 +301,28 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
     }
 
     private onChangeSearchInputHandler = (event: React.FormEvent<HTMLInputElement>): void => {
-        this.searchString = event.currentTarget.value;
+        this.setState({
+            searchString: event.currentTarget.value,
+        });
     };
 
     private goBackToProjectBoardPermissionList = (): void => {
         history.push('/portal/billing/studio-rate-card');
     };
 
-    @action
     private setStudioId = (id: number): void => {
         StudioRateCardActions.setStudioId(id);
         this.getStudioRateCardTypes();
     };
 
-    @action
     private setSelectedRateCardId = (id: number): void => {
         StudioRateCardActions.setSelectedRateCardId(id);
         this.getStudioRateCard();
     };
 
-    @action
     private getStudioRateCardTypes = (): void => {
-        StudioRateCardActions.getStudioRateCardTypes().then(() => {
+        const selectedRateCardId = this.props.match.params['rate_card_id'];
+        StudioRateCardActions.getStudioRateCardTypes(selectedRateCardId).then(() => {
             if (this.getStudioRateCardData.selectedRateCardId && !this.props.match.params['rate_card_id']) {
                 history.push(`${this.props.match.url}/${this.getStudioRateCardData.selectedRateCardId}`);
             }
@@ -301,23 +332,24 @@ class BillingStudioRateCards extends React.Component<Props & AppState, {}> {
         });
     };
 
-    @action
     private getStudioRateCard = (): void => {
         StudioRateCardActions.getStudioRateCard();
     };
 
-    @action
     private deleteActivity = (): void => {
-        this.deleteActivityIsPending = true;
-        if (this.activityToDelete) {
-            StudioRateCardActions.removeStudioRateCard(this.activityToDelete).then(() => {
-                this.deleteActivityIsPending = false;
+        this.setState({
+            deleteActivityIsPending: true,
+        });
+        if (this.state.activityToDelete) {
+            StudioRateCardActions.removeStudioRateCard(this.state.activityToDelete).then(() => {
+                this.setState({
+                    deleteActivityIsPending: false,
+                });
                 this.closeDeleteActivityModal();
             });
         }
     };
 
-    @action
     private setHeaderAndInitialData = (studioName?: string): void => {
         // Set header
         HeaderActions.setMainHeaderTitlesAndElements(

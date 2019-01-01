@@ -5,13 +5,13 @@ import * as styles from './styles.scss';
 import { AppState } from 'store/AllStores';
 import { DropdownContainer, OptionsList } from '../../../components/Form';
 import { ButtonEdit, ButtonDelete, ButtonAdd } from '../../../components/Button';
-import { action, computed, observable } from 'mobx';
 import { StudioRateCard } from '../../../types/studioRateCard';
 import { StudioRateCardActions } from '../../../actions';
 import { LoadingSpinner } from '../../../components/Loaders';
 import AddRateModal from './AddRateModal';
 import { RemoveConfirmationModal } from '../../../components/RemoveConfiramtionModal';
 import { history } from '../../../App';
+import { ButtonAttach } from '../../../components/Button/ButtonAttach';
 
 interface Props {
     match: match<MatchParams>;
@@ -21,19 +21,44 @@ interface MatchParams {
 
 }
 
+interface State {
+    isModalOpened: boolean;
+    modalMode: 'new' | 'edit';
+    isDeleteModalOpened: boolean;
+    isRemoveAttachmentModalOpened: boolean;
+    isAddingAttachment: boolean;
+}
+
+type RateCardSelectorProps = Props & AppState;
+
 @inject('store')
 @observer
-class RateCardSelector extends React.Component<Props & AppState, {}> {
-    @observable
-    private rateCardSelector?: DropdownContainer;
-    @observable
-    private isModalOpened: boolean = false;
-    @observable
-    private modalMode: 'new' | 'edit' = 'new';
-    @observable
-    private isDeleteModalOpened: boolean = false;
+class RateCardSelector extends React.Component<RateCardSelectorProps, State> {
+    constructor(props: RateCardSelectorProps) {
+        super(props);
 
-    @computed
+        this.state = {
+            isModalOpened: false,
+            modalMode: 'new',
+            isDeleteModalOpened: false,
+            isRemoveAttachmentModalOpened: false,
+            isAddingAttachment: false,
+
+        };
+    }
+
+    private rateCardSelector?: DropdownContainer;
+    private attachRef: any;
+    private reader = new FileReader();
+
+    public componentDidMount() {
+        this.reader.addEventListener('load', this.handleFileLoad);
+    }
+
+    public componentWillUnmount() {
+        this.reader.removeEventListener('load', this.handleFileLoad);
+    }
+
     private get getStudioRateCardData(): StudioRateCard {
         return this.props.store!.studioRateCard;
     }
@@ -64,22 +89,23 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
                     </DropdownContainer>
                 }
                 {
-                    this.getStudioRateCardData.selectedRateCardLabel !== '' && <ButtonEdit
-                        onClick={this.handleRateAdd}
-                        label=""
-                        labelOnLeft={false}
-                        float="right"
-                        iconBackground="none"
-                    />
-                }
-                {
-                    this.getStudioRateCardData.selectedRateCardLabel !== '' && <ButtonDelete
-                        onClick={this.openDeleteModal}
-                        label=""
-                        labelOnLeft={false}
-                        float="right"
-                        iconBackground="none"
-                    />
+                    this.getStudioRateCardData.selectedRateCardLabel !== '' &&
+                    <>
+                        <ButtonEdit
+                            onClick={this.handleRateAdd}
+                            label=""
+                            labelOnLeft={false}
+                            float="right"
+                            iconBackground="none"
+                        />
+                        <ButtonDelete
+                            onClick={this.openDeleteModal}
+                            label=""
+                            labelOnLeft={false}
+                            float="right"
+                            iconBackground="none"
+                        />
+                    </>
                 }
                 {
                     !this.getStudioRateCardData.rateCardTypes.loading && <ButtonAdd
@@ -94,25 +120,78 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
                         adding={false}
                     />
                 }
+                {
+                    this.getStudioRateCardData.selectedRateCardLabel !== '' &&
+                    <div className={styles.attachButton}>
+                        <ButtonAttach
+                            onClick={this.handleAttachClick}
+                            label=""
+                            labelOnLeft={false}
+                            float="right"
+                            iconBackground="none"
+                            isLoading={this.state.isAddingAttachment}
+                            file={this.getStudioRateCardData.selectedRateCardFile}
+                            onRemove={this.openRemoveAttachmentModal}
+                        />
+                    </div>
+                }
+                <input
+                    ref={this.handlePdfFile}
+                    className={styles.attachPDF}
+                    onChange={this.handlePdfFileChange}
+                    accept=".pdf"
+                    type="file"
+                />
                 <AddRateModal
-                    isOpen={this.isModalOpened}
+                    isOpen={this.state.isModalOpened}
                     onClose={this.closeModal}
                     onAdd={this.addRateCardType}
                     onSave={this.saveRate}
                     isSaving={this.getStudioRateCardData.rateCardTypes.saving || this.getStudioRateCardData.rateCardTypes.adding}
                     label={this.getStudioRateCardData.selectedRateCardLabel}
-                    mode={this.modalMode}
+                    mode={this.state.modalMode}
                 />
                 <RemoveConfirmationModal
-                    isActive={this.isDeleteModalOpened}
+                    isActive={this.state.isDeleteModalOpened}
                     onConfirmationModalClose={this.closeDeleteModal}
                     isErrorRemovingEntry={false}
                     isRemoving={this.getStudioRateCardData.rateCardTypes.deleting}
                     onConfirmationSuccess={this.deleteRateCard}
                     confirmationMessage="Are you sure you want to delete rate card?"
                 />
+                <RemoveConfirmationModal
+                    isActive={this.state.isRemoveAttachmentModalOpened}
+                    onConfirmationModalClose={this.closeRemoveAttachmentModal}
+                    isErrorRemovingEntry={false}
+                    isRemoving={this.getStudioRateCardData.rateCardTypes.saving}
+                    onConfirmationSuccess={this.handleDeleteAttachment}
+                    confirmationMessage="Are you sure you want to remove attachment?"
+                />
             </div>
         );
+    }
+
+    private handlePdfFile = (ref) => this.attachRef = ref;
+
+    private handlePdfFileChange = (e) => {
+        if (e.target.files.length > 0) {
+            const file = e.target.files.item(0);
+            this.reader.readAsDataURL(file);
+        }
+    }
+
+    private handleAttachClick = (e) => {
+        this.attachRef.click();
+    }
+
+    private handleFileLoad = () => {
+        this.addRateCardAttachment(this.reader.result as string);
+    }
+
+    private handleDeleteAttachment = () => {
+        StudioRateCardActions.removeRateCardAttachment().then(() => {
+            this.closeRemoveAttachmentModal();
+        });
     }
 
     private handleFilterChange = (data) => {
@@ -123,31 +202,53 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
     };
 
     private handleRateAdd = () => {
-        this.modalMode = 'edit';
-        this.isModalOpened = true;
+        this.setState({
+            modalMode: 'edit',
+            isModalOpened: true,
+        });
     };
 
     private handleAddNewRate = () => {
-        this.modalMode = 'new';
-        this.isModalOpened = true;
+        this.setState({
+            modalMode: 'new',
+            isModalOpened: true
+        });
     };
 
     private closeModal = () => {
-        this.isModalOpened = false;
+        this.setState({
+            isModalOpened: false,
+        });
     };
 
     private openDeleteModal = () => {
-        this.isDeleteModalOpened = true;
+        this.setState({
+            isDeleteModalOpened: true,
+        });
     };
 
     private closeDeleteModal = () => {
-        this.isDeleteModalOpened = false;
+        this.setState({
+            isDeleteModalOpened: false,
+        });
+    };
+
+    private openRemoveAttachmentModal = () => {
+        this.setState({
+            isRemoveAttachmentModalOpened: true,
+        });
+    };
+
+    private closeRemoveAttachmentModal = () => {
+        this.setState({
+            isRemoveAttachmentModalOpened: false,
+        });
     };
 
     private addRateCardType = (name: string) => {
         StudioRateCardActions.addRateCardType(name).then(() => {
             this.closeModal();
-            this.searchClients();
+            StudioRateCardActions.getStudioRateCard();
         });
     };
 
@@ -163,6 +264,17 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
         });
     };
 
+    private addRateCardAttachment = (data: string) => {
+        this.setState({
+            isAddingAttachment: true
+        });
+        StudioRateCardActions.modifyRateCardAttachment(data).then(() => {
+            this.setState({
+                isAddingAttachment: false
+            });
+        });
+    };
+
     private rateCardSelectorRef = (ref: DropdownContainer) => this.rateCardSelector = ref;
 
     private getOptions = () => Object.keys(this.getStudioRateCardData.rateCardTypes.data).map((key) => {
@@ -173,12 +285,6 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
         };
     });
 
-    @action
-    private searchClients = () => {
-        StudioRateCardActions.getStudioRateCard();
-    }
-
-    @action
     private setRateCard = (value) => {
         StudioRateCardActions.setSelectedRateCardId(value);
         StudioRateCardActions.getStudioRateCard();

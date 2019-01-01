@@ -21,4 +21,6 @@ export * from './TimeApprovalActions';
 export * from './SpotSentActions';
 export * from './ChannelsActions';
 export * from './StudioRateCardActions';
+export * from './TimeEntryPermissionsActions';
+export * from './TimeApprovalPermissionsActions';
 export * from './AllActions';
