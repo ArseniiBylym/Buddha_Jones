@@ -29,9 +29,9 @@ class SpotSentListController extends CustomAbstractActionController
             } else if ($subModuleId == 3) { // Spot sent for finish
                 $filter['line_status_id'] = array(3);
             } else if ($subModuleId == 4) { // Spots for Graphics
-                $filter['graphics_status'] = array(1, 3);
+                $filter['graphics_status_id'] = array(1, 3);
             } else if ($subModuleId == 5) { // Spots for EDL
-                $filter['graphics_status'] = array(2);
+                $filter['graphics_status_id'] = array(2);
             } else if ($subModuleId == 6) { // Spot for Billing
                 $filter['line_status_id'] = array(4);
                 $filter['graphics_status_id'] = array(4);
@@ -90,6 +90,12 @@ class SpotSentListController extends CustomAbstractActionController
         $noGraphics = $this->_commonRepo->filterPostData($data, 'no_graphics', 'boolean', null);
         $graphicsFiles = $this->_commonRepo->filterPostData($data, 'graphics_file', 'array', null);
 
+        if ($spotLineStatusId && $spotLineStatusId < 4) {
+            $graphicsStatusId = null;
+        } else if ($spotLineStatusId == 4 && !$graphicsStatusId) {
+            $graphicsStatusId = 1;
+        }
+
         if ($graphicsFiles) {
             $graphicsFiles = array_map(function ($file) {
                 $file['file_name'] = (!empty($file['file_name'])) ? $file['file_name'] : null;
@@ -100,7 +106,6 @@ class SpotSentListController extends CustomAbstractActionController
             }, $graphicsFiles);
         }
 
-
         $spotSent = $this->_spotSentRepository->find($id);
 
         if ($spotSent) {
@@ -109,11 +114,11 @@ class SpotSentListController extends CustomAbstractActionController
             }
 
             if ($graphicsStatusId) {
-                $spotSent->setLineStatusId($graphicsStatusId);
+                $spotSent->setGraphicsStatusId($graphicsStatusId);
             }
 
             if ($noGraphics !== null) {
-                $spotSent->setLineStatusId($noGraphics);
+                $spotSent->setNoGraphics($noGraphics);
             }
 
             $this->_em->persist($spotSent);
@@ -146,7 +151,8 @@ class SpotSentListController extends CustomAbstractActionController
 
             $response = array(
                 'status' => 1,
-                'message' => 'Project updated successfully.',
+                'message' => 'Spot sent updated successfully.',
+                'data' => $this->_spotRepo->getSpotSentTreeById($id),
             );
         } else {
             $response = array(
@@ -160,5 +166,24 @@ class SpotSentListController extends CustomAbstractActionController
         }
 
         return new JsonModel($response);
+    }
+
+    public function spotSentSubmissionPostProcess($spotSentId)
+    {
+        $spotSent = $this->_spotSentRepository->find($spotSentId);
+
+        if (!$spotSent) {
+            return;
+        }
+
+        // update all graphics resend field
+        $checkIfNotResend = $this->_spotSentFileRepository->findOneBy(array('spotSentId' => $spotSentId, 'resend' => array(0, null)));
+
+        if (!$checkIfNotResend) {
+            $spotSent->setAllGraphicsResend(1);
+            $this->_em->persist($spotSent);
+        }
+
+        $this->_em->flush();
     }
 }
