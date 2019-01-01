@@ -40,16 +40,22 @@ class TimeApprovalPermissionController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    public function update($submittingUserTypeId, $data)
+    public function update($approverUserTypeId, $data)
     {
-        $submittingUserTypeId = (int)(isset($submittingUserTypeId) ? $submittingUserTypeId : 0);
-        $approversUserTypeIds = (array)json_decode(trim(isset($data['approver_user_type_id']) ? $data['approver_user_type_id'] : ''), true);
+        $approverUserTypeId = (int)(isset($approverUserTypeId) ? $approverUserTypeId : 0);
+        $submittingUserTypeIds = (array)json_decode(trim(isset($data['submitting_user_type_id']) ? $data['submitting_user_type_id'] : ''), true);
 
-        if ($this->_user_type_id == 100 && $submittingUserTypeId) {
-            $this->_timeEntryRepo->deleteSubmitterTimeApprovalPermission($submittingUserTypeId);
+        if ($this->_user_type_id == 100 && $approverUserTypeId) {
+            $this->_timeEntryRepo->deleteApproverTimeApprovalPermission($approverUserTypeId);
 
-            if ($approversUserTypeIds) {
-                foreach ($approversUserTypeIds as $approverUserTypeId) {
+            if ($submittingUserTypeIds) {
+                $submittingUserTypeIds = array_unique($submittingUserTypeIds);
+
+                foreach ($submittingUserTypeIds as $submittingUserTypeId) {
+                    if (!(int)$submittingUserTypeId) {
+                        return;
+                    }
+
                     $permission = new RediUserTypeTimeApprovalPermission();
                     $permission->setApproverUserTypeId($approverUserTypeId);
                     $permission->setSubmittingUserTypeId($submittingUserTypeId);
