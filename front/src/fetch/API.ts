@@ -1,3 +1,4 @@
+import { history } from 'App';
 import axios from 'axios';
 import { merge as _merge } from 'lodash';
 import { ApiRequestConfig, RequestDataTransformation } from 'types/api';
@@ -45,6 +46,10 @@ export class API {
                     : response.data
                 : response;
         } catch (error) {
+            if (error.message === 'Request failed with status code 401') {
+                history.push('/user/login');
+            }
+
             throw error;
         }
     };
