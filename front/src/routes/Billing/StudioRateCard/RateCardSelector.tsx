@@ -5,7 +5,6 @@ import * as styles from './styles.scss';
 import { AppState } from 'store/AllStores';
 import { DropdownContainer, OptionsList } from '../../../components/Form';
 import { ButtonEdit, ButtonDelete, ButtonAdd } from '../../../components/Button';
-import { action, computed, observable } from 'mobx';
 import { StudioRateCard } from '../../../types/studioRateCard';
 import { StudioRateCardActions } from '../../../actions';
 import { LoadingSpinner } from '../../../components/Loaders';
@@ -23,31 +22,44 @@ interface MatchParams {
 
 }
 
+interface State {
+    isModalOpened: boolean;
+    modalMode: 'new' | 'edit';
+    isDeleteModalOpened: boolean;
+    isRemoveAttachmentModalOpened: boolean;
+    isAddingAttachment: boolean;
+}
+
+type RateCardSelectorProps = Props & AppState;
+
 @inject('store')
 @observer
-class RateCardSelector extends React.Component<Props & AppState, {}> {
-    @observable
+class RateCardSelector extends React.Component<RateCardSelectorProps, State> {
+    constructor(props: RateCardSelectorProps) {
+        super(props);
+
+        this.state = {
+            isModalOpened: false,
+            modalMode: 'new',
+            isDeleteModalOpened: false,
+            isRemoveAttachmentModalOpened: false,
+            isAddingAttachment: false,
+
+        };
+    }
+
     private rateCardSelector?: DropdownContainer;
-    @observable
-    private isModalOpened: boolean = false;
-    @observable
-    private modalMode: 'new' | 'edit' = 'new';
-    @observable
-    private isDeleteModalOpened: boolean = false;
-    @observable
-    private isRemoveAttachmentModalOpened: boolean = false;
-    @observable
-    private isAddingAttachment: boolean = false;
-
     private attachRef: any;
-
     private reader = new FileReader();
 
     public componentDidMount() {
         this.reader.addEventListener('load', this.handleFileLoad);
     }
 
-    @computed
+    public componentWillUnmount() {
+        this.reader.removeEventListener('load', this.handleFileLoad);
+    }
+
     private get getStudioRateCardData(): StudioRateCard {
         return this.props.store!.studioRateCard;
     }
@@ -94,25 +106,6 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
                             float="right"
                             iconBackground="none"
                         />
-                        <ButtonAttach
-                            onClick={this.handleAttachClick}
-                            label=""
-                            labelOnLeft={false}
-                            float="right"
-                            iconBackground="none"
-                            isLoading={this.isAddingAttachment}
-                            file={this.getStudioRateCardData.selectedRateCardFile}
-                        />
-                        {
-                            this.getStudioRateCardData.selectedRateCardFile &&
-                            <ButtonRemoveAttachment
-                                onClick={this.openRemoveAttachmentModal}
-                                label=""
-                                labelOnLeft={true}
-                                float="right"
-                                iconBackground="none"
-                            />
-                        }
                     </>
                 }
                 {
@@ -128,6 +121,21 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
                         adding={false}
                     />
                 }
+                {
+                    this.getStudioRateCardData.selectedRateCardLabel !== '' &&
+                    <div className={styles.attachButton}>
+                        <ButtonAttach
+                            onClick={this.handleAttachClick}
+                            label=""
+                            labelOnLeft={false}
+                            float="right"
+                            iconBackground="none"
+                            isLoading={this.state.isAddingAttachment}
+                            file={this.getStudioRateCardData.selectedRateCardFile}
+                            onRemove={this.openRemoveAttachmentModal}
+                        />
+                    </div>
+                }
                 <input
                     ref={this.handlePdfFile}
                     className={styles.attachPDF}
@@ -136,16 +144,16 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
                     type="file"
                 />
                 <AddRateModal
-                    isOpen={this.isModalOpened}
+                    isOpen={this.state.isModalOpened}
                     onClose={this.closeModal}
                     onAdd={this.addRateCardType}
                     onSave={this.saveRate}
                     isSaving={this.getStudioRateCardData.rateCardTypes.saving || this.getStudioRateCardData.rateCardTypes.adding}
                     label={this.getStudioRateCardData.selectedRateCardLabel}
-                    mode={this.modalMode}
+                    mode={this.state.modalMode}
                 />
                 <RemoveConfirmationModal
-                    isActive={this.isDeleteModalOpened}
+                    isActive={this.state.isDeleteModalOpened}
                     onConfirmationModalClose={this.closeDeleteModal}
                     isErrorRemovingEntry={false}
                     isRemoving={this.getStudioRateCardData.rateCardTypes.deleting}
@@ -153,7 +161,7 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
                     confirmationMessage="Are you sure you want to delete rate card?"
                 />
                 <RemoveConfirmationModal
-                    isActive={this.isRemoveAttachmentModalOpened}
+                    isActive={this.state.isRemoveAttachmentModalOpened}
                     onConfirmationModalClose={this.closeRemoveAttachmentModal}
                     isErrorRemovingEntry={false}
                     isRemoving={this.getStudioRateCardData.rateCardTypes.saving}
@@ -195,39 +203,53 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
     };
 
     private handleRateAdd = () => {
-        this.modalMode = 'edit';
-        this.isModalOpened = true;
+        this.setState({
+            modalMode: 'edit',
+            isModalOpened: true,
+        });
     };
 
     private handleAddNewRate = () => {
-        this.modalMode = 'new';
-        this.isModalOpened = true;
+        this.setState({
+            modalMode: 'new',
+            isModalOpened: true
+        });
     };
 
     private closeModal = () => {
-        this.isModalOpened = false;
+        this.setState({
+            isModalOpened: false,
+        });
     };
 
     private openDeleteModal = () => {
-        this.isDeleteModalOpened = true;
+        this.setState({
+            isDeleteModalOpened: true,
+        });
     };
 
     private closeDeleteModal = () => {
-        this.isDeleteModalOpened = false;
+        this.setState({
+            isDeleteModalOpened: false,
+        });
     };
 
     private openRemoveAttachmentModal = () => {
-        this.isRemoveAttachmentModalOpened = true;
+        this.setState({
+            isRemoveAttachmentModalOpened: true,
+        });
     };
 
     private closeRemoveAttachmentModal = () => {
-        this.isRemoveAttachmentModalOpened = false;
+        this.setState({
+            isRemoveAttachmentModalOpened: false,
+        });
     };
 
     private addRateCardType = (name: string) => {
         StudioRateCardActions.addRateCardType(name).then(() => {
             this.closeModal();
-            this.searchClients();
+            StudioRateCardActions.getStudioRateCard();
         });
     };
 
@@ -244,9 +266,13 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
     };
 
     private addRateCardAttachment = (data: string) => {
-        this.isAddingAttachment = true;
+        this.setState({
+            isAddingAttachment: true
+        });
         StudioRateCardActions.modifyRateCardAttachment(data).then(() => {
-            this.isAddingAttachment = false;
+            this.setState({
+                isAddingAttachment: false
+            });
         });
     };
 
@@ -260,12 +286,6 @@ class RateCardSelector extends React.Component<Props & AppState, {}> {
         };
     });
 
-    @action
-    private searchClients = () => {
-        StudioRateCardActions.getStudioRateCard();
-    }
-
-    @action
     private setRateCard = (value) => {
         StudioRateCardActions.setSelectedRateCardId(value);
         StudioRateCardActions.getStudioRateCard();
