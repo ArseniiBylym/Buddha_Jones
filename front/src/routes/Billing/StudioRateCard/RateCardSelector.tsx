@@ -12,7 +12,6 @@ import AddRateModal from './AddRateModal';
 import { RemoveConfirmationModal } from '../../../components/RemoveConfiramtionModal';
 import { history } from '../../../App';
 import { ButtonAttach } from '../../../components/Button/ButtonAttach';
-import { ButtonRemoveAttachment } from '../../../components/Button/ButtonRemoveAttachment';
 
 interface Props {
     match: match<MatchParams>;
