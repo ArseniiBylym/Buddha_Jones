@@ -182,7 +182,11 @@ export class Card extends React.Component<CardProps, {}> {
     }
 
     private renderContent() {
-        if (typeof this.props.children === 'undefined' || this.props.children === null) {
+        if (
+            typeof this.props.children === 'undefined' ||
+            this.props.children === null ||
+            this.props.children === false
+        ) {
             return null;
         }
 
