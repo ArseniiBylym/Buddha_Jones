@@ -24,4 +24,33 @@ export class StringHandler {
 
         return username;
     };
+
+    public static constructProjectCampaignName = (campaignName: string, projectCampaignName: string | null): string => {
+        let str = projectCampaignName ? '(' + projectCampaignName + ') ' : '';
+        str += campaignName;
+        return str;
+    };
+
+    public static constructSpotRevisionsAndGraphicsIncludedDescription = (
+        numberOfRevisions: number | null,
+        graphicsIncluded: boolean = false
+    ): string => {
+        let str =
+            numberOfRevisions === null
+                ? 'No revisions'
+                : numberOfRevisions === 0
+                ? 'Unlimited revisions'
+                : numberOfRevisions === 1
+                ? '1 revision'
+                : numberOfRevisions + ' revisions';
+
+        str += str ? ', ' : '';
+        str += graphicsIncluded ? 'graphics included' : 'graphics not included';
+
+        return str;
+    };
+
+    numberOfRevisions: number | null;
+    firstRevisionCost: number | null;
+    graphicsIncluded: boolean;
 }
