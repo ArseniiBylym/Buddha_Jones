@@ -387,10 +387,15 @@ Retrieve list of sent spot.
 `GET /spot-sent-list`
 
 
+### Parameters
 
-## Get sent spot single for graphics user
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+**true** | sub_module_id | int | null | sub module id obtained from login response, send sub module id for the menu
 
-Retrieve single spot sent data for graphics user.
+## Get sent spot single
+
+Retrieve single spot sent data.
 
 > 200: success response
 
@@ -439,4 +444,43 @@ Retrieve single spot sent data for graphics user.
 
 ### HTTP Request
 
-`GET /spot-sent-for-graphics-user/:spot_sent_id`
+`GET /spot-sent-list/:spot_sent_id`
+
+## Update Spot Sent item
+
+update a spot sent entry.
+
+> Sample request
+
+```javascript
+axios.put('/spot-sent-list/1', {
+    no_graphics:1
+    graphics_status_id: 1
+});
+```
+
+> 200: success response
+
+```json
+{
+  "status": 1,
+  "message": "Request successful.",
+  "data": {
+    "spot_sent_id": 4
+  }
+}
+```
+
+### HTTP Request
+
+`PUT /spot-sent-list/:spot_sent_id`
+
+### Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+false | line_status_id | int | 0 | send 0/1
+false | graphics_status_id | int | null | send 0/1
+false | no_graphics | int | null | send 0/1
+false | is_pdf | int | null | send 0/1
+false | graphics_file | JSON encoded array | null | list of files (like: [{"file_name":"abc1.jpg","file_description":"some desc112","resend":1},{"file_name":"def3.jpg"}]}])

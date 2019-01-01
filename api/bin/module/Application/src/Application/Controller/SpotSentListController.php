@@ -89,6 +89,7 @@ class SpotSentListController extends CustomAbstractActionController
         $graphicsStatusId = $this->_commonRepo->filterPostData($data, 'graphics_status_id', 'int');
         $noGraphics = $this->_commonRepo->filterPostData($data, 'no_graphics', 'boolean', null);
         $graphicsFiles = $this->_commonRepo->filterPostData($data, 'graphics_file', 'array', null);
+        $isPdf = $this->_commonRepo->filterPostData($data, 'is_pdf', 'int', null);
 
         if ($spotLineStatusId && $spotLineStatusId < 4) {
             $graphicsStatusId = null;
@@ -119,6 +120,10 @@ class SpotSentListController extends CustomAbstractActionController
 
             if ($noGraphics !== null) {
                 $spotSent->setNoGraphics($noGraphics);
+            }
+
+            if ($isPdf !== null) {
+                $spotSent->setIsPdf($isPdf);
             }
 
             $this->_em->persist($spotSent);

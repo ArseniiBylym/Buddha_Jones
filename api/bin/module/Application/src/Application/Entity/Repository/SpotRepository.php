@@ -1029,7 +1029,9 @@ class SpotRepository extends EntityRepository
                     ss.allGraphicsResend,
                     ss.finishRequest,
                     ss.finishOption,
-                    fh.name AS finishingHouse
+                    fh.name AS finishingHouse,
+                    ss.allGraphicsResend,
+                    ss.isPdf
                 FROM \Application\Entity\RediSpotSent ss
                 LEFT JOIN \Application\Entity\RediProject p 
                     WITH p.id = ss.projectId
@@ -1218,6 +1220,8 @@ class SpotRepository extends EntityRepository
                     'finishOption' => $row['finishOption'],
                     'finishingHouse' => $row['finishingHouse'],
                     'producers' => $row['producers'],
+                    'allGraphicsResend' => $row['allGraphicsResend'],
+                    'isPdf' => $row['isPdf'],
                 );
             }
         }
