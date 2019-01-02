@@ -73,8 +73,8 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
                 dataExpiresInMiliseconds={this.DATA_REFRESH_RATE_IN_MS}
                 apiEndpoint={APIPath.SPOTS_TO_GRAPHICS}
                 queryObject={{
-                    sub_module_id: this.getPermissionId(),
-                    // sub_module_id: 1,
+                    // sub_module_id: this.getPermissionId(),
+                    sub_module_id: 3,
                 }}
             >
                 {spotsToGraphicsFromApi => (
