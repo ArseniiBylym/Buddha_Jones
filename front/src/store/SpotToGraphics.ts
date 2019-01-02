@@ -19,7 +19,8 @@ export class SpotToGraphics {
     public getSpotFromApi = async (id: number) => {
         this.pending = true;
         try {
-            const response = (await API.getData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + `/${id}/offset=0&length=999999999`)) as string[];
+            // const response = (await API.getData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + `/${id}/offset=0&length=999999999`)) as string[];
+            const response = (await API.getData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + `/${id}`)) as string[];
             this.fetchedSpot = response;
             this.pending = false;
             this.isModalOpen = true;

@@ -56,7 +56,7 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
         if (!spotToGraphics.fetchedSpot) {
             return null;
         }
-
+        
         return (
             <>
                 <Modal
@@ -77,28 +77,21 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                                     <span>{spotToGraphics.fetchedSpot.campaignName ? spotToGraphics.fetchedSpot.campaignName : null}</span>
                                 </div>
                                 <div className={s.header__mainInfo}>
-                                    <h2 className={s.header__spotName}>
+                                    <h3 className={s.header__spotName}>
                                         {spotToGraphics.fetchedSpot.spotName}
                                         {spotToGraphics.fetchedSpot.runtime && ` (${spotToGraphics.fetchedSpot.runtime})`}
-                                    </h2>
+                                    </h3>
                                     <IconArrowLeftYellow marginLeftAuto={true} marginRight={10} width={12} height={9} />
                                     <div className={s.header_backButton} onClick={this.handleModalClose}>Back to spot sent list</div>
                                 </div>
                         </div>
                         <div className={s.content}>
-                            {/* <div className={s.dateSelect}>
-                                <div className={s.dateSelect__item}>
-                                    Spot sent date: {spotToGraphics.fetchedSpot.spotSentDate && moment(spotToGraphics.fetchedSpot.spotSentDate).format('DD/MM/YYYY')}
-                                </div>
-                            </div> */}
-                            {/* <div className={s.labels}>
-                                {spotToGraphics.fetchedSpot.projectName && <div className={s.label__item}>{spotToGraphics.fetchedSpot.projectName}</div>}
-                                {spotToGraphics.fetchedSpot.campaignName && <div className={s.label__item}>{spotToGraphics.fetchedSpot.campaignName}</div>}
-                                {spotToGraphics.fetchedSpot.spotName && <div className={s.label__item}>{spotToGraphics.fetchedSpot.spotName}</div>}
-                                {spotToGraphics.fetchedSpot.versionName && <div className={s.label__item}>{spotToGraphics.fetchedSpot.versionName}</div>}
-                            </div>
-                            <hr />  */}
                             <div className={s.noGraphicsContainer} onClick={this.withGraphicsTogle}>
+                                {spotToGraphics.fetchedSpot.versionName && 
+                                    <div className={s.noGraphicsVersion}>
+                                        <span>Version:</span>{spotToGraphics.fetchedSpot.versionName}
+                                    </div>
+                                }
                                 <div className={s.noGraphicsContainer__wrapper}>
                                     <div className={s.noGraphicsCheckbox}>
                                         {this.withGraphics && <IconTickBlue width={12} height={9} />}
