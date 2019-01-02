@@ -25,7 +25,6 @@ interface SpotsToGrapnicsFiltersProps {
     retryFetch: () => void;
     totalCountResponse: number;
     spotsResponse: any[];
-    routeType: 'sent' | 'bill' | 'graphics';
 }
 
 @observer
@@ -103,7 +102,6 @@ export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFilte
                     spots={this.spots}
                     producerId={this.props.producer && this.props.producer.id}
                     query={this.props.search.toLowerCase().trim()}
-                    routeType={this.props.routeType}
                 />
             </Section>
         );

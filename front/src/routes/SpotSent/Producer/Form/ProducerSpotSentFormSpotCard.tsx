@@ -8,27 +8,20 @@ import { ProjectPicker, ProjectPickerGroupValues, ProjectPickerValues, PersonWit
 import { Paragraph } from 'components/Content';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { ProjectCampaignUserFromApi } from 'types/projectDetails';
-import { action, computed } from 'mobx';
 import { LoadingIndicator } from 'components/Loaders';
 import { SpotSentStore } from '../../../../store/AllStores';
 import { SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
 import { ProjectPermissions } from '../../../../store';
 import { UserPermissionKey } from '../../../../types/projectPermissions';
+import { SpotSentActions } from '../../../../actions';
+import { ProjectPickerSections } from '../../../../components/Buddha';
 
 // Styles
 const s = require('./ProducerSpotSentForm.css');
 
 // Props
 interface ProducerSpotSentFormSpotCardProps {
-    onSpotResendToggle: (checked: boolean) => void;
-    onSpotRemove: (e: React.MouseEvent<HTMLButtonElement>) => void;
-    onSpotChange: (values: ProjectPickerValues | null) => void;
-    onFinishingRequestToggle: (checked: boolean) => void;
-    onSentViaMethodChange: (method: number) => void;
-    onEditorAdd: (id: number) => void;
-    onEditorRemove: (editorIndex: number) => void;
-    handleFinishAccept: (checked: boolean) => void;
-    handleProdAccept: (checked: boolean) => void;
+    onSpotRemove: (spotIndex: number) => void;
     project: ProjectPickerGroupValues | null;
     clientId: number | null;
     spot: SpotSentSpot;
@@ -44,7 +37,6 @@ type ProducerSpotSentFormSpotCardPropsTypes = ProducerSpotSentFormSpotCardProps 
 @observer
 export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSentFormSpotCardPropsTypes, {}> {
 
-    @computed
     private get campaignEditorialUsers(): { isLoading: boolean; users: ProjectCampaignUserFromApi[] } {
         if (!this.props.store) {
             return {
@@ -76,7 +68,6 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
         };
     }
 
-    @computed
     private get selectedEditors(): ProjectCampaignUserFromApi[] {
         return this.props.spot.selectedEditorsIds.reduce((editors: ProjectCampaignUserFromApi[], editorId) => {
             const editorDetails = this.campaignEditorialUsers.users.find(u => u.userId === editorId);
@@ -103,30 +94,10 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                 title={'#' + (this.props.spotIndex + 1)}
                 subTitle="Spot sent"
                 isExpandable={false}
-                headerElements={[
-                    <Checkmark
-                        key="finishing-request-checkmark"
-                        onClick={this.props.onFinishingRequestToggle}
-                        checked={this.props.spot.isFinishingRequest}
-                        label="Finish Request"
-                        labelOnLeft={true}
-                        readOnly={(!this.props.spot.spot)}
-                        type={'no-icon'}
-                    />,
-                    <Checkmark
-                        key="spot-resend-checkmark"
-                        onClick={this.props.onSpotResendToggle}
-                        checked={this.props.spot.isResend}
-                        label="Spot resend"
-                        labelOnLeft={true}
-                        readOnly={(!this.props.spot.spot)}
-                        type={'no-icon'}
-                    />,
-                    <ButtonClose key="remove-spot" onClick={this.props.onSpotRemove} label="Remove spot" />,
-                ]}
+                headerElements={this.getCardHeaders()}
             >
                 <ProjectPicker
-                    onChange={this.props.onSpotChange}
+                    onChange={this.handleSpotChange}
                     forUserId={this.props.forUserId}
                     noSeparator={true}
                     show="campaign-spot-version"
@@ -146,53 +117,9 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                     </div>
                 </Section>
 
-                {/*<section>
-                    <pre>
-                        {JSON.stringify(this.campaignEditorialUsers, null, 2)}
-                    </pre>
-                </section>*/}
-
                 <Section
                     title={`Spot #${this.props.spotIndex + 1} editors`}
-                    headerElements={
-                        this.campaignEditorialUsers.users.length > 0
-                            ? this.campaignEditorialUsers.users.length > this.selectedEditors.length
-                                ? [
-                                      {
-                                          key: 'editors-picker',
-                                          element: (
-                                              <DropdownContainer
-                                                  ref={this.referenceEditorDropdown}
-                                                  label="Select editors"
-                                              >
-                                                  <OptionsList
-                                                      onChange={this.handleAddingUser}
-                                                      options={this.campaignEditorialUsers.users
-                                                          .filter(
-                                                              user =>
-                                                                  this.props.spot.selectedEditorsIds.indexOf(
-                                                                      user.userId
-                                                                  ) === -1
-                                                          )
-                                                          .map(user => ({
-                                                              value: user.userId,
-                                                              label: user.fullName || user.username,
-                                                          }))}
-                                                  />
-                                              </DropdownContainer>
-                                          ),
-                                      },
-                                  ]
-                                : [
-                                      {
-                                          key: 'editors-nope',
-                                          element: (
-                                              <Paragraph type="dim">All editors from campaign are selected</Paragraph>
-                                          ),
-                                      },
-                                  ]
-                            : []
-                    }
+                    headerElements={this.getSectionHeaders()}
                 >
                     {this.props.spot.projectCampaign === null && (
                         <Paragraph type="dim">Campaign selection is needed to pick editors.</Paragraph>
@@ -246,7 +173,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                                 this.props.spot.version.finishAccept !== undefined &&
                                 <Checkmark
                                     key={'finish-accept'}
-                                    onClick={this.props.handleFinishAccept}
+                                    onClick={this.handleFinishAccept}
                                     checked={this.props.spot.version.finishAccept}
                                     label={'Finish Accept'}
                                     type={'no-icon'}
@@ -258,7 +185,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                                 this.props.spot.version.prodAccept !== undefined &&
                                 <Checkmark
                                     key={'prod-accept'}
-                                    onClick={this.props.handleProdAccept}
+                                    onClick={this.handleProdAccept}
                                     checked={this.props.spot.version.prodAccept}
                                     label={'Production Accept'}
                                     type={'no-icon'}
@@ -272,15 +199,104 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
         );
     }
 
-    @action
-    private onRemoveEditorHandler = (ind: number): void => {
-        this.props.onEditorRemove(ind);
-    };
+    private getSectionHeaders = () => {
+        if (this.campaignEditorialUsers.users.length > 0) {
+            if (this.campaignEditorialUsers.users.length > this.selectedEditors.length) {
+                return ([
+                    {
+                        key: 'editors-picker',
+                        element: (
+                            <DropdownContainer
+                                ref={this.referenceEditorDropdown}
+                                label="Select editors"
+                            >
+                                <OptionsList
+                                    onChange={this.handleAddingUser}
+                                    options={this.campaignEditorialUsers.users
+                                        .filter(
+                                            user =>
+                                                this.props.spot.selectedEditorsIds.indexOf(
+                                                    user.userId
+                                                ) === -1
+                                        )
+                                        .map(user => ({
+                                            value: user.userId,
+                                            label: user.fullName || user.username,
+                                        }))}
+                                />
+                            </DropdownContainer>
+                        ),
+                    },
+                ]);
+            } else {
+                return ([
+                    {
+                        key: 'editors-nope',
+                        element: (
+                            <Paragraph type="dim">All editors from campaign are selected</Paragraph>
+                        ),
+                    },
+                ]);
+            }
+        } else {
+            return [];
+        }
+    }
+
+    private getCardHeaders = () => [
+        <Checkmark
+            key="finishing-request-checkmark"
+            onClick={this.handleFinishingRequestToggle}
+            checked={this.props.spot.isFinishingRequest}
+            label="Finish Request"
+            labelOnLeft={true}
+            readOnly={(!this.props.spot.spot)}
+            type={'no-icon'}
+        />,
+        <Checkmark
+            key="spot-resend-checkmark"
+            onClick={this.handleSpotResendToggle}
+            checked={this.props.spot.isResend}
+            label="Spot resend"
+            labelOnLeft={true}
+            readOnly={(!this.props.spot.spot)}
+            type={'no-icon'}
+        />,
+        <ButtonClose key="remove-spot" onClick={this.handleSpotRemove} label="Remove spot" />,
+    ]
+
+    private onRemoveEditorHandler = (ind: number): void => this.handleSpotRemovingEditor(ind);
+
+    private handleSpotRemove = () => this.props.onSpotRemove(this.props.spotIndex);
+
+    private handleSpotResendToggle = (checked: boolean) =>
+        SpotSentActions.handleSpotResendToggle(this.props.spotIndex, checked);
+
+    private handleSpotChange = (values: ProjectPickerValues | null, type?: ProjectPickerSections) =>
+        SpotSentActions.handleSpotChange(this.props.spotIndex, values, type);
+
+    private handleFinishingRequestToggle = (checked: boolean) =>
+        SpotSentActions.handleFinishingRequestToggle(this.props.spotIndex, checked);
+
+    private handleSentViaMethodsChange = (method: number) =>
+        SpotSentActions.handleSentViaMethodsChange(this.props.spotIndex, method);
+
+    private handleSpotAddingEditor = (userId: number) =>
+        SpotSentActions.handleSpotAddingEditor(this.props.spotIndex, userId);
+
+    private handleSpotRemovingEditor = (editorIndex: number) =>
+        SpotSentActions.handleSpotRemovingEditor(this.props.spotIndex, editorIndex);
+
+    private handleFinishAccept = (checked: boolean) =>
+        SpotSentActions.handleFinishAccept(this.props.spotIndex, checked);
+
+    private handleProdAccept = (checked: boolean) =>
+        SpotSentActions.handleProdAccept(this.props.spotIndex, checked);
 
     private referenceEditorDropdown = (ref: DropdownContainer) => (this.editorDropdown = ref);
 
     private handleAddingUser = (option: { value: OptionsListValuePropType; label: string }) => {
-        this.props.onEditorAdd(option.value as number);
+        this.handleSpotAddingEditor(option.value as number);
 
         if (this.editorDropdown) {
             this.editorDropdown.closeDropdown();
@@ -294,7 +310,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                     <Checkmark
                         key={'sent-via-method-' + index}
                         onClick={() => {
-                            this.props.onSentViaMethodChange(method.id);
+                            this.handleSentViaMethodsChange(method.id);
                         }}
                         checked={this.props.spot.sentViaMethod.includes(method.id)}
                         label={method.name}

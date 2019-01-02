@@ -3,8 +3,7 @@ import { inject, observer } from 'mobx-react';
 import { HeaderActions, SpotSentActions } from 'actions';
 import { ButtonAdd, ButtonEdit } from 'components/Button';
 import { history } from 'App';
-import { computed, action, observable } from 'mobx';
-import { SpotSentStore } from '../../../../store/AllStores';
+import { AppStoreState } from '../../../../store/AllStores';
 import { Col, Row, Section } from '../../../../components/Section';
 import { LoadingSpinner } from '../../../../components/Loaders';
 import { Table, TableCell, TableRow } from '../../../../components/Table';
@@ -12,81 +11,37 @@ import { Paragraph } from '../../../../components/Content';
 import { SpotSentAllSpotsSentSpotData } from '../../../../types/spotSent';
 import { Checkmark } from '../../../../components/Form';
 import * as dateFormat from 'date-fns/format';
-import { APIPath, FetchQuery } from 'fetch';
-import { SpotGraphicsApiQueryParams, SpotGraphicsApiResponse } from 'types/spotsToGraphics';
-import { SpotsToGrapnicsFilters, SpotToGraphicsProducerOption } from '../../../SpotGraphics/SpotsToGraphics/SpotsToGraphicsFilters';
 
 // Styles
 require('./ProducerSpotSentList.css');
 
 // Props
 interface ProducerSpotSentListProps {
-    
+    store: AppStoreState;
 }
 
 // Component
 @inject('store')
 @observer
-class ProducerSpotSentList extends React.Component<any, {}> {
-    private DATA_REFRESH_RATE_IN_MS: number = 1000 * 60;
-
-    @observable private search: string = '';
-    @observable private producer: SpotToGraphicsProducerOption | null = null;
-
-    @computed
+class ProducerSpotSentList extends React.Component<ProducerSpotSentListProps, {}> {
     private get essentialDataIsLoading(): boolean {
-        return SpotSentStore.spotSentAllSpotsLoading;
+        if (!this.props.store || !this.props.store.spotSent) {
+            return true;
+        }
+        return this.props.store.spotSent.spotSentAllSpotsLoading;
     }
 
     public componentDidMount() {
-        console.log('hello');
         this.fetchAllSpotSent();
-        HeaderActions.setMainHeaderTitlesAndElements('Spots sent request', null, null, null, [
+        HeaderActions.setMainHeaderTitlesAndElements('Spots sent', null, null, null, [
             <ButtonAdd
                 key="create-spot-sent"
                 onClick={this.handleCreateSpotSentCreate}
-                label="Create new spot sent request"
+                label="Create new spot sent report"
                 labelOnLeft={true}
                 isWhite={true}
             />,
         ]);
-    }
-
-    formatSpotsList = (data: any) => {
-        let arr: any[] = [];
-        data.forEach((project, i) => {
-            project.campaign.forEach((elem, j) => {
-                let spot = {
-                    projectName: project.projectName,
-                    studioName: project.studioName,
-                    projectId: project.projectId,
-                    studioId: project.studioId,
-                    ...elem,
-                };
-                arr.push(spot);
-            });
-        });
-        return {
-            spots: arr,
-            len: arr.length,
-        };
-    }
-
-    getPermissionId = () => {
-        let permissionId: number | null = null;
-        if (this.props.store && 
-            this.props.store.user.data && 
-            this.props.store.user.data.moduleAccess) {
-            const moduleAccessArray = this.props.store.user.data.moduleAccess.find(elem => elem.moduleName === 'Spot Sent');
-            if (moduleAccessArray && moduleAccessArray.subModule && moduleAccessArray.subModule.length > 0) {
-                const moduleAccessItem = moduleAccessArray.subModule.find(elem => elem.subModuleName === 'Initiate Spot Sent');
-                if (moduleAccessItem && moduleAccessItem.canAccess === true) {
-                    permissionId = moduleAccessItem.id;
-                }
-            }
-        }
-        console.log(permissionId);
-        return permissionId;
     }
 
     public render() {
@@ -94,72 +49,17 @@ class ProducerSpotSentList extends React.Component<any, {}> {
             <>
                 {this.getTableWithLoadingSpinner()}
             </>
-        ) : (SpotSentStore.spotSentAllSpots && SpotSentStore.spotSentAllSpots.length > 0) ? (
-            // <Section
-            //     noSeparator={true}
-            //     title="Spots sent"
-            // >
-            //     {this.getTableWithData()}
-            // </Section>
-        <FetchQuery<SpotGraphicsApiResponse, SpotGraphicsApiQueryParams>
-            dataExpiresInMiliseconds={this.DATA_REFRESH_RATE_IN_MS}
-            apiEndpoint={APIPath.SPOTS_TO_GRAPHICS}
-            queryObject={{
-                sub_module_id: this.getPermissionId(),
-                // sub_module_id: 1,
-            }}
-        >
-            {spotsToGraphicsFromApi => (
-                <React.Fragment>
-                    <SpotsToGrapnicsFilters
-                        onChangeSearch={this.changeSearch}
-                        onChangeProducer={this.changeProducer}
-                        onSpotSelectionToggle={this.toggleSpotSelection}
-                        search={this.search}
-                        producer={this.producer}
-                        loading={spotsToGraphicsFromApi.loading}
-                        fetchError={spotsToGraphicsFromApi.fetchError}
-                        retryFetch={spotsToGraphicsFromApi.retry}
-                        totalCountResponse={
-                            spotsToGraphicsFromApi.response && spotsToGraphicsFromApi.response.data.length
-                                ? this.formatSpotsList(spotsToGraphicsFromApi.response.data).len
-                                : 0
-                        }
-                        spotsResponse={
-                            spotsToGraphicsFromApi.response && spotsToGraphicsFromApi.response.data
-                                ? this.formatSpotsList(spotsToGraphicsFromApi.response.data).spots
-                                : []
-                        }
-                        routeType="sent"
-                    />
-                </React.Fragment>
-            )}
-        </FetchQuery>
+        ) : (this.props.store.spotSent.spotSentAllSpots && this.props.store.spotSent.spotSentAllSpots.length > 0) ? (
+            <Section
+                noSeparator={true}
+                title="Spots sent"
+            >
+                {this.getTableWithData()}
+            </Section>
         ) : (
             <Paragraph type="dim">No spots sent exist yet.</Paragraph>
         );
     }
-
-    @action
-    private changeSearch = (search: string) => {
-        this.search = search;
-    };
-
-    @action
-    private changeProducer = (producer: SpotToGraphicsProducerOption | null) => {
-        this.producer = producer;
-    };
-
-    @action
-    private toggleSpotSelection = (spotId: number, projectCampaignId: number) => {
-        // const index = this.selectedSpots.findIndex(group => group.spotId === spotId);
-        // if (index === -1) {
-        //     this.selectedSpots = this.selectedSpots.filter(group => group.projectCampaignId === projectCampaignId);
-        //     this.selectedSpots.push({ spotId, projectCampaignId });
-        // } else {
-        //     this.selectedSpots = [...this.selectedSpots.slice(0, index), ...this.selectedSpots.slice(index + 1)];
-        // }
-    };
 
     private fetchAllSpotSent(): void {
         SpotSentActions.fetchAllSpots(true);
@@ -175,20 +75,28 @@ class ProducerSpotSentList extends React.Component<any, {}> {
         );
     }
 
-    private getTableWithData(): JSX.Element {
-        if (SpotSentStore.spotSentAllSpots && SpotSentStore.spotSentAllSpots.length > 0) {
+    private getTableWithData(): JSX.Element | null {
+        if (!this.props.store || !this.props.store.spotSent) {
+            return null;
+        }
+        const {
+            spotSent: {
+                spotSentAllSpots
+            }
+        } = this.props.store;
+        if (spotSentAllSpots && spotSentAllSpots.length > 0) {
             let tableHeaders: Array<{
                 title: string;
                 align?: 'left' | 'center' | 'right';
             }> = [];
-            let spotTitles: string[] = Object.keys(SpotSentStore.spotSentAllSpots[0]);
+            let spotTitles: string[] = Object.keys(spotSentAllSpots[0]);
             spotTitles.map((objectKey: string, ind: number) => {
                 tableHeaders.push({
-                    title: (SpotSentStore.spotSentAllSpots) ? SpotSentStore.spotSentAllSpots[0][objectKey].title : 'N/A',
+                    title: (spotSentAllSpots) ? spotSentAllSpots[0][objectKey].title : 'N/A',
                     align: (ind === 0) ? 'left' : (ind === (spotTitles.length - 1)) ? 'right' : 'center'
                 });
             });
-            let tableRowsArr: JSX.Element[] = SpotSentStore.spotSentAllSpots.map((spot: SpotSentAllSpotsSentSpotData, index: number) => {
+            let tableRowsArr: JSX.Element[] = spotSentAllSpots.map((spot: SpotSentAllSpotsSentSpotData, index: number) => {
                 let tableCellsArr: JSX.Element[] = Object.keys(spot).map((objectKey: string, ind: number) => {
                     let checkMark: JSX.Element = (
                         <Checkmark

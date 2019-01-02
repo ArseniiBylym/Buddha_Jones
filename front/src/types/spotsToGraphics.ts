@@ -74,5 +74,4 @@ export interface SpotGraphicsApiQueryParams {
     length?: number;
     search?: string;
     studio_id?: number;
-    sub_module_id?: number | undefined | null;
 }

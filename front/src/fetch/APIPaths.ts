@@ -54,5 +54,5 @@ export enum APIPath {
     CHANNEL                                 = '/channel',
     CUSTOMER_NEW                            = '/customer-new',
     PROJECT_CAMPAIGN_CUSTOMER_CONTACT       = '/project-campaign-customer-contact',
-    SPOT_SENT_FOR_GRAPHICS_USER             = '/spot-sent-list'
+    SPOT_SENT_FOR_GRAPHICS_USER             = '/spot-sent-for-graphics-user'
 }
