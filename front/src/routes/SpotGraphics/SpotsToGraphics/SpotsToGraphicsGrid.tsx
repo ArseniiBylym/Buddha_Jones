@@ -54,7 +54,8 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                     runtime: spot.runtime,
                     spotLineStatus: spot.spotLineStatus,
                     versionName: spot.versionName,
-                    spotSentId: spot.spotSentId
+                    spotSentId: spot.spotSentId,
+                    spotSentRequestId: spot.spotSentRequestId
                };
                spots.push(spotItem);
            });
@@ -94,6 +95,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
     }
 
     public render() {
+        console.log(this.props);
         const { fetchError, loading, retryFetch } = this.props;
         const { spotToGraphics } = this.props.store;
 
@@ -142,7 +144,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                         //     return (null);
                                         // } else {
                                             return (
-                                                <div key={spot.spotId} onClick={this.handleSpotSelectionToggle(spot)} className={s.spotTable__row}>
+                                                <div key={spot.spotId} onClick={this.handleSpotSelectionToggle(this.props.routeType, spot)} className={s.spotTable__row}>
                                                 <div className={s.spotDate}>
                                                 {spot.date && moment(spot.date).format('DD/MM/YYYY')}
                                                 </div>
@@ -155,6 +157,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                                 <div className={s.spotStatus}>
                                                 {spot.spotLineStatus}
                                                 </div>
+                                                
                                                 </div>
                                             );
                                         // }
@@ -202,8 +205,17 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
         history.push(path);
     }
 
-    private handleSpotSelectionToggle = (spot) => e => {
-            this.props.store.spotToGraphics.getSpotFromApi(spot.spotSentId);
+    private handleSpotSelectionToggle = (type, spot) => e => {
+        switch (type) {
+            case 'graphics': 
+                this.props.store.spotToGraphics.getSpotFromApi(spot.spotSentId);
+                break;
+            case 'sent': 
+                console.log(type);
+                break;
+            default: 
+                return;
+        }
             // this.props.store.spotToGraphics.toggleModal();
             // this.props.store.spotToGraphics.setCurrentSpot(spot);
     };
