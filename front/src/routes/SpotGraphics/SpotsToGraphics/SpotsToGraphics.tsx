@@ -3,7 +3,7 @@ import { APIPath, FetchQuery } from 'fetch';
 import { action, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
-import { AppState } from 'store/AllStores';
+import { AppState, UserStore } from 'store/AllStores';
 import { SpotGraphicsApiQueryParams, SpotGraphicsApiResponse } from 'types/spotsToGraphics';
 import { SpotsToGrapnicsFilters, SpotToGraphicsProducerOption } from './SpotsToGraphicsFilters';
 // import { truncate } from 'fs';
@@ -51,14 +51,30 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
         };
     }
 
+    getPermissionId = () => {
+        let permissionId: number | null = null;
+        if (this.props.store && 
+            this.props.store.user.data && 
+            this.props.store.user.data.moduleAccess) {
+            const moduleAccessArray = this.props.store.user.data.moduleAccess.find(elem => elem.moduleName === 'Spot Sent');
+            if (moduleAccessArray && moduleAccessArray.subModule && moduleAccessArray.subModule.length > 0) {
+                const moduleAccessItem = moduleAccessArray.subModule.find(elem => elem.subModuleName === 'Graphics for Spot');
+                if (moduleAccessItem && moduleAccessItem.canAccess === true) {
+                    permissionId = moduleAccessItem.id;
+                }
+            }
+        }
+        return permissionId;
+    }
+
     public render() {
         return (
             <FetchQuery<SpotGraphicsApiResponse, SpotGraphicsApiQueryParams>
                 dataExpiresInMiliseconds={this.DATA_REFRESH_RATE_IN_MS}
                 apiEndpoint={APIPath.SPOTS_TO_GRAPHICS}
                 queryObject={{
-                    offset: 0,
-                    length: 999999999,
+                    // sub_module_id: this.getPermissionId(),
+                    sub_module_id: 3,
                 }}
             >
                 {spotsToGraphicsFromApi => (
@@ -82,6 +98,7 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
                                     ? this.formatSpotsList(spotsToGraphicsFromApi.response.data).spots
                                     : []
                             }
+                            routeType="graphics"
                         />
                     </React.Fragment>
                 )}

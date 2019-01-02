@@ -14,8 +14,6 @@ import { NewClientRequestListAsync } from './StudioClient/NewClientRequest/List'
 import { TimeEntryAsync } from './TimeTracking';
 import { TimeApprovalAsync } from './TimeTracking/Approval';
 import { UserAccountAsync } from './User';
-import { TimeEntryPermissionsAsync } from './TimeCardPermissions/TimeEntryPermissions';
-import { TimeApprovalPermissionsAsync } from './TimeCardPermissions/TimeApprovalPermissions';
 
 // Icons
 const dashboardIcon = require('../assets/images/navigation/navigation-icon-dashboard.png');
@@ -188,28 +186,6 @@ export const routes: Route[] = [
         allowAllUsers: false,
     },
     {
-        component: TimeEntryPermissionsAsync,
-        key: 'time-entry-permissions',
-        accessKey: RouteAccessKey.ProjectBoardPermission,
-        group: configurationGroup,
-        name: 'Time Entry Permissions',
-        path: '/portal/configuration/user-management/time-entry-permissions',
-        entry: '/portal/configuration/user-management/time-entry-permissions',
-        exact: false,
-        allowAllUsers: false,
-    },
-    {
-        component: TimeApprovalPermissionsAsync,
-        key: 'time-approval-permissions',
-        accessKey: RouteAccessKey.ProjectBoardPermission,
-        // group: configurationGroup,
-        name: 'Time Approval Permissions',
-        path: '/portal/configuration/user-management/time-approval-permissions/:id',
-        entry: '/portal/configuration/user-management/time-approval-permissions/:id',
-        exact: false,
-        allowAllUsers: false,
-    },
-    {
         component: ProjectBoardPermissionListAsync,
         key: 'project-board-permission',
         accessKey: RouteAccessKey.ProjectBoardPermission,
@@ -251,3 +227,52 @@ export const routes: Route[] = [
         allowAllUsers: false,
     },
 ];
+
+/*
+{
+    title: 'Dashboard',
+    icon: require('./../assets/images/navigation/navigation-icon-dashboard.png'),
+    links: [
+        { path: '/', title: 'Dashboard' }
+    ]
+},
+{
+    title: 'Work',
+    icon: require('./../assets/images/navigation/navigation-icon-projects.png'),
+    links: [
+        { path: '/projects', title: 'Projects board' },
+        { path: '/time-tracking/create-entry', title: 'Create time entry' },
+        { path: '/editors/project-updates', title: 'Update project progress' },
+        { path: '/editors/updates', title: 'Editors updates' },
+        { path: '/finish/request', title: 'Finish request' },
+        { path: '/graphics', title: 'Graphics Request' }
+    ]
+},
+{
+    title: 'Billing',
+    icon: require('./../assets/images/navigation/navigation-icon-time.png'),
+    links: [
+        { path: '/estimates', title: 'Estimate & Quote' },
+        { path: '/spot/billing', title: 'Spot Billing' },
+        { path: '/customer/billing', title: 'Customer' },
+        { path: '/customer/pricing', title: 'Customer rate card' }
+    ]
+},
+{
+    title: 'Customer',
+    icon: require('./../assets/images/navigation/navigation-icon-send.png'),
+    links: [
+        { path: '/spot-sent/report', title: 'Producer spot sent' },
+        { path: '/spot-sent/finalize', title: 'Post team spot sent' },
+        { path: '/spot/forward', title: 'Forward Spot' }
+    ]
+},
+{
+    title: 'Configuration',
+    icon: require('./../assets/images/navigation/navigation-icon-activity.png'),
+    links: [
+        { path: '/activity', title: 'Activity definition' },
+        { path: '/generic-staff', title: 'Generic staff' }
+    ]
+}
+*/

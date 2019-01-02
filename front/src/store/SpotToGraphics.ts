@@ -19,7 +19,8 @@ export class SpotToGraphics {
     public getSpotFromApi = async (id: number) => {
         this.pending = true;
         try {
-            const response = (await API.getData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + `/${id}/offset=0&length=999999999`)) as string[];
+            // const response = (await API.getData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + `/${id}/offset=0&length=999999999`)) as string[];
+            const response = (await API.getData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + `/${id}`)) as string[];
             this.fetchedSpot = response;
             this.pending = false;
             this.isModalOpen = true;
@@ -96,8 +97,29 @@ export class SpotToGraphics {
     }
 
     @action
-    public sendFiles = () => {
-        // console.log(this.files);
-        // console.log(this.date);
+    public sendFiles = async (withGraphicsStatus, completedCheckboxStatus) => {
+        // console.log(this.fetchedSpot.graphicsFile);
+        let files = this.fetchedSpot.graphicsFile.map(file => {
+            return {
+                file_name: file.fileName,
+                file_description: file.fileDescription,
+                resend: file.resend,
+            };
+        });
+        const body = {
+            no_graphics: withGraphicsStatus ? 1 : 0,
+            graphics_status_id: completedCheckboxStatus ? 1 : 0,
+            graphics_file: files,
+        };
+        // console.log(body);
+        try {
+            const response = await API.putJSONData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + this.fetchedSpot.spotSentId, JSON.stringify(body));
+            // console.log(response);
+            this.toggleModal();
+        } catch (error) {
+            // console.log(error);
+            throw (error);
+        }
     }
+
 }
