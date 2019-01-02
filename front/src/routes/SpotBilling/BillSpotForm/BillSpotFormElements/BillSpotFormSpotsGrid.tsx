@@ -82,10 +82,9 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                 >
                     <Card
                         isExpandable={false}
-                        title={this.areSpotsInEditMode ? 'Add spots from list below to the bill:' : undefined}
-                        subTitle={
-                            this.areSpotsInEditMode && this.remainingSpotsToBill.length <= 0
-                                ? 'No spots are available to be added to this bill'
+                        title={
+                            this.areSpotsInEditMode && this.remainingSpotsToBill.length > 0
+                                ? 'Pick spots to add to the bill from the list below:'
                                 : undefined
                         }
                         classNameForContentAboveTitleBar={s.spotsGrid}
