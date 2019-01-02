@@ -1,4 +1,4 @@
 // Exports
-export * from './BillSpotFormElements/BillSpotFormProjectHistory';
-export * from './BillSpotFormSpotsGrid';
-export * from './DraftBillSpotForm/BillSpotFormBottomBar';
+export * from './BillSpotFormElements';
+export * from './ApprovedBillSpotForm';
+export * from './DraftBillSpotForm';

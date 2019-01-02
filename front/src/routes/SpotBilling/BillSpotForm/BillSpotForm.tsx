@@ -105,14 +105,32 @@ export default class BillSpotForm extends React.Component<Props, {}> {
                                 },
                             },
                         ],
+                        unbilledProjectTimeEntries: [],
+                        unbilledProjectCampaignTimeEntries: [],
                         spots: [
+                            {
+                                spotId: 2,
+                                spotName: '#1 Interrogation',
+                                projectCampaignId: 156,
+                                numberOfRevisions: 5,
+                                graphicsIncluded: false,
+                                firstRevisionCost: 45000,
+                                firstRevisionIsBilled: true,
+                                timeEntries: [],
+                            },
                             {
                                 spotId: 79,
                                 spotName: '#2 Saved',
+                                projectCampaignId: 156,
+                                numberOfRevisions: 4,
+                                graphicsIncluded: false,
+                                firstRevisionCost: 12500,
+                                firstRevisionIsBilled: false,
                                 timeEntries: [],
                             },
                         ],
                         bill: {
+                            selectedSpots: [79],
                             typeId: 2,
                             typeName: 'Revisions',
                             firstStage: [],
@@ -141,7 +159,7 @@ export default class BillSpotForm extends React.Component<Props, {}> {
                     }
 
                     return billFromApi.response.billStatusId === SpotSentBillStatus.Draft ? (
-                        <DraftBillSpotForm bill={billFromApi.response} />
+                        <DraftBillSpotForm billData={billFromApi.response} />
                     ) : (
                         <ApprovedBillSpotForm bill={billFromApi.response} />
                     );

@@ -20,6 +20,6 @@ export * from './TimeEntry';
 export * from './TimeApproval';
 export * from './Time';
 export * from './SpotSent';
-export * from './SpotsToBillFromApi';
+export * from './SpotToBillForm';
 export * from './Channels';
 export * from './StudioRateCard';

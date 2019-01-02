@@ -20,6 +20,7 @@ import {
     TimeApprovalActionsClass,
     SpotSentActionsClass,
     SpotsBillingActionsClass,
+    SpotToBillFormActionsClass,
     ChannelsActionsClass,
     StudioRateCardActionsClass,
 } from './index';
@@ -45,5 +46,6 @@ export const TimeEntryActions = new TimeEntryActionsClass();
 export const TimeApprovalActions = new TimeApprovalActionsClass();
 export const SpotSentActions = new SpotSentActionsClass();
 export const SpotsBillingActions = new SpotsBillingActionsClass();
+export const SpotToBillFormActions = new SpotToBillFormActionsClass();
 export const ChannelsActions = new ChannelsActionsClass();
 export const StudioRateCardActions = new StudioRateCardActionsClass();

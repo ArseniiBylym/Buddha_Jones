@@ -24,7 +24,7 @@ import {
     TimeApproval,
     Time,
     SpotSent,
-    SpotsToBillFromApi,
+    SpotToBillForm,
     Channels,
     StudioRateCard,
 } from './index';
@@ -51,7 +51,7 @@ export const TimeEntryStore = new TimeEntry();
 export const TimeApprovalStore = new TimeApproval();
 export const TimeStore = new Time();
 export const SpotSentStore = new SpotSent();
-export const SpotsToBillFromApiStore = new SpotsToBillFromApi();
+export const SpotToBillFormStore = new SpotToBillForm();
 export const ChannelsStore = new Channels();
 export const StudioRateCardStore = new StudioRateCard();
 
@@ -78,7 +78,7 @@ export interface AppStoreState {
     timeApproval: TimeApproval;
     time: Time;
     spotSent: SpotSent;
-    spotsToBillFromApi: SpotsToBillFromApi;
+    spotToBillForm: SpotToBillForm;
     channels: Channels;
     studioRateCard: StudioRateCard;
 }
@@ -106,7 +106,7 @@ export const store: AppStoreState = {
     timeApproval: TimeApprovalStore,
     time: TimeStore,
     spotSent: SpotSentStore,
-    spotsToBillFromApi: SpotsToBillFromApiStore,
+    spotToBillForm: SpotToBillFormStore,
     channels: ChannelsStore,
     studioRateCard: StudioRateCardStore,
 };

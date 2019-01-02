@@ -22,4 +22,5 @@ export * from './SpotSentActions';
 export * from './SpotsBillingActions';
 export * from './ChannelsActions';
 export * from './StudioRateCardActions';
+export * from './SpotToBillFormActions';
 export * from './AllActions';

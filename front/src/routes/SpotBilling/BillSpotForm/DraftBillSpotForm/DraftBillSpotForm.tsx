@@ -1,24 +1,44 @@
-import { observer } from 'mobx-react';
+import { BillSpotFormBottomBar } from '.';
+import { HeaderActions, SpotToBillFormActions } from 'actions';
+import { inject, observer } from 'mobx-react';
 import * as React from 'react';
+import { AppOnlyStoreState } from 'store/AllStores';
 import { SpotBillFormSummary } from 'types/spotBilling';
-import { BillSpotFormProjectHistory } from '../BillSpotFormElements';
+import { BillSpotFormProjectHistory, BillSpotFormSpotsGrid } from '../BillSpotFormElements';
 
-interface Props {
-    bill: SpotBillFormSummary;
+interface Props extends AppOnlyStoreState {
+    billData: SpotBillFormSummary;
 }
 
+@inject('store')
 @observer
 export class DraftBillSpotForm extends React.Component<Props, {}> {
+    constructor(props: Props) {
+        super(props);
+
+        if (this.props.billData) {
+            SpotToBillFormActions.initialize(this.props.billData.bill);
+
+            HeaderActions.setMainHeaderTitles(this.props.billData.projectName, this.props.billData.studioName);
+        }
+    }
+
     public render() {
-        const { bill } = this.props;
+        const { billData } = this.props;
 
         return (
             <React.Fragment>
-                <BillSpotFormProjectHistory projectHistory={bill.projectBillsHistory} />
+                <BillSpotFormProjectHistory projectHistory={billData.projectBillsHistory} />
 
-                {/* <BillSpotFormSpotsGrid /> */}
+                <BillSpotFormSpotsGrid
+                    spots={billData.spots}
+                    campaignName={billData.campaignName}
+                    projectCampaignName={billData.projectCampaignName}
+                    projectCampaignId={billData.projectCampaignId}
+                    editable={true}
+                />
 
-                {/* <BillSpotFormBottomBar isSaving={false} /> */}
+                <BillSpotFormBottomBar isSaving={false} />
             </React.Fragment>
         );
     }

@@ -1,15 +1,25 @@
-import * as React from 'react';
-import { observer, inject } from 'mobx-react';
-import { SpotSentSpot } from 'types/spotSent';
-import { Card, Section } from 'components/Section';
-import { Checkmark, DropdownContainer, OptionsList, OptionsListValuePropType } from 'components/Form';
+import {
+    PersonWithRole,
+    ProjectPicker,
+    ProjectPickerGroupValues,
+    ProjectPickerValues
+    } from 'components/Buddha';
 import { ButtonClose } from 'components/Button';
-import { ProjectPicker, ProjectPickerGroupValues, ProjectPickerValues, PersonWithRole } from 'components/Buddha';
 import { Paragraph } from 'components/Content';
+import {
+    Checkmark,
+    DropdownContainer,
+    OptionsList,
+    OptionsListValuePropType
+    } from 'components/Form';
+import { LoadingIndicator } from 'components/Loaders';
+import { Card, Section } from 'components/Section';
+import { action, computed } from 'mobx';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { ProjectCampaignUserFromApi } from 'types/projectDetails';
-import { action, computed } from 'mobx';
-import { LoadingIndicator } from 'components/Loaders';
+import { SpotSentSpot } from 'types/spotSent';
 import { SpotSentStore } from '../../../../store/AllStores';
 import { SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
 
@@ -39,7 +49,6 @@ type ProducerSpotSentFormSpotCardPropsTypes = ProducerSpotSentFormSpotCardProps 
 @inject('store')
 @observer
 export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSentFormSpotCardPropsTypes, {}> {
-
     @computed
     private get campaignEditorialUsers(): { isLoading: boolean; users: ProjectCampaignUserFromApi[] } {
         if (!this.props.store) {
@@ -92,27 +101,29 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                 title={'#' + (this.props.spotIndex + 1)}
                 subTitle="Spot sent"
                 isExpandable={false}
-                headerElements={[
-                    <Checkmark
-                        key="finishing-request-checkmark"
-                        onClick={this.props.onFinishingRequestToggle}
-                        checked={this.props.spot.isFinishingRequest}
-                        label="Finish Request"
-                        labelOnLeft={true}
-                        readOnly={(!this.props.spot.spot)}
-                        type={'no-icon'}
-                    />,
-                    <Checkmark
-                        key="spot-resend-checkmark"
-                        onClick={this.props.onSpotResendToggle}
-                        checked={this.props.spot.isResend}
-                        label="Spot resend"
-                        labelOnLeft={true}
-                        readOnly={(!this.props.spot.spot)}
-                        type={'no-icon'}
-                    />,
-                    <ButtonClose key="remove-spot" onClick={this.props.onSpotRemove} label="Remove spot" />,
-                ]}
+                headerElements={
+                    <React.Fragment>
+                        <Checkmark
+                            onClick={this.props.onFinishingRequestToggle}
+                            checked={this.props.spot.isFinishingRequest}
+                            label="Finish Request"
+                            labelOnLeft={true}
+                            readOnly={!this.props.spot.spot}
+                            type={'no-icon'}
+                        />
+
+                        <Checkmark
+                            onClick={this.props.onSpotResendToggle}
+                            checked={this.props.spot.isResend}
+                            label="Spot resend"
+                            labelOnLeft={true}
+                            readOnly={!this.props.spot.spot}
+                            type={'no-icon'}
+                        />
+
+                        <ButtonClose onClick={this.props.onSpotRemove} label="Remove spot" />
+                    </React.Fragment>
+                }
             >
                 <ProjectPicker
                     onChange={this.props.onSpotChange}
@@ -130,9 +141,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                 />
 
                 <Section title={'Sent via'}>
-                    <div className={s.sentViaMethodsContainer}>
-                        {this.getSentViaMethods()}
-                    </div>
+                    <div className={s.sentViaMethodsContainer}>{this.getSentViaMethods()}</div>
                 </Section>
 
                 {/*<section>
@@ -187,8 +196,9 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                         <Paragraph type="dim">Campaign selection is needed to pick editors.</Paragraph>
                     )}
 
-                    {this.props.spot.projectCampaign !== null &&
-                        this.campaignEditorialUsers.isLoading && <LoadingIndicator label="Loading editors" />}
+                    {this.props.spot.projectCampaign !== null && this.campaignEditorialUsers.isLoading && (
+                        <LoadingIndicator label="Loading editors" />
+                    )}
 
                     {this.props.spot.projectCampaign !== null &&
                         !this.campaignEditorialUsers.isLoading &&
@@ -214,15 +224,11 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                                 selected={true}
                                 editing={false}
                             />
-                            <span
-                                onClick={this.onRemoveEditorHandler.bind(this, ind)}
-                                className={s.editorRemoveButton}
-                            >
+                            <span onClick={this.onRemoveEditorHandler.bind(this, ind)} className={s.editorRemoveButton}>
                                 &#x2716;
                             </span>
                         </div>
                     ))}
-
                 </Section>
             </Card>
         );
@@ -245,19 +251,21 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
 
     private getSentViaMethods(): JSX.Element[] {
         if (SpotSentStore.spotSentSentViaMethodOptions && SpotSentStore.spotSentSentViaMethodOptions.length > 0) {
-            return SpotSentStore.spotSentSentViaMethodOptions.map((method: SpotSentOptionsChildrenFromApi, index: number) => {
-                return (
-                    <Checkmark
-                        key={'sent-via-method-' + index}
-                        onClick={() => {
-                            this.props.onSentViaMethodChange(method.id);
-                        }}
-                        checked={this.props.spot.sentViaMethod.includes(method.id)}
-                        label={method.name}
-                        type={'no-icon'}
-                    />
-                );
-            });
+            return SpotSentStore.spotSentSentViaMethodOptions.map(
+                (method: SpotSentOptionsChildrenFromApi, index: number) => {
+                    return (
+                        <Checkmark
+                            key={'sent-via-method-' + index}
+                            onClick={() => {
+                                this.props.onSentViaMethodChange(method.id);
+                            }}
+                            checked={this.props.spot.sentViaMethod.includes(method.id)}
+                            label={method.name}
+                            type={'no-icon'}
+                        />
+                    );
+                }
+            );
         } else {
             return [];
         }

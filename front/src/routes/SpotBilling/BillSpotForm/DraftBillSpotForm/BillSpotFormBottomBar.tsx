@@ -4,8 +4,9 @@ import { BottomBar } from 'components/Layout';
 import { LoadingIndicator } from 'components/Loaders';
 import { Col, Row } from 'components/Section';
 import { computed, observable } from 'mobx';
-import { observer } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import * as React from 'react';
+import { AppOnlyStoreState } from 'store/AllStores';
 
 const s = require('./BillSpotFormBottomBar.css');
 
@@ -16,22 +17,22 @@ enum DeleteStatus {
     Error = -1,
 }
 
-interface Props {
+interface Props extends AppOnlyStoreState {
     isSaving: boolean;
 }
 
+@inject('store')
 @observer
 export class BillSpotFormBottomBar extends React.Component<Props, {}> {
     @observable private deleteStatus: DeleteStatus = DeleteStatus.None;
 
     @computed
     private get isEmpty(): boolean {
-        return true;
-
-        // return (
-        //     this.props.bill === null ||
-        //     (this.props.bill.firstStage.length <= 0 && this.props.bill.activities.length <= 0)
-        // );
+        return (
+            !this.props.store ||
+            (this.props.store.spotToBillForm.firstStage.length <= 0 &&
+                this.props.store.spotToBillForm.activities.length <= 0)
+        );
     }
 
     public render() {
@@ -58,8 +59,8 @@ export class BillSpotFormBottomBar extends React.Component<Props, {}> {
                             )) || <Paragraph type="success">Draft saved</Paragraph>}
                     </Col>
 
-                    <Col style={{ textAlign: 'right' }}>
-                        <Paragraph type="dim" size="small">
+                    <Col>
+                        <Paragraph align="right" type="dim" size="small">
                             Bill is empty. To save the bill add some items to it.
                         </Paragraph>
                     </Col>
