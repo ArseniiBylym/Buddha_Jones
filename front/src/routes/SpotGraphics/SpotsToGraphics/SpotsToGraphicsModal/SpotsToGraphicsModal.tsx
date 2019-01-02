@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { observable, action } from 'mobx';
+import { observable, action, computed } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { Modal } from 'components/Modals';
 import { TableRow, Table, TableCell } from 'components/Table';
@@ -25,6 +25,15 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
     @observable private withGraphics: boolean = false;
     @observable private modalConfirmOpen: boolean = false;
     @observable private completedCheckbox: boolean = false;
+
+    @computed
+    private get withGraphicsStatus() {
+        return this.withGraphics;
+    }
+    @computed
+    private get completedCheckboxStatus() {
+        return this.completedCheckbox;
+    }
 
     @action
     private completedCheckboxToggle = () => {
@@ -168,11 +177,11 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
     };
 
     private sendFilesHandler = () => {
-        this.props.store.spotToGraphics.sendFiles();
+        this.props.store.spotToGraphics.sendFiles(this.withGraphicsStatus, this.completedCheckboxStatus);
     }
 
-    private sendHandler = () => {
-        if (this.withGraphics) {
+    private sendHandler = (bool) => e => {
+        if (bool) {
             this.sendFilesHandler();
             return;
         } else {
@@ -284,8 +293,8 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                     }
                     {!spotToGraphics.isFilesEmpty || this.withGraphics ? <div onClick={this.completedCheckboxToggle} className={s.fileCheckbox__label}>Completed</div> : null}
                     {!spotToGraphics.isFilesEmpty || this.withGraphics 
-                        ? <ButtonSend onClick={this.sendHandler} label="Save" labelSize="large" iconColor="green" labelColor="green"/>
-                        : <div onClick={this.sendHandler} className={s.buttonSend__item}>Request EDL</div>
+                        ? <ButtonSend onClick={this.sendHandler(true)} label="Save" labelSize="large" iconColor="green" labelColor="green"/>
+                        : <div onClick={this.sendHandler(false)} className={s.buttonSend__item}>Request EDL</div>
                     }
                 </div>
                 <Modal
