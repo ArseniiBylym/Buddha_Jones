@@ -38,7 +38,8 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                 studioName: item.studioName,
                 studioId: item.studioId,
                 projectId: item.projectId,
-                projectCampaignId: item.projectCampaignId
+                projectCampaignId: item.projectCampaignId,
+                
            };
 
            let spots: any[] = [];
@@ -47,6 +48,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                return !!elem.spotId;
            });
            newSpotList.forEach((spot, j) => {
+               console.log(spot);
                let spotItem = {
                     spotId: spot.spotId,
                     spotName: spot.spotName,
@@ -55,7 +57,8 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                     spotLineStatus: spot.spotLineStatus,
                     versionName: spot.versionName,
                     spotSentId: spot.spotSentId,
-                    spotSentRequestId: spot.spotSentRequestId
+                    spotSentRequestId: spot.spotSentRequestId,
+                    finishRequest: spot.finishRequest,
                };
                spots.push(spotItem);
            });
@@ -140,21 +143,22 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                         </div>
                                     )}
                                     {projectCampaign.spots.map(spot => {
+                                        console.log(spot);
                                         return (
                                             <div key={spot.spotId} onClick={this.handleSpotSelectionToggle(this.props.routeType, spot)} className={s.spotTable__row}>
-                                            <div className={s.spotDate}>
-                                            {spot.date && moment(spot.date).format('DD/MM/YYYY')}
-                                            </div>
-                                            <div className={s.spotItem}>
-                                            {spot.spotName}{spot.runtime && ` (${spot.runtime})`}
-                                            </div>
-                                            <div className={s.spotStatus}>
-                                            {spot.versionName}
-                                            </div>
-                                            <div className={s.spotStatus}>
-                                            {spot.spotLineStatus}
-                                            </div>
-                                            
+                                                <div className={s.spotDate}>
+                                                    {spot.date && moment(spot.date).format('DD/MM/YYYY')}
+                                                </div>
+                                                <div className={s.spotItem}>
+                                                    {spot.spotName}{spot.runtime && ` (${spot.runtime})`}
+                                                    {!spot.finishRequest && this.props.routeType === 'sent' ? <span>pending</span> : null}
+                                                </div>
+                                                <div className={s.spotStatus}>
+                                                    {spot.versionName}
+                                                </div>
+                                                <div className={s.spotStatus}>
+                                                    {spot.spotLineStatus}
+                                                </div>
                                             </div>
                                         );
                                     })}
