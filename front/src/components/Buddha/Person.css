@@ -36,7 +36,13 @@
             align-items: center;
 
             & > * {
-                font-size: 0.95em;
+                font-size: 0.95rem;
+            }
+
+            &:global(.personNameSmall) {
+                & > * {
+                    font-size: 0.8rem;
+                }
             }
 
             & > label {
