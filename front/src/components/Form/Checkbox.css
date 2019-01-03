@@ -1,152 +1,179 @@
 .checkbox {
-  cursor: pointer;
-  position: relative;
-  width: 100%;
-  min-width: 20px;
-  min-height: 20px;
-  display: flex;
-  justify-content: flex-start;
-  align-content: center;
-  align-items: center;
-  &>input,
-  &>input[type="checkbox"] {
-    background: none;
-    border: none;
-    width: 18px;
-    height: 18px;
-    opacity: 0;
-    margin: 0;
-    margin-left: 0;
-    margin-right: 6px;
-  }
-  & p {
-    font-size: 0.8em;
-    font-weight: 600;
-    transition: 250ms color 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
-    &::before {
-      content: "";
-      position: absolute;
-      display: block;
-      z-index: 1;
-      width: 18px;
-      height: 18px;
-      top: 0;
-      left: 0;
-      box-sizing: border-box;
-      background: #FFFFFF;
-      border: 1px solid #DCDEDE;
-      border-radius: 3px;
-      transition: 300ms background 0ms cubic-bezier(0.645, 0.045, 0.355, 1), 300ms border 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
-    }
-  }
-  & .icon {
-    outline: none;
-    position: absolute;
-    display: flex;
     cursor: pointer;
-    justify-content: center;
+    position: relative;
+    width: 100%;
+    min-width: 20px;
+    min-height: 20px;
+    display: flex;
+    justify-content: flex-start;
     align-content: center;
     align-items: center;
-    width: 18px;
-    height: 18px;
-    padding: 0;
-    z-index: 2;
-    top: 0;
-    left: 0;
-    box-sizing: border-box;
-    & img {
-      width: 20px;
-      height: 20px;
-      position: relative;
-      left: 1px;
-      top: 0;
+
+    & > input,
+    & > input[type='checkbox'] {
+        background: none;
+        border: none;
+        width: 21px;
+        height: 21px;
+        opacity: 0;
+        margin: 0;
+        margin-left: 0;
+        margin-right: 6px;
     }
-    &:focus,
-    &:active {
-      border: 1px dashed #6F7583;
-      border-radius: 3px;
-    }
-  }
-  &:hover {
+
     & p {
-      color: #496DF4;
-      &::before {
-        background: #E9EBEB;
-      }
-    }
-    & .icon {
-      border: 1px dashed #6F7583;
-      border-radius: 3px;
-    }
-  }
-  &.checked {
-    & p {
-      &::before {
-        background: #25AC7F;
-        border-color: #18A073;
-      }
-    }
-    & .icon {
-      &:focus,
-      &:active {
-        border-color: #FFFFFF;
-      }
-    }
-    &:hover {
-      & p {
+        font-size: 0.8em;
+        font-weight: 600;
+        transition: 250ms color 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
+
         &::before {
-          background: #18A073;
+            content: '';
+            position: absolute;
+            display: block;
+            z-index: 1;
+            width: 21px;
+            height: 21px;
+            top: 0;
+            left: 0;
+            box-sizing: border-box;
+            background: #f4f2f0;
+            border: 1px solid #5a4d3f;
+            border-radius: 2px;
+            transition: 300ms background 0ms cubic-bezier(0.645, 0.045, 0.355, 1),
+                300ms border 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
         }
-      }
     }
-  }
-  &.disabled {
-    cursor: not-allowed;
-  }
-  &.labelOnLeft {
-    justify-content: flex-end;
-    text-align: right;
-    &>input,
-    &>input[type="checkbox"] {
-      margin: 0;
-      margin-left: 6px;
-      margin-right: 0;
-    }
-    & p {
-      &::before {
-        left: auto;
-        right: 0;
-      }
-    }
+
     & .icon {
-      left: auto;
-      right: 0;
+        outline: none;
+        position: absolute;
+        display: flex;
+        cursor: pointer;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        width: 21px;
+        height: 21px;
+        padding: 0;
+        z-index: 2;
+        top: 0;
+        left: 0;
+        background: none;
+        border: none;
+        box-sizing: border-box;
+
+        & i {
+            opacity: 0;
+            transition: 300ms opacity 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+
+        &:focus,
+        &:active {
+            border: 1px solid #0768d8;
+            border-radius: 2px;
+        }
     }
-  }
-  &.alignLeft {
-    justify-content: flex-start;
-  }
-  &.alignCenter {
-    justify-content: center;
-  }
-  &.alignRight {
-    justify-content: flex-end;
-    text-align: right;
-    &>input,
-    &>input[type="checkbox"] {
-      margin: 0;
-      margin-left: 6px;
-      margin-right: 0;
+
+    &:hover {
+        & p {
+            color: #496df4;
+
+            &::before {
+                background: #e9ebeb;
+            }
+        }
+
+        & .icon {
+            border: 1px dashed #6f7583;
+            border-radius: 2px;
+        }
     }
-    & p {
-      &::before {
-        left: auto;
-        right: 0;
-      }
+
+    &.checked {
+        & p {
+            &::before {
+                background: #0768d8;
+                border-color: #0768d8;
+            }
+        }
+
+        & .icon {
+            & i {
+                opacity: 1;
+            }
+
+            &:focus,
+            &:active {
+                border-color: #ffffff;
+            }
+        }
+
+        &:hover {
+            & p {
+                &::before {
+                    background: #3999be;
+                }
+            }
+        }
     }
-    & .icon {
-      left: auto;
-      right: 0;
+
+    &.disabled {
+        cursor: not-allowed;
     }
-  }
+
+    &.labelOnLeft {
+        justify-content: flex-end;
+        text-align: right;
+
+        & > input,
+        & > input[type='checkbox'] {
+            margin: 0;
+            margin-left: 6px;
+            margin-right: 0;
+        }
+
+        & p {
+            &::before {
+                left: auto;
+                right: 0;
+            }
+        }
+
+        & .icon {
+            left: auto;
+            right: 0;
+        }
+    }
+
+    &.alignLeft {
+        justify-content: flex-start;
+    }
+
+    &.alignCenter {
+        justify-content: center;
+    }
+
+    &.alignRight {
+        justify-content: flex-end;
+        text-align: right;
+
+        & > input,
+        & > input[type='checkbox'] {
+            margin: 0;
+            margin-left: 6px;
+            margin-right: 0;
+        }
+
+        & p {
+            &::before {
+                left: auto;
+                right: 0;
+            }
+        }
+
+        & .icon {
+            left: auto;
+            right: 0;
+        }
+    }
 }
