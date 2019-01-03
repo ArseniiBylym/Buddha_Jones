@@ -13,6 +13,8 @@ import {
     VersionsResultsRawApiResponse, TRTItem,
 } from 'types/projectsCampaignsSpots';
 
+import { ProjectPickerSections, ProjectPickerValues } from '../components/Buddha';
+
 export class ProjectsCampaignsSpotsActionsClass {
     private resultsExpirationInMinutes: number = 5;
 
@@ -232,7 +234,7 @@ export class ProjectsCampaignsSpotsActionsClass {
                     APIPath.SPOT,
                     {
                         project_id: ids ? ids.projectId : null,
-                        campaign_id: ids ? ids.projectCampaignId : null,
+                        project_campaign_id: ids ? ids.projectCampaignId : null,
                         search,
                         offset: this.prepareOffset(page, resultsPerPage),
                         length: resultsPerPage,
@@ -255,6 +257,27 @@ export class ProjectsCampaignsSpotsActionsClass {
 
             throw error;
         }
+    };
+
+    public getSpotResult = (
+        userId: number,
+        ids: {
+            projectId: number | null;
+            projectCampaignId: number | null;
+        } | null,
+        search: string,
+        page: number
+    ): SpotsResult | null => {
+        search = this.prepareSearchQuery(search);
+        return (
+            ProjectsCampaignsSpotsStore.spots.find(
+                s => s.userId === userId &&
+                    s.projectId === (ids ? ids.projectId : null) &&
+                    s.projectCampaignId === (ids ? ids.projectCampaignId : null) &&
+                    s.search === search &&
+                    s.page === page
+            ) || null
+        );
     };
 
     @action
@@ -366,29 +389,6 @@ export class ProjectsCampaignsSpotsActionsClass {
         );
     };
 
-    public getSpotResult = (
-        userId: number,
-        ids: {
-            projectId: number | null;
-            projectCampaignId: number | null;
-        } | null,
-        search: string,
-        page: number
-    ): SpotsResult | null => {
-        search = this.prepareSearchQuery(search);
-
-        return (
-            ProjectsCampaignsSpotsStore.spots.find(
-                s =>
-                    s.userId === userId &&
-                    s.projectId === (ids ? ids.projectId : null) &&
-                    s.projectCampaignId === (ids ? ids.projectCampaignId : null) &&
-                    s.search === search &&
-                    s.page === page
-            ) || null
-        );
-    };
-
     public getVersionResult = (
         userId: number,
         ids: {
@@ -429,6 +429,71 @@ export class ProjectsCampaignsSpotsActionsClass {
 
     public prepareSectionKey = (id: number | null): string => {
         return id !== null ? (typeof id === 'number' ? id.toString() : '0') : 'all';
+    };
+
+    public fetchResults = async (
+        forUserId: number,
+        section: ProjectPickerSections,
+        search: string = '',
+        page: number = 1,
+        entriesPerPage: number = 16,
+        value: ProjectPickerValues | null = null,
+        forceFetch: boolean = false
+    ): Promise<boolean> => {
+        try {
+            switch (section) {
+                case 'project':
+                    return await this.fetchProjects(
+                        forUserId,
+                        search,
+                        page,
+                        entriesPerPage,
+                        forceFetch
+                    );
+                case 'projectCampaign':
+                    return await this.fetchCampaigns(
+                        forUserId,
+                        value && value.project ? value.project.id : null,
+                        search,
+                        page,
+                        entriesPerPage,
+                        forceFetch
+                    );
+                case 'spot':
+                    return await this.fetchSpots(
+                        forUserId,
+                        value
+                            ? {
+                                projectId: value.project ? value.project.id : null,
+                                projectCampaignId: value.projectCampaign && value.projectCampaign.id ? value.projectCampaign.id : null,
+                            }
+                            : null,
+                        search,
+                        page,
+                        entriesPerPage,
+                        forceFetch
+                    );
+                case 'version':
+                    return await this.fetchVersions(
+                        forUserId,
+                        value
+                            ? {
+                                projectId: value.project ? value.project.id : null,
+                                projectCampaignId: value.projectCampaign ? value.projectCampaign.id : null,
+                                spotId: value.spot ? value.spot.id : null,
+                            }
+                            : null,
+                        search,
+                        page,
+                        entriesPerPage,
+                        forceFetch
+                    );
+                default:
+                    return true;
+            }
+        } catch (error) {
+            throw error;
+        }
     };
 
     private prepareOffset = (page: number, resultsPerPage: number): number => {
