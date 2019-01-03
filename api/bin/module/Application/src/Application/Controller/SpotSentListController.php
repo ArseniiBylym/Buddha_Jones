@@ -196,5 +196,7 @@ class SpotSentListController extends CustomAbstractActionController
         $this->_em->persist($spotSent);
 
         $this->_em->flush();
+
+        $this->_notificationRepo->sendSpotSentNoficationById($spotSentId);
     }
 }

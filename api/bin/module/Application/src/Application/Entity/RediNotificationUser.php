@@ -30,6 +30,13 @@ class RediNotificationUser
      */
     private $userTypeId;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="user_id", type="integer", nullable=true)
+     */
+    private $userId;
+
 
 
     /**
@@ -76,5 +83,28 @@ class RediNotificationUser
     public function getUserTypeId()
     {
         return $this->userTypeId;
+    }
+
+    /**
+     * Set userId
+     *
+     * @param integer $userId
+     * @return RediNotificationUser
+     */
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+
+        return $this;
+    }
+
+    /**
+     * Get userId
+     *
+     * @return integer 
+     */
+    public function getUserId()
+    {
+        return $this->userId;
     }
 }
