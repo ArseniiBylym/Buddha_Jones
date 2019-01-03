@@ -1082,6 +1082,10 @@ class SpotRepository extends EntityRepository
             }
         }
 
+        if (!empty($filter['spot_sent_for_billing'])) {
+            $dqlFilter[] = " (ss.lineStatusId = 4 OR ss.graphicsStatusId = 4) ";
+        }
+
         if (count($dqlFilter)) {
             $dql .= " AND " . implode(" AND ", $dqlFilter);
         }
