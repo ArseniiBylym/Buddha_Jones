@@ -42,6 +42,20 @@ export class Paragraph extends React.Component<ParagraphProps, {}> {
                 style={{
                     ...{
                         textAlign: this.props.align ? this.props.align : null,
+                        marginLeft: this.props.align
+                            ? this.props.align === 'right'
+                                ? 'auto'
+                                : this.props.align === 'center'
+                                ? 'auto'
+                                : '0'
+                            : '0',
+                        marginRight: this.props.align
+                            ? this.props.align === 'left'
+                                ? 'auto'
+                                : this.props.align === 'center'
+                                ? 'auto'
+                                : '0'
+                            : '0',
                         float: this.props.float !== 'none' ? this.props.float : null,
                     },
                     ...(this.props.style && typeof this.props.style === 'object' && this.props.style),
