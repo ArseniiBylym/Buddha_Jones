@@ -24,6 +24,7 @@ export interface UserProjectRoleFromApi {
 export interface UserType {
     id: number;
     name: string;
+    timeEntryApprover: number;
 }
 
 export interface OtherUserDetails {
@@ -89,6 +90,7 @@ export interface UsersListFromApi {
 export interface UserTypeFromApi {
     id: number;
     type_name: string;
+    timeEntryApprover: number;
 }
 
 export interface ProjectPermissionsTypeFromApi {

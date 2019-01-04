@@ -4,13 +4,18 @@ import { HeaderActions, UsersActions } from 'actions';
 import { inject, observer } from 'mobx-react';
 import { action, computed, observable } from 'mobx';
 import { Col, Row, Section } from 'components/Section';
-import { InputSearch } from 'components/Form';
+import { InputSearch, Checkmark } from 'components/Form';
 import { Table, TableCell, TableRow } from 'components/Table';
 import { LoadingSpinner } from 'components/Loaders';
 import { UserType } from 'types/users';
 import { Paragraph } from 'components/Content';
 import { history } from 'App';
 import { ButtonEdit } from 'components/Button';
+import { TimeEntryPermissionsActions } from '../../../../../actions';
+import { BottomBar } from '../../../../../components/Layout/BottomBar';
+import { ButtonSave } from '../../../../../components/Button/ButtonSave';
+
+const s = require('./ProjectBoardPermissionList.css');
 
 @inject('store')
 @observer
@@ -52,6 +57,19 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                 ]}
             >
                 {this.getTableWithData()}
+                {
+                        <BottomBar
+                            show={this.props.store!.timeEntryPermissions.touched}
+                        >
+                            <ButtonSave
+                                onClick={TimeEntryPermissionsActions.saveTimeEntryPermissions}
+                                float={'right'}
+                                label={'Save Changes'}
+                                savingLabel={'Saving'}
+                                isSaving={this.props.store!.timeEntryPermissions.saving}
+                            />
+                        </BottomBar>
+                    }
             </Section>
         ) : (
             <>
@@ -64,6 +82,7 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
     private setHeaderAndInitialData = (): void => {
         // Fetch required data
         UsersActions.fetchUsersTypes();
+        TimeEntryPermissionsActions.getTimeEntryPermissions();
 
         // Set header
         HeaderActions.setMainHeaderTitlesAndElements(
@@ -124,22 +143,42 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                 return (
                     <TableRow key={`user-type-${ind}`}>
                         <TableCell align="left">
-                            {userType.name}
+                            <div className={s.userType__wrapper}>
+                                <div>{userType.name}</div>
+                                {userType.timeEntryApprover ? <div className={s.userType__label}>approver</div> : null}
+                            </div>
                         </TableCell>
-
                         <TableCell align="right">
                             <ButtonEdit
-                                onClick={this.handlePermissionEdit(userType.id, userType.name)}
-                                label="Manage access"
+                                onClick={this.onEditClick(userType.id)}
+                                label="permissions"
                                 labelOnLeft={false}
                                 float="right"
                             />
                         </TableCell>
-
+                        <TableCell align="right">
+                            <Checkmark
+                                onClick={this.handlePermissionChange(userType.id)}
+                                checked={this.props.store!.timeEntryPermissions.data.includes(userType.id)}
+                                // checked={true}
+                                // label={this.props.isChecked ? 'Allowed' : 'Not allowed'}
+                                label={this.props.store!.timeEntryPermissions.data.includes(userType.id) ? 'Allowed' : 'Not allowed'}
+                                labelOnLeft={true}
+                                type={'blue'}
+                            />
+                        </TableCell>
                         <TableCell align="right">
                             <ButtonEdit
                                 onClick={this.handleUsersEdit(userType.id, userType.name)}
                                 label="Edit users"
+                                labelOnLeft={false}
+                                float="right"
+                            />
+                        </TableCell>
+                        <TableCell align="right">
+                            <ButtonEdit
+                                onClick={this.handlePermissionEdit(userType.id, userType.name)}
+                                label="Manage access"
                                 labelOnLeft={false}
                                 float="right"
                             />
@@ -151,10 +190,12 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                 <Table
                     header={[
                         { title: 'User type', align: 'left' },
-                        { title: '', align: 'right' },
-                        { title: '', align: 'right' }
+                        { title: 'Approval', align: 'right' },
+                        { title: 'Time entry', align: 'right' },
+                        { title: 'Users', align: 'right' },
+                        { title: 'Access', align: 'right' },
                     ]}
-                    columnsWidths={['60%', '20%', '20%']}
+                    columnsWidths={['28%', '18%', '18%', '18%', '18%']}
                 >
                     {(this.isSearchResultsEmpty()) ? this.getTableWithNoMatchingText() : tableRowsArr}
                 </Table>
@@ -164,6 +205,14 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                 <></>
             );
         }
+    }
+
+    private handlePermissionChange = (id: number) => e => {
+        TimeEntryPermissionsActions.changeTimeEntryPermission(id);
+    }
+
+    private onEditClick = (id: number) => e => {
+        history.push(`/portal/configuration/user-management/time-approval-permissions/${id}`);
     }
 
     private handleUsersEdit = (
