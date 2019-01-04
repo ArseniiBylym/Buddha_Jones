@@ -71,6 +71,7 @@ export class UsersActionsClass {
                     .map(type => ({
                         id: type.id,
                         name: type.type_name,
+                        timeEntryApprover: type.timeEntryApprover,
                     }));
                 UsersStore.typesLastFetchTimestamp = Date.now();
                 UsersStore.typesLoading = false;
