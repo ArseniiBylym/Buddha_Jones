@@ -135,6 +135,35 @@ export class API {
         }
     };
 
+    /** Fetch PUT JSON */
+    static putJSONData = async (
+        endpoint: string,
+        data: object | string = {},
+        configuration: ApiRequestConfig | null = null,
+        transformData: RequestDataTransformation | null = 'put-data',
+        returnOnlyData: boolean = false
+    ): Promise<object> => {
+        try {
+            // Configure
+            let config: ApiRequestConfig = API.REQUEST_CONFIG;
+            if (configuration) {
+                config = { ...config, ...configuration };
+            }
+            // Set authentication headers
+            config = API.setAuthenticationHeaders(config);
+            // Call the API
+            const response = await axios.put(API.URL + endpoint, data, config);
+            // Return API response
+            return returnOnlyData
+                ? typeof response.data.data !== 'undefined'
+                    ? response.data.data
+                    : response.data
+                : response;
+        } catch (error) {
+            throw error;
+        }
+    };
+
     /** Fetch DELETE */
     static deleteData = async (
         endpoint: string,

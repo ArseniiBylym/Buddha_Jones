@@ -9,6 +9,18 @@ export interface UserApiResponse extends ApiResponse {
     data: UserData;
 }
 
+export interface ModuleAccess {
+    id: number;
+    moduleName: string;
+    subModule: [
+        {
+            canAccess: boolean;
+            id: number;
+            subModuleName: string;
+        }
+    ];
+}
+
 export interface UserData {
     createdDate: any;
     lastLoginDate: any;
@@ -34,6 +46,7 @@ export interface UserData {
     token: string;
     status: 1 | 0;
     allowedRouteKeys: string[];
+    moduleAccess: ModuleAccess[];
 }
 
 export enum UserLoginStatus {

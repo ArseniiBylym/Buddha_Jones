@@ -16,6 +16,7 @@ import { TimeApprovalAsync } from './TimeTracking/Approval';
 import { UserAccountAsync } from './User';
 import { TimeEntryPermissionsAsync } from './TimeCardPermissions/TimeEntryPermissions';
 import { TimeApprovalPermissionsAsync } from './TimeCardPermissions/TimeApprovalPermissions';
+import { SpotsToEDLAsync } from './SpotEDL/SpotsToEDL/SpotsToEDLAsync';
 
 // Icons
 const dashboardIcon = require('../assets/images/navigation/navigation-icon-dashboard.png');
@@ -134,6 +135,17 @@ export const routes: Route[] = [
         name: 'Spots to graphics',
         path: '/portal/spots-to-graphics',
         entry: '/portal/spots-to-graphics',
+        exact: true,
+        allowAllUsers: true,
+    },
+    {
+        component: SpotsToEDLAsync,
+        key: 'spots-to-edl',
+        accessKey: RouteAccessKey.SpotBilling,
+        group: studioGroup,
+        name: 'Spots to EDL',
+        path: '/portal/spots-to-edl',
+        entry: '/portal/spots-to-edl',
         exact: true,
         allowAllUsers: true,
     },
