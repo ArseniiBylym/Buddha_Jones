@@ -50,6 +50,21 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
             len: arr.length,
         };
     }
+    getPermissionId = () => {
+        let permissionId: number | null = null;
+        if (this.props.store && 
+            this.props.store.user.data && 
+            this.props.store.user.data.moduleAccess) {
+            const moduleAccessArray = this.props.store.user.data.moduleAccess.find(elem => elem.moduleName === 'Spot Sent');
+            if (moduleAccessArray && moduleAccessArray.subModule && moduleAccessArray.subModule.length > 0) {
+                const moduleAccessItem = moduleAccessArray.subModule.find(elem => elem.subModuleName === 'Graphics for Spot');
+                if (moduleAccessItem && moduleAccessItem.canAccess === true) {
+                    permissionId = moduleAccessItem.id;
+                }
+            }
+        }
+        return permissionId;
+    }
 
     public render() {
         return (
@@ -57,8 +72,7 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
                 dataExpiresInMiliseconds={this.DATA_REFRESH_RATE_IN_MS}
                 apiEndpoint={APIPath.SPOTS_TO_GRAPHICS}
                 queryObject={{
-                    offset: 0,
-                    length: 999999999,
+                    sub_module_id: this.getPermissionId(),
                 }}
             >
                 {spotsToGraphicsFromApi => (
@@ -82,6 +96,7 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
                                     ? this.formatSpotsList(spotsToGraphicsFromApi.response.data).spots
                                     : []
                             }
+                            routeType="graphics"
                         />
                     </React.Fragment>
                 )}
