@@ -153,7 +153,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                                 </div>
                                                 <div className={s.spotItem}>
                                                 {spot.spotName}{spot.runtime && ` (${spot.runtime})`}
-                                                {!spot.finishRequest && this.props.routeType === 'sent' ? <span>pending</span> : null}
+                                                {spot.finishRequest && this.props.routeType === 'sent' ? <span>FINISH</span> : null}
                                                 </div>
                                                 {this.props.routeType === 'edl' ? (
                                                     <div onClick={this.onEDLClickHandler(spot.spotSentId, index)} className={s.edlButton}>

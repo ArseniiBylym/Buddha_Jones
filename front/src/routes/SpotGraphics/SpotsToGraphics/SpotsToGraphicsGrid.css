@@ -152,7 +152,7 @@
                 & > span{
                     background-color: #d8c6b8;
                     color: Sienna;
-                    font-size: 12px;
+                    font-size: 10px;
                     font-weight: 600;
                     transform: translateY(-40px);
                     /* border: 1px solid rgb(126, 117, 109); */
@@ -192,7 +192,7 @@
                 & > span{
                     background-color: #d8c6b8;
                     color: Sienna;
-                    font-size: 12px;
+                    font-size: 10px;
                     font-weight: 600;
                     transform: translateY(-40px);
                     /* border: 1px solid rgb(126, 117, 109); */
