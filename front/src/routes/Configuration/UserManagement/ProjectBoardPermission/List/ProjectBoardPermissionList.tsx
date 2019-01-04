@@ -145,7 +145,7 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                         <TableCell align="left">
                             <div className={s.userType__wrapper}>
                                 <div>{userType.name}</div>
-                                {userType.timeEntryApprover ? <div className={s.userType__label}>approved</div> : null}
+                                {userType.timeEntryApprover ? <div className={s.userType__label}>approver</div> : null}
                             </div>
                         </TableCell>
                         <TableCell align="right">
