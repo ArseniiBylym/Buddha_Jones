@@ -398,7 +398,7 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                             executiveId={this.props.campaign.firstPointOfContactId}
                         />*/}
                          <Col className={s.collapseButton}>
-                                <div className={s.collapseButtonLabel}>View team </div>
+                                <div className={s.collapseButtonLabel}>View teams </div>
                                 <Button
                                     onClick={this.peopleAreExpandedSwitch}
                                     icon={this.getVersionNameButtonIcon()}
