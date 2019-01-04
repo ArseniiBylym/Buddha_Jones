@@ -83,7 +83,12 @@ export class TimeEntryCalendarHeader extends React.Component<TimeEntryCalendarHe
                         {'Date: '}
                         <span>{this.dayNames.currentFirstDate}</span> <strong>{this.dayNames.nameOfTheFirstDayInMonth}</strong>
                         {(this.dayNames.nameOfTheFirstDayInMonth === this.dayNames.nameOfTheLastDayInMonth && (
-                            <span key={0}> {this.dayNames.nameOfTheFullYearOfFirstDayInMonth}</span>
+                            <>
+                                <span key={0}> {this.dayNames.nameOfTheFullYearOfFirstDayInMonth}</span>
+                                <i> / </i>
+                                <span>{this.dayNames.currentLastDate}</span> <strong>{this.dayNames.nameOfTheLastDayInMonth}</strong>
+                                <span>{' ' + this.dayNames.nameOfTheFullYearOfLastDayInMonth}</span>
+                            </>
                         )) ||
                         (this.dayNames.nameOfTheFullYearOfFirstDayInMonth ===
                             this.dayNames.nameOfTheFullYearOfLastDayInMonth && (
