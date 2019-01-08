@@ -203,7 +203,10 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
             project.projectId + '/' +
             project.projectName + '/1';
 
-        history.push(path);
+        let win = window.open(path, '_blank');
+        if ( win) {
+            win.focus();
+        }
     }
 
     private handleCampaignClick = (project) => e => {
@@ -215,7 +218,10 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
             '?projectCampaignId=' +
             project.projectCampaignId;
 
-        history.push(path);
+        let win = window.open(path, '_blank');
+        if ( win) {
+            win.focus();
+        }
     }
 
     private onEDLClickHandler = (spotSentId, index) => e => {

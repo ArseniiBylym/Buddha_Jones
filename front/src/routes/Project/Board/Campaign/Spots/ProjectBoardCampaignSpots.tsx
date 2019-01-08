@@ -27,6 +27,7 @@ interface ProjectBoardCampaignsSpotsProps {
     projectCampaignId: number;
     campaignId: number;
     spots: SpotDetails[];
+    approvedByBilling?: boolean;
 }
 
 // Types
@@ -300,6 +301,7 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
                     onClick={this.handleNewSpotFormToggle}
                     className={classNames(s.campaignAddSpotButton, {
                         [s.rotate45]: this.addingNewSpotFormVisible,
+                        [s.disabled]: this.props.approvedByBilling === false,
                     })}
                     label={this.addingNewSpotFormVisible ? 'Cancel adding new spot' : 'Add new spot'}
                     labelColor={this.addingNewSpotFormVisible ? 'orange' : 'blue'}
@@ -337,6 +339,9 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
     };
 
     private handleNewSpotFormToggle = () => {
+        if (this.props.approvedByBilling === false ) {
+            return;
+        }
         if (this.addingNewSpotFormVisible) {
             this.addingNewSpotFormVisible = false;
         } else {
