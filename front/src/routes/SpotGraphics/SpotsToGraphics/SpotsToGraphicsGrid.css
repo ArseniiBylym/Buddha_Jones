@@ -29,7 +29,7 @@
     justify-content: center;
     align-content: center;
     align-items: center;
-    padding: 24px 0;
+    padding: 24px 5px;
     padding-bottom: 16px;
 
     & > .headline {
@@ -77,6 +77,12 @@
             & > p:nth-child(2) {
                 width: 55%;
             }
+            & > .spots__header__ver{
+                width: 10%;
+            }
+            & > .spots__header__status{
+                width: 20%;
+            }
 
         }
 
@@ -101,6 +107,112 @@
             }
             &:hover{
                 background-color: #e9e0d7;
+            }
+            & > .spotItem{
+                & > span{
+                    background-color: #d8c6b8;
+                    color: Sienna;
+                    font-size: 12px;
+                    font-weight: 600;
+                    transform: translateY(-40px);
+                    /* border: 1px solid rgb(126, 117, 109); */
+                    border-radius: 3px;
+                    padding: 0 3px;
+                    margin-left: 10px;
+                }
+                }
+            & > .edlButton{
+                background-color: #E8DFD7;
+                padding: 3px;
+                width: 30%;
+            }
+            & > .spotVer{
+                width: 10%;
+            }
+            & > .spotStatus{
+                width: 20%;
+            }
+        }
+        & > .spotTable__row__hidden {
+            width: 100%;
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            padding: 5px 0;
+            color: #5a4d3f;
+            font-size: .95em;
+            font-weight: 600;
+            & > div{
+                width: 15%;
+            }
+            & > div:nth-child(2) {
+                width: 55%;
+            }
+            & > .spotItem{
+                & > span{
+                    background-color: #d8c6b8;
+                    color: Sienna;
+                    font-size: 10px;
+                    font-weight: 600;
+                    transform: translateY(-40px);
+                    /* border: 1px solid rgb(126, 117, 109); */
+                    border-radius: 3px;
+                    padding: 0 3px;
+                    margin-left: 10px;
+                }
+            }
+            & > .edlButton{
+                background-color: #E8DFD7;
+                padding: 3px;
+                width: 30%;
+            }
+            & > .spotVer{
+                width: 10%;
+            }
+            & > .spotStatus{
+                width: 20%;
+            }
+        }
+        & > .spotTable__row__hidden {
+            width: 100%;
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            padding: 5px 0;
+            color: #5a4d3f;
+            font-size: .95em;
+            font-weight: 600;
+            & > div{
+                width: 15%;
+            }
+            & > div:nth-child(2) {
+                width: 55%;
+            }
+            & > .spotItem{
+                & > span{
+                    background-color: #d8c6b8;
+                    color: Sienna;
+                    font-size: 10px;
+                    font-weight: 600;
+                    transform: translateY(-40px);
+                    /* border: 1px solid rgb(126, 117, 109); */
+                    border-radius: 3px;
+                    padding: 0 3px;
+                    margin-left: 10px;
+                }
+            }
+            & > .edlButton{
+                background-color: #E8DFD7;
+                padding: 3px;
+                width: 30%;
+                cursor: pointer;
+            }
+            & > .edlButton{
+                background-color: #E8DFD7;
+                padding: 3px;
+                width: 30%;
+                cursor: pointer;
+            }
             }
         }
         
@@ -127,7 +239,7 @@
             }
         }
     }
-}
+
 
 .producers {
     padding: 8px;

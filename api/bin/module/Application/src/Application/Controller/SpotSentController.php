@@ -317,13 +317,17 @@ class SpotSentController extends CustomAbstractActionController
                     $graphicsFiles = $this->_commonRepo->filterPostData($sv, 'graphics_file');
                 }
 
-                $sv['graphics_file'] = array_map(function ($file) {
-                    $file['file_name'] = (!empty($file['file_name'])) ? $file['file_name'] : null;
-                    $file['file_description'] = (!empty($file['file_description'])) ? $file['file_description'] : null;
-                    $file['resend'] = (!empty($file['resend'])) ? $file['resend'] : null;
+                $sv['graphics_file'] = array();
 
-                    return $file;
-                }, $graphicsFiles);
+                if ($graphicsFiles) {
+                    $sv['graphics_file'] = array_map(function ($file) {
+                        $file['file_name'] = (!empty($file['file_name'])) ? $file['file_name'] : null;
+                        $file['file_description'] = (!empty($file['file_description'])) ? $file['file_description'] : null;
+                        $file['resend'] = (!empty($file['resend'])) ? $file['resend'] : null;
+
+                        return $file;
+                    }, $graphicsFiles);
+                }
             }
         }
 

@@ -53,3 +53,11 @@
 .spotsColumn3{
   width: 100%;
 }
+.disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+button.disabled:hover span{
+  border-bottom-color: transparent !important;
+  background: #ffffff !important;
+}

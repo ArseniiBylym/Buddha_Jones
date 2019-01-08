@@ -15,16 +15,17 @@ export interface SpotToGraphicsProducerOption {
 
 interface SpotsToGrapnicsFiltersProps {
     onChangeSearch: (search: string) => void;
-    onChangeProducer: (producer: SpotToGraphicsProducerOption | null) => void;
-    onSpotSelectionToggle: (spotId: number, projectCampaignId: number) => void;
+    onChangeProducer?: (producer: SpotToGraphicsProducerOption | null) => void;
+    onSpotSelectionToggle?: (spotId: number, projectCampaignId: number) => void;
     selectedSpots?: SpotProjectCampaignGroup[];
     search: string;
-    producer: SpotToGraphicsProducerOption | null;
+    producer?: SpotToGraphicsProducerOption | null;
     loading: boolean;
     fetchError: boolean;
     retryFetch: () => void;
     totalCountResponse: number;
     spotsResponse: any[];
+    routeType?: string;
 }
 
 @observer
@@ -102,6 +103,7 @@ export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFilte
                     spots={this.spots}
                     producerId={this.props.producer && this.props.producer.id}
                     query={this.props.search.toLowerCase().trim()}
+                    routeType={this.props.routeType}
                 />
             </Section>
         );

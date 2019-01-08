@@ -3,6 +3,7 @@
 }
 
 .tags {
+  /* padding-left: 30px; */
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -15,6 +16,7 @@
 
 .entry {
   margin-top: 12px;
+  padding-left: 50px;
   display: flex;
   justify-content: space-between;
   align-content: flex-start;

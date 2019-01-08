@@ -54,7 +54,10 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                     runtime: spot.runtime,
                     spotLineStatus: spot.spotLineStatus,
                     versionName: spot.versionName,
-                    spotSentId: spot.spotSentId
+                    spotSentId: spot.spotSentId,
+                    spotSentRequestId: spot.spotSentRequestId,
+                    finishRequest: spot.finishRequest,
+                    graphicsStatus: spot.graphicsStatus,
                };
                spots.push(spotItem);
            });
@@ -133,28 +136,41 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                         <div className={s.spots__header}>
                                             <p>Sent dt.</p>    
                                             <p>Spot name</p>   
-                                            <p>Ver.</p>   
-                                            <p>Status</p>    
+                                            {this.props.routeType === 'edl' ?  <p>Confirm</p> : null}
+                                            {this.props.routeType !== 'edl' ? <p className={s.spots__header__ver}>Ver.</p> : null}
+                                            {this.props.routeType !== 'edl' ?  <p className={s.spots__header__status}>Status</p> : null}
                                         </div>
                                     )}
-                                    {projectCampaign.spots.map(spot => {
-                                        // if (this.props.query && spot.spotName.toLowerCase().indexOf(this.props.query) === -1) {
-                                        //     return (null);
-                                        // } else {
+                                    {projectCampaign.spots.map((spot, index) => {
+                                        let styleName = s.spotTable__row;
+                                        if (this.props.routeType === 'edl') {
+                                            styleName = s.spotTable__row__hidden;
+                                        }
                                             return (
-                                                <div key={spot.spotId} onClick={this.handleSpotSelectionToggle(spot)} className={s.spotTable__row}>
+                                                <div key={spot.spotId} onClick={this.handleSpotSelectionToggle(this.props.routeType, spot)} className={styleName}>
                                                 <div className={s.spotDate}>
                                                 {spot.date && moment(spot.date).format('DD/MM/YYYY')}
                                                 </div>
                                                 <div className={s.spotItem}>
                                                 {spot.spotName}{spot.runtime && ` (${spot.runtime})`}
+                                                {spot.finishRequest && this.props.routeType === 'sent' ? <span>FINISH</span> : null}
                                                 </div>
-                                                <div className={s.spotStatus}>
+                                                {this.props.routeType === 'edl' ? (
+                                                    <div onClick={this.onEDLClickHandler(spot.spotSentId, index)} className={s.edlButton}>
+                                                        EDL Exported
+                                                    </div>
+                                                ) : null}
+                                                {this.props.routeType !== 'edl' ? (
+                                                    <div className={s.spotVer}>
                                                 {spot.versionName}
                                                 </div>
-                                                <div className={s.spotStatus}>
-                                                {spot.spotLineStatus}
-                                                </div>
+                                                )  : null}
+                                                {this.props.routeType !== 'edl' ? (
+                                                    <div className={s.spotStatus}>
+                                                        {this.props.routeType === 'graphics' ? spot.graphicsStatus : spot.spotLineStatus}
+                                                    </div>
+                                                )  : null}
+                                                
                                                 </div>
                                             );
                                         // }
@@ -187,7 +203,10 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
             project.projectId + '/' +
             project.projectName + '/1';
 
-        history.push(path);
+        let win = window.open(path, '_blank');
+        if ( win) {
+            win.focus();
+        }
     }
 
     private handleCampaignClick = (project) => e => {
@@ -199,12 +218,26 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
             '?projectCampaignId=' +
             project.projectCampaignId;
 
-        history.push(path);
+        let win = window.open(path, '_blank');
+        if ( win) {
+            win.focus();
+        }
     }
 
-    private handleSpotSelectionToggle = (spot) => e => {
-            this.props.store.spotToGraphics.getSpotFromApi(spot.spotSentId);
-            // this.props.store.spotToGraphics.toggleModal();
-            // this.props.store.spotToGraphics.setCurrentSpot(spot);
+    private onEDLClickHandler = (spotSentId, index) => e => {
+        this.props.store.spotToGraphics.changeEDLApi(spotSentId, index);
+    }
+
+    private handleSpotSelectionToggle = (type, spot) => e => {
+        switch (type) {
+            case 'graphics': 
+                this.props.store.spotToGraphics.getSpotFromApi(spot.spotSentId);
+                break;
+            case 'sent': 
+                history.push('/portal/studio/producer-spot-sent-details/' + spot.spotSentRequestId);
+                break;
+            default: 
+                return;
+        }
     };
 }

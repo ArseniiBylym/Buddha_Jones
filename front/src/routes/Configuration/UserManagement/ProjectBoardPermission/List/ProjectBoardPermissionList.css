@@ -1,0 +1,15 @@
+.userType__wrapper{
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+}
+.userType__label {
+    background-color: #d8c6b8;
+    color: Sienna;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 3px;
+    padding: 0 3px;
+    margin-left: 10px;
+}

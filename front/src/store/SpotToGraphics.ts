@@ -19,7 +19,7 @@ export class SpotToGraphics {
     public getSpotFromApi = async (id: number) => {
         this.pending = true;
         try {
-            const response = (await API.getData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + `/${id}/offset=0&length=999999999`)) as string[];
+            const response = (await API.getData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + `/${id}`)) as string[];
             this.fetchedSpot = response;
             this.pending = false;
             this.isModalOpen = true;
@@ -96,8 +96,38 @@ export class SpotToGraphics {
     }
 
     @action
-    public sendFiles = () => {
-        // console.log(this.files);
-        // console.log(this.date);
+    public changeEDLApi = async (spotSentId, index) => {
+        const body = {
+            graphics_status_id: 3,
+        };
+        try {
+        //    await API.putJSONData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + spotSentId, body);
+           await API.putData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + spotSentId, body);
+        } catch (error) {
+            throw (error);
+        }
+    }
+
+    @action
+    public sendFiles = async (withGraphicsStatus, completedCheckboxStatus, toEDL) => {
+        let files = this.fetchedSpot.graphicsFile.map(file => {
+            return {
+                file_name: file.fileName,
+                file_description: file.fileDescription,
+                resend: file.resend,
+            };
+        });
+        const body = {
+            graphics_status_id: completedCheckboxStatus ? 4 : toEDL ? 2 : 1,
+            no_graphics: withGraphicsStatus ? 1 : 0,
+            graphics_file: JSON.stringify(files),
+        };
+        try {
+            // await API.putJSONData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + this.fetchedSpot.spotSentId, body);
+            await API.putData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + this.fetchedSpot.spotSentId, body);
+            this.toggleModal();
+        } catch (error) {
+            throw (error);
+        }
     }
 }
