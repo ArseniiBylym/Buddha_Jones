@@ -8,6 +8,7 @@ import { ClientContact } from 'types/clients';
 import { AppState } from '../../../../store/AllStores';
 import { match } from 'react-router';
 import * as dateFormat from 'date-fns/format';
+import { observer, inject } from 'mobx-react';
 import { SpotSentValueForSubmit, SpotSentVersionForSubmit } from '../../../../types/spotSentForm';
 
 // Styles
@@ -24,7 +25,10 @@ interface ProducerSpotSentFormState {
 // Types
 type ProducerSpotSentFormPropsTypes = ProducerSpotSentFormProps & AppState;
 
+@inject('store')
+@observer
 class FormSendSection extends React.PureComponent<ProducerSpotSentFormPropsTypes, ProducerSpotSentFormState> {
+
     public render() {
         if (!this.props.store) {
             return null;
@@ -34,7 +38,8 @@ class FormSendSection extends React.PureComponent<ProducerSpotSentFormPropsTypes
             <Section>
                 <div className={s.summary}>
                     <Checkmark
-                        onClick={SpotSentActions.handleFinalToggle}
+                        // onClick={SpotSentActions.handleFinalToggle}
+                        onClick={this.checkmarkClickHander}
                         checked={spotSentDetails.status === 2}
                         label="Ready to be sent"
                         labelOnLeft={true}
@@ -49,6 +54,13 @@ class FormSendSection extends React.PureComponent<ProducerSpotSentFormPropsTypes
                 </div>
             </Section>
         );
+    }
+
+    private checkmarkClickHander = () => {
+        if (this.props.store && this.props.store.spotSent) {
+            const value = this.props.store.spotSent.spotSentDetails.status === 2 ? false : true;
+            SpotSentActions.handleFinalToggle(value);
+        }
     }
 
     private handleSubmit = async () => {
