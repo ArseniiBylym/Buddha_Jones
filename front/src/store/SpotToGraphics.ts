@@ -101,7 +101,8 @@ export class SpotToGraphics {
             graphics_status_id: 3,
         };
         try {
-           await API.putJSONData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + spotSentId, JSON.stringify(body));
+        //    await API.putJSONData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + spotSentId, body);
+           await API.putData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + spotSentId, body);
         } catch (error) {
             throw (error);
         }
@@ -119,10 +120,11 @@ export class SpotToGraphics {
         const body = {
             graphics_status_id: completedCheckboxStatus ? 4 : toEDL ? 2 : 1,
             no_graphics: withGraphicsStatus ? 1 : 0,
-            graphics_file: files,
+            graphics_file: JSON.stringify(files),
         };
         try {
-            await API.putJSONData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + this.fetchedSpot.spotSentId, JSON.stringify(body));
+            // await API.putJSONData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + this.fetchedSpot.spotSentId, body);
+            await API.putData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + this.fetchedSpot.spotSentId, body);
             this.toggleModal();
         } catch (error) {
             throw (error);
