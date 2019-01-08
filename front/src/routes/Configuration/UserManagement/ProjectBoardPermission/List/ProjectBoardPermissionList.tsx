@@ -152,7 +152,7 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                             <ButtonEdit
                                 onClick={this.onEditClick(userType.id)}
                                 label="permissions"
-                                labelOnLeft={false}
+                                labelOnLeft={true}
                                 float="right"
                             />
                         </TableCell>
@@ -171,7 +171,7 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                             <ButtonEdit
                                 onClick={this.handleUsersEdit(userType.id, userType.name)}
                                 label="Edit users"
-                                labelOnLeft={false}
+                                labelOnLeft={true}
                                 float="right"
                             />
                         </TableCell>
@@ -179,7 +179,7 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                             <ButtonEdit
                                 onClick={this.handlePermissionEdit(userType.id, userType.name)}
                                 label="Manage access"
-                                labelOnLeft={false}
+                                labelOnLeft={true}
                                 float="right"
                             />
                         </TableCell>

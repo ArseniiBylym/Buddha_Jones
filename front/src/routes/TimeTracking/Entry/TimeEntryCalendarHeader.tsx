@@ -81,30 +81,20 @@ export class TimeEntryCalendarHeader extends React.Component<TimeEntryCalendarHe
                 <Col className={s.month} size={6}>
                     <p>
                         {'Date: '}
-                        <strong>{this.dayNames.nameOfTheFirstDayInMonth}</strong> <span>{this.dayNames.currentFirstDate}, </span> 
-                        {(this.dayNames.nameOfTheFirstDayInMonth === this.dayNames.nameOfTheLastDayInMonth && (
+                        <strong>{this.dayNames.nameOfTheFirstDayInMonth}</strong>
+                        <span> {this.dayNames.currentFirstDate}, </span> 
+                        <span key={0}> {this.dayNames.nameOfTheFullYearOfFirstDayInMonth}</span>
+
+                        {((this.dayNames.currentFirstDate !== this.dayNames.currentLastDate) ||
+                         (this.dayNames.nameOfTheFirstDayInMonth !== this.dayNames.nameOfTheLastDayInMonth) || 
+                         (this.dayNames.nameOfTheFullYearOfFirstDayInMonth !== this.dayNames.nameOfTheFullYearOfLastDayInMonth)) && (
                             <>
-                                <span key={0}> {this.dayNames.nameOfTheFullYearOfFirstDayInMonth}</span>
                                 <i> / </i>
-                                <strong>{this.dayNames.nameOfTheLastDayInMonth}</strong> <span>{this.dayNames.currentLastDate}, </span> 
+                                <strong>{this.dayNames.nameOfTheLastDayInMonth}</strong>
+                                <span> {this.dayNames.currentLastDate}, </span> 
                                 <span>{' ' + this.dayNames.nameOfTheFullYearOfLastDayInMonth}</span>
                             </>
-                        )) ||
-                        (this.dayNames.nameOfTheFullYearOfFirstDayInMonth ===
-                            this.dayNames.nameOfTheFullYearOfLastDayInMonth && (
-                                <>
-                                    <i> / </i>
-                                    <strong>{this.dayNames.nameOfTheLastDayInMonth}</strong> <span>{this.dayNames.currentLastDate}, </span> 
-                                    <span>{' ' + this.dayNames.nameOfTheFullYearOfLastDayInMonth}</span>
-                                </>
-                            )) || (
-                            <>
-                                <span>{this.dayNames.nameOfTheFullYearOfFirstDayInMonth}</span>
-                                <i> / </i>
-                                <strong>{this.dayNames.nameOfTheLastDayInMonth}</strong> <span>{this.dayNames.currentLastDate}, </span> 
-                                <span>{' ' + this.dayNames.nameOfTheFullYearOfLastDayInMonth}</span>
-                            </>
-                        )}
+                         )}
                     </p>
                 </Col>
 
