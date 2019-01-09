@@ -1,12 +1,13 @@
 import { DataFetchError } from 'components/Errors/DataFetchError';
 import { LoadingShade, LoadingSpinner } from 'components/Loaders';
 import { Card } from 'components/Section';
-import { computed } from 'mobx';
+import { observable, action, computed } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import * as React from 'react';
 import { history } from 'App';
 import * as moment from 'moment';
 import { SpotsToGraphicsModal } from './SpotsToGraphicsModal/SpotsToGraphicsModal';
+import { Modal } from 'components/Modals';
 
 const s = require('./SpotsToGraphicsGrid.css');
 
@@ -25,6 +26,28 @@ const s = require('./SpotsToGraphicsGrid.css');
 @inject('store')
 @observer
 export class SpotsToGraphicsGrid extends React.Component<any, {}> {
+    @observable private modalConfirmOpen: boolean = false;
+    @observable private selectedSpot: any;
+
+    @action
+    private selectedSpotSet = (spotSentId, index, name) => {
+        this.selectedSpot = {
+            spotSentId: spotSentId,
+            index: index,
+            name: name,
+        };
+    }
+
+    @action
+    private selectedSpotClear = () => {
+        this.selectedSpot = {};
+    }
+
+    @action
+    private modalConfirmToggle = () => {
+        this.modalConfirmOpen = !this.modalConfirmOpen;
+    }
+
     @computed
     private get projectCampaignCards(): any[] {
         let cardsList: any[] = [];
@@ -149,14 +172,14 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                             return (
                                                 <div key={spot.spotId} onClick={this.handleSpotSelectionToggle(this.props.routeType, spot)} className={styleName}>
                                                 <div className={s.spotDate}>
-                                                {spot.date && moment(spot.date).format('DD/MM/YYYY')}
+                                                    {spot.date && moment(spot.date).format('DD/MM/YYYY')}
                                                 </div>
                                                 <div className={s.spotItem}>
-                                                {spot.spotName}{spot.runtime && ` (${spot.runtime})`}
-                                                {spot.finishRequest && this.props.routeType === 'sent' ? <span>FINISH</span> : null}
+                                                    {spot.spotName}{spot.runtime && ` (${spot.runtime})`}
+                                                    {spot.finishRequest && this.props.routeType === 'sent' ? <span>FINISH</span> : null}
                                                 </div>
                                                 {this.props.routeType === 'edl' ? (
-                                                    <div onClick={this.onEDLClickHandler(spot.spotSentId, index)} className={s.edlButton}>
+                                                    <div onClick={this.onEDLClickHandler(spot.spotSentId, index, spot.spotName)} className={s.edlButton}>
                                                         EDL Exported
                                                     </div>
                                                 ) : null}
@@ -189,11 +212,41 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                 </p>
 
                             </div>
+                            {this.props.routeType === 'edl' && <Modal
+                                show={this.modalConfirmOpen}
+                                title={`You are requesting EDL for Spot ${this.selectedSpot && this.selectedSpot.name} `}
+                                closeButton={false}
+                                type="alert"
+                                actions={[
+                                    {
+                                        onClick: () => { this.modalButtonHandler(true); },
+                                        closeOnClick: false,
+                                        label: 'Confirm',
+                                        type: 'default',
+                                    },
+                                    {
+                                        onClick: () => { this.modalButtonHandler(false); },
+                                        closeOnClick: false,
+                                        label: 'Cancel',
+                                        type: 'alert',
+                                    },
+                                ]}
+                            />}
                         </React.Fragment>
                     </Card>
                 ))}
             </div>
         );
+    }
+
+    private modalButtonHandler = (value) => {
+        if (value) {
+            this.modalConfirmToggle();
+            this.props.store.spotToGraphics.changeEDLApi(this.selectedSpot.spotSentId, this.selectedSpot.index);
+        } else {
+            this.modalConfirmToggle();
+            this.selectedSpotClear();
+        }
     }
 
     private handleProjectClick = (project) => e => {
@@ -224,8 +277,9 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
         }
     }
 
-    private onEDLClickHandler = (spotSentId, index) => e => {
-        this.props.store.spotToGraphics.changeEDLApi(spotSentId, index);
+    private onEDLClickHandler = (spotSentId, index, name) => e => {
+        this.selectedSpotSet(spotSentId, index, name);
+        this.modalConfirmToggle();
     }
 
     private handleSpotSelectionToggle = (type, spot) => e => {
