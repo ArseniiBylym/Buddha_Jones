@@ -33,9 +33,10 @@ class SpotSentListController extends CustomAbstractActionController
             } else if ($subModuleId == 5) { // Spots for EDL
                 $filter['graphics_status_id'] = array(2);
             } else if ($subModuleId == 6) { // Spot for Billing
-                // $filter['line_status_id'] = array(4); // this will be or
-                // $filter['graphics_status_id'] = array(4);
                 $filter['spot_sent_for_billing'] = true;
+            } else if ($subModuleId == 7) { // Graphics only requests
+                $filter['line_status_id'] = array(1,4);
+                $filter['spot_sent_type'] = array(2);
             }
 
             $data = $this->_spotRepo->getSpotSentListTree($filter);

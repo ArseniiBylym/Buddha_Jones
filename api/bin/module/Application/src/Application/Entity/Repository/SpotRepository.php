@@ -1031,7 +1031,8 @@ class SpotRepository extends EntityRepository
                     ss.finishOption,
                     fh.name AS finishingHouse,
                     ss.allGraphicsResend,
-                    ss.isPdf
+                    ss.isPdf,
+                    ss.spotSentType
                 FROM \Application\Entity\RediSpotSent ss
                 LEFT JOIN \Application\Entity\RediProject p 
                     WITH p.id = ss.projectId
@@ -1082,6 +1083,10 @@ class SpotRepository extends EntityRepository
             }
         }
 
+        if (!empty($filter['spot_sent_type'])) {
+            $dqlFilter[] = " (ss.spotSentType = :spot_sent_type) ";
+        }
+
         if (!empty($filter['spot_sent_for_billing'])) {
             $dqlFilter[] = " (ss.lineStatusId = 4 OR ss.graphicsStatusId = 4) ";
         }
@@ -1102,6 +1107,10 @@ class SpotRepository extends EntityRepository
 
         if (!empty($filter['spot_sent_id'])) {
             $query->setParameter("spot_sent_id", $filter['spot_sent_id']);
+        }
+
+        if (!empty($filter['spot_sent_type'])) {
+            $query->setParameter("spot_sent_type", $filter['spot_sent_type']);
         }
 
         if (!empty($filter['line_status_id'])) {
@@ -1226,6 +1235,7 @@ class SpotRepository extends EntityRepository
                     'producers' => $row['producers'],
                     'allGraphicsResend' => $row['allGraphicsResend'],
                     'isPdf' => $row['isPdf'],
+                    'spotSentType' => $row['spotSentType'],
                 );
             }
         }
