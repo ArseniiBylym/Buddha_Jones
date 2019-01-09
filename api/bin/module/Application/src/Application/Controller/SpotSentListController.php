@@ -25,16 +25,18 @@ class SpotSentListController extends CustomAbstractActionController
             if ($subModuleId == 1) { // initiate
                 $filter['line_status_id'] = array(1);
             } else if ($subModuleId == 2) { // post spot sent
-                $filter['line_status_id'] = array(2);
+                $filter['line_status_id'] = array(2,3);
             } else if ($subModuleId == 3) { // Spot sent for finish
-                $filter['line_status_id'] = array(3);
+                $filter['line_status_id'] = array(2,3);
             } else if ($subModuleId == 4) { // Spots for Graphics
                 $filter['graphics_status_id'] = array(1, 3);
             } else if ($subModuleId == 5) { // Spots for EDL
                 $filter['graphics_status_id'] = array(2);
             } else if ($subModuleId == 6) { // Spot for Billing
-                $filter['line_status_id'] = array(4);
-                $filter['graphics_status_id'] = array(4);
+                $filter['spot_sent_for_billing'] = true;
+            } else if ($subModuleId == 7) { // Graphics only requests
+                $filter['line_status_id'] = array(1,4);
+                $filter['spot_sent_type'] = array(2);
             }
 
             $data = $this->_spotRepo->getSpotSentListTree($filter);
@@ -196,5 +198,7 @@ class SpotSentListController extends CustomAbstractActionController
         $this->_em->persist($spotSent);
 
         $this->_em->flush();
+
+        // $this->_notificationRepo->sendSpotSentNoficationById($spotSentId);
     }
 }
