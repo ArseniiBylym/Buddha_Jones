@@ -151,7 +151,7 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                         <TableCell align="right">
                             <ButtonEdit
                                 onClick={this.onEditClick(userType.id)}
-                                label="permissions"
+                                label={`approving ${userType.userCount ? userType.userCount : 0}`}
                                 labelOnLeft={true}
                                 float="right"
                             />
@@ -160,8 +160,6 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                             <Checkmark
                                 onClick={this.handlePermissionChange(userType.id)}
                                 checked={this.props.store!.timeEntryPermissions.data.includes(userType.id)}
-                                // checked={true}
-                                // label={this.props.isChecked ? 'Allowed' : 'Not allowed'}
                                 label={this.props.store!.timeEntryPermissions.data.includes(userType.id) ? 'Allowed' : 'Not allowed'}
                                 labelOnLeft={true}
                                 type={'blue'}
@@ -170,7 +168,7 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                         <TableCell align="right">
                             <ButtonEdit
                                 onClick={this.handleUsersEdit(userType.id, userType.name)}
-                                label="Edit users"
+                                label={`${userType.timeEntryApprovingCount ? userType.timeEntryApprovingCount : 0} users`}
                                 labelOnLeft={true}
                                 float="right"
                             />

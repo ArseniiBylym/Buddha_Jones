@@ -72,6 +72,8 @@ export class UsersActionsClass {
                         id: type.id,
                         name: type.type_name,
                         timeEntryApprover: type.timeEntryApprover,
+                        timeEntryApprovingCount: type.timeEntryApprovingCount,
+                        userCount: type.userCount,
                     }));
                 UsersStore.typesLastFetchTimestamp = Date.now();
                 UsersStore.typesLoading = false;
