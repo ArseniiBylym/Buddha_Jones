@@ -157,7 +157,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                 <div className={s.spots}>
                                     {projectCampaign.spots && projectCampaign.spots.length > 0 && (
                                         <div className={s.spots__header}>
-                                            <p>Sent dt.</p>    
+                                            <p>Date</p>    
                                             <p>Spot name</p>   
                                             {this.props.routeType === 'edl' ?  <p>Confirm</p> : null}
                                             {this.props.routeType !== 'edl' ? <p className={s.spots__header__ver}>Ver.</p> : null}
