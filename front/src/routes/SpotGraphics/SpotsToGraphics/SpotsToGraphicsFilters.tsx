@@ -26,6 +26,7 @@ interface SpotsToGrapnicsFiltersProps {
     totalCountResponse: number;
     spotsResponse: any[];
     routeType?: string;
+    forceUpdating?: () => void;
 }
 
 @observer
@@ -104,6 +105,7 @@ export class SpotsToGrapnicsFilters extends React.Component<SpotsToGrapnicsFilte
                     producerId={this.props.producer && this.props.producer.id}
                     query={this.props.search.toLowerCase().trim()}
                     routeType={this.props.routeType}
+                    forceUpdating={this.props.forceUpdating}
                 />
             </Section>
         );

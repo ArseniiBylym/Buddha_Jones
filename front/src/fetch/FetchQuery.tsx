@@ -37,6 +37,7 @@ interface FetchQueryProps<R, Q = {}> extends AppOnlyStoreState {
     /** Defaults to `5` - maximum amount of times automatic data fetch retry will be attempted */
     retryAttemptsLimit?: number;
     children(props: FetchQueryChildrenProps<R>): JSX.Element;
+    withoutCaching?: boolean;
 }
 
 enum FetchQueryStatus {
@@ -100,6 +101,7 @@ export class FetchQuery<R, Q = {}> extends React.Component<FetchQueryProps<R, Q>
 
     componentWillReceiveProps(nextProps: FetchQueryProps<R, Q>) {
         if (
+            this.props.withoutCaching || 
             this.props.apiEndpoint !== nextProps.apiEndpoint ||
             !_isEqual(this.props.queryObject, nextProps.queryObject) ||
             (this.props.skipFetching !== nextProps.skipFetching && nextProps.skipFetching === true)
@@ -154,7 +156,7 @@ export class FetchQuery<R, Q = {}> extends React.Component<FetchQueryProps<R, Q>
                 const cache = toJS(get(this.props.store.fetch.cachedQueries, cacheKey)) as FetchData;
                 const now = Date.now();
 
-                if (now <= cache.expiresAtTimeStamp) {
+                if (now <= cache.expiresAtTimeStamp && !this.props.withoutCaching) {
                     this.queryStatus[cacheKey].status = FetchQueryStatus.Success;
                     this.queryStatus[cacheKey].retriesCount = 0;
                     return true;

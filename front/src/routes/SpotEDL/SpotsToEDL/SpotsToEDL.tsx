@@ -69,6 +69,10 @@ class SpotsToEDL extends React.Component<any, {}> {
         return permissionId;
     }
 
+    updateComponent = () => {
+        this.forceUpdate();
+    }
+
     public render() {
         return this.essentialDataIsLoading === true ? (
             <>
@@ -81,6 +85,7 @@ class SpotsToEDL extends React.Component<any, {}> {
             queryObject={{
                 sub_module_id: this.getPermissionId(),
             }}
+            withoutCaching={true}
         >
             {spotsToGraphicsFromApi => (
                 <React.Fragment>
@@ -101,6 +106,7 @@ class SpotsToEDL extends React.Component<any, {}> {
                                 : []
                         }
                         routeType="edl"
+                        forceUpdating={this.updateComponent}
                     />
                 </React.Fragment>
             )}
