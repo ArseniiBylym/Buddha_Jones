@@ -176,8 +176,11 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
         this.props.store.spotToGraphics.removeFileItem(fileIndex);
     };
 
-    private sendFilesHandler = (toEDL) => {
-        this.props.store.spotToGraphics.sendFiles(this.withGraphicsStatus, this.completedCheckboxStatus, toEDL);
+    private sendFilesHandler =  async (toEDL) => {
+        await this.props.store.spotToGraphics.sendFiles(this.withGraphicsStatus, this.completedCheckboxStatus, toEDL);
+        if (this.props.forceUpdating) {
+            this.props.forceUpdating();
+        }
     }
 
     private sendHandler = (bool) => e => {

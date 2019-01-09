@@ -137,7 +137,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
 
         return (
             <div className={s.grid}>
-                <SpotsToGraphicsModal />
+                <SpotsToGraphicsModal forceUpdating={this.props.forceUpdating}/>
                 {this.projectCampaignCards.map((projectCampaign, i) => (
                     <Card
                         className={s.card}
@@ -239,10 +239,13 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
         );
     }
 
-    private modalButtonHandler = (value) => {
+    private modalButtonHandler = async (value) => {
         if (value) {
             this.modalConfirmToggle();
-            this.props.store.spotToGraphics.changeEDLApi(this.selectedSpot.spotSentId, this.selectedSpot.index);
+            await this.props.store.spotToGraphics.changeEDLApi(this.selectedSpot.spotSentId, this.selectedSpot.index);
+            if (this.props.forceUpdating) {
+                this.props.forceUpdating();
+            }
         } else {
             this.modalConfirmToggle();
             this.selectedSpotClear();
