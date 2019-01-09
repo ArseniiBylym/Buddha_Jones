@@ -150,3 +150,18 @@
     margin-left: 10px;
     cursor: pointer;
 }
+.finishHouseContainer{
+    padding-top: 10px;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+}
+.finishHouseContainer__item{
+    font-size: .95em;
+    margin-right: 20px;
+    &>span{
+        margin-right: 10px;
+        color: rgb(126, 117, 109);
+        font-weight: 700;
+    }
+}
