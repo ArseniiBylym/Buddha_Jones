@@ -6,9 +6,6 @@ import * as React from 'react';
 import { AppState } from 'store/AllStores';
 import { SpotGraphicsApiQueryParams, SpotGraphicsApiResponse } from 'types/spotsToGraphics';
 import { SpotsToGrapnicsFilters, SpotToGraphicsProducerOption } from './SpotsToGraphicsFilters';
-// import { truncate } from 'fs';
-
-// const s = require('./SpotsToGraphics.scss');
 
 interface SpotsToGraphicsProps extends AppState {}
 
@@ -131,8 +128,6 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
         // }
     };
 
-    // private openNewBill = () => {
-    // };
 }
 
 export default SpotsToGraphics;

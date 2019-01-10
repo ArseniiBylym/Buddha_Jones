@@ -214,7 +214,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                             </div>
                             {this.props.routeType === 'edl' && <Modal
                                 show={this.modalConfirmOpen}
-                                title={`You are requesting EDL for Spot ${this.selectedSpot && this.selectedSpot.name} `}
+                                title={`Please confirm EDL export for Spot ${this.selectedSpot && this.selectedSpot.name} `}
                                 closeButton={false}
                                 type="alert"
                                 actions={[

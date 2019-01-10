@@ -9,6 +9,7 @@ import { ProjectPickerContent, ProjectPickerResult } from './ProjectPickerConten
 import { AppOnlyStoreState } from 'store/AllStores';
 import { ProjectPermissionsActions, ProjectsCampaignsSpotsActions } from 'actions';
 import { UserPermissionKey } from 'types/projectPermissions';
+import { Modal } from 'components/Modals';
 
 // Styles
 const s = require('./ProjectPicker.css');
@@ -83,6 +84,7 @@ interface State {
         version: string;
     };
     sectionOpen: ProjectPickerSections | null;
+    clearSelectionModal: boolean;
 }
 
 @inject('store')
@@ -117,7 +119,8 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
                 campaign: '',
                 spot: '',
                 version: '',
-            }
+            },
+            clearSelectionModal: false
         };
     }
 
@@ -504,6 +507,27 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
                             : false
                     }
                 />
+                <Modal
+                    show={this.state.clearSelectionModal}
+                    title="Clearing entry is irreversable"
+                    text="Are you sure you want to clear this entry?"
+                    closeButton={false}
+                    type="alert"
+                    actions={[
+                        {
+                            onClick: () => { this.modalButtonHandler(false); },
+                            closeOnClick: false,
+                            label: 'No, do not clear',
+                            type: 'alert',
+                        },
+                        {
+                            onClick: () => { this.modalButtonHandler(true); },
+                            closeOnClick: false,
+                            label: 'Yes, please clear',
+                            type: 'default',
+                        },
+                    ]}
+                />
             </Section>
         );
     }
@@ -558,12 +582,12 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
                     {
                         element: (
                             <Button
-                                onClick={this.handleClearingSelectedValues}
+                                onClick={this.clearSelectionModalToggle}
                                 className={s.clearButton}
                                 label={{
                                     text: 'Clear selection',
                                     size: 'small',
-                                    color: 'orange',
+                                    color: 'gray',
                                 }}
                             />
                         ),
@@ -571,6 +595,18 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
                 ] : []
             ),
         ];
+    }
+
+    private clearSelectionModalToggle = () => {
+        this.setState(prevState => ({clearSelectionModal: !prevState.clearSelectionModal}));
+    }
+    private modalButtonHandler = (value: boolean) => {
+        if (value) {
+            this.clearSelectionModalToggle();
+            this.handleClearingSelectedValues();
+        } else {
+            this.clearSelectionModalToggle();
+        }
     }
 
     private handleClearingSelectedValues = () => {
