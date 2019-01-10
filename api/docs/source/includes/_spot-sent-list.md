@@ -484,3 +484,245 @@ false | graphics_status_id | int | null | send 0/1
 false | no_graphics | int | null | send 0/1
 false | is_pdf | int | null | send 0/1
 false | graphics_file | JSON encoded array | null | list of files (like: [{"file_name":"abc1.jpg","file_description":"some desc112","resend":1},{"file_name":"def3.jpg"}]}])
+
+
+
+
+## Get spot sent List
+
+Retrieve list of all sent spot .
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request successful",
+    "total_count": 3,
+    "object_count": 3,
+    "data": [
+        {
+            "projectId": 47,
+            "projectName": "Annihilation",
+            "studioId": 2,
+            "studioName": "Warner Bros.",
+            "campaignId": 2,
+            "campaignName": "Theatrical Radio",
+            "customerId": 13,
+            "customerName": "Brian Worsley\r\n",
+            "projectCampaignId": 157,
+            "spotId": 84,
+            "spotName": "#1 Interrogation",
+            "versionId": 1,
+            "versionName": "1",
+            "spotSentId": "14",
+            "spotSentRequestId": "38",
+            "spotSentDate": null,
+            "spotLineStatusId": 4,
+            "graphicsStatusId": 1,
+            "trtId": 5,
+            "runtime": ":30",
+            "noGraphics": 1,
+            "allGraphicsResend": 0,
+            "finishRequest": 0,
+            "finishOption": "OOH Finish Prep",
+            "finishingHouse": null,
+            "isPdf": 0,
+            "spotSentType": 1,
+            "notes": null,
+            "internalNote": "some note",
+            "studioNote": "ssss",
+            "spotResend": 1,
+            "createdAt": {
+                "date": "2018-11-09 16:25:17.000000",
+                "timezone_type": 3,
+                "timezone": "US/Eastern"
+            },
+            "spotLineStatus": "Completed",
+            "graphicsStatus": "Pending",
+            "producers": [
+                {
+                    "userId": 6,
+                    "firstName": "JAMIE",
+                    "lastName": "ZAKOSKI",
+                    "creativeRoleId": 1,
+                    "creativeRoleName": "Lead Producer"
+                },
+                {
+                    "userId": 11,
+                    "firstName": "MARIE",
+                    "lastName": "BYRNES",
+                    "creativeRoleId": 2,
+                    "creativeRoleName": "Producer"
+                }
+            ],
+            "editors": [],
+            "customerContacts": [
+                {
+                    "id": 19,
+                    "customerId": 19,
+                    "name": "Ingrid Enson\r\n",
+                    "title": "Creative Exec",
+                    "email": null,
+                    "mobilePhone": null
+                }
+            ]
+        },
+        {
+            "projectId": 47,
+            "projectName": "Annihilation",
+            "studioId": 2,
+            "studioName": "Warner Bros.",
+            "campaignId": 4,
+            "campaignName": "Theatrical Teaser/Trailer",
+            "customerId": 9,
+            "customerName": "Bianka Cisneros",
+            "projectCampaignId": 156,
+            "spotId": 78,
+            "spotName": "#1 Theory aka \"Truce\"",
+            "versionId": 2,
+            "versionName": "1A",
+            "spotSentId": "74",
+            "spotSentRequestId": "45",
+            "spotSentDate": null,
+            "spotLineStatusId": 4,
+            "graphicsStatusId": 2,
+            "trtId": 5,
+            "runtime": ":30",
+            "noGraphics": 1,
+            "allGraphicsResend": 0,
+            "finishRequest": 1,
+            "finishOption": "In-House Finish",
+            "finishingHouse": null,
+            "isPdf": null,
+            "spotSentType": 1,
+            "notes": "",
+            "internalNote": "a",
+            "studioNote": "b",
+            "spotResend": 0,
+            "createdAt": {
+                "date": "2018-11-13 16:46:08.000000",
+                "timezone_type": 3,
+                "timezone": "US/Eastern"
+            },
+            "spotLineStatus": "Completed",
+            "graphicsStatus": "Waiting for EDL",
+            "producers": [
+                {
+                    "userId": 6,
+                    "firstName": "JAMIE",
+                    "lastName": "ZAKOSKI",
+                    "creativeRoleId": 1,
+                    "creativeRoleName": "Lead Producer"
+                },
+                {
+                    "userId": 15,
+                    "firstName": "TONY",
+                    "lastName": "FANG",
+                    "creativeRoleId": 1,
+                    "creativeRoleName": "Lead Producer"
+                },
+                {
+                    "userId": 97,
+                    "firstName": "MARK",
+                    "lastName": "LAFONTANT",
+                    "creativeRoleId": 1,
+                    "creativeRoleName": "Lead Producer"
+                }
+            ],
+            "editors": [
+                {
+                    "id": 37,
+                    "initials": "KG",
+                    "name": "KELLI GRIGGS"
+                }
+            ],
+            "customerContacts": []
+        },
+        {
+            "projectId": 47,
+            "projectName": "Annihilation",
+            "studioId": 2,
+            "studioName": "Warner Bros.",
+            "campaignId": 4,
+            "campaignName": "Theatrical Teaser/Trailer",
+            "customerId": 9,
+            "customerName": "Bianka Cisneros",
+            "projectCampaignId": 156,
+            "spotId": 78,
+            "spotName": "#1 Theory aka \"Truce\"",
+            "versionId": 4,
+            "versionName": "1Alt",
+            "spotSentId": "75",
+            "spotSentRequestId": "45",
+            "spotSentDate": null,
+            "spotLineStatusId": 4,
+            "graphicsStatusId": 3,
+            "trtId": 5,
+            "runtime": ":30",
+            "noGraphics": null,
+            "allGraphicsResend": 0,
+            "finishRequest": 0,
+            "finishOption": "In-House Finish",
+            "finishingHouse": null,
+            "isPdf": null,
+            "spotSentType": 1,
+            "notes": "",
+            "internalNote": "a",
+            "studioNote": "b",
+            "spotResend": 0,
+            "createdAt": {
+                "date": "2018-11-13 16:46:08.000000",
+                "timezone_type": 3,
+                "timezone": "US/Eastern"
+            },
+            "spotLineStatus": "Completed",
+            "graphicsStatus": "EDL Exported",
+            "producers": [
+                {
+                    "userId": 6,
+                    "firstName": "JAMIE",
+                    "lastName": "ZAKOSKI",
+                    "creativeRoleId": 1,
+                    "creativeRoleName": "Lead Producer"
+                },
+                {
+                    "userId": 15,
+                    "firstName": "TONY",
+                    "lastName": "FANG",
+                    "creativeRoleId": 1,
+                    "creativeRoleName": "Lead Producer"
+                },
+                {
+                    "userId": 97,
+                    "firstName": "MARK",
+                    "lastName": "LAFONTANT",
+                    "creativeRoleId": 1,
+                    "creativeRoleName": "Lead Producer"
+                }
+            ],
+            "editors": [],
+            "customerContacts": []
+        }
+    ]
+}
+```
+
+### HTTP Request
+
+`GET /spot-sent-all`
+
+
+### Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+false | offset | int | 0 | offset 
+false | length | int | 10 | length or limit
+false | start_date | string | null | start date
+false | end_date | string | null | end date
+false | project_id | int | null | project id
+false | campaign_id | int | null | campaign id
+false | project_campaign_id | int | null | project camapign id
+false | spot_id | int | null | spot id
+false | version_id | int | null | version id

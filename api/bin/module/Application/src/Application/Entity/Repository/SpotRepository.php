@@ -1004,35 +1004,49 @@ class SpotRepository extends EntityRepository
 
     public function getSpotSentListTree($filter = array())
     {
+        if (empty($filter['get_count'])) {
+            $columns = "ss.projectId,
+                        p.projectName,
+                        std.id AS studioId,
+                        std.studioName,
+                        ss.campaignId,
+                        c.campaignName,
+                        cu.id AS customerId,
+                        cu.customerName,
+                        ss.projectCampaignId,
+                        ss.spotId,
+                        s.spotName,
+                        ss.versionId,
+                        v.versionName,
+                        ss.id AS spotSentId,
+                        ss.requestId AS spotSentRequestId,
+                        ss.spotSentDate,
+                        ss.lineStatusId AS spotLineStatusId,
+                        ss.graphicsStatusId,
+                        s.trtId,
+                        trt.runtime,
+                        ss.noGraphics,
+                        ss.allGraphicsResend,
+                        ss.finishRequest,
+                        ss.finishOption,
+                        fh.name AS finishingHouse,
+                        ss.allGraphicsResend,
+                        ss.isPdf,
+                        ss.spotSentType,
+                        ss.notes,
+                        ss.internalNote,
+                        ss.studioNote,
+                        ss.spotResend,
+                        ss.editor,
+                        ss.customerContact,
+                        ss.spotSentDate,
+                        ss.createdAt";
+        } else {
+            $columns = "COUNT(DISTINCT ss.id) AS total_count";
+        }
+
         $dql = "SELECT 
-                    ss.projectId,
-                    p.projectName,
-                    std.id AS studioId,
-                    std.studioName,
-                    ss.campaignId,
-                    c.campaignName,
-                    cu.id AS customerId,
-                    cu.customerName,
-                    ss.projectCampaignId,
-                    ss.spotId,
-                    s.spotName,
-                    ss.versionId,
-                    v.versionName,
-                    ss.id AS spotSentId,
-                    ss.requestId AS spotSentRequestId,
-                    ss.spotSentDate,
-                    ss.lineStatusId AS spotLineStatusId,
-                    ss.graphicsStatusId,
-                    s.trtId,
-                    trt.runtime,
-                    ss.noGraphics,
-                    ss.allGraphicsResend,
-                    ss.finishRequest,
-                    ss.finishOption,
-                    fh.name AS finishingHouse,
-                    ss.allGraphicsResend,
-                    ss.isPdf,
-                    ss.spotSentType
+                    " . $columns . "
                 FROM \Application\Entity\RediSpotSent ss
                 LEFT JOIN \Application\Entity\RediProject p 
                     WITH p.id = ss.projectId
@@ -1091,15 +1105,65 @@ class SpotRepository extends EntityRepository
             $dqlFilter[] = " (ss.lineStatusId = 4 OR ss.graphicsStatusId = 4) ";
         }
 
+        if (!empty($filter['project_id'])) {
+            $dqlFilter[] = " ss.projectId = :project_id ";
+        }
+
+        if (!empty($filter['campaign_id'])) {
+            $dqlFilter[] = " ss.campaignId = :campaign_id ";
+        }
+
+        if (!empty($filter['project_campaign_id'])) {
+            $dqlFilter[] = " ss.projectCampaignId = :project_campaign_id ";
+        }
+
+        if (!empty($filter['spot_id'])) {
+            $dqlFilter[] = " ss.spotId = :spot_id ";
+        }
+
+        if (!empty($filter['version_id'])) {
+            $dqlFilter[] = " ss.versionId = :version_id ";
+        }
+
+        if (!empty($filter['start_date'])) {
+            $dqlFilter[] = " ss.spotSentDate >= :start_date ";
+
+            $startDate = new \DateTime($filter['start_date']);
+            $startDate = $startDate->format('Y-m-d 00:00:00');
+        }
+
+        if (!empty($filter['end_date'])) {
+            $dqlFilter[] = " ss.spotSentDate <= :end_date ";
+
+            $endDate = new \DateTime($filter['end_date']);
+            $endDate = $endDate->format('Y-m-d 23:59:59');
+        }
+
         if (count($dqlFilter)) {
             $dql .= " AND " . implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId
-                ORDER BY p.projectName ASC , c.campaignName ASC";
-
+        if (empty($filter['get_count'])) {
+            if (!empty($filter['return_flat_result'])) {
+                $dql .= " GROUP BY ss.id 
+                    ORDER BY ss.id ASC";
+            } else {
+                $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId
+                    ORDER BY p.projectName ASC , c.campaignName ASC";
+            }
+        }
 
         $query = $this->getEntityManager()->createQuery($dql);
+
+        if (empty($filter['get_count'])) {
+            if (isset($filter['offset'])) {
+                $query->setFirstResult($filter['offset']);
+            }
+
+            if (!empty($filter['length'])) {
+                $query->setMaxResults($filter['length']);
+            }
+        }
 
         if (!empty($filter['current_user_id'])) {
             $query->setParameter("current_user_id", $filter['current_user_id']);
@@ -1121,14 +1185,47 @@ class SpotRepository extends EntityRepository
             $query->setParameter("graphics_status_id", $filter['graphics_status_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
         }
 
+        if (!empty($filter['project_id'])) {
+            $query->setParameter("project_id", $filter['project_id']);
+        }
+
+        if (!empty($filter['campaign_id'])) {
+            $query->setParameter("campaign_id", $filter['campaign_id']);
+        }
+
+        if (!empty($filter['project_campaign_id'])) {
+            $query->setParameter("project_campaign_id", $filter['project_campaign_id']);
+        }
+
+        if (!empty($filter['spot_id'])) {
+            $query->setParameter("spot_id", $filter['spot_id']);
+        }
+
+        if (!empty($filter['version_id'])) {
+            $query->setParameter("version_id", $filter['version_id']);
+        }
+
+        if (!empty($filter['start_date'])) {
+            $query->setParameter('start_date', $startDate);
+        }
+
+        if (!empty($filter['end_date'])) {
+            $query->setParameter('end_date', $endDate);
+        }
+
+
         $result = $query->getArrayResult();
+
+        if (!empty($filter['get_count'])) {
+            return (!empty($result[0]['total_count'])) ? (int)$result[0]['total_count'] : 0;
+        }
 
         $statusOptions = $this->getSpotSentOption('status', true);
         $graphicsStatusOptions = $this->getSpotSentOption('graphics_status', true);
         $userRepo = new UsersRepository($this->_entityManager);
 
         // update status
-        $result = array_map(function ($ssRow) use ($statusOptions, $graphicsStatusOptions, $userRepo) {
+        $result = array_map(function ($ssRow) use ($statusOptions, $graphicsStatusOptions, $userRepo, $filter) {
             $ssRow['spotLineStatus'] = (!empty($statusOptions[$ssRow['spotLineStatusId']])) ? $statusOptions[$ssRow['spotLineStatusId']]['name'] : null;
             $graphicsStatus = (!empty($graphicsStatusOptions[$ssRow['graphicsStatusId']])) ? $graphicsStatusOptions[$ssRow['graphicsStatusId']]['name'] : null;
 
@@ -1177,7 +1274,42 @@ class SpotRepository extends EntityRepository
             }
 
             $ssRow['graphicsStatus'] = $graphicsStatus;
-            $ssRow['producers'] = $userRepo->getCreativeUsersFromProjectCampaignByRole($ssRow['projectCampaignId'], array(1, 2, 3));
+
+            if (!empty($filter['return_producer_list'])) {
+                $ssRow['producers'] = $userRepo->getCreativeUsersFromProjectCampaignByRole($ssRow['projectCampaignId'], array(1, 2, 3));
+            }
+
+            if (!empty($filter['return_editor_list'])) {
+                $ssRow['editors'] = array();
+
+                if (!empty($ssRow['editor'])) {
+                    $editorIds = explode(',', $ssRow['editor']);
+
+                    if (count($editorIds)) {
+                        $editorIds = array_map('trim', $editorIds);
+                        $userRepo = new UsersRepository($this->_entityManager);
+                        $ssRow['editors'] = $userRepo->getUsersById($editorIds);
+                    }
+                }
+            }
+
+            if (!empty($filter['return_customer_contact_list'])) {
+                $ssRow['customerContacts'] = array();
+
+                if (!empty($ssRow['customerContact'])) {
+                    $customerContactIds = explode(',', $ssRow['customerContact']);
+
+                    if (count($customerContactIds)) {
+                        $customerContactIds = array_map('trim', $customerContactIds);
+                        $customerRepo = new CustomerRepository($this->_entityManager);
+
+                        $ssRow['customerContacts'] = $customerRepo->getCustomerContactsById($customerContactIds);
+                    }
+                }
+            }
+
+            unset($ssRow['editor']);
+            unset($ssRow['customerContact']);
 
             return $ssRow;
         }, $result);

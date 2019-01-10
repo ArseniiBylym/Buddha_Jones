@@ -18,6 +18,7 @@ class SpotSentListController extends CustomAbstractActionController
 
         $filter['current_user_id'] = $this->_user_id;
         $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
+        $filter['return_producer_list'] = true;
 
         $checkSubModuleAccess = $this->_moduleRepo->checkUserSubModule($this->_user_type_id, $subModuleId);
 
