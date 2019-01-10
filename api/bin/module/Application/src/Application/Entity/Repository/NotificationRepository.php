@@ -252,4 +252,30 @@ class NotificationRepository extends EntityRepository
 
     return (!empty($data[0])) ? $data[0] : null;
   }
+
+  /**
+   * Send spot sent notification
+   * for all spot sent under a request id
+   *
+   * @param int $spotSentRequestId Spot sent request ID
+   * @return void
+   */
+  public function sendSpotSentNoficationByRequestId($spotSentRequestId) {
+
+  }
+
+  /**
+   * Send spot notification for a spot sent id
+   *
+   * @param int $spotSentId Spot sent id
+   * @return void
+   */
+  public function sendSpotSentNoficationById($spotSentId) {
+    $spotRepo = new SpotRepository($this->_entityManager);
+    $spotSent = $spotRepo->getSpotSentTreeById($spotSentId);
+
+    if ($spotSent) {
+        var_dump($spotSent); exit;
+    }
+  }
 }

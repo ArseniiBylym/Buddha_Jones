@@ -63,6 +63,10 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
         return permissionId;
     }
 
+    updateComponent = () => {
+        this.forceUpdate();
+    }
+
     public render() {
         return (
             <FetchQuery<SpotGraphicsApiResponse, SpotGraphicsApiQueryParams>
@@ -71,6 +75,7 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
                 queryObject={{
                     sub_module_id: this.getPermissionId(),
                 }}
+                withoutCaching={true}
             >
                 {spotsToGraphicsFromApi => (
                     <React.Fragment>
@@ -94,6 +99,7 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
                                     : []
                             }
                             routeType="graphics"
+                            forceUpdating={this.updateComponent}
                         />
                     </React.Fragment>
                 )}

@@ -95,18 +95,30 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                                 </div>
                         </div>
                         <div className={s.content}>
-                            <div className={s.noGraphicsContainer} onClick={this.withGraphicsTogle}>
+                            <div className={s.noGraphicsContainer} >
                                 {spotToGraphics.fetchedSpot.versionName && 
                                     <div className={s.noGraphicsVersion}>
                                         <span>Version:</span>{spotToGraphics.fetchedSpot.versionName}
                                     </div>
                                 }
-                                <div className={s.noGraphicsContainer__wrapper}>
+                                <div className={s.noGraphicsContainer__wrapper} onClick={this.withGraphicsTogle}>
                                     <div className={s.noGraphicsCheckbox}>
                                         {this.withGraphics && <IconTickBlue width={12} height={9} />}
                                     </div>
                                     <div className={s.noGraphicsLabel}>NO GRAPHICS</div>
                                 </div>
+                            </div>
+                            <div className={s.finishHouseContainer}>
+                                {spotToGraphics.fetchedSpot.finishOption && 
+                                    <div className={s.finishHouseContainer__item}>
+                                        <span>Finish</span>{spotToGraphics.fetchedSpot.finishOption}
+                                    </div>
+                                }
+                                {spotToGraphics.fetchedSpot.finishingHouse && 
+                                    <div className={s.finishHouseContainer__item}>
+                                        <span>Finishing House</span>{spotToGraphics.fetchedSpot.finishingHouse}
+                                    </div>
+                                }
                             </div>
                             {this.getFilesWorkOnSection()}
                         </div>
@@ -176,8 +188,11 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
         this.props.store.spotToGraphics.removeFileItem(fileIndex);
     };
 
-    private sendFilesHandler = (toEDL) => {
-        this.props.store.spotToGraphics.sendFiles(this.withGraphicsStatus, this.completedCheckboxStatus, toEDL);
+    private sendFilesHandler =  async (toEDL) => {
+        await this.props.store.spotToGraphics.sendFiles(this.withGraphicsStatus, this.completedCheckboxStatus, toEDL);
+        if (this.props.forceUpdating) {
+            this.props.forceUpdating();
+        }
     }
 
     private sendHandler = (bool) => e => {

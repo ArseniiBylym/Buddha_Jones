@@ -31,9 +31,23 @@ class RediBilling
     /**
      * @var integer
      *
-     * @ORM\Column(name="project_campaign_id", type="bigint", nullable=true)
+     * @ORM\Column(name="project_id", type="integer", nullable=true)
      */
-    private $projectCampaignId;
+    private $projectId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="campaign_id", type="integer", nullable=true)
+     */
+    private $campaignId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="spot_id", type="integer", nullable=true)
+     */
+    private $spotId;
 
     /**
      * @var string
@@ -92,26 +106,72 @@ class RediBilling
     }
 
     /**
-     * Set projectCampaignId
+     * Set projectId
      *
-     * @param integer $projectCampaignId
+     * @param integer $projectId
      * @return RediBilling
      */
-    public function setProjectCampaignId($projectCampaignId)
+    public function setProjectId($projectId)
     {
-        $this->projectCampaignId = $projectCampaignId;
+        $this->projectId = $projectId;
 
         return $this;
     }
 
     /**
-     * Get projectCampaignId
+     * Get projectId
      *
      * @return integer 
      */
-    public function getProjectCampaignId()
+    public function getProjectId()
     {
-        return $this->projectCampaignId;
+        return $this->projectId;
+    }
+
+    /**
+     * Set campaignId
+     *
+     * @param integer $campaignId
+     * @return RediBilling
+     */
+    public function setCampaignId($campaignId)
+    {
+        $this->campaignId = $campaignId;
+
+        return $this;
+    }
+
+    /**
+     * Get campaignId
+     *
+     * @return integer 
+     */
+    public function getCampaignId()
+    {
+        return $this->campaignId;
+    }
+
+    /**
+     * Set spotId
+     *
+     * @param integer $spotId
+     * @return RediBilling
+     */
+    public function setSpotId($spotId)
+    {
+        $this->spotId = $spotId;
+
+        return $this;
+    }
+
+    /**
+     * Get spotId
+     *
+     * @return integer 
+     */
+    public function getSpotId()
+    {
+        return $this->spotId;
     }
 
     /**

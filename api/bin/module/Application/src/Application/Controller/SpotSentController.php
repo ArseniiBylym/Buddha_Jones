@@ -446,7 +446,7 @@ class SpotSentController extends CustomAbstractActionController
                         }
 
                         $this->_em->flush();
-                    } else if (count($existingSpecSheetFile)) {
+                    } else if ($existingSpecSheetFile && count($existingSpecSheetFile)) {
                         $spotSents = $this->_spotSentRepository->findBy(array('requestId' => $requestId));
 
                         foreach ($spotSents as $spotSent) {
