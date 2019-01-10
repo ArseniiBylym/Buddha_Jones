@@ -16,7 +16,7 @@ import { SpotSentActions } from '../../../../actions';
 import { ProjectPickerSections } from '../../../../components/Buddha';
 import { TableRow, Table, TableCell } from 'components/Table';
 import { Input } from 'components/Form';
-import { ButtonAdd, ButtonClose, ButtonSend } from 'components/Button';
+import { ButtonAdd, ButtonClose } from 'components/Button';
 import TextAreaFile from 'components/Form/TextAreaFile';
 
 // Styles
@@ -194,6 +194,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                 {
                     this.projectPermissions && this.projectPermissions.loggedInUserPermissions[UserPermissionKey.SpotSentFinishProdAccept] &&
                     this.projectPermissions && this.projectPermissions.loggedInUserPermissions[UserPermissionKey.SpotSentFinishProdAccept].canEdit &&
+                    this.props.spot.line_status_id && this.props.spot.line_status_id === 2 &&
                     <Section>
                         <div className={s.acceptButtonsContainer}>
                             {

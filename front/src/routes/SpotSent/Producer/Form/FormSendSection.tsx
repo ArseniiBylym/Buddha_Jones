@@ -5,7 +5,7 @@ import { history } from 'App';
 import { Section } from 'components/Section';
 import { Checkmark } from 'components/Form';
 import { ClientContact } from 'types/clients';
-import { AppState } from '../../../../store/AllStores';
+// import { AppState } from '../../../../store/AllStores';
 import { match } from 'react-router';
 import * as dateFormat from 'date-fns/format';
 import { observer, inject } from 'mobx-react';
