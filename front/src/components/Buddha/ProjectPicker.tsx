@@ -587,7 +587,7 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
                                 label={{
                                     text: 'Clear selection',
                                     size: 'small',
-                                    color: 'orange',
+                                    color: 'gray',
                                 }}
                             />
                         ),
