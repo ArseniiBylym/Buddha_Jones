@@ -9,6 +9,7 @@ export interface SpotSentSpot {
     selectedEditorsIds: number[];
     isFinishingRequest: boolean;
     sentViaMethod: number[];
+    line_status_id: number | null;
 }
 
 export interface SentViaOption {

@@ -165,6 +165,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                 {
                     this.projectPermissions && this.projectPermissions.loggedInUserPermissions[UserPermissionKey.SpotSentFinishProdAccept] &&
                     this.projectPermissions && this.projectPermissions.loggedInUserPermissions[UserPermissionKey.SpotSentFinishProdAccept].canEdit &&
+                    this.props.spot.line_status_id && this.props.spot.line_status_id === 2 &&
                     <Section>
                         <div className={s.acceptButtonsContainer}>
                             {

@@ -165,7 +165,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                             isResend: (spot.spot_resend === 1) ? true : false,
                                             isFinishingRequest: (spot.finish_request === 1) ? true : false,
                                             selectedEditorsIds: spot.editors as number[],
-                                            sentViaMethod: (spot.sent_via_method) ? spot.sent_via_method as number[] : []
+                                            sentViaMethod: (spot.sent_via_method) ? spot.sent_via_method as number[] : [],
+                                            line_status_id: spot.line_status_id
                                         }}
                                         spotIndex={spotIndex}
                                         forUserId={this.props.store!.user.data!.id}
