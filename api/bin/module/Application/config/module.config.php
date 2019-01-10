@@ -203,6 +203,7 @@ return array(
             'Application\Controller\SpotSentForGraphicsUser'                        => 'Application\Controller\SpotSentForGraphicsUserController',
             'Application\Controller\SpotSentOptions'                                => 'Application\Controller\SpotSentOptionsController',
             'Application\Controller\SpotSentList'                                   => 'Application\Controller\SpotSentListController',
+            'Application\Controller\SpotSentAll'                                    => 'Application\Controller\SpotSentAllController',
             'Application\Controller\SpotVersionEditor'                              => 'Application\Controller\SpotVersionEditorController',
             'Application\Controller\Staff'                                          => 'Application\Controller\StaffController',
             'Application\Controller\Status'                                         => 'Application\Controller\StatusController',

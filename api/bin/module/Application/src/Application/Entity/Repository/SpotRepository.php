@@ -1004,6 +1004,14 @@ class SpotRepository extends EntityRepository
 
     public function getSpotSentListTree($filter = array())
     {
+        if (empty($filter['offset'])) {
+            $filter['offset'] = 0;
+        }
+
+        if (empty($filter['length'])) {
+            $filter['length'] = 10;
+        }
+
         $dql = "SELECT 
                     ss.projectId,
                     p.projectName,
@@ -1032,7 +1040,11 @@ class SpotRepository extends EntityRepository
                     fh.name AS finishingHouse,
                     ss.allGraphicsResend,
                     ss.isPdf,
-                    ss.spotSentType
+                    ss.spotSentType,
+                    ss.notes,
+                    ss.internalNote,
+                    ss.studioNote,
+                    ss.spotResend
                 FROM \Application\Entity\RediSpotSent ss
                 LEFT JOIN \Application\Entity\RediProject p 
                     WITH p.id = ss.projectId
@@ -1091,6 +1103,41 @@ class SpotRepository extends EntityRepository
             $dqlFilter[] = " (ss.lineStatusId = 4 OR ss.graphicsStatusId = 4) ";
         }
 
+        if (!empty($filter['project_id'])) {
+            $dqlFilter[] = " ss.projectId = :project_id ";
+        }
+
+        if (!empty($filter['campaign_id'])) {
+            $dqlFilter[] = " ss.campaignId = :campaign_id ";
+        }
+
+        if (!empty($filter['project_campaign_id'])) {
+            $dqlFilter[] = " ss.projectCampaignId = :project_campaign_id ";
+        }
+
+        if (!empty($filter['spot_id'])) {
+            $dqlFilter[] = " ss.spotId = :spot_id ";
+        }
+
+        if (!empty($filter['version_id'])) {
+            $dqlFilter[] = " ss.versionId = :version_id ";
+        }
+
+        if (!empty($filter['start_date'])) {
+            $dqlFilter[] = " ss.spotSentDate >= :start_date ";
+
+            $startDate = new \DateTime($filter['start_date']);
+            $startDate = $startDate->format('Y-m-d 00:00:00');
+        }
+
+        if (!empty($filter['end_date'])) {
+            $dqlFilter[] = " ss.spotSentDate <= :end_date ";
+
+            $endDate = new \DateTime($filter['end_date']);
+            $endDate = $endDate->format('Y-m-d 23:59:59');
+        }
+
+
         if (count($dqlFilter)) {
             $dql .= " AND " . implode(" AND ", $dqlFilter);
         }
@@ -1100,6 +1147,8 @@ class SpotRepository extends EntityRepository
 
 
         $query = $this->getEntityManager()->createQuery($dql);
+        $query->setFirstResult($offset);
+        $query->setMaxResults($length);
 
         if (!empty($filter['current_user_id'])) {
             $query->setParameter("current_user_id", $filter['current_user_id']);
@@ -1121,6 +1170,35 @@ class SpotRepository extends EntityRepository
             $query->setParameter("graphics_status_id", $filter['graphics_status_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
         }
 
+        if (!empty($filter['project_id'])) {
+            $query->setParameter("project_id", $filter['project_id']);
+        }
+
+        if (!empty($filter['campaign_id'])) {
+            $query->setParameter("campaign_id", $filter['campaign_id']);
+        }
+
+        if (!empty($filter['project_campaign_id'])) {
+            $query->setParameter("project_campaign_id", $filter['project_campaign_id']);
+        }
+
+        if (!empty($filter['spot_id'])) {
+            $query->setParameter("spot_id", $filter['spot_id']);
+        }
+
+        if (!empty($filter['version_id'])) {
+            $query->setParameter("version_id", $filter['version_id']);
+        }
+
+        if (!empty($filter['start_date'])) {        
+            $query->setParameter('start_date', $startDate);
+        }
+
+        if (!empty($filter['end_date'])) {        
+            $query->setParameter('end_date', $endDate);
+        }
+        
+
         $result = $query->getArrayResult();
 
         $statusOptions = $this->getSpotSentOption('status', true);
@@ -1128,7 +1206,7 @@ class SpotRepository extends EntityRepository
         $userRepo = new UsersRepository($this->_entityManager);
 
         // update status
-        $result = array_map(function ($ssRow) use ($statusOptions, $graphicsStatusOptions, $userRepo) {
+        $result = array_map(function ($ssRow) use ($statusOptions, $graphicsStatusOptions, $userRepo, $filter) {
             $ssRow['spotLineStatus'] = (!empty($statusOptions[$ssRow['spotLineStatusId']])) ? $statusOptions[$ssRow['spotLineStatusId']]['name'] : null;
             $graphicsStatus = (!empty($graphicsStatusOptions[$ssRow['graphicsStatusId']])) ? $graphicsStatusOptions[$ssRow['graphicsStatusId']]['name'] : null;
 
@@ -1177,7 +1255,10 @@ class SpotRepository extends EntityRepository
             }
 
             $ssRow['graphicsStatus'] = $graphicsStatus;
-            $ssRow['producers'] = $userRepo->getCreativeUsersFromProjectCampaignByRole($ssRow['projectCampaignId'], array(1, 2, 3));
+
+            if (!empty($filter['return_producer_list'])) {
+                $ssRow['producers'] = $userRepo->getCreativeUsersFromProjectCampaignByRole($ssRow['projectCampaignId'], array(1, 2, 3));
+            }
 
             return $ssRow;
         }, $result);

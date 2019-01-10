@@ -39,7 +39,7 @@ class ProjectCampaignController extends CustomAbstractActionController
             $filter['campaign_id'] = (int)$this->getRequest()->getQuery('campaign_id', 0);
             $filter['request_writing_team'] = $this->getRequest()->getQuery('request_writing_team', null);
             $filter['request_music_team'] = $this->getRequest()->getQuery('request_music_team', null);
-            $filter['approved_by_billing'] = $this->getRequest()->getQuery('approved_by_billing', null);
+            $filter['approved_by_billing'] = $this->getRequest()->getQuery('approved_by_billing', 1);
             $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
             $length = (int)trim($this->getRequest()->getQuery('length', 10));
             $getUser = (int)trim($this->getRequest()->getQuery('get_user', 0));
