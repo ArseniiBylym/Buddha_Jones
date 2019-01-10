@@ -1139,14 +1139,19 @@ class SpotRepository extends EntityRepository
             $endDate = $endDate->format('Y-m-d 23:59:59');
         }
 
-
         if (count($dqlFilter)) {
             $dql .= " AND " . implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId
-                ORDER BY p.projectName ASC , c.campaignName ASC";
-
+        if (empty($filter['get_count'])) {
+            if (!empty($filter['return_flat_result'])) {
+                $dql .= " GROUP BY ss.id 
+                    ORDER BY ss.id ASC";
+            } else {
+                $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId
+                    ORDER BY p.projectName ASC , c.campaignName ASC";
+            }
+        }
 
         $query = $this->getEntityManager()->createQuery($dql);
 
@@ -1158,7 +1163,6 @@ class SpotRepository extends EntityRepository
             if (!empty($filter['length'])) {
                 $query->setMaxResults($filter['length']);
             }
-
         }
 
         if (!empty($filter['current_user_id'])) {

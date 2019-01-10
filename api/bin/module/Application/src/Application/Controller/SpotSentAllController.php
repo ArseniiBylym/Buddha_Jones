@@ -28,18 +28,21 @@ class SpotSentAllController extends CustomAbstractActionController
         $filter['return_producer_list'] = true;
         $filter['return_editor_list'] = true;
         $filter['return_customer_contact_list'] = true;
+        
         $filter['line_status_id'] = array(2, 3, 4);
 
         if ($checkSubModuleAccess) {
             $data = $this->_spotRepo->getSpotSentListTree($filter);
 
             $filter['get_count'] = true;
-            $count = $this->_spotRepo->getSpotSentListTree($filter);
+            $totalCount = $this->_spotRepo->getSpotSentListTree($filter);
 
             $response = array(
                 'status' => 1,
-                'message' => 'Request Successful',
-                'data' => $data,
+                'message' => 'Request successful',
+                'total_count' => $totalCount,
+                'object_count' => count($data),
+                'data' => $data
             );
         } else {
             $response = array(
