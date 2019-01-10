@@ -31,6 +31,8 @@ interface ProducerSpotSentFormProps {
 interface ProducerSpotSentFormState {
     currentSpotIndex: number;
     isRemoveConfirmationModalActive: boolean;
+    prevLocation: string;
+    files: [{file_name: string, file_description: string}] | [];
 }
 
 // Types
@@ -46,6 +48,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         this.state = {
             currentSpotIndex: 0,
             isRemoveConfirmationModalActive: false,
+            prevLocation: '',
+            files: [],
         };
     }
 
@@ -81,7 +85,21 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
     }
 
+    private getPrevLocation = () => {
+        let prevLock: string | string[] | undefined = this.props.location && this.props.location.pathname.split('/');
+        prevLock = prevLock && prevLock[prevLock.length - 1];
+        return prevLock;
+    }
+
     public componentDidMount() {
+
+        // get prev location
+        const lastLocation = this.getPrevLocation();
+        if (lastLocation) {
+            this.setState({
+                prevLocation: lastLocation,
+            });
+        }
 
         // Fetch spot sent options
         SpotSentActions.fetchSpotSentOptions();
@@ -90,13 +108,23 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         if (this.isEditMode) {
             this.setHeaderAndInitialData();
         } else {
-            HeaderActions.setMainHeaderTitlesAndElements('Initiate spot sent', null, null, null, [
-                <ButtonBack
-                    key="button-back-to-list"
-                    onClick={this.handleBackButtonClick}
-                    label="Back to spots sent list"
-                />,
-            ]);
+            if (this.getPrevLocation() === 'graphics') {
+                HeaderActions.setMainHeaderTitlesAndElements('Graphics spot sent', null, null, null, [
+                    <ButtonBack
+                        key="button-back-to-list"
+                        onClick={this.handleBackButtonClick}
+                        label="Back to graphics spot sent"
+                    />,
+                ]);
+            } else {
+                HeaderActions.setMainHeaderTitlesAndElements('Initiate spot sent', null, null, null, [
+                    <ButtonBack
+                        key="button-back-to-list"
+                        onClick={this.handleBackButtonClick}
+                        label="Back to spots sent list"
+                    />,
+                ]);
+            }
         }
 
     }
@@ -163,12 +191,16 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                                 prodAccept: spot.prod_accept === 1,
                                             } : null,
                                             isResend: (spot.spot_resend === 1) ? true : false,
+                                            isPDF: (spot.is_pdf === 1) ? true : false,
                                             isFinishingRequest: (spot.finish_request === 1) ? true : false,
                                             selectedEditorsIds: spot.editors as number[],
-                                            sentViaMethod: (spot.sent_via_method) ? spot.sent_via_method as number[] : []
+                                            sentViaMethod: (spot.sent_via_method) ? spot.sent_via_method as number[] : [],
+                                            sentGraphicsViaMethod: (spot.graphics_sent_via_method) ? spot.graphics_sent_via_method as number[] : []
                                         }}
                                         spotIndex={spotIndex}
                                         forUserId={this.props.store!.user.data!.id}
+                                        withGraphicsSection={this.state.prevLocation === 'graphics' ? true : false}
+                                        updateFileList={this.updateFileList}
                                     />
                                 );
                             }
@@ -220,7 +252,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     >
                         <ProducerSpotSentFormFinishRequest/>
                     </AnimateHeight>
-                    <FormSendSection {...this.props}/>
+                    <FormSendSection {...this.props} prevLocation={this.state.prevLocation} files={this.state.files}/>
                 </AnimateHeight>
                 <FormJsonSection spotSentDetails={spotSentDetails}/>
             </>
@@ -229,7 +261,13 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     private getLoadingSpinner = (): JSX.Element => <LoadingSpinner className={s.loadingSpinner} size={64}/>;
 
-    private handleBackButtonClick = () => history.push('/portal/studio/producer-spot-sent-list');
+    private handleBackButtonClick = () => {
+        if (this.state.prevLocation === 'graphics') {
+            history.push('/portal/graphics-spot-sent');
+        } else {
+            history.push('/portal/studio/producer-spot-sent-list');
+        }
+    }
 
     private handleClosingSpotDeleteConfirmation = () => this.setState({
         isRemoveConfirmationModalActive: false,
@@ -304,6 +342,12 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             throw error;
         }
     };
+
+    private updateFileList = (arr: [{file_name: string, file_description: string}] | []) => {
+        this.setState({
+            files: arr,
+        });
+    } 
 }
 
 export default ProducerSpotSentForm;
