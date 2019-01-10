@@ -25,6 +25,9 @@ class SpotSentAllController extends CustomAbstractActionController
         $filter['offset'] = (int)trim($this->getRequest()->getQuery('offset', 0));
         $filter['length'] = (int)trim($this->getRequest()->getQuery('length', 10));
         $filter['return_flat_result'] = true;
+        $filter['return_producer_list'] = true;
+        $filter['return_editor_list'] = true;
+        $filter['return_customer_contact_list'] = true;
         $filter['line_status_id'] = array(2, 3, 4);
 
         if ($checkSubModuleAccess) {

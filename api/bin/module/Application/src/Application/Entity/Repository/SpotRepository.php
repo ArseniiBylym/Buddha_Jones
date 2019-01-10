@@ -1004,47 +1004,49 @@ class SpotRepository extends EntityRepository
 
     public function getSpotSentListTree($filter = array())
     {
-        if (empty($filter['offset'])) {
-            $filter['offset'] = 0;
-        }
-
-        if (empty($filter['length'])) {
-            $filter['length'] = 10;
+        if (empty($filter['get_count'])) {
+            $columns = "ss.projectId,
+                        p.projectName,
+                        std.id AS studioId,
+                        std.studioName,
+                        ss.campaignId,
+                        c.campaignName,
+                        cu.id AS customerId,
+                        cu.customerName,
+                        ss.projectCampaignId,
+                        ss.spotId,
+                        s.spotName,
+                        ss.versionId,
+                        v.versionName,
+                        ss.id AS spotSentId,
+                        ss.requestId AS spotSentRequestId,
+                        ss.spotSentDate,
+                        ss.lineStatusId AS spotLineStatusId,
+                        ss.graphicsStatusId,
+                        s.trtId,
+                        trt.runtime,
+                        ss.noGraphics,
+                        ss.allGraphicsResend,
+                        ss.finishRequest,
+                        ss.finishOption,
+                        fh.name AS finishingHouse,
+                        ss.allGraphicsResend,
+                        ss.isPdf,
+                        ss.spotSentType,
+                        ss.notes,
+                        ss.internalNote,
+                        ss.studioNote,
+                        ss.spotResend,
+                        ss.editor,
+                        ss.customerContact,
+                        ss.spotSentDate,
+                        ss.createdAt";
+        } else {
+            $columns = "COUNT(DISTINCT ss.id) AS total_count";
         }
 
         $dql = "SELECT 
-                    ss.projectId,
-                    p.projectName,
-                    std.id AS studioId,
-                    std.studioName,
-                    ss.campaignId,
-                    c.campaignName,
-                    cu.id AS customerId,
-                    cu.customerName,
-                    ss.projectCampaignId,
-                    ss.spotId,
-                    s.spotName,
-                    ss.versionId,
-                    v.versionName,
-                    ss.id AS spotSentId,
-                    ss.requestId AS spotSentRequestId,
-                    ss.spotSentDate,
-                    ss.lineStatusId AS spotLineStatusId,
-                    ss.graphicsStatusId,
-                    s.trtId,
-                    trt.runtime,
-                    ss.noGraphics,
-                    ss.allGraphicsResend,
-                    ss.finishRequest,
-                    ss.finishOption,
-                    fh.name AS finishingHouse,
-                    ss.allGraphicsResend,
-                    ss.isPdf,
-                    ss.spotSentType,
-                    ss.notes,
-                    ss.internalNote,
-                    ss.studioNote,
-                    ss.spotResend
+                    " . $columns . "
                 FROM \Application\Entity\RediSpotSent ss
                 LEFT JOIN \Application\Entity\RediProject p 
                     WITH p.id = ss.projectId
@@ -1147,8 +1149,17 @@ class SpotRepository extends EntityRepository
 
 
         $query = $this->getEntityManager()->createQuery($dql);
-        $query->setFirstResult($offset);
-        $query->setMaxResults($length);
+
+        if (empty($filter['get_count'])) {
+            if (isset($filter['offset'])) {
+                $query->setFirstResult($filter['offset']);
+            }
+
+            if (!empty($filter['length'])) {
+                $query->setMaxResults($filter['length']);
+            }
+
+        }
 
         if (!empty($filter['current_user_id'])) {
             $query->setParameter("current_user_id", $filter['current_user_id']);
@@ -1190,16 +1201,20 @@ class SpotRepository extends EntityRepository
             $query->setParameter("version_id", $filter['version_id']);
         }
 
-        if (!empty($filter['start_date'])) {        
+        if (!empty($filter['start_date'])) {
             $query->setParameter('start_date', $startDate);
         }
 
-        if (!empty($filter['end_date'])) {        
+        if (!empty($filter['end_date'])) {
             $query->setParameter('end_date', $endDate);
         }
-        
+
 
         $result = $query->getArrayResult();
+
+        if (!empty($filter['get_count'])) {
+            return (!empty($result[0]['total_count'])) ? (int)$result[0]['total_count'] : 0;
+        }
 
         $statusOptions = $this->getSpotSentOption('status', true);
         $graphicsStatusOptions = $this->getSpotSentOption('graphics_status', true);
@@ -1259,6 +1274,38 @@ class SpotRepository extends EntityRepository
             if (!empty($filter['return_producer_list'])) {
                 $ssRow['producers'] = $userRepo->getCreativeUsersFromProjectCampaignByRole($ssRow['projectCampaignId'], array(1, 2, 3));
             }
+
+            if (!empty($filter['return_editor_list'])) {
+                $ssRow['editors'] = array();
+
+                if (!empty($ssRow['editor'])) {
+                    $editorIds = explode(',', $ssRow['editor']);
+
+                    if (count($editorIds)) {
+                        $editorIds = array_map('trim', $editorIds);
+                        $userRepo = new UsersRepository($this->_entityManager);
+                        $ssRow['editors'] = $userRepo->getUsersById($editorIds);
+                    }
+                }
+            }
+
+            if (!empty($filter['return_customer_contact_list'])) {
+                $ssRow['customerContacts'] = array();
+
+                if (!empty($ssRow['customerContact'])) {
+                    $customerContactIds = explode(',', $ssRow['customerContact']);
+
+                    if (count($customerContactIds)) {
+                        $customerContactIds = array_map('trim', $customerContactIds);
+                        $customerRepo = new CustomerRepository($this->_entityManager);
+
+                        $ssRow['customerContacts'] = $customerRepo->getCustomerContactsById($customerContactIds);
+                    }
+                }
+            }
+
+            unset($ssRow['editor']);
+            unset($ssRow['customerContact']);
 
             return $ssRow;
         }, $result);
