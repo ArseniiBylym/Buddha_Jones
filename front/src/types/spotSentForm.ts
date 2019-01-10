@@ -20,6 +20,9 @@ export interface SpotSentVersionForSubmit {
     sent_via_method: number[] | null;
     finish_accept?: 0 | 1;
     prod_accept?: 0 | 1;
+    is_pdf?: 0 | 1;
+    graphics_sent_via_method: number[] | null;
+    graphics_file: [{file_name: string, file_description: string}];
 }
 
 export interface SpotSentValueForSubmit {

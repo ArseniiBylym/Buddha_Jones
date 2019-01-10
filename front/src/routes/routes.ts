@@ -17,6 +17,7 @@ import { UserAccountAsync } from './User';
 import { TimeEntryPermissionsAsync } from './TimeCardPermissions/TimeEntryPermissions';
 import { TimeApprovalPermissionsAsync } from './TimeCardPermissions/TimeApprovalPermissions';
 import { SpotsToEDLAsync } from './SpotEDL/SpotsToEDL/SpotsToEDLAsync';
+import { SpotsToGraphicsSentAsync } from './SpotGraphicsSent/SpotsToGraphicsSent/SpotsToGraphicsSentAsync';
 
 // Icons
 const dashboardIcon = require('../assets/images/navigation/navigation-icon-dashboard.png');
@@ -148,6 +149,21 @@ export const routes: Route[] = [
         entry: '/portal/spots-to-edl',
         exact: true,
         allowAllUsers: true,
+    },
+    {
+        component: SpotsToGraphicsSentAsync,
+        key: 'graphics-spot-sent',
+        accessKey: RouteAccessKey.SpotBilling,
+        // key: 'new-customer-approval',
+        // accessKey: RouteAccessKey.NewCustomerApproval,
+        group: studioGroup,
+        name: 'Graphics Spot Sent',
+        path: '/portal/graphics-spot-sent',
+        entry: '/portal/graphics-spot-sent',
+        exact: true,
+        // allowAllUsers: true,
+        allowAllUsers: false,
+        subModuleAccess: 7,
     },
     {
         component: BillingStudioRateCardsAsync,

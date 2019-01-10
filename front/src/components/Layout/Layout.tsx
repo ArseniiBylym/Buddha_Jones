@@ -45,14 +45,16 @@ export class Layout extends React.Component<AppState, {}> {
                             })}
                         >
                             <Switch>
-                                {this.props.store.user.routes.map(route => (
-                                    <Route
-                                        key={typeof route.key !== 'undefined' && route.key ? route.key : route.path}
-                                        path={route.path}
-                                        exact={route.exact}
-                                        component={route.component}
-                                    />
-                                ))}
+                                {this.props.store.user.routes.map(route => {
+                                        return (
+                                            <Route
+                                                key={typeof route.key !== 'undefined' && route.key ? route.key : route.path}
+                                                path={route.path}
+                                                exact={route.exact}
+                                                component={route.component}
+                                            />
+                                        );
+                                })}
                             </Switch>
                         </div>
                     </div>

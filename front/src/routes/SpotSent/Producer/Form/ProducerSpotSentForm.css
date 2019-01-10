@@ -86,3 +86,8 @@
     vertical-align: top;
     margin-right: 12px;
 }
+.fileCheckbox{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

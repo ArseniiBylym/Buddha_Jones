@@ -6,9 +6,11 @@ export interface SpotSentSpot {
     spot: ProjectPickerGroupValues | null;
     version: ProjectPickerGroupValues | null;
     isResend: boolean;
+    isPDF: boolean;
     selectedEditorsIds: number[];
     isFinishingRequest: boolean;
     sentViaMethod: number[];
+    sentGraphicsViaMethod: number[];
 }
 
 export interface SentViaOption {
@@ -139,6 +141,7 @@ export interface SpotSentDetailsSpotDataFromApi {
     runtime?: number;
     finishAccept?: 0 | 1;
     prodAccept?: 0 | 1;
+    sentGraphicsViaMethod: string | null;
 }
 
 export interface SpotSentAllSpotsSentSpotDataFromApi {
@@ -175,7 +178,9 @@ export interface SpotSentOptionsFromApi {
     framerate_option: string[];
     raster_size_option: string[];
     sent_via_method: SpotSentOptionsStdSectionFromApi[];
+    graphics_sent_via_method: SpotSentOptionsStdSectionFromApi[];
     status: SpotSentOptionsStdSectionFromApi[];
+
 }
 
 export interface SpotSentOptionsStdSectionFromApi {
