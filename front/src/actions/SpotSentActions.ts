@@ -142,10 +142,10 @@ export class SpotSentActionsClass {
                             prod_accept: spot.prodAccept,
                             sent_via_method: (spot.sentViaMethod) ? spot.sentViaMethod.split(',').map((method: string) => {
                                 return parseInt(method, 0);
-                            }) : null,
+                            }) : [],
                             graphics_sent_via_method: (spot.sentGraphicsViaMethod) ? spot.sentGraphicsViaMethod.split(',').map((method: string) => {
                                 return parseInt(method, 0);
-                            }) : null,
+                            }) : [],
                         };
                     }),
                     finish_option: response.finishOption,
@@ -355,6 +355,10 @@ export class SpotSentActionsClass {
                         }
                         CampaignPeopleActions.fetchEditorsFromProjectCampaign(values.projectCampaign.id);
                     }
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_id = null;
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_name = '';
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = null;
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = '';
                     break;
                 case ProjectPickerSections.spot:
                     if (values && values.spot) {
@@ -365,6 +369,8 @@ export class SpotSentActionsClass {
                             (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_name = values.spot.name;
                         }
                     }
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = null;
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = '';
                     break;
                 case ProjectPickerSections.version:
                     if (values && values.version) {
