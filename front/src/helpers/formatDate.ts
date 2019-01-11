@@ -8,6 +8,9 @@ export function formatDate(date: Date, h: number): Date {
             case '25':
                 minutes = 15 * 60 * 1000;
                 break;
+            case '5':
+                minutes = 30 * 60 * 1000;
+                break;
             case '50':
                 minutes = 30 * 60 * 1000;
                 break;
