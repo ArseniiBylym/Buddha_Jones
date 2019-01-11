@@ -38,11 +38,18 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
         if (!this.props.store) {
             return null;
         }
-        const { spotSentDetails } = this.props.store.spotSent;
+        // const { spotSentDetails } = this.props.store.spotSent;
         return (
             <Section>
                 <div className={s.summary}>
-                    {this.props.prevLocation && this.props.prevLocation === 'graphics' ? (
+                        <Checkmark
+                            onClick={this.completedToggleHandler}
+                            checked={this.state.isGraphicsCompleted}
+                            label={this.props.prevLocation && this.props.prevLocation === 'graphics' ? 'Completed' : 'Ready to be sent'}
+                            labelOnLeft={true}
+                            type={'no-icon'}
+                        />
+                    {/* {this.props.prevLocation && this.props.prevLocation === 'graphics' ? (
                         <Checkmark
                             onClick={this.completedToggleHandler}
                             checked={this.state.isGraphicsCompleted}
@@ -53,8 +60,6 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                         ) 
                         : (
                         <Checkmark
-                            // onClick={this.checkmarkClickHander}
-                            // checked={spotSentDetails.status === 2}
                             onClick={this.completedToggleHandler}
                             checked={this.state.isGraphicsCompleted}
                             label="Ready to be sent"
@@ -63,11 +68,11 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                         />
                         )
 
-                    }
+                    } */}
                     
                     <ButtonSend
                         onClick={this.handleSubmit}
-                        label={this.props.prevLocation && this.props.prevLocation === 'graphics' ? this.saveGraphicsButtonText : this.saveButtonText}
+                        label={this.saveButtonText}
                         iconColor="orange"
                     />
                 </div>
@@ -79,16 +84,12 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
         this.setState(prevState => ({isGraphicsCompleted: !prevState.isGraphicsCompleted}));
     }
 
-    // private completedToggleHandler = () => {
-    //     this.setState(prevState => ({isGraphicsCompleted: !prevState.isGraphicsCompleted}));
+    // private checkmarkClickHander = () => {
+    //     if (this.props.store && this.props.store.spotSent) {
+    //         const value = this.props.store.spotSent.spotSentDetails.status === 2 ? false : true;
+    //         SpotSentActions.handleFinalToggle(value);
+    //     }
     // }
-
-    private checkmarkClickHander = () => {
-        if (this.props.store && this.props.store.spotSent) {
-            const value = this.props.store.spotSent.spotSentDetails.status === 2 ? false : true;
-            SpotSentActions.handleFinalToggle(value);
-        }
-    }
 
     private handleSubmit = async () => {
         try {
@@ -136,15 +137,7 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
     }
 
     private get saveButtonText(): string {
-        if (this.props.store && this.props.store.spotSent.spotSentDetails.status === 2) {
-            return 'Upload and send';
-        } else {
-            return 'Save draft';
-        }
-    }
-
-    private get saveGraphicsButtonText(): string {
-        if (this.props.store && this.props.store.spotSent.spotSentDetails.status === 2) {
+        if (this.state.isGraphicsCompleted) {
             return 'Save';
         } else {
             return 'Save draft';
