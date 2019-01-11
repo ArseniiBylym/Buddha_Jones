@@ -7,7 +7,7 @@ import {
     SpotSentAllSpotsSentFromApi,
     SpotSentAllSpotsSentSpotData,
     SpotSentAllSpotsSentSpotDataFromApi,
-    SpotSentDetailsFromApi,
+    // SpotSentDetailsFromApi,
     SpotSentDetailsSpotDataFromApi,
     SpotSentFromApi,
     SpotSentOptionsFromApi,
@@ -21,6 +21,7 @@ import {
     SpotSentVersionForSubmit
 } from '../types/spotSentForm';
 import { ToggleSideContent } from '../components/Form';
+// import { stringify } from 'querystring';
 
 export class SpotSentActionsClass {
 
@@ -96,6 +97,7 @@ export class SpotSentActionsClass {
             SpotSentStore.spotSentDeliveryToClientOptions = response.delivery_to_client_option;
             SpotSentStore.spotSentAudioOptions = response.audio_option;
             SpotSentStore.spotSentSentViaMethodOptions = response.sent_via_method;
+            SpotSentStore.spotSentGraphicsSentViaMethodOptions = response.graphics_sent_via_method;
             return true;
         } catch (error) {
             throw error;
@@ -117,7 +119,8 @@ export class SpotSentActionsClass {
             ) {
                 SpotSentStore.spotSentDetailsLoading = true;
 
-                const response = (await API.getData(APIPath.SPOT_SENT + '/' + id)) as SpotSentDetailsFromApi;
+                // const response = (await API.getData(APIPath.SPOT_SENT + '/' + id)) as SpotSentDetailsFromApi;
+                const response = (await API.getData(APIPath.SPOT_SENT + '/' + id)) as any;
 
                 SpotSentStore.spotSentDetails = {
                     project_id: response.projectId,
@@ -139,7 +142,10 @@ export class SpotSentActionsClass {
                             prod_accept: spot.prodAccept,
                             sent_via_method: (spot.sentViaMethod) ? spot.sentViaMethod.split(',').map((method: string) => {
                                 return parseInt(method, 0);
-                            }) : null
+                            }) : [],
+                            graphics_sent_via_method: (spot.sentGraphicsViaMethod) ? spot.sentGraphicsViaMethod.split(',').map((method: string) => {
+                                return parseInt(method, 0);
+                            }) : [],
                         };
                     }),
                     finish_option: response.finishOption,
@@ -296,6 +302,11 @@ export class SpotSentActionsClass {
     };
 
     @action
+    public handleSpotPDFToggle = (spotIndex: number, checked: boolean) => {
+        (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).is_pdf = checked ? 1 : 0;
+    };
+
+    @action
     public handleFinishingRequestToggle = (spotIndex: number, checked: boolean) => {
         (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).finish_request = checked ? 1 : 0;
     };
@@ -344,6 +355,10 @@ export class SpotSentActionsClass {
                         }
                         CampaignPeopleActions.fetchEditorsFromProjectCampaign(values.projectCampaign.id);
                     }
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_id = null;
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_name = '';
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = null;
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = '';
                     break;
                 case ProjectPickerSections.spot:
                     if (values && values.spot) {
@@ -354,6 +369,8 @@ export class SpotSentActionsClass {
                             (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_name = values.spot.name;
                         }
                     }
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = null;
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = '';
                     break;
                 case ProjectPickerSections.version:
                     if (values && values.version) {
@@ -396,6 +413,19 @@ export class SpotSentActionsClass {
             }
         } else if (!sentViaMethod.includes(method)) {
             ((SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).sent_via_method as number[]).push(method);
+        }
+    };
+
+    @action
+    public handleGraphicsSentViaMethodsChange = (spotIndex: number, method: number) => {
+        const sentGraphicsViaMethod: number[] = ((SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).graphics_sent_via_method as number[]);
+        if (sentGraphicsViaMethod.includes(method)) {
+            const i: number = sentGraphicsViaMethod.indexOf(method);
+            if (i !== -1) {
+                ((SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).graphics_sent_via_method as number[]).splice(i, 1);
+            }
+        } else if (!sentGraphicsViaMethod.includes(method)) {
+            ((SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).graphics_sent_via_method as number[]).push(method);
         }
     };
 
@@ -514,11 +544,14 @@ export class SpotSentActionsClass {
             version_id: null,
             editors: [],
             spot_resend: 0,
+            is_pdf: 0,
             finish_request: 0,
             line_status_id: null,
             sent_via_method: [],
             finish_accept: 0,
             prod_accept: 0,
+            graphics_sent_via_method: [],
+            graphics_file: [{file_name: '', file_description: ''}],
         };
     }
 }

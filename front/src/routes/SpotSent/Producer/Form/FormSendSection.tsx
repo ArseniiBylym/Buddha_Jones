@@ -5,7 +5,7 @@ import { history } from 'App';
 import { Section } from 'components/Section';
 import { Checkmark } from 'components/Form';
 import { ClientContact } from 'types/clients';
-import { AppState } from '../../../../store/AllStores';
+// import { AppState } from '../../../../store/AllStores';
 import { match } from 'react-router';
 import * as dateFormat from 'date-fns/format';
 import { observer, inject } from 'mobx-react';
@@ -15,37 +15,61 @@ import { SpotSentValueForSubmit, SpotSentVersionForSubmit } from '../../../../ty
 const s = require('./ProducerSpotSentForm.css');
 
 // Props
-interface ProducerSpotSentFormProps {
-}
+// interface ProducerSpotSentFormProps {
+// }
 
 // Props
 interface ProducerSpotSentFormState {
+    isGraphicsCompleted: boolean;
 }
 
 // Types
-type ProducerSpotSentFormPropsTypes = ProducerSpotSentFormProps & AppState;
+// type ProducerSpotSentFormPropsTypes = ProducerSpotSentFormProps & AppState;
 
 @inject('store')
 @observer
-class FormSendSection extends React.PureComponent<ProducerSpotSentFormPropsTypes, ProducerSpotSentFormState> {
+class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState> {
+
+    state = {
+        isGraphicsCompleted: false,
+    };
 
     public render() {
         if (!this.props.store) {
             return null;
         }
-        const { spotSentDetails } = this.props.store.spotSent;
+        // const { spotSentDetails } = this.props.store.spotSent;
         return (
             <Section>
                 <div className={s.summary}>
-                    <Checkmark
-                        // onClick={SpotSentActions.handleFinalToggle}
-                        onClick={this.checkmarkClickHander}
-                        checked={spotSentDetails.status === 2}
-                        label="Ready to be sent"
-                        labelOnLeft={true}
-                        type={'no-icon'}
-                    />
+                        <Checkmark
+                            onClick={this.completedToggleHandler}
+                            checked={this.state.isGraphicsCompleted}
+                            label={this.props.prevLocation && this.props.prevLocation === 'graphics' ? 'Completed' : 'Ready to be sent'}
+                            labelOnLeft={true}
+                            type={'no-icon'}
+                        />
+                    {/* {this.props.prevLocation && this.props.prevLocation === 'graphics' ? (
+                        <Checkmark
+                            onClick={this.completedToggleHandler}
+                            checked={this.state.isGraphicsCompleted}
+                            label="Completed"
+                            labelOnLeft={true}
+                            type={'no-icon'}
+                        />
+                        ) 
+                        : (
+                        <Checkmark
+                            onClick={this.completedToggleHandler}
+                            checked={this.state.isGraphicsCompleted}
+                            label="Ready to be sent"
+                            labelOnLeft={true}
+                            type={'no-icon'}
+                        />
+                        )
 
+                    } */}
+                    
                     <ButtonSend
                         onClick={this.handleSubmit}
                         label={this.saveButtonText}
@@ -56,12 +80,16 @@ class FormSendSection extends React.PureComponent<ProducerSpotSentFormPropsTypes
         );
     }
 
-    private checkmarkClickHander = () => {
-        if (this.props.store && this.props.store.spotSent) {
-            const value = this.props.store.spotSent.spotSentDetails.status === 2 ? false : true;
-            SpotSentActions.handleFinalToggle(value);
-        }
+    private completedToggleHandler = () => {
+        this.setState(prevState => ({isGraphicsCompleted: !prevState.isGraphicsCompleted}));
     }
+
+    // private checkmarkClickHander = () => {
+    //     if (this.props.store && this.props.store.spotSent) {
+    //         const value = this.props.store.spotSent.spotSentDetails.status === 2 ? false : true;
+    //         SpotSentActions.handleFinalToggle(value);
+    //     }
+    // }
 
     private handleSubmit = async () => {
         try {
@@ -70,6 +98,20 @@ class FormSendSection extends React.PureComponent<ProducerSpotSentFormPropsTypes
                 delete spot.campaign_name;
                 delete spot.spot_name;
                 delete spot.version_name;
+                spot.graphics_file = this.props.files;
+                if (this.props.prevLocation && this.props.prevLocation === 'graphics') {
+                    if (this.state.isGraphicsCompleted) {
+                        spot.line_status_id = 4;
+                    } else {
+                        spot.line_status_id = 1;
+                    }
+                } else {
+                    if (this.state.isGraphicsCompleted) {
+                        spot.line_status_id = 2;
+                    } else {
+                        spot.line_status_id = 1;
+                    }
+                }
                 return spot;
             }));
             (data.finish_option as string) = JSON.stringify(data.finish_option);
@@ -95,8 +137,8 @@ class FormSendSection extends React.PureComponent<ProducerSpotSentFormPropsTypes
     }
 
     private get saveButtonText(): string {
-        if (this.props.store && this.props.store.spotSent.spotSentDetails.status === 2) {
-            return 'Upload and send';
+        if (this.state.isGraphicsCompleted) {
+            return 'Save';
         } else {
             return 'Save draft';
         }

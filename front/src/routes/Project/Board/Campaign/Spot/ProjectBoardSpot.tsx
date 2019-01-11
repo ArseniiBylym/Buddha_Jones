@@ -312,6 +312,15 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                                 icon={this.getVersionNameButtonIcon()}
                             />
                         )}
+                        {this.props.userCanViewNumberOfRevisionsAndVersions &&
+                        spot.versions.length === 0 && 
+                        this.isEditFormVisible && (
+                            <Button
+                                onClick={this.handleVersionExpandOrCollapse}
+                                label={ProjectBoardSpot.getVersionNameButtonLabel()}
+                                icon={this.getVersionNameButtonIcon()}
+                            />
+                        )}
                     </Row>
 
                     {this.props.showSeparator && <hr className={s.endSeparator}/>}
@@ -359,7 +368,10 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                             {this.props.userCanViewNumberOfRevisionsAndVersions &&
                             spot.numberOfRevisions !== 0 &&
                             (spot.versions === null || spot.versions.length <= 0) && (
+                                <>
                                 <Tag className={s.versionName} title="No spot versions added" isTitleDim={true}/>
+                                <hr />
+                                </>
                             )}
 
                             {this.isEditFormVisible &&

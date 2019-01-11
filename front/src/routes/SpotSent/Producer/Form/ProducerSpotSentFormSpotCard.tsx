@@ -3,7 +3,6 @@ import { observer, inject } from 'mobx-react';
 import { SpotSentSpot } from 'types/spotSent';
 import { Card, Section } from 'components/Section';
 import { Checkmark, DropdownContainer, OptionsList, OptionsListValuePropType } from 'components/Form';
-import { ButtonClose } from 'components/Button';
 import { ProjectPicker, ProjectPickerGroupValues, ProjectPickerValues, PersonWithRole } from 'components/Buddha';
 import { Paragraph } from 'components/Content';
 import { AppOnlyStoreState } from 'store/AllStores';
@@ -15,6 +14,10 @@ import { ProjectPermissions } from '../../../../store';
 import { UserPermissionKey } from '../../../../types/projectPermissions';
 import { SpotSentActions } from '../../../../actions';
 import { ProjectPickerSections } from '../../../../components/Buddha';
+import { TableRow, Table, TableCell } from 'components/Table';
+import { Input } from 'components/Form';
+import { ButtonAdd, ButtonClose } from 'components/Button';
+import TextAreaFile from 'components/Form/TextAreaFile';
 
 // Styles
 const s = require('./ProducerSpotSentForm.css');
@@ -27,6 +30,14 @@ interface ProducerSpotSentFormSpotCardProps {
     spot: SpotSentSpot;
     spotIndex: number;
     forUserId: number;
+    withGraphicsSection?: boolean;
+    updateFileList: any;
+}
+
+interface ProducerSpotSentFormSpotCardState {
+    textareaValue: string;
+    textareaEmpty: boolean;
+    files: any;
 }
 
 // Types
@@ -35,7 +46,19 @@ type ProducerSpotSentFormSpotCardPropsTypes = ProducerSpotSentFormSpotCardProps 
 // Component
 @inject('store')
 @observer
-export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSentFormSpotCardPropsTypes, {}> {
+export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSentFormSpotCardPropsTypes, ProducerSpotSentFormSpotCardState> {
+
+    state = {
+        textareaValue: '',
+        textareaEmpty: true,
+        files: []
+    };
+
+    componentDidUpdate = (prevProps, prevState) => {
+        if (this.state.files !== prevState.files) {
+            this.props.updateFileList(this.state.files);
+        }
+    }
 
     private get campaignEditorialUsers(): { isLoading: boolean; users: ProjectCampaignUserFromApi[] } {
         if (!this.props.store) {
@@ -94,7 +117,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                 title={'#' + (this.props.spotIndex + 1)}
                 subTitle="Spot sent"
                 isExpandable={false}
-                headerElements={this.getCardHeaders()}
+                headerElements={this.props.withGraphicsSection ? this.getCardHeadersForGraphics() : this.getCardHeaders()}
             >
                 <ProjectPicker
                     onChange={this.handleSpotChange}
@@ -113,11 +136,17 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
 
                 <Section title={'Sent via'}>
                     <div className={s.sentViaMethodsContainer}>
-                        {this.getSentViaMethods()}
+                        {this.props.withGraphicsSection ? this.getGraphicsSentViaMethods() : this.getSentViaMethods()}
                     </div>
                 </Section>
 
-                <Section
+                {this.props.withGraphicsSection && 
+                    <>
+                        {this.getFilesWorkOnSection()}
+                    </>
+                }
+
+                {!this.props.withGraphicsSection && <Section
                     title={`Spot #${this.props.spotIndex + 1} editors`}
                     headerElements={this.getSectionHeaders()}
                 >
@@ -161,10 +190,11 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
                         </div>
                     ))}
 
-                </Section>
+                </Section>}
                 {
                     this.projectPermissions && this.projectPermissions.loggedInUserPermissions[UserPermissionKey.SpotSentFinishProdAccept] &&
                     this.projectPermissions && this.projectPermissions.loggedInUserPermissions[UserPermissionKey.SpotSentFinishProdAccept].canEdit &&
+                    this.props.spot.line_status_id && this.props.spot.line_status_id === 2 &&
                     <Section>
                         <div className={s.acceptButtonsContainer}>
                             {
@@ -243,6 +273,19 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
         }
     }
 
+    private getCardHeadersForGraphics = () => [
+        <Checkmark
+            key="spot-resend-checkmark"
+            onClick={this.handleSpotPDFToggle(this.props.spot.isPDF)}
+            checked={this.props.spot.isPDF}
+            label="PDF"
+            labelOnLeft={true}
+            readOnly={false}
+            type={'no-icon'}
+        />,
+        <ButtonClose key="remove-spot" onClick={this.handleSpotRemove} label="Remove spot" />,
+    ]
+
     private getCardHeaders = () => [
         <Checkmark
             key="finishing-request-checkmark"
@@ -272,6 +315,9 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
     private handleSpotResendToggle = (checked: boolean) =>
         SpotSentActions.handleSpotResendToggle(this.props.spotIndex, checked);
 
+    private handleSpotPDFToggle = (checked: boolean) => e =>
+        SpotSentActions.handleSpotPDFToggle(this.props.spotIndex, !checked);
+
     private handleSpotChange = (values: ProjectPickerValues | null, type?: ProjectPickerSections) =>
         SpotSentActions.handleSpotChange(this.props.spotIndex, values, type);
 
@@ -280,6 +326,9 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
 
     private handleSentViaMethodsChange = (method: number) =>
         SpotSentActions.handleSentViaMethodsChange(this.props.spotIndex, method);
+
+    private handleGraphicsSentViaMethodsChange = (method: number) =>
+        SpotSentActions.handleGraphicsSentViaMethodsChange(this.props.spotIndex, method);
 
     private handleSpotAddingEditor = (userId: number) =>
         SpotSentActions.handleSpotAddingEditor(this.props.spotIndex, userId);
@@ -322,4 +371,208 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
             return [];
         }
     }
+
+    private getGraphicsSentViaMethods(): JSX.Element[] {
+        if (SpotSentStore.spotSentGraphicsSentViaMethodOptions && SpotSentStore.spotSentGraphicsSentViaMethodOptions.length > 0) {
+            return SpotSentStore.spotSentGraphicsSentViaMethodOptions.map((method: SpotSentOptionsChildrenFromApi, index: number) => {
+                return (
+                    <Checkmark
+                        key={'sent-via-method-' + index}
+                        onClick={() => {
+                            this.handleGraphicsSentViaMethodsChange(method.id);
+                        }}
+                        checked={this.props.spot.sentGraphicsViaMethod.includes(method.id)}
+                        label={method.name}
+                        type={'no-icon'}
+                    />
+                );
+            });
+        } else {
+            return [];
+        }
+    }
+
+    private getFilesWorkOnSection(): JSX.Element | null {
+        return (
+            <Section title="Files worked on">
+                <Table
+                    type="compact"
+                    header={[
+                        { title: 'Filename', align: 'left' },
+                        { title: 'Description', align: 'left' },
+                        { title: '', align: 'center' },
+                    ]}
+                    columnsWidths={['316px', '350px', '110px']}
+                >
+                    {this.state.files.map((file: {file_name: string, file_description: string, }, fileIndex) => (
+                        <TableRow key={fileIndex}>
+                            <TableCell>
+                                <Input
+                                    maxWidth={266}
+                                    label="Filename"
+                                    value={file.file_name}
+                                    onChange={this.handleFileChangeName(fileIndex)}
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    minWidth={320}
+                                    label="Description (optional)"
+                                    value={file.file_description}
+                                    onChange={this.handleFileChangeDescription(fileIndex)}
+                                />
+                            </TableCell>
+                            <TableCell >
+                                <div className={s.fileCheckbox}>
+                                    <ButtonClose
+                                        onClick={this.handleFileRemove(fileIndex)}
+                                        label=""
+                                    />
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+
+                    {(this.state.files.length <= 0) && (
+                        <TableRow key="no-files">
+                            <TableCell colSpan={4}>
+                                <Paragraph type="alert">Files are required</Paragraph>
+                            </TableCell>
+                        </TableRow>
+                    )}
+
+                    <TableRow key="add">
+                        <TableCell colSpan={4} align="right">
+                            <ButtonAdd
+                                onClick={this.handleFileAdd}
+                                label="Add file names"
+                                labelOnLeft={true}
+                                float="right"
+                            />
+                        </TableCell>
+                    </TableRow>
+                </Table>
+                <TextAreaFile 
+                    config={this.state} 
+                    textareaOnFocusHandler={this.textareaOnFocusHandler} 
+                    textareaOnBlurHandler={this.textareaOnBlurHandler}
+                    textareaOnChangeHandler={this.textareaOnChangeHandler}
+                />
+            </Section>
+        );
+    }
+
+    textareaOnFocusHandler = () => {
+        if (this.state.textareaEmpty) {
+            this.setState({
+                textareaEmpty: false
+            });
+        }
+    }
+
+    textareaOnBlurHandler = () => {
+        if (!this.state.textareaValue) {
+            this.setState({
+                textareaEmpty: true
+            });
+        }
+    }
+
+    textareaOnChangeHandler = e => {
+        this.setState({
+            textareaValue: e.target.value,
+        });
+    }
+
+    addEmptyFileItem = () => {
+        if (this.state.files.length > 0 && (this.state.files[this.state.files.length - 1] as any).file_name === '') {
+            return;
+        }
+        const filesList: any = this.state.files.slice();
+        filesList.push({file_name: '', file_description: ''});
+        this.setState({
+            files: filesList,
+        });
+    }
+
+    addFileArray = (arr: any) => {
+        let files: any = [];
+        if (this.state.files.length > 0 && (this.state.files[this.state.files.length - 1 ] as any).file_name === '') {
+            let splicedStateFiles = this.state.files.slice();
+            splicedStateFiles.splice(-1, 1);
+            let tempFilesList: any = [];
+            arr.forEach((item, i) => {
+                tempFilesList.push({file_name: item, file_description: ''});
+            });
+            files = splicedStateFiles.concat(tempFilesList);
+        } else {
+            let tempFilesList: any = [];
+            arr.forEach((item, i) => {
+                tempFilesList.push({file_name: item, file_description: ''});
+            });
+            files = this.state.files.concat(tempFilesList);
+        }
+        this.setState({
+            files: files,
+        });
+            
+    }
+
+    private handleFileAdd = () => {
+        if (this.state.textareaValue) {
+            const arr: string[] | null = this.state.textareaValue.match(/[^\r\n]+/g);
+            if (arr) {
+                this.addFileArray(arr);
+                this.setState({
+                    textareaValue: '',
+                    textareaEmpty: true,
+                });
+            }
+        } else {
+            
+            this.addEmptyFileItem();
+        }
+    };
+
+    handleFileChangeName = (index) => e => {
+        const filesList = this.state.files.map((item: {file_name: string, file_description: string}, i) => {
+            if (index === i) {
+                return {
+                    file_name: e.target.value,
+                    file_description: item.file_description,
+                };
+            } else {
+                return item;
+            }
+        });
+        this.setState({
+            files: filesList,
+        });
+    }
+
+    handleFileChangeDescription = (index) => e => {
+        const filesList = this.state.files.map((item: {file_name: string, file_description: string}, i) => {
+            if (index === i) {
+                return {
+                    file_name: item.file_name,
+                    file_description: e.target.value
+                };
+            } else {
+                return item;
+            }
+        });
+        this.setState({
+            files: filesList,
+        });
+    }
+
+    handleFileRemove = (index) => e => {
+        const filesList = this.state.files.filter((item, i) => {
+            return index !== i;
+        });
+        this.setState({
+            files: filesList,
+        });
+    }
+
 }

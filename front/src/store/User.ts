@@ -12,18 +12,29 @@ export class User {
     public get isLoggedIn(): boolean {
         return this.token !== null && this.token !== '' && this.data !== null && Boolean(this.data.status);
     }
-
     @computed
     public get routes(): Route[] {
         return this.isLoggedIn
-            ? routes.filter(
-                route =>
-                    route.allowAllUsers ||
-                    (this.data !== null
-                        ? this.data.allowedRouteKeys.indexOf(route.accessKey) !== -1
-                        : false)
-            )
+            ? routes.filter(route => {
+                if (route.allowAllUsers) {
+                    return true;
+                }
+                if (this.data !== null && route.subModuleAccess && !this.getSubmoduleAccess(route.subModuleAccess, this.data.moduleAccess)) {
+                    return false;
+                }
+                if (this.data !== null && this.data.allowedRouteKeys.indexOf(route.accessKey) !== -1) {
+                    return true;
+                }
+                return false;
+            })
             : [];
+    }
+
+    getSubmoduleAccess = (routeKey, subModulesArr) => {
+        const value = subModulesArr[1].subModule.find(elem => {
+            return elem.id === routeKey;
+        });
+        return value ? true : false;
     }
 
     constructor() {
