@@ -53,8 +53,10 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                         ) 
                         : (
                         <Checkmark
-                            onClick={this.checkmarkClickHander}
-                            checked={spotSentDetails.status === 2}
+                            // onClick={this.checkmarkClickHander}
+                            // checked={spotSentDetails.status === 2}
+                            onClick={this.completedToggleHandler}
+                            checked={this.state.isGraphicsCompleted}
                             label="Ready to be sent"
                             labelOnLeft={true}
                             type={'no-icon'}
@@ -77,6 +79,10 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
         this.setState(prevState => ({isGraphicsCompleted: !prevState.isGraphicsCompleted}));
     }
 
+    // private completedToggleHandler = () => {
+    //     this.setState(prevState => ({isGraphicsCompleted: !prevState.isGraphicsCompleted}));
+    // }
+
     private checkmarkClickHander = () => {
         if (this.props.store && this.props.store.spotSent) {
             const value = this.props.store.spotSent.spotSentDetails.status === 2 ? false : true;
@@ -95,6 +101,12 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                 if (this.props.prevLocation && this.props.prevLocation === 'graphics') {
                     if (this.state.isGraphicsCompleted) {
                         spot.line_status_id = 4;
+                    } else {
+                        spot.line_status_id = 1;
+                    }
+                } else {
+                    if (this.state.isGraphicsCompleted) {
+                        spot.line_status_id = 2;
                     } else {
                         spot.line_status_id = 1;
                     }
