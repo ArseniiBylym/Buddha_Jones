@@ -355,6 +355,10 @@ export class SpotSentActionsClass {
                         }
                         CampaignPeopleActions.fetchEditorsFromProjectCampaign(values.projectCampaign.id);
                     }
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_id = null;
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_name = '';
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = null;
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = '';
                     break;
                 case ProjectPickerSections.spot:
                     if (values && values.spot) {
@@ -365,6 +369,8 @@ export class SpotSentActionsClass {
                             (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_name = values.spot.name;
                         }
                     }
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = null;
+                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = '';
                     break;
                 case ProjectPickerSections.version:
                     if (values && values.version) {
