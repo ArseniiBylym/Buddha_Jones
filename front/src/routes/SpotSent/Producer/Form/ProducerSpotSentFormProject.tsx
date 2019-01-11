@@ -25,18 +25,18 @@ export class ProducerSpotSentFormProject extends React.Component<ProducerSpotSen
         return (
             <>
                 <ProjectPicker
-                    headerElements={[
-                        {
-                            element: (
-                                <DatePicker
-                                    key="date-picker"
-                                    label="Spot sent date"
-                                    value={this.props.date}
-                                    align="right"
-                                />
-                            ),
-                        },
-                    ]}
+                    // headerElements={[
+                    //     {
+                    //         element: (
+                    //             <DatePicker
+                    //                 key="date-picker"
+                    //                 label="Spot sent date"
+                    //                 value={this.props.date}
+                    //                 align="right"
+                    //             />
+                    //         ),
+                    //     },
+                    // ]}
                     onChange={this.handleProjectChange}
                     forUserId={this.props.store!.user.data!.id}
                     value={{
