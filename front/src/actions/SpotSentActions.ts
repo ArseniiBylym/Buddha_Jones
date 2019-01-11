@@ -142,10 +142,10 @@ export class SpotSentActionsClass {
                             prod_accept: spot.prodAccept,
                             sent_via_method: (spot.sentViaMethod) ? spot.sentViaMethod.split(',').map((method: string) => {
                                 return parseInt(method, 0);
-                            }) : null,
+                            }) : [],
                             graphics_sent_via_method: (spot.sentGraphicsViaMethod) ? spot.sentGraphicsViaMethod.split(',').map((method: string) => {
                                 return parseInt(method, 0);
-                            }) : null,
+                            }) : [],
                         };
                     }),
                     finish_option: response.finishOption,
