@@ -472,7 +472,8 @@ class ProjectRepository extends EntityRepository
                 ptc.firstPointOfContactId,
                 ptc.requestWritingTeam, ptc.writingTeamNotes,
                 ptc.requestMusicTeam, ptc.musicTeamNotes, ptc.note,
-                ptc.budget, ptc.budgetNote, ptc.por, ptc.invoiceContact, ptc.materialReceiveDate,
+                ptc.budget, ptc.budgetNote, ptc.graphicsBudgetNote,
+                ptc.por, ptc.invoiceContact, ptc.materialReceiveDate,
                 ptc.approvedByBilling,
                 ptc.customerId, cu.cardname AS customerName,
                 ptc.channelId, ch.channelName

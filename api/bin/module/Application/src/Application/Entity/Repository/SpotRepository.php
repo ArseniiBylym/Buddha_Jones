@@ -173,6 +173,7 @@ class SpotRepository extends EntityRepository
                 "rasterSize",
                 "rasterSizeNote",
                 "musicCueSheet",
+                "musicNote",
                 "gfxFinish",
                 "audioPrep",
                 "audio",
@@ -190,6 +191,8 @@ class SpotRepository extends EntityRepository
                 "customerContact",
                 "spotSentType",
                 "allGraphicsResend",
+                "graphicsNote",
+                "finalNarr",
                 "createdBy",
                 "updatedBy",
                 "createdAt",
@@ -1033,14 +1036,13 @@ class SpotRepository extends EntityRepository
                         ss.allGraphicsResend,
                         ss.isPdf,
                         ss.spotSentType,
-                        ss.notes,
                         ss.internalNote,
-                        ss.studioNote,
                         ss.spotResend,
                         ss.editor,
                         ss.customerContact,
                         ss.spotSentDate,
-                        ss.createdAt";
+                        ss.createdAt,
+                        ss.updatedAt";
         } else {
             $columns = "COUNT(DISTINCT ss.id) AS total_count";
         }
@@ -1137,6 +1139,10 @@ class SpotRepository extends EntityRepository
 
             $endDate = new \DateTime($filter['end_date']);
             $endDate = $endDate->format('Y-m-d 23:59:59');
+        }
+
+        if (empty($filter['return_flat_result'])) {
+            $dqlFilter[] = " (ss.projectId IS NOT NULL AND ss.campaignId IS NOT NULL AND ss.spotId IS NOT NULL) ";
         }
 
         if (count($dqlFilter)) {
@@ -1399,17 +1405,6 @@ class SpotRepository extends EntityRepository
 
         if ($data) {
             $data['graphicsFile'] = $this->getSpotSendFiles($spotSentId);
-
-            // unset($data["projectId"]);
-            // unset($data["studioId"]);
-            // unset($data["campaignId"]);
-            // unset($data["customerId"]);
-            // unset($data["projectCampaignId"]);
-            // unset($data["spotId"]);
-            // unset($data["versionId"]);
-            // unset($data["spotSentRequestId"]);
-            // unset($data["trtId"]);
-            // unset($data["allGraphicsResend"]);
 
             return $data;
         }

@@ -165,9 +165,9 @@ class SpotSentController extends CustomAbstractActionController
         $deadline = $this->_commonRepo->filterPostData($data, 'deadline', 'datetime', $this->_commonRepo->filterPostData($existingData, 'deadline', 'datetimeObj', null));
         $spotSentDate = $this->_commonRepo->filterPostData($data, 'spot_sent_date', 'datetime', $this->_commonRepo->filterPostData($existingData, 'spotSentDate', 'datetimeObj', null));
         $finishingHouse = $this->_commonRepo->filterPostData($data, 'finishing_house', 'int', $this->_commonRepo->filterPostData($existingData, 'finishingHouse', 'int', null));
-        $framerate = $this->_commonRepo->filterPostData($data, 'framerate', 'string', $this->_commonRepo->filterPostData($existingData, 'framerate', 'string', null), true);
+        $framerate = $this->_commonRepo->filterPostData($data, 'framerate', 'json', $this->_commonRepo->filterPostData($existingData, 'framerate', null, null), true);
         $framerateNote = $this->_commonRepo->filterPostData($data, 'framerate_note', 'string', $this->_commonRepo->filterPostData($existingData, 'framerateNote', 'string', null), true);
-        $rasterSize = $this->_commonRepo->filterPostData($data, 'raster_size', 'string', $this->_commonRepo->filterPostData($existingData, 'rasterSize', 'string', null), true);
+        $rasterSize = $this->_commonRepo->filterPostData($data, 'raster_size', 'json', $this->_commonRepo->filterPostData($existingData, 'rasterSize', null, null), true);
         $rasterSizeNote = $this->_commonRepo->filterPostData($data, 'raster_size_note', 'string', $this->_commonRepo->filterPostData($existingData, 'rasterSizeNote', 'string', null), true);
         $musicCueSheet = $this->_commonRepo->filterPostData($data, 'music_cue_sheet', 'boolean', $this->_commonRepo->filterPostData($existingData, 'musicCueSheet', 'boolean', 0), true);
         $audioPrep = $this->_commonRepo->filterPostData($data, 'audio_prep', 'boolean', $this->_commonRepo->filterPostData($existingData, 'audioPrep', 'boolean', 0), true);
@@ -181,6 +181,9 @@ class SpotSentController extends CustomAbstractActionController
         $deliveryNote = $this->_commonRepo->filterPostData($data, 'delivery_note', 'string', $this->_commonRepo->filterPostData($existingData, 'deliveryNote', 'string', null), true);
         $statusId = $this->_commonRepo->filterPostData($data, 'status_id', 'int', $this->_commonRepo->filterPostData($existingData, 'statusId', 'int', null), true);
         $audioNote = $this->_commonRepo->filterPostData($data, 'audio_note', 'string', $this->_commonRepo->filterPostData($existingData, 'audioNote', 'string', null), true);
+        $audioNote = $this->_commonRepo->filterPostData($data, 'graphics_note', 'string', $this->_commonRepo->filterPostData($existingData, 'graphicsNote', 'string', null), true);
+        $audioNote = $this->_commonRepo->filterPostData($data, 'music_note', 'string', $this->_commonRepo->filterPostData($existingData, 'musicNote', 'string', null), true);
+        $audioNote = $this->_commonRepo->filterPostData($data, 'final_narr', 'string', $this->_commonRepo->filterPostData($existingData, 'finalNarr', 'string', null), true);
 
         $deliveryToClient = $this->_commonRepo->filterPostData($data, 'delivery_to_client', 'json', $this->_commonRepo->filterPostData($existingData, 'deliveryToClient', null, null), true);
         $audio = $this->_commonRepo->filterPostData($data, 'audio', 'json', $this->_commonRepo->filterPostData($existingData, 'audio', null, null), true);
@@ -198,6 +201,8 @@ class SpotSentController extends CustomAbstractActionController
         $audio = is_array($audio) ? $this->arrayToCommaSeparated($audio) : $audio;
         $deliveryToClient = is_array($deliveryToClient) ? $this->arrayToCommaSeparated($deliveryToClient, true) : $deliveryToClient;
         $customerContact = is_array($customerContact) ? $this->arrayToCommaSeparated($customerContact) : $customerContact;
+        $framerate = is_array($framerate) ? $this->arrayToCommaSeparated($framerate) : $framerate;
+        $rasterSize = is_array($rasterSize) ? $this->arrayToCommaSeparated($rasterSize) : $rasterSize;
 
         if ($isUpdate && !$spotVersionData) {
             $spotVersionData = $this->_spotRepo->getRawSpotVersionDataByRequestId($requestId);
@@ -528,6 +533,8 @@ class SpotSentController extends CustomAbstractActionController
                 $data['deliveryToClient'] = $this->commaSeparatedToArray($data['deliveryToClient'], true);
                 $data['audio'] = $this->commaSeparatedToArray($data['audio']);
                 $data['finishOption'] = $this->commaSeparatedToArray($data['finishOption'], true);
+                $data['framerate'] = $this->commaSeparatedToArray($data['framerate'], false, 'strval');
+                $data['rasterSize'] = $this->commaSeparatedToArray($data['rasterSize'], false, 'strval');
                 // $data['customerContact'] = $this->commaSeparatedToArray($data['customerContact']);
                 $data['finishingHouseName'] = null;
                 $data['customerContact'] = array();
@@ -583,7 +590,7 @@ class SpotSentController extends CustomAbstractActionController
         return ((is_array($arr) && count($arr)) ? implode(',', $arr) : null);
     }
 
-    private function commaSeparatedToArray($str, $isParentChild = false)
+    private function commaSeparatedToArray($str, $isParentChild = false, $filterFunction = 'intval')
     {
         if (!$str) {
             return array();
@@ -594,7 +601,7 @@ class SpotSentController extends CustomAbstractActionController
         if (!count($result)) {
             $result = null;
         } else {
-            $result = array_map('intval', $result);
+            $result = array_map($filterFunction, $result);
         }
 
         if ($isParentChild) {
