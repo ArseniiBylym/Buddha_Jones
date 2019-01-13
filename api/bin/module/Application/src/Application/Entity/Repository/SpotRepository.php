@@ -1141,6 +1141,10 @@ class SpotRepository extends EntityRepository
             $endDate = $endDate->format('Y-m-d 23:59:59');
         }
 
+        if (empty($filter['return_flat_result'])) {
+            $dqlFilter[] = " (ss.projectId IS NOT NULL AND ss.campaignId IS NOT NULL AND ss.spotId IS NOT NULL) ";
+        }
+
         if (count($dqlFilter)) {
             $dql .= " AND " . implode(" AND ", $dqlFilter);
         }

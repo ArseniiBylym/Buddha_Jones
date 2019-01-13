@@ -89,6 +89,7 @@ class ProjectCampaignController extends CustomAbstractActionController
                     if (!$canViewBudget) {
                         unset($row['budget']);
                         unset($row['budgetNote']);
+                        unset($row['graphicsBudgetNote']);
                     }
 
                     if (!$canViewNote) {
@@ -182,6 +183,7 @@ class ProjectCampaignController extends CustomAbstractActionController
             $musicTeamNote = ($canEditMusicTeam && isset($data['music_team_notes']) ? trim($data['music_team_notes']) : null);
             $note = ($canEditwNote && isset($data['note']) ? trim($data['note']) : null);
             $budgetNote = ($canEditBudget && isset($data['budget_note']) ? trim($data['budget_note']) : null);
+            $graphicsBudgetNote = ($canEditBudget && isset($data['graphics_budget_note']) ? trim($data['graphics_budget_note']) : null);
             $budget = ($canEditBudget && isset($data['budget']) ? trim($data['budget']) : null);
             $por = ($canEditPor && isset($data['por'])) ? $data['por'] : null;
             $invoiceContact = ($canEditInvoice && isset($data['invoice_contact'])) ? $data['invoice_contact'] : null;
@@ -308,6 +310,10 @@ class ProjectCampaignController extends CustomAbstractActionController
 
                     if ($budgetNote) {
                         $existingProjectToCampaign->setBudgetNote($budgetNote);
+                    }
+
+                    if ($graphicsBudgetNote) {
+                        $existingProjectToCampaign->setGraphicsBudgetNote($graphicsBudgetNote);
                     }
 
                     if ($approvedByBilling !== null) {
@@ -447,6 +453,7 @@ class ProjectCampaignController extends CustomAbstractActionController
                     if (!$canViewBudget) {
                         unset($data['budget']);
                         unset($data['budgetNote']);
+                        unset($data['graphicsBudgetNote']);
                     }
 
                     if (!$canViewNote) {

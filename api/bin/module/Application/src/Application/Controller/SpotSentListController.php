@@ -24,7 +24,7 @@ class SpotSentListController extends CustomAbstractActionController
 
         if ($checkSubModuleAccess) {
             if ($subModuleId == 1) { // initiate
-                $filter['line_status_id'] = array(1);
+                $filter['line_status_id'] = array(1,2,3,4);
             } else if ($subModuleId == 2) { // post spot sent
                 $filter['line_status_id'] = array(2,3);
             } else if ($subModuleId == 3) { // Spot sent for finish

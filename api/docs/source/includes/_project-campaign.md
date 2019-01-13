@@ -108,6 +108,9 @@ false | request_music_team | int | null | Send 0 or 1 to filter
 false | offset | int | 0 | Offset
 false | length | int | 20 | Length of expected result rows
 false | get_user | int | 0 | Send 0 or 1. Send 1 to get user, editor, designer and billing user for project+campaign
+false | budget | string | null | budget
+false | budget_note | string | null | budget note
+false | graphics_budget_note | string | null | graphcis budget note
 
 
 
@@ -207,6 +210,8 @@ false | writing_team_notes | string | null | Note for writing team
 false | music_team_notes | string | null | Note for music team
 false | note | string | null | Note for project campaign
 false | budget | string | null | Budget
+false | budget_note | string | null | budget note
+false | graphics_budget_note | string | null | graphcis budget note
 false | material_receive_date | string | null | material receive date
 false | customer_id | int | null | Customer id
 false | channel_id | int | null | Channel id (billing user will set that)
