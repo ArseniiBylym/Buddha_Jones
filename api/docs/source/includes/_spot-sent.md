@@ -877,6 +877,9 @@ false | delivery_to_client | string| null | Sent delivery to client option, json
 false | delivery_note | string | null | Delivery note
 false | audio | string | null | Sent audio option, json encoded  array ids like "[1,2,3,4]"
 false | audio_note | string | null | audio note
+false | music_note | string | null | music note
+false | graphics_note | string | null | graphics note
+false | final_narr | string | null | sent 'yes'/'no'/'not applicable'
 false | graphics_finish | int | 0 | send 0/1
 false | gfx_finish | int | 0 | send 0/1
 false | customer_contact | string| null | customer contact ids json encoded array ids like "[1,2,3,4]"
@@ -991,6 +994,9 @@ false | delivery_to_client | string| null | Sent delivery to client option, json
 false | delivery_note | string | null | Delivery note
 false | audio | string | null | Sent audio option, json encoded  array ids like "[1,2,3,4]"
 false | audio_note | string | null | audio note
+false | music_note | string | null | music note
+false | graphics_note | string | null | graphics note
+false | final_narr | string | null | sent 'yes'/'no'/'not applicable'
 false | graphics_finish | int | 0 | send 0/1
 false | gfx_finish | int | 0 | send 0/1
 false | customer_contact | string| null | customer contact ids json encoded array ids like "[1,2,3,4]"
