@@ -45,6 +45,12 @@ export class SpotsToBillGrid extends React.Component<SpotsToBillGridProps, {}> {
     @computed
     private get projectCampaignCards(): ProjectCampaignCard[] {
         return this.props.spots.list.reduce((cards: ProjectCampaignCard[], spot) => {
+            // When there is no spot ID, do not include the data
+            if (spot.spotId === null) {
+                return cards;
+            }
+
+            // Check if project campaign already exists in the accumulated array
             let index = cards.findIndex(c => c.projectCampaignId === spot.projectCampaignId);
             if (index === -1) {
                 index = cards.length;
@@ -62,6 +68,7 @@ export class SpotsToBillGrid extends React.Component<SpotsToBillGridProps, {}> {
                 });
             }
 
+            // Add spot to project campaign
             cards[index].spots.push({
                 id: spot.spotId,
                 name: spot.spotName,
