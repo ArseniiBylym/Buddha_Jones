@@ -18,6 +18,84 @@
 }
 
 .inBillCol {
-    min-width: 200px;
+    min-width: 236px;
     justify-content: flex-end;
+}
+
+.splitButton {
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    margin-right: 12px;
+    width: 24px;
+    height: 24px;
+    background: #eeeae7;
+    border: 1px solid #e2dbd5;
+    border-radius: 2px;
+    transition: 300ms background 0ms cubic-bezier(0.645, 0.045, 0.355, 1),
+        300ms border 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
+
+    & img {
+        width: 16px;
+        height: 16px;
+    }
+
+    &:hover {
+        background: #ffffff;
+        border-color: #0768d8;
+    }
+}
+
+.secondaryRows {
+    & > div {
+        &.splitTimeEntryHoursEmptyCol {
+            grid-column: 1 / span 1;
+        }
+
+        &.splitTimeEntryVisualLineCol {
+            grid-column: 2 / span 3;
+            position: relative;
+            background: url('../../../../assets/images/patterns/horizontal-dash-pattern.png') center repeat-x;
+            background-size: 7px 1px;
+
+            &::after {
+                content: '';
+                display: block;
+                position: absolute;
+                top: -12px;
+                left: 0;
+                width: 1px;
+                height: calc(50% + 12px);
+                background: url('../../../../assets/images/patterns/vertical-dash-pattern.png') top left repeat-y;
+                background-size: 1px 7px;
+            }
+        }
+
+        &.splitTimeEntryInBillCol {
+            display: flex;
+            grid-column: 5 / span 2;
+            padding-right: 54px;
+            justify-content: space-between;
+            align-content: center;
+            align-items: center;
+
+            & > p {
+                margin-right: 6px;
+                font-size: 0.8rem;
+                font-weight: 400;
+                color: #7e756d;
+            }
+        }
+    }
+
+    &.overtimeHoursRow {
+        & > div {
+            padding-top: 0 !important;
+        }
+    }
 }

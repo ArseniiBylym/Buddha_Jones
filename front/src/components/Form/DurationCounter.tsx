@@ -13,6 +13,8 @@ import { DurationCounterDropdown } from './DurationCounterDropdown';
 
 const s = require('./DurationCounter.css');
 
+export type DurationCounterExceedColor = 'default' | 'success' | 'alert';
+
 export interface DurationCounterDropdownEntry {
     value: number | string;
     isSelected: boolean;
@@ -29,7 +31,7 @@ export interface DurationCounterDropdownOptions {
 
 interface DurationCounterExceedProps {
     value: number;
-    color: 'default' | 'success' | 'alert';
+    color: DurationCounterExceedColor;
 }
 
 interface DurationCounterProps {

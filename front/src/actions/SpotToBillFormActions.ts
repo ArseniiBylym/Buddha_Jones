@@ -52,6 +52,11 @@ export class SpotToBillFormActionsClass {
     ) => {
         let object: ActivityInBill = {
             timeEntryId,
+            hoursAreSplit:
+                (typeof hours.overtimeHoursInMinutes === 'number' && hours.overtimeHoursInMinutes > 0) ||
+                (typeof hours.doubletimeHoursInMinutes === 'number' && hours.doubletimeHoursInMinutes > 0)
+                    ? true
+                    : false,
             regularHoursInMinutes: typeof hours.regularHoursInMinutes === 'number' ? hours.regularHoursInMinutes : 0,
             overtimeHoursInMinutes: typeof hours.overtimeHoursInMinutes === 'number' ? hours.overtimeHoursInMinutes : 0,
             doubletimeHoursInMinutes:
@@ -76,6 +81,14 @@ export class SpotToBillFormActionsClass {
             SpotToBillFormStore.selectedActivities[index] = object;
         } else {
             SpotToBillFormStore.selectedActivities.push(object);
+        }
+    };
+
+    @action
+    public splitTimeEntryHoursInActivitiesSelection = (timeEntryId: number) => {
+        const index = SpotToBillFormStore.selectedActivitiesIds.indexOf(timeEntryId);
+        if (index !== -1) {
+            SpotToBillFormStore.selectedActivities[index].hoursAreSplit = true;
         }
     };
 

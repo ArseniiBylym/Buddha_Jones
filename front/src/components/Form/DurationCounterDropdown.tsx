@@ -39,7 +39,7 @@ export class DurationCounterDropdown extends React.Component<DurationCounterDrop
             this.show = true;
 
             if (this.dropdown) {
-                const scroller = zenscroll.createScroller(this.dropdown, 128, this.buttonHeight);
+                const scroller = zenscroll.createScroller(this.dropdown, 128, 0);
                 const list = this.dropdown.firstElementChild;
                 if (list) {
                     const entries = list.getElementsByTagName('li');
@@ -94,8 +94,9 @@ export class DurationCounterDropdown extends React.Component<DurationCounterDrop
 
         // Ensure reasonable usable height
         // TODO: Add calculation for dynamic content
-        height += 256;
-        positionY -= 128;
+        const expand: number = 164;
+        height += expand * 2;
+        positionY -= expand;
 
         // Render portal
         return ReactDOM.createPortal(

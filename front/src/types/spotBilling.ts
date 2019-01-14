@@ -2,9 +2,14 @@ import { DateObjectFromApi } from './api';
 
 export interface ActivityInBill {
     timeEntryId: number;
+    hoursAreSplit: boolean;
     regularHoursInMinutes: number;
     overtimeHoursInMinutes: number;
     doubletimeHoursInMinutes: number;
+}
+
+export interface ActivityInBillWithBaseTime extends ActivityInBill {
+    baseHoursInMinutes: number;
 }
 
 export interface SpotBillFormFirstStage {

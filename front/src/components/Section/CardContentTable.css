@@ -79,4 +79,22 @@
             padding-right: 24px;
         }
     }
+
+    &.compact {
+        &:first-child {
+            & > div {
+                padding-top: 24px;
+            }
+        }
+
+        &:last-child {
+            & > div {
+                padding-bottom: 24px;
+            }
+        }
+
+        & > div {
+            padding: 6px 12px;
+        }
+    }
 }

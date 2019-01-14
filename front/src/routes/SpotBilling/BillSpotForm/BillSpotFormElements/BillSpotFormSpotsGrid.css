@@ -17,11 +17,18 @@
 }
 
 .summarySectionHeadline {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
     background: #eeeae7;
     padding: 12px 24px;
     margin-top: 24px;
-    font-size: 0.85rem;
-    font-weight: 600;
+
+    & > h3 {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
 
     &:first-child {
         margin-top: 0;

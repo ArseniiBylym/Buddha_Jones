@@ -1,16 +1,19 @@
-import { BillSpotFormProjectCampaignActivities } from '.';
 import { ButtonEdit } from 'components/Button';
 import { Paragraph } from 'components/Content';
-import { DurationCounter } from 'components/Form';
 import { Card, Section } from 'components/Section';
 import { DateHandler } from 'helpers/DateHandler';
 import { computed, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
-import { BillTimeEntry, SpotBillFormSpot } from 'types/spotBilling';
+import { ActivityInBillWithBaseTime, BillTimeEntry, SpotBillFormSpot } from 'types/spotBilling';
 import { BillSpotFormSpotsGridTable } from './BillSpotFormSpotsGridTable';
 import { BillSpotFormSpotsToAdd } from './BillSpotFormSpotsToAdd';
+import {
+    BillSpotFormProjectCampaignActivities,
+    BillActivitiesSectionSelectionTotal,
+    BillTimeEntriesSelectionTotals,
+} from '.';
 
 const s = require('./BillSpotFormSpotsGrid.css');
 
@@ -56,6 +59,77 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                 : [];
 
         return this.props.spots.filter(spot => spotsAddedToBill.findIndex(spotId => spotId === spot.spotId) === -1);
+    }
+
+    @computed private get selectedProjectEntries(): ActivityInBillWithBaseTime[] {
+        return this.props.unbilledProjectTimeEntries.reduce((activities: ActivityInBillWithBaseTime[], timeEntry) => {
+            const inSelection = this.props.store!.spotToBillForm.selectedActivitiesIds.indexOf(timeEntry.timeEntryId);
+            if (inSelection !== -1) {
+                const selection = this.props.store!.spotToBillForm.selectedActivities[inSelection];
+
+                activities.push({
+                    ...selection,
+                    baseHoursInMinutes: DateHandler.convertHoursDotMinutesToTotalMinutes(timeEntry.duration),
+                });
+            }
+
+            return activities;
+        }, []);
+    }
+
+    @computed private get selectedProjectCampaignEntries(): ActivityInBillWithBaseTime[] {
+        return this.props.unbilledProjectCampaignTimeEntries.reduce(
+            (activities: ActivityInBillWithBaseTime[], timeEntry) => {
+                const inSelection = this.props.store!.spotToBillForm.selectedActivitiesIds.indexOf(
+                    timeEntry.timeEntryId
+                );
+                if (inSelection !== -1) {
+                    const selection = this.props.store!.spotToBillForm.selectedActivities[inSelection];
+
+                    activities.push({
+                        ...selection,
+                        baseHoursInMinutes: DateHandler.convertHoursDotMinutesToTotalMinutes(timeEntry.duration),
+                    });
+                }
+
+                return activities;
+            },
+            []
+        );
+    }
+
+    @computed private get selectedEntriesHoursDifference(): {
+        project: BillTimeEntriesSelectionTotals;
+        projectCampaign: BillTimeEntriesSelectionTotals;
+    } {
+        let base: number = 0;
+        let adjusted: number = 0;
+
+        this.selectedProjectEntries.forEach(entry => {
+            base += entry.baseHoursInMinutes;
+            adjusted += entry.regularHoursInMinutes + entry.overtimeHoursInMinutes + entry.doubletimeHoursInMinutes;
+        });
+
+        const project: BillTimeEntriesSelectionTotals = {
+            selectedBaseMinutes: base,
+            selectedAdjustedMinutes: adjusted,
+        };
+
+        base = 0;
+        adjusted = 0;
+
+        this.selectedProjectCampaignEntries.forEach(entry => {
+            base += entry.baseHoursInMinutes;
+            adjusted += entry.regularHoursInMinutes + entry.overtimeHoursInMinutes + entry.doubletimeHoursInMinutes;
+        });
+
+        return {
+            project,
+            projectCampaign: {
+                selectedBaseMinutes: base,
+                selectedAdjustedMinutes: adjusted,
+            },
+        };
     }
 
     public render() {
@@ -141,7 +215,19 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                     >
                         {this.unbilledProjectTimeEntriesTotalMinutes > 0 && (
                             <React.Fragment>
-                                <div className={s.summarySectionHeadline}>Project activities:</div>
+                                <div className={s.summarySectionHeadline}>
+                                    <h3>Project activities:</h3>
+
+                                    <BillActivitiesSectionSelectionTotal
+                                        selectedBaseMinutes={
+                                            this.selectedEntriesHoursDifference.project.selectedBaseMinutes
+                                        }
+                                        selectedAdjustedMinutes={
+                                            this.selectedEntriesHoursDifference.project.selectedAdjustedMinutes
+                                        }
+                                    />
+                                </div>
+
                                 <BillSpotFormProjectCampaignActivities
                                     timeEntries={this.props.unbilledProjectTimeEntries}
                                 />
@@ -150,7 +236,19 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
 
                         {this.unbilledProjectCampaignTimeEntriesTotalMinutes > 0 && (
                             <React.Fragment>
-                                <div className={s.summarySectionHeadline}>Campaign activities:</div>
+                                <div className={s.summarySectionHeadline}>
+                                    <h3>Campaign activities:</h3>
+
+                                    <BillActivitiesSectionSelectionTotal
+                                        selectedBaseMinutes={
+                                            this.selectedEntriesHoursDifference.projectCampaign.selectedBaseMinutes
+                                        }
+                                        selectedAdjustedMinutes={
+                                            this.selectedEntriesHoursDifference.projectCampaign.selectedAdjustedMinutes
+                                        }
+                                    />
+                                </div>
+
                                 <BillSpotFormProjectCampaignActivities
                                     timeEntries={this.props.unbilledProjectCampaignTimeEntries}
                                 />
