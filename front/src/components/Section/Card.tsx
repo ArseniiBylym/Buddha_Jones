@@ -15,6 +15,7 @@ interface CardProps {
     classNameForHeader?: string;
     classNameForContentAboveTitleBar?: string;
     classNameForHeaderTitleBar?: string;
+    classNameForHeaderTitle?: string;
     classNameForHeaderContent?: string;
     classNameForContent?: string;
     title?: string;
@@ -42,6 +43,7 @@ export class Card extends React.Component<CardProps, {}> {
             classNameForHeader: undefined,
             classNameForContentAboveTitleBar: undefined,
             classNameForHeaderTitleBar: undefined,
+            classNameForHeaderTitle: undefined,
             classNameForHeaderContent: undefined,
             classNameForContent: undefined,
             title: '',
@@ -131,7 +133,10 @@ export class Card extends React.Component<CardProps, {}> {
             >
                 <div className={s.left}>
                     {(this.props.isExpandable && (
-                        <button onClick={this.handleTogglingExpansion} className={s.name}>
+                        <button
+                            onClick={this.handleTogglingExpansion}
+                            className={classNames(s.name, s.nameButton, this.props.classNameForHeaderTitle)}
+                        >
                             <span className={classNames({ [s.expanded]: this.isExpanded })}>
                                 <IconArrowTopBlue className={s.arrowCollapse} width={10} height={16} />
                                 <IconDropdownArrow className={s.arrowExpand} width={12} height={8} />
@@ -141,7 +146,7 @@ export class Card extends React.Component<CardProps, {}> {
                             {this.renderSubTitle()}
                         </button>
                     )) || (
-                        <p className={s.name}>
+                        <p className={classNames(s.name, this.props.classNameForHeaderTitle)}>
                             {this.renderTitle()}
                             {this.renderSubTitle()}
                         </p>
