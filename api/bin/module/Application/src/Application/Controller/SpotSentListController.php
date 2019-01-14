@@ -19,12 +19,13 @@ class SpotSentListController extends CustomAbstractActionController
         $filter['current_user_id'] = $this->_user_id;
         $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
         $filter['return_producer_list'] = true;
+        $filter['return_graphics_file_list'] = true;
 
         $checkSubModuleAccess = $this->_moduleRepo->checkUserSubModule($this->_user_type_id, $subModuleId);
 
         if ($checkSubModuleAccess) {
             if ($subModuleId == 1) { // initiate
-                $filter['line_status_id'] = array(1);
+                $filter['line_status_id'] = array(1,2,3,4);
             } else if ($subModuleId == 2) { // post spot sent
                 $filter['line_status_id'] = array(2,3);
             } else if ($subModuleId == 3) { // Spot sent for finish

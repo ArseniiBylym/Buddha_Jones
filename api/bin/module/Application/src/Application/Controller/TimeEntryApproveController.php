@@ -133,7 +133,7 @@ class TimeEntryApproveController extends CustomAbstractActionController
             } else {
                 $response = array(
                     'status' => 0,
-                    'message' => 'Please provide required data(ids and status(approve=4, reopen=6).'
+                    'message' => 'Please provide required data(ids and status).'
                 );
             }
         } else {

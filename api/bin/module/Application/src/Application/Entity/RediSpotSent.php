@@ -148,6 +148,13 @@ class RediSpotSent
     private $musicCueSheet;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="music_note", type="text", nullable=true)
+     */
+    private $musicNote;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="gfx_finish", type="smallint", nullable=true)
@@ -349,6 +356,20 @@ class RediSpotSent
      * @ORM\Column(name="graphics_status_id", type="integer", nullable=true)
      */
     private $graphicsStatusId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="graphics_note", type="text", nullable=true)
+     */
+    private $graphicsNote;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="final_narr", type="string", length=20, nullable=true)
+     */
+    private $finalNarr;
 
     /**
      * @var integer
@@ -802,6 +823,29 @@ class RediSpotSent
     public function getMusicCueSheet()
     {
         return $this->musicCueSheet;
+    }
+
+    /**
+     * Set musicNote
+     *
+     * @param string $musicNote
+     * @return RediSpotSent
+     */
+    public function setMusicNote($musicNote)
+    {
+        $this->musicNote = $musicNote;
+
+        return $this;
+    }
+
+    /**
+     * Get musicNote
+     *
+     * @return string 
+     */
+    public function getMusicNote()
+    {
+        return $this->musicNote;
     }
 
     /**
@@ -1469,6 +1513,52 @@ class RediSpotSent
     public function getGraphicsStatusId()
     {
         return $this->graphicsStatusId;
+    }
+
+    /**
+     * Set graphicsNote
+     *
+     * @param string $graphicsNote
+     * @return RediSpotSent
+     */
+    public function setGraphicsNote($graphicsNote)
+    {
+        $this->graphicsNote = $graphicsNote;
+
+        return $this;
+    }
+
+    /**
+     * Get graphicsNote
+     *
+     * @return string 
+     */
+    public function getGraphicsNote()
+    {
+        return $this->graphicsNote;
+    }
+
+    /**
+     * Set finalNarr
+     *
+     * @param string $finalNarr
+     * @return RediSpotSent
+     */
+    public function setFinalNarr($finalNarr)
+    {
+        $this->finalNarr = $finalNarr;
+
+        return $this;
+    }
+
+    /**
+     * Get finalNarr
+     *
+     * @return string 
+     */
+    public function getFinalNarr()
+    {
+        return $this->finalNarr;
     }
 
     /**

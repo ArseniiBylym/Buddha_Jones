@@ -218,9 +218,9 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         {spotSentDetails.spot_version.length <= 0 &&
                         <Paragraph type="dim">No spots have been added.</Paragraph>}
 
-                        <div className={s.spotsSummary}>
+                        {this.addSpotAllowed() && <div className={s.spotsSummary}>
                             <ButtonAdd onClick={this.handleCreateSpot} label="Add spot" labelOnLeft={true}/>
-                        </div>
+                        </div>}
                     </Section>
                     }
 
@@ -359,6 +359,19 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             files: arr,
         });
     } 
+
+    private addSpotAllowed = () => {
+        if (this.props.store) {
+            let spots = this.props.store.spotSent.spotSentDetails.spot_version;
+            if (spots && spots.length > 0) {
+                const lastSpot: any = spots[spots.length - 1];
+                if (!lastSpot.campaign_id || !lastSpot.spot_id) {
+                    return false;
+                }
+            }
+        } 
+        return true;
+    }
 }
 
 export default ProducerSpotSentForm;

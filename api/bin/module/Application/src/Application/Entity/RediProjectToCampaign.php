@@ -101,6 +101,13 @@ class RediProjectToCampaign
     /**
      * @var string
      *
+     * @ORM\Column(name="graphics_budget_note", type="text", nullable=true)
+     */
+    private $graphicsBudgetNote;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="POR", type="string", length=200, nullable=true)
      */
     private $por;
@@ -396,6 +403,29 @@ class RediProjectToCampaign
     public function getBudgetNote()
     {
         return $this->budgetNote;
+    }
+
+    /**
+     * Set graphicsBudgetNote
+     *
+     * @param string $graphicsBudgetNote
+     * @return RediProjectToCampaign
+     */
+    public function setGraphicsBudgetNote($graphicsBudgetNote)
+    {
+        $this->graphicsBudgetNote = $graphicsBudgetNote;
+
+        return $this;
+    }
+
+    /**
+     * Get graphicsBudgetNote
+     *
+     * @return string 
+     */
+    public function getGraphicsBudgetNote()
+    {
+        return $this->graphicsBudgetNote;
     }
 
     /**
