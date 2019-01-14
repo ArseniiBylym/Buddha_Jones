@@ -5,6 +5,7 @@ import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { SpotBillFormSummary } from 'types/spotBilling';
 import { BillSpotFormProjectHistory, BillSpotFormSpotsGrid } from '../BillSpotFormElements';
+import { BillSpotFormActivities } from './BillSpotFormActivities';
 
 interface Props extends AppOnlyStoreState {
     billData: SpotBillFormSummary;
@@ -32,11 +33,18 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
 
                 <BillSpotFormSpotsGrid
                     spots={billData.spots}
+                    unbilledProjectTimeEntries={billData.unbilledProjectTimeEntries}
+                    unbilledProjectCampaignTimeEntries={billData.unbilledProjectCampaignTimeEntries}
                     campaignName={billData.campaignName}
                     projectCampaignName={billData.projectCampaignName}
                     projectCampaignId={billData.projectCampaignId}
                     editable={true}
                 />
+
+                <BillSpotFormActivities />
+
+                <br />
+                <br />
 
                 <BillSpotFormBottomBar isSaving={false} />
             </React.Fragment>

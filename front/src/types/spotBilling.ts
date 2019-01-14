@@ -1,5 +1,12 @@
 import { DateObjectFromApi } from './api';
 
+export interface ActivityInBill {
+    timeEntryId: number;
+    regularHoursInMinutes: number;
+    overtimeHoursInMinutes: number;
+    doubletimeHoursInMinutes: number;
+}
+
 export interface SpotBillFormFirstStage {
     spotId: number;
     versionIds: number[];
@@ -27,24 +34,29 @@ export interface SpotBillFormData {
     activities: SpotBillFormActivityGroup[];
 }
 
-export interface SpotBillTimeEntry {
-    id: number;
-    userId: number;
-    username: string;
-    firstName: string | null;
-    lastName: string | null;
-    initials: string | null;
-    activityId: number;
-    activityValue: string;
-    activityDescription: string | null;
-    activityType: string;
-    activityTypeId: number;
-    duration: string;
-    startDate: DateObjectFromApi;
+export interface BillTimeEntry {
+    timeEntryId: number;
+    projectId: number;
+    projectName: string;
+    projectCampaignId: number | null;
+    campaignName: string | null;
+    projectCampaignName: string | null;
     spotId: number | null;
     spotName: string | null;
     versionId: number | null;
     versionName: string | null;
+    activityId: number;
+    activityName: string;
+    activityDescription: string | null;
+    activityIsBillable: boolean;
+    userId: number;
+    userName: string;
+    userFirstName: string;
+    userLastName: string | null;
+    userInitials: string | null;
+    userImage: string | null;
+    duration: string;
+    startDate: DateObjectFromApi;
 }
 
 export interface SpotBillFormSpot {
@@ -55,7 +67,7 @@ export interface SpotBillFormSpot {
     firstRevisionCost: number | null;
     firstRevisionIsBilled: boolean;
     graphicsIncluded: boolean;
-    timeEntries: SpotBillTimeEntry[];
+    timeEntries: BillTimeEntry[];
 }
 
 export interface ProjectBillsHistoryEntry {
@@ -69,19 +81,6 @@ export interface ProjectBillsHistoryEntry {
     createdByUserLastName: string | null;
     createdByUserImage: string | null;
     createdAt: DateObjectFromApi;
-}
-
-export interface BillTimeEntry {
-    activityId: number;
-    activityValue: string;
-    activityDescription: string | null;
-    duration: string;
-    userId: number;
-    userName: string;
-    userFirstName: string;
-    userLastName: string | null;
-    userImage: string | null;
-    startDate: DateObjectFromApi;
 }
 
 export interface SpotBillFormSummary {

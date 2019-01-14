@@ -1,0 +1,23 @@
+.entry {
+    display: contents;
+}
+
+.activityCol {
+    & strong {
+        margin-right: 8px;
+    }
+}
+
+.dateCol {
+    font-weight: 600;
+
+    & span {
+        font-weight: 400;
+        margin-right: 8px;
+    }
+}
+
+.inBillCol {
+    min-width: 200px;
+    justify-content: flex-end;
+}

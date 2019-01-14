@@ -10,4 +10,5 @@ export * from './AlphabeticalOptionsList';
 export * from './Toggle';
 export * from './ToggleButtons';
 export * from './Counter';
+export * from './DurationCounter';
 export * from './Select';

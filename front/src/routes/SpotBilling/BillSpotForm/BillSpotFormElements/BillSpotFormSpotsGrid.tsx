@@ -1,11 +1,14 @@
+import { BillSpotFormProjectCampaignActivities } from '.';
 import { ButtonEdit } from 'components/Button';
 import { Paragraph } from 'components/Content';
+import { DurationCounter } from 'components/Form';
 import { Card, Section } from 'components/Section';
+import { DateHandler } from 'helpers/DateHandler';
 import { computed, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
-import { SpotBillFormSpot } from 'types/spotBilling';
+import { BillTimeEntry, SpotBillFormSpot } from 'types/spotBilling';
 import { BillSpotFormSpotsGridTable } from './BillSpotFormSpotsGridTable';
 import { BillSpotFormSpotsToAdd } from './BillSpotFormSpotsToAdd';
 
@@ -13,6 +16,8 @@ const s = require('./BillSpotFormSpotsGrid.css');
 
 interface Props extends AppOnlyStoreState {
     spots: SpotBillFormSpot[];
+    unbilledProjectTimeEntries: BillTimeEntry[];
+    unbilledProjectCampaignTimeEntries: BillTimeEntry[];
     editable: boolean;
     campaignName: string;
     projectCampaignName: string | null;
@@ -23,6 +28,26 @@ interface Props extends AppOnlyStoreState {
 @observer
 export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
     @observable private areSpotsInEditMode: boolean = false;
+
+    @computed private get unbilledProjectTimeEntriesTotalMinutes(): number {
+        return this.calculateTotalMinutesOfTimeEntries(this.props.unbilledProjectTimeEntries);
+    }
+
+    @computed private get unbilledProjectNonBillableTimeEntriesTotalMinutes(): number {
+        return this.calculateTotalMinutesOfTimeEntries(
+            this.props.unbilledProjectTimeEntries.filter(e => e.activityIsBillable === false)
+        );
+    }
+
+    @computed private get unbilledProjectCampaignTimeEntriesTotalMinutes(): number {
+        return this.calculateTotalMinutesOfTimeEntries(this.props.unbilledProjectCampaignTimeEntries);
+    }
+
+    @computed private get unbilledProjectCampaignNonBillableTimeEntriesTotalMinutes(): number {
+        return this.calculateTotalMinutesOfTimeEntries(
+            this.props.unbilledProjectCampaignTimeEntries.filter(e => e.activityIsBillable === false)
+        );
+    }
 
     @computed private get remainingSpotsToBill(): SpotBillFormSpot[] {
         const spotsAddedToBill: number[] =
@@ -39,27 +64,99 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                 <Section title="Project and campaign summary" noSeparator={true}>
                     <Card
                         isExpandable={true}
-                        title="View non-billable activities"
+                        title="View unbilled project and campaign activities"
                         titleWhenExpanded="Hide non-billable activities"
                         classNameForContentAboveTitleBar={s.projectAndCampaignSummary}
                         contentAboveTitleBar={
                             <React.Fragment>
                                 <div>
                                     <div className={s.titles}>
-                                        <h3>14h 30min</h3>
-                                        <h4>Non-billable project activities</h4>
+                                        <h3>
+                                            {this.unbilledProjectTimeEntriesTotalMinutes > 0
+                                                ? DateHandler.convertTotalMinutesToHM(
+                                                      this.unbilledProjectTimeEntriesTotalMinutes
+                                                  )
+                                                : 'None'}
+                                        </h3>
+                                        <h4>Unbilled project activities</h4>
+
+                                        <Paragraph
+                                            size="small"
+                                            type={
+                                                this.unbilledProjectNonBillableTimeEntriesTotalMinutes > 0
+                                                    ? 'alert'
+                                                    : 'dim'
+                                            }
+                                        >
+                                            {(this.unbilledProjectNonBillableTimeEntriesTotalMinutes > 0 && (
+                                                <React.Fragment>
+                                                    <strong>
+                                                        {DateHandler.convertTotalMinutesToHM(
+                                                            this.unbilledProjectNonBillableTimeEntriesTotalMinutes
+                                                        )}
+                                                    </strong>
+                                                    {' non-billable'}
+                                                </React.Fragment>
+                                            )) || <span>No non-billable hours</span>}
+                                        </Paragraph>
                                     </div>
                                 </div>
 
                                 <div>
                                     <div className={s.titles}>
-                                        <h3>6h 45min</h3>
-                                        <h4>Non-billable campaign activities</h4>
+                                        <h3>
+                                            {this.unbilledProjectCampaignTimeEntriesTotalMinutes > 0
+                                                ? DateHandler.convertTotalMinutesToHM(
+                                                      this.unbilledProjectCampaignTimeEntriesTotalMinutes
+                                                  )
+                                                : 'None'}
+                                        </h3>
+                                        <h4>Unbilled campaign activities</h4>
+
+                                        <Paragraph
+                                            size="small"
+                                            type={
+                                                this.unbilledProjectCampaignNonBillableTimeEntriesTotalMinutes > 0
+                                                    ? 'alert'
+                                                    : 'dim'
+                                            }
+                                        >
+                                            {(this.unbilledProjectCampaignNonBillableTimeEntriesTotalMinutes > 0 && (
+                                                <React.Fragment>
+                                                    <strong>
+                                                        {DateHandler.convertTotalMinutesToHM(
+                                                            this
+                                                                .unbilledProjectCampaignNonBillableTimeEntriesTotalMinutes
+                                                        )}
+                                                    </strong>
+                                                    {' non-billable'}
+                                                </React.Fragment>
+                                            )) || <span>No non-billable hours</span>}
+                                        </Paragraph>
                                     </div>
                                 </div>
                             </React.Fragment>
                         }
-                    />
+                        noPadding={true}
+                    >
+                        {this.unbilledProjectTimeEntriesTotalMinutes > 0 && (
+                            <React.Fragment>
+                                <div className={s.summarySectionHeadline}>Project activities:</div>
+                                <BillSpotFormProjectCampaignActivities
+                                    timeEntries={this.props.unbilledProjectTimeEntries}
+                                />
+                            </React.Fragment>
+                        )}
+
+                        {this.unbilledProjectCampaignTimeEntriesTotalMinutes > 0 && (
+                            <React.Fragment>
+                                <div className={s.summarySectionHeadline}>Campaign activities:</div>
+                                <BillSpotFormProjectCampaignActivities
+                                    timeEntries={this.props.unbilledProjectCampaignTimeEntries}
+                                />
+                            </React.Fragment>
+                        )}
+                    </Card>
                 </Section>
 
                 <Section
@@ -117,5 +214,14 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
 
     private handleTogglingEditMode = e => {
         this.areSpotsInEditMode = !this.areSpotsInEditMode;
+    };
+
+    private calculateTotalMinutesOfTimeEntries = (timeEntries: BillTimeEntry[]): number => {
+        return timeEntries.reduce((total: number, entry) => {
+            const minutes = DateHandler.convertHoursDotMinutesToTotalMinutes(entry.duration);
+            total += minutes;
+
+            return total;
+        }, 0);
     };
 }

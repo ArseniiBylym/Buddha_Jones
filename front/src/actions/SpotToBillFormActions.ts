@@ -1,6 +1,6 @@
 import { action } from 'mobx';
 import { SpotToBillFormStore } from 'store/AllStores';
-import { SpotBillFormData } from 'types/spotBilling';
+import { ActivityInBill, SpotBillFormData } from 'types/spotBilling';
 
 export class SpotToBillFormActionsClass {
     @action
@@ -10,6 +10,8 @@ export class SpotToBillFormActionsClass {
         SpotToBillFormStore.firstStage = [];
         SpotToBillFormStore.activities = [];
         SpotToBillFormStore.spotsAddedToBill = [];
+
+        SpotToBillFormStore.selectedActivities = [];
     };
 
     @action
@@ -35,6 +37,55 @@ export class SpotToBillFormActionsClass {
             SpotToBillFormStore.spotsAddedToBill = [
                 ...SpotToBillFormStore.spotsAddedToBill.slice(0, index),
                 ...SpotToBillFormStore.spotsAddedToBill.slice(index + 1),
+            ];
+        }
+    };
+
+    @action
+    public addTimeEntryToActivitiesSelection = (
+        timeEntryId: number,
+        hours: {
+            regularHoursInMinutes?: number;
+            overtimeHoursInMinutes?: number;
+            doubletimeHoursInMinutes?: number;
+        }
+    ) => {
+        let object: ActivityInBill = {
+            timeEntryId,
+            regularHoursInMinutes: typeof hours.regularHoursInMinutes === 'number' ? hours.regularHoursInMinutes : 0,
+            overtimeHoursInMinutes: typeof hours.overtimeHoursInMinutes === 'number' ? hours.overtimeHoursInMinutes : 0,
+            doubletimeHoursInMinutes:
+                typeof hours.doubletimeHoursInMinutes === 'number' ? hours.doubletimeHoursInMinutes : 0,
+        };
+
+        const index = SpotToBillFormStore.selectedActivitiesIds.indexOf(timeEntryId);
+        if (index !== -1) {
+            object.regularHoursInMinutes =
+                typeof hours.regularHoursInMinutes === 'number'
+                    ? hours.regularHoursInMinutes
+                    : SpotToBillFormStore.selectedActivities[index].regularHoursInMinutes;
+            object.overtimeHoursInMinutes =
+                typeof hours.overtimeHoursInMinutes === 'number'
+                    ? hours.overtimeHoursInMinutes
+                    : SpotToBillFormStore.selectedActivities[index].overtimeHoursInMinutes;
+            object.doubletimeHoursInMinutes =
+                typeof hours.doubletimeHoursInMinutes === 'number'
+                    ? hours.doubletimeHoursInMinutes
+                    : SpotToBillFormStore.selectedActivities[index].doubletimeHoursInMinutes;
+
+            SpotToBillFormStore.selectedActivities[index] = object;
+        } else {
+            SpotToBillFormStore.selectedActivities.push(object);
+        }
+    };
+
+    @action
+    public removeTimeEntryFromActivitiesSelection = (timeEntryId: number) => {
+        const index = SpotToBillFormStore.selectedActivitiesIds.indexOf(timeEntryId);
+        if (index !== -1) {
+            SpotToBillFormStore.selectedActivities = [
+                ...SpotToBillFormStore.selectedActivities.slice(0, index),
+                ...SpotToBillFormStore.selectedActivities.slice(index + 1),
             ];
         }
     };
