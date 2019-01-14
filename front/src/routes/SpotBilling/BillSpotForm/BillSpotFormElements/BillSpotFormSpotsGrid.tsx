@@ -225,6 +225,8 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                                         selectedAdjustedMinutes={
                                             this.selectedEntriesHoursDifference.project.selectedAdjustedMinutes
                                         }
+                                        totalMinutes={this.unbilledProjectTimeEntriesTotalMinutes}
+                                        areTotalMinutesUnbilled={false}
                                     />
                                 </div>
 
@@ -246,6 +248,8 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                                         selectedAdjustedMinutes={
                                             this.selectedEntriesHoursDifference.projectCampaign.selectedAdjustedMinutes
                                         }
+                                        totalMinutes={this.unbilledProjectCampaignTimeEntriesTotalMinutes}
+                                        areTotalMinutesUnbilled={false}
                                     />
                                 </div>
 

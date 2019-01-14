@@ -23,6 +23,12 @@
             color: #0768d8;
         }
 
+        &.total {
+            & strong {
+                color: #f55b1e;
+            }
+        }
+
         &.positive {
             & strong {
                 color: #189e44;

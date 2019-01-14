@@ -6,6 +6,7 @@ import { Col, Row } from 'components/Section';
 import { computed, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
+import AnimateHeight from 'react-animate-height';
 import { AppOnlyStoreState } from 'store/AllStores';
 
 const s = require('./BillSpotFormBottomBar.css');
@@ -35,10 +36,26 @@ export class BillSpotFormBottomBar extends React.Component<Props, {}> {
         );
     }
 
+    @computed
+    private get isAnythingSelected(): boolean {
+        return this.props.store!.spotToBillForm.selectedActivitiesIds.length > 0;
+    }
+
     public render() {
         return (
-            <BottomBar classNameInner={s.bottomBarInner} show={true}>
-                <Row alignContent="center" alignItems="center">
+            <BottomBar
+                classNameInner={s.bottomBarInner}
+                show={true}
+                showHeader={this.isAnythingSelected}
+                header={
+                    <Row justifyContent="center" alignContent="center" alignItems="center">
+                        <Col flex="0 1 auto">
+                            <p>Test</p>
+                        </Col>
+                    </Row>
+                }
+            >
+                <Row className={s.baseRow} alignContent="center" alignItems="center">
                     <Col>
                         {(this.props.isSaving && <LoadingIndicator label="Saving bill draft" labelOnRight={true} />) ||
                             (this.isEmpty && (

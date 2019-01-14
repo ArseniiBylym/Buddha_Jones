@@ -1,0 +1,6 @@
+.dayTitle {
+    & > strong {
+        font-size: 1rem !important;
+        font-weight: 700 !important;
+    }
+}

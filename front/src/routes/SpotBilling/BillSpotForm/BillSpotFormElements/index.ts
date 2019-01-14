@@ -7,3 +7,4 @@ export * from './BillSpotFormSpotsToAdd';
 export * from './BillSpotTimeEntryRow';
 export * from './BillSpotFormProjectCampaignActivities';
 export * from './BillActivitiesSectionSelectionTotal';
+export * from './BillSpotFormActivitiesTable';

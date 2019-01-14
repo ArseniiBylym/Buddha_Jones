@@ -11,6 +11,9 @@ export interface BillTimeEntriesSelectionTotals {
     selectedBaseMinutes: number;
     // Total minutes entered by billing user to time fields
     selectedAdjustedMinutes: number;
+    // Total minutes that have never been billed
+    totalMinutes?: number;
+    areTotalMinutesUnbilled?: boolean;
 }
 
 interface BillActivitiesSectionSelectionTotalProps extends BillTimeEntriesSelectionTotals {}
@@ -24,6 +27,13 @@ export class BillActivitiesSectionSelectionTotal extends React.Component<BillAct
     public render() {
         return (
             <div className={s.selection}>
+                {this.props.totalMinutes && (
+                    <p className={s.total}>
+                        <span>{this.props.areTotalMinutesUnbilled ? 'Total unbilled: ' : 'Total: '}</span>
+                        <strong>{DateHandler.convertTotalMinutesToHM(this.props.totalMinutes)}</strong>
+                    </p>
+                )}
+
                 <p>
                     <span>Selected: </span>
                     <strong>{DateHandler.convertTotalMinutesToHM(this.props.selectedBaseMinutes)}</strong>

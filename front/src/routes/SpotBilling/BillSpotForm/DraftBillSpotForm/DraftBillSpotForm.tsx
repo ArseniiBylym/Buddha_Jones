@@ -1,5 +1,6 @@
 import { BillSpotFormBottomBar } from '.';
 import { HeaderActions, SpotToBillFormActions } from 'actions';
+import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
@@ -14,6 +15,11 @@ interface Props extends AppOnlyStoreState {
 @inject('store')
 @observer
 export class DraftBillSpotForm extends React.Component<Props, {}> {
+    @computed
+    private get isAnyActivitySelected(): boolean {
+        return this.props.store!.spotToBillForm.selectedActivitiesIds.length > 0;
+    }
+
     constructor(props: Props) {
         super(props);
 
@@ -41,10 +47,7 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
                     editable={true}
                 />
 
-                <BillSpotFormActivities />
-
-                <br />
-                <br />
+                <BillSpotFormActivities spots={billData.spots} marginBottom={this.isAnyActivitySelected ? 64 : 24} />
 
                 <BillSpotFormBottomBar isSaving={false} />
             </React.Fragment>
