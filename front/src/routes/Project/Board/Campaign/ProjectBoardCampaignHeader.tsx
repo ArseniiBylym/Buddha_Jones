@@ -253,11 +253,11 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
 
     @action
     private handleProjectBoardPermissionToggle = () => {
-        if (!this.isEditMode) {
-            return;
-        }
-
+        // if (!this.isEditMode) {
+        //     return;
+        // }
         this.approvedByBilling = !this.approvedByBilling;
+        this.handleSaveApprovalChanges();
     };
 
     @action
@@ -302,6 +302,18 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
                 this.removing = 'error';
                 throw error;
             }
+        }
+    };
+
+    @action
+    private handleSaveApprovalChanges = async () => {
+        try {
+                await ProjectsDetailsActions.changeProjectCampaignApproved(
+                    this.props.campaign.projectCampaignId,
+                    this.approvedByBilling,
+                );
+        } catch (error) {
+            throw error;
         }
     };
 }
