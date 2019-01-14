@@ -11,7 +11,7 @@ interface TableRowProps {
     id?: string;
     className?: string | null;
     type?: 'default' | 'highlight' | 'subrow' | 'border' | 'compact';
-    onClick?: () => void;
+    onClick?: (id?: any) => void;
 }
 
 @observer

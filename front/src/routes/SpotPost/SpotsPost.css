@@ -1,0 +1,21 @@
+
+.tableContainer tbody tr {
+  font-size: 10px;
+  cursor: pointer;
+  padding: 5px 0;
+
+}
+.editorsContainer {
+  /* font-size: 8px; */
+}
+.tableContainer tbody tr span{
+  background-color: #d8c6b8;
+  color: Sienna;
+  font-weight: 600;
+  border-radius: 3px;
+  padding: 0 3px;
+  margin-left: 5px;
+}
+  
+  
+  

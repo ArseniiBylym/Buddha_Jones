@@ -18,6 +18,7 @@ import { TimeEntryPermissionsAsync } from './TimeCardPermissions/TimeEntryPermis
 import { TimeApprovalPermissionsAsync } from './TimeCardPermissions/TimeApprovalPermissions';
 import { SpotsToEDLAsync } from './SpotEDL/SpotsToEDL/SpotsToEDLAsync';
 import { SpotsToGraphicsSentAsync } from './SpotGraphicsSent/SpotsToGraphicsSent/SpotsToGraphicsSentAsync';
+import { SpotsPostAsync } from './SpotPost/SpotsPostAsync';
 
 // Icons
 const dashboardIcon = require('../assets/images/navigation/navigation-icon-dashboard.png');
@@ -114,6 +115,17 @@ export const routes: Route[] = [
         accessKey: RouteAccessKey.SpotSentByProducer,
         name: 'Spot sent',
         path: '/portal/studio/producer-spot-sent-details/:id',
+        exact: false,
+        allowAllUsers: true,
+    },
+    {
+        component: SpotsPostAsync,
+        key: 'spot-post-finish-request',
+        accessKey: RouteAccessKey.SpotBilling,
+        group: studioGroup,
+        name: 'Spot post/finish request',
+        path: '/portal/spot-post-finish-request',
+        entry: '/portal/spot-post-finish-request',
         exact: false,
         allowAllUsers: true,
     },
