@@ -1069,6 +1069,8 @@ class SpotRepository extends EntityRepository
                     WITH trt.id = s.trtId
                 LEFT JOIN \Application\Entity\RediFinishingHouse fh
                     WITH ss.finishingHouse = fh.id
+                LEFT JOIN \Application\Entity\RediProjectToCampaignUser ptcu
+                    WITH ptcu.projectCampaignId = ss.projectCampaignId
                 WHERE ss.billId IS NULL
                     AND ss.projectId IS NOT NULL
                     AND ss.campaignId IS NOT NULL
@@ -1077,7 +1079,7 @@ class SpotRepository extends EntityRepository
         $dqlFilter = [];
 
         if (!empty($filter['current_user_id'])) {
-            $dqlFilter[] = " ((ss.createdBy= :current_user_id AND ss.lineStatusId <= 1) OR ss.lineStatusId > 1) ";
+            $dqlFilter[] = " (((ss.createdBy= :current_user_id OR ptcu.userId = :current_user_id) AND ss.lineStatusId <= 1) OR ss.lineStatusId > 1) ";
         }
 
         if (!empty($filter['spot_sent_id'])) {
