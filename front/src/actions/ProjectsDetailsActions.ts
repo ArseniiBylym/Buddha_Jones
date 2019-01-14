@@ -898,6 +898,21 @@ export class ProjectDetailsActionsClass {
         }
     };
 
+    @action 
+    public changeProjectCampaignApproved = async (
+        projectCampaignId: number,
+        approvedByBilling: boolean,
+    ): Promise<boolean> => {
+        try {
+            await API.putData(APIPath.PROJECT_CAMPAIGN + '/' + projectCampaignId, {
+                approved_by_billing: approvedByBilling ? 1 : 0
+            });
+            return true;
+        } catch (error) {
+            throw error;
+        }
+    };
+
     @action
     public changeProjectCampaignCustomer = async (
         projectCampaignId: number,

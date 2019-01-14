@@ -42,13 +42,13 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
         return (
             <Section>
                 <div className={s.summary}>
-                        <Checkmark
+                        {this.getSpotLineStatusId() !== 2 && <Checkmark
                             onClick={this.completedToggleHandler}
                             checked={this.state.isGraphicsCompleted}
                             label={this.props.prevLocation && this.props.prevLocation === 'graphics' ? 'Completed' : 'Ready to be sent'}
                             labelOnLeft={true}
                             type={'no-icon'}
-                        />
+                        />}
                     {/* {this.props.prevLocation && this.props.prevLocation === 'graphics' ? (
                         <Checkmark
                             onClick={this.completedToggleHandler}
@@ -84,6 +84,19 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
         this.setState(prevState => ({isGraphicsCompleted: !prevState.isGraphicsCompleted}));
     }
 
+    private getSpotLineStatusId = (): any => {
+        if (this.props.store && 
+            this.props.store.spotSent && 
+            this.props.store.spotSent.spotSentDetails && 
+            this.props.store.spotSent.spotSentDetails.spot_version) {
+                let lineStatus = 0;
+                this.props.store.spotSent.spotSentDetails.spot_version.forEach(item => {
+                    lineStatus = item.line_status_id;
+                });
+                return lineStatus;
+        }
+    }
+
     // private checkmarkClickHander = () => {
     //     if (this.props.store && this.props.store.spotSent) {
     //         const value = this.props.store.spotSent.spotSentDetails.status === 2 ? false : true;
@@ -99,7 +112,13 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                 delete spot.spot_name;
                 delete spot.version_name;
                 spot.graphics_file = this.props.files;
-                if (this.props.prevLocation && this.props.prevLocation === 'graphics') {
+                if (this.getSpotLineStatusId() === 2) {
+                    if (spot.finish_accept || spot.prod_accept) {
+                        spot.line_status_id = 3;
+                    } else {
+                        spot.line_status_id = 2;
+                    }
+                } else if (this.props.prevLocation && this.props.prevLocation === 'graphics') {
                     if (this.state.isGraphicsCompleted) {
                         spot.line_status_id = 4;
                     } else {
@@ -137,7 +156,9 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
     }
 
     private get saveButtonText(): string {
-        if (this.state.isGraphicsCompleted) {
+        if (this.getSpotLineStatusId() === 2) {
+            return 'Save';
+        } else if (this.state.isGraphicsCompleted) {
             return 'Save';
         } else {
             return 'Save draft';
