@@ -1034,6 +1034,7 @@ class SpotRepository extends EntityRepository
                         ss.finishOption,
                         fh.name AS finishingHouse,
                         ss.allGraphicsResend,
+                        ss.noGraphics,
                         ss.isPdf,
                         ss.spotSentType,
                         ss.internalNote,
@@ -1314,6 +1315,10 @@ class SpotRepository extends EntityRepository
                 }
             }
 
+            if (!empty($filter['return_graphics_file_list'])) {
+                $ssRow['graphicsFile'] = $this->getSpotSendFiles($ssRow['spotSentId']);
+            }
+
             unset($ssRow['editor']);
             unset($ssRow['customerContact']);
 
@@ -1353,7 +1358,7 @@ class SpotRepository extends EntityRepository
             }
 
             if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']])) {
-                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']] = array(
+                $spotRes = array(
                     'spotId' => (int)$row['spotId'],
                     'spotName' => $row['spotName'],
                     'spotSentId' => (int)$row['spotSentId'],
@@ -1374,7 +1379,14 @@ class SpotRepository extends EntityRepository
                     'allGraphicsResend' => $row['allGraphicsResend'],
                     'isPdf' => $row['isPdf'],
                     'spotSentType' => $row['spotSentType'],
+                    'noGraphics' => $row['noGraphics'],
                 );
+
+                if (!empty($filter['return_graphics_file_list'])) {
+                    $spotRes['graphicsFile'] = $row['graphicsFile'];
+                }
+
+                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']] = $spotRes;
             }
         }
 
