@@ -60,7 +60,7 @@
         &.splitTimeEntryVisualLineCol {
             grid-column: 2 / span 3;
             position: relative;
-            background: url('../../../../assets/images/patterns/horizontal-dash-pattern.png') center repeat-x;
+            background: url('../../../../assets/images/patterns/horizontal-dash-pattern.png') 0px 18px repeat-x;
             background-size: 7px 1px;
             border-left: 40px solid #f4f2f0;
 
@@ -72,7 +72,7 @@
                 left: 0;
                 width: 1px;
                 height: calc(50% + 12px);
-                background: url('../../../../assets/images/patterns/vertical-dash-pattern.png') top left repeat-y;
+                background: url('../../../../assets/images/patterns/vertical-dash-pattern.png') 0px 0px repeat-y;
                 background-size: 1px 7px;
             }
         }

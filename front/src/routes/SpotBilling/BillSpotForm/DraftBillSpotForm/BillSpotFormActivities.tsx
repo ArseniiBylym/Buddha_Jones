@@ -7,14 +7,18 @@ import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { BillTimeEntry, SpotBillFormSpot } from 'types/spotBilling';
-import { BillActivitiesSectionSelectionTotal } from '../BillSpotFormElements';
+import { BillActivitiesSectionSelectionTotal, BillSpotFormProjectCampaignActivities } from '../BillSpotFormElements';
 
 const s = require('./BillSpotFormActivities.css');
 
 interface ActivityDay extends BillTimeEntriesSelectionTotals {
     date: Date;
     dateIso: string;
-    timeEntries: BillTimeEntry[];
+    spots: Array<{
+        id: number;
+        name: string;
+        timeEntries: BillTimeEntry[];
+    }>;
 }
 
 interface Props extends AppOnlyStoreState {
@@ -31,12 +35,27 @@ export class BillSpotFormActivities extends React.Component<Props, {}> {
                 const dateIso = timeEntry.startDate.date;
                 const index = days.findIndex(day => day.dateIso === dateIso);
                 if (index !== -1) {
-                    days[index].timeEntries.push(timeEntry);
+                    const spotIndex = days[index].spots.findIndex(iteratedSpot => iteratedSpot.id === timeEntry.spotId);
+                    if (spotIndex !== -1) {
+                        days[index].spots[spotIndex].timeEntries.push(timeEntry);
+                    } else {
+                        days[index].spots.push({
+                            id: timeEntry.spotId || 1,
+                            name: timeEntry.spotName || '',
+                            timeEntries: [timeEntry],
+                        });
+                    }
                 } else {
                     days.push({
                         date: DateHandler.parseDateStringAsDateObject(timeEntry.startDate),
                         dateIso: timeEntry.startDate.date,
-                        timeEntries: [timeEntry],
+                        spots: [
+                            {
+                                id: timeEntry.spotId || 0,
+                                name: timeEntry.spotName || '',
+                                timeEntries: [timeEntry],
+                            },
+                        ],
                         totalMinutes: 0,
                         selectedBaseMinutes: 0,
                         selectedAdjustedMinutes: 0,
@@ -53,21 +72,23 @@ export class BillSpotFormActivities extends React.Component<Props, {}> {
             let daySelectedBaseMinutes = 0;
             let daySelectedAdjustedMinutes = 0;
 
-            day.timeEntries.forEach(timeEntry => {
-                const duration = DateHandler.convertHoursDotMinutesToTotalMinutes(timeEntry.duration);
-                dayMinutes += duration;
+            day.spots.forEach(spot => {
+                spot.timeEntries.forEach(timeEntry => {
+                    const duration = DateHandler.convertHoursDotMinutesToTotalMinutes(timeEntry.duration);
+                    dayMinutes += duration;
 
-                const selectionIndex = this.props.store!.spotToBillForm.selectedActivitiesIds.indexOf(
-                    timeEntry.timeEntryId
-                );
-                if (selectionIndex !== -1) {
-                    const selection = this.props.store!.spotToBillForm.selectedActivities[selectionIndex];
-                    daySelectedBaseMinutes += duration;
-                    daySelectedAdjustedMinutes +=
-                        selection.regularHoursInMinutes +
-                        selection.overtimeHoursInMinutes +
-                        selection.doubletimeHoursInMinutes;
-                }
+                    const selectionIndex = this.props.store!.spotToBillForm.selectedActivitiesIds.indexOf(
+                        timeEntry.timeEntryId
+                    );
+                    if (selectionIndex !== -1) {
+                        const selection = this.props.store!.spotToBillForm.selectedActivities[selectionIndex];
+                        daySelectedBaseMinutes += duration;
+                        daySelectedAdjustedMinutes +=
+                            selection.regularHoursInMinutes +
+                            selection.overtimeHoursInMinutes +
+                            selection.doubletimeHoursInMinutes;
+                    }
+                });
             });
 
             day.totalMinutes = dayMinutes;
@@ -76,17 +97,19 @@ export class BillSpotFormActivities extends React.Component<Props, {}> {
         });
 
         activityDays.forEach(day => {
-            day.timeEntries = day.timeEntries.sort((entryA, entryB) => {
-                if (
-                    DateHandler.checkIfDateIsOlderThanOtherDate(
-                        DateHandler.parseDateStringAsDateObject(entryA.startDate),
-                        DateHandler.parseDateStringAsDateObject(entryB.startDate)
-                    )
-                ) {
-                    return 1;
-                } else {
-                    return -1;
-                }
+            day.spots.forEach(spot => {
+                spot.timeEntries = spot.timeEntries.sort((entryA, entryB) => {
+                    if (
+                        DateHandler.checkIfDateIsOlderThanOtherDate(
+                            DateHandler.parseDateStringAsDateObject(entryA.startDate),
+                            DateHandler.parseDateStringAsDateObject(entryB.startDate)
+                        )
+                    ) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                });
             });
         });
 
@@ -121,8 +144,18 @@ export class BillSpotFormActivities extends React.Component<Props, {}> {
                                     selectedAdjustedMinutes={day.selectedAdjustedMinutes}
                                 />
                             }
+                            noPadding={true}
                         >
-                            <div />
+                            {day.spots.map(spot => (
+                                <div key={spot.id}>
+                                    <p className={s.activitiesSpotHeadline}>{spot.name || '#' + spot.id}</p>
+
+                                    <BillSpotFormProjectCampaignActivities
+                                        timeEntries={spot.timeEntries}
+                                        options={{ showVersions: true }}
+                                    />
+                                </div>
+                            ))}
                         </Card>
                     ))}
                 </Section>

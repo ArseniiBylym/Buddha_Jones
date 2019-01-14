@@ -6,7 +6,6 @@ import { Col, Row } from 'components/Section';
 import { computed, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
-import AnimateHeight from 'react-animate-height';
 import { AppOnlyStoreState } from 'store/AllStores';
 
 const s = require('./BillSpotFormBottomBar.css');

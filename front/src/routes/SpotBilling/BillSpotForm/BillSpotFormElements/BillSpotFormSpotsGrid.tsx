@@ -232,6 +232,10 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
 
                                 <BillSpotFormProjectCampaignActivities
                                     timeEntries={this.props.unbilledProjectTimeEntries}
+                                    options={{
+                                        showBillable: true,
+                                        showDate: true,
+                                    }}
                                 />
                             </React.Fragment>
                         )}
@@ -255,6 +259,10 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
 
                                 <BillSpotFormProjectCampaignActivities
                                     timeEntries={this.props.unbilledProjectCampaignTimeEntries}
+                                    options={{
+                                        showBillable: true,
+                                        showDate: true,
+                                    }}
                                 />
                             </React.Fragment>
                         )}

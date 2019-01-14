@@ -6,15 +6,18 @@ import { Checkbox, DurationCounter } from 'components/Form';
 import { CardContentTable, CardContentTableRow } from 'components/Section';
 import { DateHandler } from 'helpers/DateHandler';
 import { StringHandler } from 'helpers/StringHandler';
-import { inject, observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import * as React from 'react';
-import { AppOnlyStoreState } from 'store/AllStores';
 import { ActivityInBill } from 'types/spotBilling';
 
 const s = require('./BillSpotFormActivitiesTable.css');
 const splitIcon = require('./../../../../assets/images/actions/split-icon.svg');
 
 export interface FormattedInBillTimeEntry extends ActivityInBill {
+    spotId: number | null;
+    spotName: string | null;
+    versionId: number | null;
+    versionName: string | null;
     userId: number;
     userName: string;
     userFirstName: string | null;
@@ -31,22 +34,39 @@ export interface FormattedInBillTimeEntry extends ActivityInBill {
     isSelectedToBill: boolean;
 }
 
-interface Props extends AppOnlyStoreState {
-    entriesFormatted: FormattedInBillTimeEntry[];
+export interface BillActivitiesTableOptions {
+    showVersions?: boolean;
+    showDate?: boolean;
+    showBillable?: boolean;
 }
 
-@inject('store')
+interface Props {
+    entriesFormatted: FormattedInBillTimeEntry[];
+    options: BillActivitiesTableOptions;
+}
+
 @observer
 export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
     public render() {
+        const {
+            options: { showVersions, showDate, showBillable },
+        } = this.props;
+
         return (
             <CardContentTable
                 header={[
                     { title: 'Person' },
+                    ...(showVersions
+                        ? [
+                              {
+                                  title: 'Version',
+                              },
+                          ]
+                        : []),
                     { title: 'Activity' },
-                    { title: 'Date and time', align: 'right' },
+                    { title: showDate ? 'Date and time' : 'Time', align: 'right' },
                     { title: 'Hours', align: 'right' },
-                    { title: 'Billable', align: 'left' },
+                    ...(showBillable ? [{ title: 'Billable', align: 'left' as 'left' }] : []),
                     { title: 'In bill', align: 'right' },
                 ]}
             >
@@ -67,6 +87,21 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                 />
                             </div>
 
+                            {showVersions && (
+                                <div className={s.versionCol}>
+                                    <Paragraph
+                                        type={entry.versionName || entry.versionId ? 'brown' : 'dim'}
+                                        size="small"
+                                    >
+                                        {entry.versionName
+                                            ? entry.versionName
+                                            : entry.versionId
+                                            ? '#' + entry.versionId
+                                            : 'Unspecified'}
+                                    </Paragraph>
+                                </div>
+                            )}
+
                             <div className={s.activityCol}>
                                 <Paragraph type="brown" size="small">
                                     <strong>{entry.activityName}</strong>
@@ -76,7 +111,7 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
 
                             <div className={s.dateCol} style={{ textAlign: 'right' }}>
                                 <Paragraph type="brown" size="small" align="right">
-                                    <span>{DateHandler.printDateObjectAsString(entry.startDate)}</span>
+                                    {showDate && <span>{DateHandler.printDateObjectAsString(entry.startDate)}</span>}
 
                                     {DateHandler.printPeriodBetweenTwoDatesAsHoursString(
                                         entry.startDate,
@@ -92,16 +127,18 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                 </Paragraph>
                             </div>
 
-                            <div className={s.billableCol} style={{ textAlign: 'center' }}>
-                                <Paragraph
-                                    type={entry.isBillable ? 'blue' : 'alert'}
-                                    size="small"
-                                    bold={true}
-                                    align="left"
-                                >
-                                    {entry.isBillable ? 'Yes' : 'No'}
-                                </Paragraph>
-                            </div>
+                            {showBillable && (
+                                <div className={s.billableCol} style={{ textAlign: 'center' }}>
+                                    <Paragraph
+                                        type={entry.isBillable ? 'blue' : 'alert'}
+                                        size="small"
+                                        bold={true}
+                                        align="left"
+                                    >
+                                        {entry.isBillable ? 'Yes' : 'No'}
+                                    </Paragraph>
+                                </div>
+                            )}
 
                             <div className={s.inBillCol}>
                                 <div>

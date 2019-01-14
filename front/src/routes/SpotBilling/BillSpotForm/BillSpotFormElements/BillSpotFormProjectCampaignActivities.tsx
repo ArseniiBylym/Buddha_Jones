@@ -5,10 +5,11 @@ import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { BillTimeEntry } from 'types/spotBilling';
-import { BillSpotFormActivitiesTable } from './BillSpotFormActivitiesTable';
+import { BillActivitiesTableOptions, BillSpotFormActivitiesTable } from './BillSpotFormActivitiesTable';
 
 interface Props extends AppOnlyStoreState {
     timeEntries: BillTimeEntry[];
+    options: BillActivitiesTableOptions;
 }
 
 @inject('store')
@@ -34,6 +35,10 @@ export class BillSpotFormProjectCampaignActivities extends React.Component<Props
             // Add to array
             entries.push({
                 timeEntryId: entry.timeEntryId,
+                spotId: entry.spotId,
+                spotName: entry.spotName,
+                versionId: entry.versionId,
+                versionName: entry.versionName,
                 hoursAreSplit: selectedToBill ? selectedToBill.hoursAreSplit : false,
                 userId: entry.userId,
                 userName: entry.userName,
@@ -68,6 +73,6 @@ export class BillSpotFormProjectCampaignActivities extends React.Component<Props
     }
 
     public render() {
-        return <BillSpotFormActivitiesTable entriesFormatted={this.entriesFormatted} />;
+        return <BillSpotFormActivitiesTable entriesFormatted={this.entriesFormatted} options={this.props.options} />;
     }
 }
