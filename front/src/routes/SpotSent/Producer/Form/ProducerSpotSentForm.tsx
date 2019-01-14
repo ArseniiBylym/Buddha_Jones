@@ -116,6 +116,14 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         label="Back to graphics spot sent"
                     />,
                 ]);
+            // if (this.getPrevLocation() === 'spotPost') {
+            //     HeaderActions.setMainHeaderTitlesAndElements('Graphics spot sent', null, null, null, [
+            //         <ButtonBack
+            //             key="button-back-to-list"
+            //             onClick={this.handleBackButtonClick}
+            //             label="Back to spot post/finish request"
+            //         />,
+            //     ]);
             } else {
                 HeaderActions.setMainHeaderTitlesAndElements('Initiate spot sent', null, null, null, [
                     <ButtonBack
@@ -265,6 +273,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     private handleBackButtonClick = () => {
         if (this.state.prevLocation === 'graphics') {
             history.push('/portal/graphics-spot-sent');
+        } else if (this.state.prevLocation === 'spotPost') {
+            history.push('/portal/spot-post-finish-request');
         } else {
             history.push('/portal/studio/producer-spot-sent-list');
         }

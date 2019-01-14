@@ -63,7 +63,8 @@ main {
 .content {
   position: relative;
   width: 96%;
-  max-width: 1152px;
+  /* max-width: 1152px; */
+  max-width: 1400px;
   margin: 0 auto;
   margin-top: 24px;
   margin-bottom: 24px;
