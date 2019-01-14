@@ -13,9 +13,11 @@ class SpotsPostTable extends React.Component<any, any> {
                     header={[
                         { title: 'Date', align: 'center' },
                         { title: 'Project', align: 'center' },
-                        { title: 'Trt/spot type', align: 'center', colSpan: 2 },
+                        { title: 'Spot type', align: 'center', colSpan: 2 },
+                        { title: 'Trt', align: 'center', colSpan: 1 },
                         { title: 'Title', align: 'center', colSpan: 1 },
                         { title: 'Ver', align: 'center' },
+                        { title: 'Status', align: 'center' },
                         { title: 'Editor', align: 'center' },
                         { title: 'To', align: 'center', colSpan: 2 },
                         { title: 'Time', align: 'center' },
@@ -58,8 +60,10 @@ class SpotsPostTable extends React.Component<any, any> {
                     <TableCell colSpan={1} align="center">{spot.spotSentDate && moment(spot.spotSentDate.date).format('DD/MM/YYYY')}</TableCell>
                     <TableCell colSpan={1} align="center">{spot.projectName}</TableCell>
                     <TableCell colSpan={2} align="center">{spot.campaignName} ({spot.runtime})</TableCell>
-                    <TableCell colSpan={1} align="center">{spot.spotName}</TableCell>
+                    <TableCell colSpan={1} align="center">({spot.runtime})</TableCell>
+                    <TableCell colSpan={1} align="center">{spot.spotName} {spot.finishRequest && <span>FINISH</span>}</TableCell>
                     <TableCell colSpan={1} align="center">{spot.versionName}</TableCell>
+                    <TableCell colSpan={1} align="center">{spot.spotLineStatus}</TableCell>
                     <TableCell colSpan={1} align="center"><div className={s.editorsContainer}>{this.getEditors(spot.editors)}</div></TableCell>
                     <TableCell colSpan={2} align="center"><div className={s.editorsContainer}>{this.getCustomerContacts(spot.customerContacts)}</div></TableCell>
                     <TableCell colSpan={1} align="center">{spot.spotSentDate && moment(spot.spotSentDate.date).format('HH:mm')}</TableCell>
