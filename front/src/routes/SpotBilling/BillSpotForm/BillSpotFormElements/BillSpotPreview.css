@@ -1,0 +1,54 @@
+.topBar {
+    & > p {
+        padding-left: 64px;
+        padding-right: 64px;
+    }
+}
+
+.summary {
+    margin: 0 -36px;
+    padding: 24px 64px;
+    background: #e2dbd5;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+
+    & > .left {
+        & p {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #7e756d;
+
+            & strong {
+                font-weight: 600;
+                color: #0b0c32;
+            }
+
+            &.spots {
+                & strong:not(:last-child)::after {
+                    display: inline;
+                    content: ', ';
+                    font-weight: 400;
+                }
+            }
+
+            &.campaign {
+                margin-top: 6px;
+                font-size: 0.9rem;
+
+                &:first-child {
+                    margin-top: 0;
+                }
+            }
+        }
+    }
+
+    & .studio {
+        font-size: 0.9rem;
+
+        & em {
+            font-style: normal;
+        }
+    }
+}
