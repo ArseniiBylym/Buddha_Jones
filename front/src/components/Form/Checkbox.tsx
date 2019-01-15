@@ -2,7 +2,7 @@ import * as classNames from 'classnames';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { IconTickGreen, IconTickWhite } from '../Icons';
+import { IconTickWhite } from '../Icons';
 
 const s = require('./Checkbox.css');
 
