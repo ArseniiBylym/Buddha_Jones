@@ -49,7 +49,8 @@ class ProjectsList extends React.Component<ProjectsListProps & AppState, {}> {
     public componentDidMount() {
         this.isComponentMounted = true;
 
-        HeaderActions.setMainHeaderTitlesAndElements('Projects board');
+        HeaderActions.replaceMainHeaderContent({ title: 'Projects board' });
+
         if (this.props.store && this.props.store.user.data) {
             ProjectPermissionsActions.fetchLoggedInUserPermissions();
         }

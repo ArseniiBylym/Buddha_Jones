@@ -27,15 +27,19 @@ class SpotsToGraphicsSent extends React.Component<any, {}> {
 
     public componentDidMount() {
         this.fetchAllSpotSent();
-        HeaderActions.setMainHeaderTitlesAndElements('Graphics spot sent', null, null, null, [
-            <ButtonAdd
-                key="create-spot-sent"
-                onClick={this.handleCreateSpotSentCreate}
-                label="Create new spot sent report"
-                labelOnLeft={true}
-                isWhite={true}
-            />,
-        ]);
+
+        HeaderActions.replaceMainHeaderContent({
+            title: 'Graphics spot sent',
+            elements: [
+                <ButtonAdd
+                    key="create-spot-sent"
+                    onClick={this.handleCreateSpotSentCreate}
+                    label="Create new spot sent report"
+                    labelOnLeft={true}
+                    isWhite={true}
+                />,
+            ],
+        });
     }
 
     formatSpotsList = (data: any) => {

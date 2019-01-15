@@ -55,7 +55,10 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
         if (this.props.billData) {
             SpotToBillFormActions.initialize(this.props.billData.bill);
 
-            HeaderActions.setMainHeaderTitles(this.props.billData.projectName, this.props.billData.studioName);
+            HeaderActions.replaceMainHeaderContent({
+                title: this.props.billData.projectName,
+                subTitle: this.props.billData.studioName,
+            });
         }
     }
 

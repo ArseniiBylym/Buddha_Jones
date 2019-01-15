@@ -1,16 +1,16 @@
-import * as React from 'react';
-import * as styles from './styles.scss';
 import { HeaderActions, StudiosActions } from 'actions/index';
-import { AppState } from 'store/AllStores';
-import { Section, SectionElement } from 'components/Section/index';
 import { InputSearch } from 'components/Form/index';
-import { inject, observer } from 'mobx-react';
-import { match } from 'react-router';
-import { Table } from 'components/Table';
 import { LoadingSpinner } from 'components/Loaders';
-import { Client, ClientsSearch } from '../../../types/clients';
+import { Section, SectionElement } from 'components/Section/index';
+import { Table } from 'components/Table';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { match } from 'react-router';
+import { AppState } from 'store/AllStores';
 import { Pagination } from '../../../components/Pagination';
+import { Client, ClientsSearch } from '../../../types/clients';
 import BillingStudioRateCardsRow from './BillingStudioRateCardsRow';
+import * as styles from './styles.scss';
 
 interface Props {
     match: match<MatchRouteParams>;
@@ -48,7 +48,7 @@ class BillingStudioRateCards extends React.Component<BillingStudioRateCardsProps
     private static getTableWithLoadingSpinner(): JSX.Element {
         return (
             <div className={styles.loadingSpinnerBlock}>
-                <LoadingSpinner size={64}/>
+                <LoadingSpinner size={64} />
             </div>
         );
     }
@@ -64,21 +64,14 @@ class BillingStudioRateCards extends React.Component<BillingStudioRateCardsProps
 
         return (
             <>
-                <Section
-                    noSeparator={true}
-                    title="Select Studio"
-                    headerElements={this.getHeaderElements()}
-                >
-                    {
-                        this.props.store!.users.isPageableUsersListLoading &&
+                <Section noSeparator={true} title="Select Studio" headerElements={this.getHeaderElements()}>
+                    {this.props.store!.users.isPageableUsersListLoading &&
+                        BillingStudioRateCards.getTableWithLoadingSpinner()}
+                    {this.getClientsBySearch.loading ? (
                         BillingStudioRateCards.getTableWithLoadingSpinner()
-                    }
-                    {
-                        this.getClientsBySearch.loading ?
-                        BillingStudioRateCards.getTableWithLoadingSpinner()
-                        :
+                    ) : (
                         <Table>{this.getTableRows()}</Table>
-                    }
+                    )}
                     <Pagination
                         countPerPage={Number(this.perPage)}
                         countTotal={Number(this.getClientsBySearch.totalCount)}
@@ -92,7 +85,7 @@ class BillingStudioRateCards extends React.Component<BillingStudioRateCardsProps
 
     private getTableRows(): JSX.Element[] {
         const { clients } = this.getClientsBySearch;
-        return clients.map((client: Client) => <BillingStudioRateCardsRow client={client} key={client.id}/>);
+        return clients.map((client: Client) => <BillingStudioRateCardsRow client={client} key={client.id} />);
     }
 
     private getHeaderElements(): SectionElement[] {
@@ -126,19 +119,18 @@ class BillingStudioRateCards extends React.Component<BillingStudioRateCardsProps
     };
 
     private searchClients = (): void => {
-        StudiosActions.searchClients( this.state.searchString, undefined, (this.state.currentPage - 1) * this.perPage, this.perPage );
+        StudiosActions.searchClients(
+            this.state.searchString,
+            undefined,
+            (this.state.currentPage - 1) * this.perPage,
+            this.perPage
+        );
     };
 
     private setHeaderAndInitialData = (): void => {
         this.searchClients();
         // Set header
-        HeaderActions.setMainHeaderTitlesAndElements(
-            'Studio rate card',
-            null,
-            null,
-            null,
-            [],
-        ).then();
+        HeaderActions.setMainHeaderTitlesAndElements('Studio rate card', null, null, null, [], [], false).then();
     };
 }
 

@@ -17,6 +17,7 @@ class SpotsPost extends React.Component<SpotsPostPorps, {}> {
     componentDidMount() {
         HeaderActions.replaceMainHeaderContent({
             title: 'Spot post / finish request',
+            isLayoutWide: true,
         });
     }
 

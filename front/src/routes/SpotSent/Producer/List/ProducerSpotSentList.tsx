@@ -40,15 +40,18 @@ class ProducerSpotSentList extends React.Component<any, {}> {
 
     public componentDidMount() {
         this.fetchAllSpotSent();
-        HeaderActions.setMainHeaderTitlesAndElements('Spots sent request', null, null, null, [
-            <ButtonAdd
-                key="create-spot-sent"
-                onClick={this.handleCreateSpotSentCreate}
-                label="Create new spot sent report"
-                labelOnLeft={true}
-                isWhite={true}
-            />,
-        ]);
+        HeaderActions.replaceMainHeaderContent({
+            title: 'Spots sent request',
+            elements: [
+                <ButtonAdd
+                    key="create-spot-sent"
+                    onClick={this.handleCreateSpotSentCreate}
+                    label="Create new spot sent report"
+                    labelOnLeft={true}
+                    isWhite={true}
+                />,
+            ],
+        });
     }
 
     formatSpotsList = (data: any) => {
