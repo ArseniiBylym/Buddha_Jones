@@ -108,21 +108,25 @@ export class BillSpotFormBottomBar extends React.Component<Props, {}> {
                             </Col>
                         )}
 
-                        <Col flex="0 1 auto">
-                            <Paragraph type="brown">{`Selected ${this.selectedActivitiesCount} ${
-                                this.selectedActivitiesCount > 1 ? 'time entries' : 'time entry'
-                            }`}</Paragraph>
-                        </Col>
+                        {this.isAnythingSelected && (
+                            <Col flex="0 1 auto">
+                                <Paragraph type="brown">{`Selected ${this.selectedActivitiesCount} ${
+                                    this.selectedActivitiesCount > 1 ? 'time entries' : 'time entry'
+                                }`}</Paragraph>
+                            </Col>
+                        )}
 
-                        <Col flex="0 1 auto">
-                            <DropdownContainer
-                                ref={this.referenceAddToBillDropdown}
-                                minWidth={510}
-                                label="Add selection to the bill"
-                            >
-                                <OptionsList onChange={this.handleAddingToBill} options={this.addDropdownOptions} />
-                            </DropdownContainer>
-                        </Col>
+                        {this.isAnythingSelected && (
+                            <Col flex="0 1 auto">
+                                <DropdownContainer
+                                    ref={this.referenceAddToBillDropdown}
+                                    minWidth={510}
+                                    label="Add selection to the bill"
+                                >
+                                    <OptionsList onChange={this.handleAddingToBill} options={this.addDropdownOptions} />
+                                </DropdownContainer>
+                            </Col>
+                        )}
                     </Row>
                 }
             >
@@ -198,6 +202,6 @@ export class BillSpotFormBottomBar extends React.Component<Props, {}> {
     };
 
     private handleOpeningBill = (e: React.MouseEvent<HTMLButtonElement>) => {
-        // TODO
+        SpotToBillFormActions.toggleBillPreview(true);
     };
 }

@@ -11,6 +11,7 @@ export class SpotToBillForm {
     @observable public spotsAddedToBill: number[] = [];
 
     @observable public addingActivityToBillStatus: AddingActivityToBillStatus = 'none';
+    @observable public showBillPreview: boolean = false;
 
     @observable public selectedActivities: SpotBillFormActivityTimeEntry[] = [];
     @computed public get selectedActivitiesIds(): number[] {

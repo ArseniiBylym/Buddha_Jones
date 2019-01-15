@@ -1,11 +1,12 @@
 import { BillSpotFormBottomBar } from '.';
 import { HeaderActions, SpotToBillFormActions } from 'actions';
+import { Modal } from 'components/Modals';
 import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { BillTimeEntry, SpotBillFormSpot, SpotBillFormSummary } from 'types/spotBilling';
-import { BillSpotFormProjectHistory, BillSpotFormSpotsGrid } from '../BillSpotFormElements';
+import { BillSpotFormProjectHistory, BillSpotFormSpotsGrid, BillSpotPreview } from '../BillSpotFormElements';
 import { BillSpotFormActivities } from './BillSpotFormActivities';
 
 interface Props extends AppOnlyStoreState {
@@ -61,6 +62,7 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
 
     public render() {
         const { billData } = this.props;
+        const { addingActivityToBillStatus, showBillPreview } = this.props.store!.spotToBillForm;
 
         return (
             <React.Fragment>
@@ -78,15 +80,22 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
 
                 <BillSpotFormActivities
                     spots={this.filteredSpots}
-                    marginBottom={
-                        this.isAnyActivitySelected ||
-                        this.props.store!.spotToBillForm.addingActivityToBillStatus !== 'none'
-                            ? 64
-                            : 24
-                    }
+                    marginBottom={this.isAnyActivitySelected || addingActivityToBillStatus !== 'none' ? 64 : 24}
                 />
 
                 <BillSpotFormBottomBar isBillSaving={false} spots={billData.spots} />
+
+                <Modal show={showBillPreview}>
+                    <BillSpotPreview
+                        spots={billData.spots}
+                        unbilledProjectTimeEntries={this.filteredUnbilledProjectTimeEntries}
+                        unbilledProjectCampaignTimeEntries={this.filteredUnbilledProjectCampaignTimeEntries}
+                        campaignName={billData.campaignName}
+                        projectCampaignName={billData.projectCampaignName}
+                        projectCampaignId={billData.projectCampaignId}
+                        editable={true}
+                    />
+                </Modal>
             </React.Fragment>
         );
     }
