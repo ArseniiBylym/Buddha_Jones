@@ -9,3 +9,4 @@ export * from './BillSpotFormProjectCampaignActivities';
 export * from './BillActivitiesSectionSelectionTotal';
 export * from './BillSpotFormActivitiesTable';
 export * from './BillSpotPreview';
+export * from './BillSpotPreviewRowEdit';

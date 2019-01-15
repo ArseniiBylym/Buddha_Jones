@@ -114,3 +114,8 @@ export interface SpotBillFormSummary {
     spots: SpotBillFormSpot[];
     bill: SpotBillFormData;
 }
+
+export interface SpotBillRowRevision {
+    versionId: number;
+    versionName: string;
+}

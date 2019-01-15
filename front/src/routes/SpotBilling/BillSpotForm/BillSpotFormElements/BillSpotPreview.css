@@ -52,3 +52,43 @@
         }
     }
 }
+
+.content {
+    margin: 0 30px;
+    padding-top: 24px;
+    padding-bottom: 64px;
+}
+
+.grid {
+    display: grid;
+    grid-template: auto / auto auto auto auto auto auto;
+    gap: 16px;
+}
+
+.gridHeader {
+    display: contents;
+}
+
+.gridRow {
+    display: contents;
+}
+
+.totals {
+    padding-top: 24px;
+    margin-top: 24px;
+    display: block;
+    text-align: right;
+    border-top: 1px solid #d1cdca;
+
+    & p {
+        font-size: 1rem;
+        text-align: right;
+    }
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+}
