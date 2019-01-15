@@ -181,9 +181,9 @@ class SpotSentController extends CustomAbstractActionController
         $deliveryNote = $this->_commonRepo->filterPostData($data, 'delivery_note', 'string', $this->_commonRepo->filterPostData($existingData, 'deliveryNote', 'string', null), true);
         $statusId = $this->_commonRepo->filterPostData($data, 'status_id', 'int', $this->_commonRepo->filterPostData($existingData, 'statusId', 'int', null), true);
         $audioNote = $this->_commonRepo->filterPostData($data, 'audio_note', 'string', $this->_commonRepo->filterPostData($existingData, 'audioNote', 'string', null), true);
-        $audioNote = $this->_commonRepo->filterPostData($data, 'graphics_note', 'string', $this->_commonRepo->filterPostData($existingData, 'graphicsNote', 'string', null), true);
-        $audioNote = $this->_commonRepo->filterPostData($data, 'music_note', 'string', $this->_commonRepo->filterPostData($existingData, 'musicNote', 'string', null), true);
-        $audioNote = $this->_commonRepo->filterPostData($data, 'final_narr', 'string', $this->_commonRepo->filterPostData($existingData, 'finalNarr', 'string', null), true);
+        $graphicsNote = $this->_commonRepo->filterPostData($data, 'graphics_note', 'string', $this->_commonRepo->filterPostData($existingData, 'graphicsNote', 'string', null), true);
+        $musicNote = $this->_commonRepo->filterPostData($data, 'music_note', 'string', $this->_commonRepo->filterPostData($existingData, 'musicNote', 'string', null), true);
+        $finalNarr = $this->_commonRepo->filterPostData($data, 'final_narr', 'string', $this->_commonRepo->filterPostData($existingData, 'finalNarr', 'string', null), true);
 
         $deliveryToClient = $this->_commonRepo->filterPostData($data, 'delivery_to_client', 'json', $this->_commonRepo->filterPostData($existingData, 'deliveryToClient', null, null), true);
         $audio = $this->_commonRepo->filterPostData($data, 'audio', 'json', $this->_commonRepo->filterPostData($existingData, 'audio', null, null), true);
@@ -374,6 +374,9 @@ class SpotSentController extends CustomAbstractActionController
                     $spotSent->setFinishOption($finishOption);
                     $spotSent->setCustomerContact($customerContact);
                     $spotSent->setSpotSentType($spotSentType);
+                    $spotSent->setGraphicsNote($graphicsNote);
+                    $spotSent->setMusicNote($musicNote);
+                    $spotSent->setFinalNarr($finalNarr);
 
                     $spotSent->setProdAccept($svd['prod_accept']);
                     $spotSent->setFinishAccept($svd['finish_accept']);
