@@ -298,6 +298,9 @@ class SpotSentController extends CustomAbstractActionController
                 $sv['prod_accept'] = (!empty($sv['prod_accept'])) ? 1 : 0;
                 $sv['line_status_id'] = $this->_commonRepo->filterPostData($sv, 'line_status_id', 'int', 1);
                 $sv['graphics_status_id'] = $this->_commonRepo->filterPostData($sv, 'graphics_status_id', 'int', null);
+                $sv['qc_approved'] = $this->_commonRepo->filterPostData($sv, 'qc_approved', 'string', null);
+                $sv['qc_note'] = $this->_commonRepo->filterPostData($sv, 'qc_note', 'string', null);
+                $sv['qc_link'] = $this->_commonRepo->filterPostData($sv, 'qc_link', 'string', null);
 
                 if ($sv['line_status_id'] < 4) {
                     $sv['graphics_status_id'] = null;
@@ -391,6 +394,9 @@ class SpotSentController extends CustomAbstractActionController
                     $spotSent->setSentViaMethod($svd['sent_via_method']);
                     $spotSent->setNoGraphics($svd['no_graphics']);
                     $spotSent->setIsPdf($svd['is_pdf']);
+                    $spotSent->setQcApproved($svd['qc_approved']);
+                    $spotSent->setQcNote($svd['qc_note']);
+                    $spotSent->setQcLink($svd['qc_link']);
 
                     if ($isUpdate) {
                         $spotSent->setCreatedAt($existingSpotSent->getCreatedAt());

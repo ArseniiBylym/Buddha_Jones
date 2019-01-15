@@ -191,6 +191,7 @@ class ProjectController extends CustomAbstractActionController
                 $projectCode = ($canEditProjectCodeName && !empty($data['project_code'])) ? trim($data['project_code']) : null;
                 $projectPrefix = ($canEditProjectPrefix && !empty($data['project_prefix'])) ? trim($data['project_prefix']) : null;
                 $projectRelease = ($canEditReleaseDate && !empty($data['project_release'])) ? $data['project_release'] : null;
+                $confidential =  (!empty($data['confidential'])) ? $data['confidential'] : 0;
                 $type = (!empty($data['type'])) ? $data['type'] : "B";
                 $users = json_decode(isset($data['user']) ? $data['user'] : null, true);
 
@@ -205,6 +206,7 @@ class ProjectController extends CustomAbstractActionController
                     if ($studio) {
                         $project = new RediProject();
                         $project->setStudioId($studioId);
+                        $project->setConfidential($confidential);
 
                         if ($projectName) {
                             $project->setProjectName($projectName);
@@ -317,6 +319,7 @@ class ProjectController extends CustomAbstractActionController
                 $projectCode = ($canEditProjectCodeName && !empty($data['project_code'])) ? $data['project_code'] : null;
                 $projectPrefix = ($canEditProjectPrefix && !empty($data['project_prefix'])) ? $data['project_prefix'] : null;
                 $projectRelease = ($canEditReleaseDate && !empty($data['project_release'])) ? $data['project_release'] : null;
+                $confidential =  (isset($data['confidential'])) ? (int)$data['confidential'] : null;
                 $type = (!empty($data['type'])) ? $data['type'] : null;
                 $users = json_decode(isset($data['user']) ? $data['user'] : null, true);
 
@@ -388,6 +391,10 @@ class ProjectController extends CustomAbstractActionController
 
                         if ($type) {
                             $project->setType($type);
+                        }
+
+                        if ($confidential !== null) {
+                            $project->setConfidential($confidential);
                         }
 
                         if ($projectRelease) {
