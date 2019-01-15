@@ -44,4 +44,5 @@ export enum UserPermissionKey {
     SpotClientDueDate = 'spot-client-due-date',
     SpotFirstRevisionRate = 'spot-first-revision-cost',
     SpotGraphicsRevision = 'spot-graphics-revision',
+    SpotSentFinishProdAccept = 'spot-sent-finish-prod-accept',
 }

@@ -23,6 +23,8 @@ import {
     SpotToBillFormActionsClass,
     ChannelsActionsClass,
     StudioRateCardActionsClass,
+    TimeEntryPermissionsClass,
+    TimeApprovalPermissionsClass,
 } from './index';
 
 export const FetchActions = new FetchActionsClass();
@@ -44,8 +46,14 @@ export const ProjectPermissionsActions = new ProjectPermissionsActionsClass();
 export const ActivitiesActions = new ActivitiesActionsClass();
 export const TimeEntryActions = new TimeEntryActionsClass();
 export const TimeApprovalActions = new TimeApprovalActionsClass();
+<<<<<<< HEAD
 export const SpotSentActions = new SpotSentActionsClass();
 export const SpotsBillingActions = new SpotsBillingActionsClass();
 export const SpotToBillFormActions = new SpotToBillFormActionsClass();
+=======
+>>>>>>> origin/dev
 export const ChannelsActions = new ChannelsActionsClass();
 export const StudioRateCardActions = new StudioRateCardActionsClass();
+export const SpotSentActions = new SpotSentActionsClass();
+export const TimeEntryPermissionsActions = new TimeEntryPermissionsClass();
+export const TimeApprovalPermissionsActions = new TimeApprovalPermissionsClass();

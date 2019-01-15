@@ -126,6 +126,10 @@ return array(
                 $entityManager = $serviceManager->get('Doctrine\ORM\EntityManager');
                 return new \Application\Entity\Repository\NotificationRepository($entityManager);
             },
+            'Application\Entity\Repository\ModuleRepository' => function ($serviceManager) {
+                $entityManager = $serviceManager->get('Doctrine\ORM\EntityManager');
+                return new \Application\Entity\Repository\ModuleRepository($entityManager);
+            },
         ),
     ),
 //    'translator' => array(
@@ -176,6 +180,8 @@ return array(
             'Application\Controller\Login'                                          => 'Application\Controller\LoginController',
             'Application\Controller\LoginRefresh'                                   => 'Application\Controller\LoginRefreshController',
             'Application\Controller\Logout'                                         => 'Application\Controller\LogoutController',
+            'Application\Controller\Module'                                         => 'Application\Controller\ModuleController',
+            'Application\Controller\ModuleAccess'                                   => 'Application\Controller\ModuleAccessController',
             'Application\Controller\Notification'                                   => 'Application\Controller\NotificationController',
             'Application\Controller\OutsideCost'                                    => 'Application\Controller\OutsideCostController',
             'Application\Controller\PasswordReset'                                  => 'Application\Controller\PasswordResetController',
@@ -194,7 +200,10 @@ return array(
             'Application\Controller\SpotBilling'                                    => 'Application\Controller\SpotBillingController',
             'Application\Controller\SpotSent'                                       => 'Application\Controller\SpotSentController',
             'Application\Controller\SpotSentValidate'                               => 'Application\Controller\SpotSentValidateController',
+            'Application\Controller\SpotSentForGraphicsUser'                        => 'Application\Controller\SpotSentForGraphicsUserController',
             'Application\Controller\SpotSentOptions'                                => 'Application\Controller\SpotSentOptionsController',
+            'Application\Controller\SpotSentList'                                   => 'Application\Controller\SpotSentListController',
+            'Application\Controller\SpotSentAll'                                    => 'Application\Controller\SpotSentAllController',
             'Application\Controller\SpotVersionEditor'                              => 'Application\Controller\SpotVersionEditorController',
             'Application\Controller\Staff'                                          => 'Application\Controller\StaffController',
             'Application\Controller\Status'                                         => 'Application\Controller\StatusController',

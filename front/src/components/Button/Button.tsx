@@ -13,7 +13,7 @@ export type ButtonFloatPropType = 'left' | 'right' | 'none';
 export type ButtonIconSizePropType = 'nopadding' | 'small' | 'large';
 export type ButtonIconColorPropType = 'none' | 'none-alt' | 'white' | 'yellow' | 'blue' | 'orange' | 'green';
 export type ButtonLabelSizePropType = 'small' | 'large';
-export type ButtonLabelColorPropType = 'black' | 'white' | 'white' | 'yellow' | 'blue' | 'orange' | 'green';
+export type ButtonLabelColorPropType = 'black' | 'white' | 'white' | 'yellow' | 'blue' | 'orange' | 'green' | 'gray' ;
 export type ButtonTooltipPositionOnPropType = 'left' | 'top' | 'right' | 'bottom';
 
 export interface ButtonLabel {

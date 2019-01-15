@@ -506,6 +506,7 @@ class TimeTrackingCalendar extends React.Component {
                     });
                 }).catch(error => {
                     setTimeout(() => {
+                        // TODO fix this kind of error handling all over the project
                         this.fetchEntriesForDays();
                     }, 1024);
                 });

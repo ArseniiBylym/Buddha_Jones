@@ -13,9 +13,10 @@ import { Paragraph } from 'components/Content';
 import { ButtonSend, ButtonAdd, ButtonClose } from 'components/Button';
 import { ProjectPicker, ProjectPickerValues } from 'components/Buddha';
 import { TableRow, Table, TableCell } from 'components/Table';
-import { DurationPicker } from 'components/Calendar';
+// import { DurationPicker } from 'components/Calendar';
 import { BottomBar } from 'components/Layout';
 import { TimeEntryUserWithType } from 'types/timeEntry';
+import TextAreaFile from '../../../components/Form/TextAreaFile';
 
 enum SubmittingStatus {
     none,
@@ -44,6 +45,12 @@ type ComponentProps = Props & AppOnlyStoreState;
 @inject('store')
 @observer
 export class TimeEntryContent extends React.Component<ComponentProps, {}> {
+
+    state = {
+        textareaValue: '',
+        textareaEmpty: true,
+    };
+
     private realTimeValidation: boolean = false;
     private activityDropdown: DropdownContainer | null = null;
 
@@ -75,8 +82,8 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                 return 'Files are required';
             case SubmittingStatus.errorFilesNamesRequired:
                 return 'All files need a filename';
-            case SubmittingStatus.errorFilesDurationWrong:
-                return 'Files work time does not match entry duration';
+            // case SubmittingStatus.errorFilesDurationWrong:
+            //     return 'Files work time does not match entry duration';
             case SubmittingStatus.errorProjectRequired:
                 return 'Project and campaign are required';
             case SubmittingStatus.errorVersionRequired:
@@ -171,10 +178,11 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                     header={[
                         { title: 'Filename', align: 'left' },
                         { title: 'Description', align: 'left' },
-                        { title: 'Duration', align: 'center' },
+                        // { title: 'Duration', align: 'center' },
                         { title: 'Remove', align: 'right' },
                     ]}
-                    columnsWidths={['200px', '366px', '128px', '92px']}
+                    // columnsWidths={['200px', '366px', '128px', '92px']}
+                    columnsWidths={['200px', '494px', '92px']}
                 >
                     {timeEntry.values &&
                     timeEntry.values.files.map((file, fileIndex) => (
@@ -195,14 +203,14 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                                     onChange={this.handleFileChangeText('description', fileIndex)}
                                 />
                             </TableCell>
-                            <TableCell>
+                            {/* <TableCell>
                                 <DurationPicker
                                     className={styles.fileDuration}
                                     onChange={this.handleFileWorkDurationChange(fileIndex)}
                                     totalMinutesValue={file.durationInMinutes}
                                     increments={timeEntry.durationIncrements}
                                 />
-                            </TableCell>
+                            </TableCell> */}
                             <TableCell align="right">
                                 <ButtonClose
                                     onClick={this.handleFileRemove(fileIndex)}
@@ -225,13 +233,19 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
                         <TableCell colSpan={4} align="right">
                             <ButtonAdd
                                 onClick={this.handleFileAdd}
-                                label="Add file"
+                                label="Add file names"
                                 labelOnLeft={true}
                                 float="right"
                             />
                         </TableCell>
                     </TableRow>
                 </Table>
+                <TextAreaFile 
+                    config={this.state} 
+                    textareaOnFocusHandler={this.textareaOnFocusHandler} 
+                    textareaOnBlurHandler={this.textareaOnBlurHandler}
+                    textareaOnChangeHandler={this.textareaOnChangeHandler}
+                />
             </Section>
         );
     }
@@ -445,18 +459,51 @@ export class TimeEntryContent extends React.Component<ComponentProps, {}> {
         );
     };
 
-    private handleFileWorkDurationChange = (fileIndex: number) => (totalTimeInMinutes: number) => {
-        TimeEntryActions.setFileDetails(
-            {
-                durationInMinutes: totalTimeInMinutes,
-            },
-            fileIndex
-        );
-    };
+    // private handleFileWorkDurationChange = (fileIndex: number) => (totalTimeInMinutes: number) => {
+    //     TimeEntryActions.setFileDetails(
+    //         {
+    //             durationInMinutes: totalTimeInMinutes,
+    //         },
+    //         fileIndex
+    //     );
+    // };
 
     private handleFileAdd = () => {
-        TimeEntryActions.setFileDetails({}, null);
+        if (this.state.textareaValue) {
+            const arr: string[] | null = this.state.textareaValue.match(/[^\r\n]+/g);
+            if (arr) {
+                TimeEntryActions.setFileDetailsArray(arr);
+                this.setState({
+                    textareaValue: '',
+                    textareaEmpty: true,
+                });
+            }
+        } else {
+            TimeEntryActions.setFileDetails({}, null);
+        }
     };
+
+    textareaOnChangeHandler = e => {
+        this.setState({
+            textareaValue: e.target.value,
+        });
+    }
+
+    textareaOnBlurHandler = () => {
+        if (!this.state.textareaValue) {
+            this.setState({
+                textareaEmpty: true
+            });
+        }
+    }
+
+    textareaOnFocusHandler = () => {
+        if (this.state.textareaEmpty) {
+            this.setState({
+                textareaEmpty: false
+            });
+        }
+    }
 
     private handleFileRemove = (fileIndex: number) => () => {
         TimeEntryActions.removeFile(fileIndex);

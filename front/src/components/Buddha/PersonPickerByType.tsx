@@ -221,6 +221,7 @@ export class PersonPickerByType extends React.Component<PersonPickerByTypePropsT
             await UsersActions.fetchUsersByType(showUsersOfTypesIds);
             this.isLoading = false;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.fetchUsersByType(showUsersOfTypesIds);
             }, 1024);
@@ -234,6 +235,7 @@ export class PersonPickerByType extends React.Component<PersonPickerByTypePropsT
             await UsersActions.fetchUsersByClass(showUsersOfClassIds);
             this.isLoading = false;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.fetchUsersByClass(showUsersOfClassIds);
             }, 1024);

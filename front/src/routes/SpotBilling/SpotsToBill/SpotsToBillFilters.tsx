@@ -87,7 +87,6 @@ export class SpotsToBillFilters extends React.Component<SpotsToBillFiltersProps,
                     producers.push(producer);
                 }
             });
-
             return producers;
         }, []);
     }

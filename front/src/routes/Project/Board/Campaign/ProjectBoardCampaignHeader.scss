@@ -36,6 +36,7 @@
     }
     
     .campaignName {
+        width: 400px;
         display: flex;
         justify-content: flex-start;
         align-content: center;
@@ -58,6 +59,27 @@
                 opacity: 0;
             }
         }
+    }
+    .campaignIsApproved{
+        display: inline-block;
+        width: 270px;
+        padding-right: 10px;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: flex-start;
+    }
+    .pendingLabel{
+        background-color: #d8c6b8;
+        color: Sienna;
+        font-size: 12px;
+        font-weight: 600;
+        transform: translateY(-15px);
+        // border: 1px solid rgb(126, 117, 109);
+        border-radius: 3px;
+        padding: 0 3px;
+        margin-left: 10px;
+        
     }
     
     .campaignRemoveButtonContainer {

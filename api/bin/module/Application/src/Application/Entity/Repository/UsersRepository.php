@@ -850,4 +850,31 @@ class UsersRepository extends EntityRepository
 
         return (!empty($result[0]['minHour']) ? (int)$result[0]['minHour'] : 8);
     }
+
+    public function getAllUserType()
+    {
+        $dql = "SELECT
+                  ut.id, ut.typeName as type_name,
+                  COUNT(DISTINCT tap.submittingUserTypeId) AS timeEntryApprovingCount,
+                  COUNT(DISTINCT u.id) AS userCount
+                FROM \Application\Entity\RediUserType ut
+                LEFT JOIN \Application\Entity\RediUserTypeTimeApprovalPermission tap
+                    WITH tap.approverUserTypeId = ut.id
+                LEFT JOIN \Application\Entity\RediUser u
+                    WITH u.typeId = ut.id
+                GROUP BY ut.id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getArrayResult();
+
+        $result = array_map(function($row) {
+            $row['timeEntryApprover'] = (!empty($row['timeEntryApprovingCount'])) ? 1 : 0;
+            $row['userCount'] = (int)$row['userCount'];
+            $row['timeEntryApprovingCount'] = (int)$row['timeEntryApprovingCount'];
+
+            return $row;
+        }, $result);
+
+        return $result;
+    }
 }

@@ -27,6 +27,7 @@ export class ProjectPermissionsActionsClass {
             ProjectPermissionsStore.loadingCount--;
             return true;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.fetchLoggedInUserPermissions();
                 ProjectPermissionsStore.loadingCount--;

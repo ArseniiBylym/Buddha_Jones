@@ -15,6 +15,7 @@ use League\Csv\Reader;
 use Application\Entity\RediCcStatement;
 use Application\Entity\RediCcStatementLine;
 use Application\Entity\RediSpotVersionEditor;
+use Application\Entity\RediSpotSentFile;
 
 class SpotSentController extends CustomAbstractActionController
 {
@@ -24,6 +25,7 @@ class SpotSentController extends CustomAbstractActionController
         $filter['offset'] = (int)trim($this->getRequest()->getQuery('offset', 0));
         $filter['length'] = (int)trim($this->getRequest()->getQuery('length', 10));
         $filter['sort'] = strtolower(trim($this->getRequest()->getQuery('sort', 'update')));
+        $filter['spot_sent_type'] = (int)trim($this->getRequest()->getQuery('spot_sent_type', 0));
 
         $data = $this->_spotRepo->searchSpotSent($filter);
         $totalCount = $this->_spotRepo->searchSpotSentCount($filter);
@@ -113,6 +115,8 @@ class SpotSentController extends CustomAbstractActionController
         $spotSents = $this->_spotSentRepository->findBy(array('requestId' => $requestId));
 
         if (count($spotSents)) {
+            $this->_spotRepo->deleteSpotSentFileByRequestId($requestId);
+
             foreach ($spotSents as $spotSent) {
                 $this->_em->remove($spotSent);
             }
@@ -161,9 +165,9 @@ class SpotSentController extends CustomAbstractActionController
         $deadline = $this->_commonRepo->filterPostData($data, 'deadline', 'datetime', $this->_commonRepo->filterPostData($existingData, 'deadline', 'datetimeObj', null));
         $spotSentDate = $this->_commonRepo->filterPostData($data, 'spot_sent_date', 'datetime', $this->_commonRepo->filterPostData($existingData, 'spotSentDate', 'datetimeObj', null));
         $finishingHouse = $this->_commonRepo->filterPostData($data, 'finishing_house', 'int', $this->_commonRepo->filterPostData($existingData, 'finishingHouse', 'int', null));
-        $framerate = $this->_commonRepo->filterPostData($data, 'framerate', 'string', $this->_commonRepo->filterPostData($existingData, 'framerate', 'string', null), true);
+        $framerate = $this->_commonRepo->filterPostData($data, 'framerate', 'json', $this->_commonRepo->filterPostData($existingData, 'framerate', null, null), true);
         $framerateNote = $this->_commonRepo->filterPostData($data, 'framerate_note', 'string', $this->_commonRepo->filterPostData($existingData, 'framerateNote', 'string', null), true);
-        $rasterSize = $this->_commonRepo->filterPostData($data, 'raster_size', 'string', $this->_commonRepo->filterPostData($existingData, 'rasterSize', 'string', null), true);
+        $rasterSize = $this->_commonRepo->filterPostData($data, 'raster_size', 'json', $this->_commonRepo->filterPostData($existingData, 'rasterSize', null, null), true);
         $rasterSizeNote = $this->_commonRepo->filterPostData($data, 'raster_size_note', 'string', $this->_commonRepo->filterPostData($existingData, 'rasterSizeNote', 'string', null), true);
         $musicCueSheet = $this->_commonRepo->filterPostData($data, 'music_cue_sheet', 'boolean', $this->_commonRepo->filterPostData($existingData, 'musicCueSheet', 'boolean', 0), true);
         $audioPrep = $this->_commonRepo->filterPostData($data, 'audio_prep', 'boolean', $this->_commonRepo->filterPostData($existingData, 'audioPrep', 'boolean', 0), true);
@@ -177,6 +181,9 @@ class SpotSentController extends CustomAbstractActionController
         $deliveryNote = $this->_commonRepo->filterPostData($data, 'delivery_note', 'string', $this->_commonRepo->filterPostData($existingData, 'deliveryNote', 'string', null), true);
         $statusId = $this->_commonRepo->filterPostData($data, 'status_id', 'int', $this->_commonRepo->filterPostData($existingData, 'statusId', 'int', null), true);
         $audioNote = $this->_commonRepo->filterPostData($data, 'audio_note', 'string', $this->_commonRepo->filterPostData($existingData, 'audioNote', 'string', null), true);
+        $audioNote = $this->_commonRepo->filterPostData($data, 'graphics_note', 'string', $this->_commonRepo->filterPostData($existingData, 'graphicsNote', 'string', null), true);
+        $audioNote = $this->_commonRepo->filterPostData($data, 'music_note', 'string', $this->_commonRepo->filterPostData($existingData, 'musicNote', 'string', null), true);
+        $audioNote = $this->_commonRepo->filterPostData($data, 'final_narr', 'string', $this->_commonRepo->filterPostData($existingData, 'finalNarr', 'string', null), true);
 
         $deliveryToClient = $this->_commonRepo->filterPostData($data, 'delivery_to_client', 'json', $this->_commonRepo->filterPostData($existingData, 'deliveryToClient', null, null), true);
         $audio = $this->_commonRepo->filterPostData($data, 'audio', 'json', $this->_commonRepo->filterPostData($existingData, 'audio', null, null), true);
@@ -186,12 +193,16 @@ class SpotSentController extends CustomAbstractActionController
         $customerContact = $this->_commonRepo->filterPostData($data, 'customer_contact', 'json', $this->_commonRepo->filterPostData($existingData, 'customerContact', null, null), true);
         $specSheetFile = $this->_commonRepo->filterPostData($data, 'spec_sheet_file', 'json', null);
 
+        $spotSentType = $this->_commonRepo->filterPostData($data, 'spot_sent_type', 'int', $this->_commonRepo->filterPostData($existingData, 'spotSentType', 'int', 1), 1);
+        
         // array to commaseparated string
         // $sentViaMethod = $this->arrayToCommaSeparated($sentViaMethod);
         $finishOption = is_array($finishOption) ? $this->arrayToCommaSeparated($finishOption, true) : $finishOption;
         $audio = is_array($audio) ? $this->arrayToCommaSeparated($audio) : $audio;
         $deliveryToClient = is_array($deliveryToClient) ? $this->arrayToCommaSeparated($deliveryToClient, true) : $deliveryToClient;
         $customerContact = is_array($customerContact) ? $this->arrayToCommaSeparated($customerContact) : $customerContact;
+        $framerate = is_array($framerate) ? $this->arrayToCommaSeparated($framerate) : $framerate;
+        $rasterSize = is_array($rasterSize) ? $this->arrayToCommaSeparated($rasterSize) : $rasterSize;
 
         if ($isUpdate && !$spotVersionData) {
             $spotVersionData = $this->_spotRepo->getRawSpotVersionDataByRequestId($requestId);
@@ -286,6 +297,14 @@ class SpotSentController extends CustomAbstractActionController
                 $sv['finish_accept'] = (!empty($sv['finish_accept'])) ? 1 : 0;
                 $sv['prod_accept'] = (!empty($sv['prod_accept'])) ? 1 : 0;
                 $sv['line_status_id'] = $this->_commonRepo->filterPostData($sv, 'line_status_id', 'int', 1);
+                $sv['graphics_status_id'] = $this->_commonRepo->filterPostData($sv, 'graphics_status_id', 'int', null);
+
+                if ($sv['line_status_id'] < 4) {
+                    $sv['graphics_status_id'] = null;
+                } else if ($sv['line_status_id'] == 4 && !$sv['graphics_status_id']) {
+                    $sv['graphics_status_id'] = 1;
+                }
+
                 $sentViaMethod = $this->_commonRepo->filterPostData($sv, 'sent_via_method', 'array', array());
 
                 if (!$sentViaMethod) {
@@ -293,6 +312,27 @@ class SpotSentController extends CustomAbstractActionController
                 }
 
                 $sv['sent_via_method'] = is_array($sentViaMethod) ? $this->arrayToCommaSeparated($sentViaMethod) : $sentViaMethod;
+                $sv['no_graphics'] = $this->_commonRepo->filterPostData($sv, 'no_graphics', 'boolean', null, true);
+                $sv['is_pdf'] = $this->_commonRepo->filterPostData($sv, 'is_pdf', 'boolean', null, true);
+                $sv['spot_sent_type'] = $spotSentType;
+
+                $graphicsFiles = $this->_commonRepo->filterPostData($sv, 'graphics_file', 'array', array());
+
+                if (!$graphicsFiles) {
+                    $graphicsFiles = $this->_commonRepo->filterPostData($sv, 'graphics_file');
+                }
+
+                $sv['graphics_file'] = array();
+
+                if ($graphicsFiles) {
+                    $sv['graphics_file'] = array_map(function ($file) {
+                        $file['file_name'] = (!empty($file['file_name'])) ? $file['file_name'] : null;
+                        $file['file_description'] = (!empty($file['file_description'])) ? $file['file_description'] : null;
+                        $file['resend'] = (!empty($file['resend'])) ? $file['resend'] : null;
+
+                        return $file;
+                    }, $graphicsFiles);
+                }
             }
         }
 
@@ -300,10 +340,8 @@ class SpotSentController extends CustomAbstractActionController
             $requestId = $requestId ? $requestId : $this->_spotRepo->getNextSpotSentRequestId();
             $now = new \DateTime('now');
             $spotSentIds = [];
-
             $validate = $this->validateData($requestId, $spotVersionData);
 
-            // var
             if ($validate['result']) {
                 foreach ($spotVersionData as $svd) {
                     $spotSent = new RediSpotSent();
@@ -335,6 +373,7 @@ class SpotSentController extends CustomAbstractActionController
                     $spotSent->setStudioNote($studioNote);
                     $spotSent->setFinishOption($finishOption);
                     $spotSent->setCustomerContact($customerContact);
+                    $spotSent->setSpotSentType($spotSentType);
 
                     $spotSent->setProdAccept($svd['prod_accept']);
                     $spotSent->setFinishAccept($svd['finish_accept']);
@@ -345,7 +384,10 @@ class SpotSentController extends CustomAbstractActionController
                     $spotSent->setSpotResend($svd['spot_resend']);
                     $spotSent->setFinishRequest($svd['finish_request']);
                     $spotSent->setLineStatusId($svd['line_status_id']);
+                    $spotSent->setGraphicsStatusId($svd['graphics_status_id']);
                     $spotSent->setSentViaMethod($svd['sent_via_method']);
+                    $spotSent->setNoGraphics($svd['no_graphics']);
+                    $spotSent->setIsPdf($svd['is_pdf']);
 
                     if ($isUpdate) {
                         $spotSent->setCreatedAt($existingSpotSent->getCreatedAt());
@@ -360,7 +402,26 @@ class SpotSentController extends CustomAbstractActionController
 
                     $this->_em->persist($spotSent);
                     $this->_em->flush();
-                    $spotSentIds[] = $spotSent->getId();
+                    $spotSentId = $spotSent->getId();
+
+                    if ($svd['graphics_file']) {
+                        foreach ($svd['graphics_file'] as $file) {
+                            if (empty($file['file_name'])) {
+                                continue;
+                            }
+
+                            $spotSentFile = new RediSpotSentFile();
+                            $spotSentFile->setSpotSentId($spotSentId);
+                            $spotSentFile->setFileName($file['file_name']);
+                            $spotSentFile->setFileDescription($file['file_description']);
+                            $spotSentFile->setResend($file['resend']);
+                            $this->_em->persist($spotSentFile);
+                        }
+
+                        $this->_em->flush();
+                    }
+
+                    $spotSentIds[] = $spotSentId;
                 }
 
                 if (count($spotSentIds)) {
@@ -390,7 +451,7 @@ class SpotSentController extends CustomAbstractActionController
                         }
 
                         $this->_em->flush();
-                    } else if (count($existingSpecSheetFile)) {
+                    } else if ($existingSpecSheetFile && count($existingSpecSheetFile)) {
                         $spotSents = $this->_spotSentRepository->findBy(array('requestId' => $requestId));
 
                         foreach ($spotSents as $spotSent) {
@@ -427,6 +488,8 @@ class SpotSentController extends CustomAbstractActionController
                         }
                     }
                 }
+
+                $this->spotSentSubmissionPostProcess($requestId);
 
                 $response = array(
                     'status' => 1,
@@ -470,6 +533,8 @@ class SpotSentController extends CustomAbstractActionController
                 $data['deliveryToClient'] = $this->commaSeparatedToArray($data['deliveryToClient'], true);
                 $data['audio'] = $this->commaSeparatedToArray($data['audio']);
                 $data['finishOption'] = $this->commaSeparatedToArray($data['finishOption'], true);
+                $data['framerate'] = $this->commaSeparatedToArray($data['framerate'], false, 'strval');
+                $data['rasterSize'] = $this->commaSeparatedToArray($data['rasterSize'], false, 'strval');
                 // $data['customerContact'] = $this->commaSeparatedToArray($data['customerContact']);
                 $data['finishingHouseName'] = null;
                 $data['customerContact'] = array();
@@ -525,7 +590,7 @@ class SpotSentController extends CustomAbstractActionController
         return ((is_array($arr) && count($arr)) ? implode(',', $arr) : null);
     }
 
-    private function commaSeparatedToArray($str, $isParentChild = false)
+    private function commaSeparatedToArray($str, $isParentChild = false, $filterFunction = 'intval')
     {
         if (!$str) {
             return array();
@@ -536,7 +601,7 @@ class SpotSentController extends CustomAbstractActionController
         if (!count($result)) {
             $result = null;
         } else {
-            $result = array_map('intval', $result);
+            $result = array_map($filterFunction, $result);
         }
 
         if ($isParentChild) {
@@ -629,6 +694,7 @@ class SpotSentController extends CustomAbstractActionController
                 'spotId' => $svd['spot_id'],
                 'versionId' => $svd['version_id'],
                 'spotResend' => $svd['spot_resend'],
+                'spotSentType' => $svd['spot_sent_type'],
             );
 
             $check = $this->_spotSentRepository->findOneBy($checkData);
@@ -644,5 +710,35 @@ class SpotSentController extends CustomAbstractActionController
         return array(
             "result" => true,
         );
+    }
+
+    public function spotSentSubmissionPostProcess($requestId)
+    {
+        $data = $this->getSingle($requestId);
+
+        if (!$data) {
+            return;
+        }
+
+        // update all graphics resend field
+        $graphicsFilesArr = array_column($data['spotData'], 'graphicsFile');
+
+        if ($graphicsFilesArr) {
+            foreach ($graphicsFilesArr as $graphicsFiles) {
+                if (!empty($graphicsFiles[0]['spotSentId'])) {
+                    $spotSentId = (int)$graphicsFiles[0]['spotSentId'];
+                    $hasNull = array_intersect(array(0, null), array_column($graphicsFiles, 'resend'));
+                    $resend = $hasNull ? 0 : 1;
+                    $spotSentRow = $this->_spotSentRepository->find($spotSentId);
+
+                    if ($spotSentRow) {
+                        $spotSentRow->setAllGraphicsResend($resend);
+                        $this->_em->persist($spotSentRow);
+                    }
+                }
+            }
+
+            $this->_em->flush();
+        }
     }
 }

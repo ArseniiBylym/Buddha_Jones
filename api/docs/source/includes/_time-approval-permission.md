@@ -218,11 +218,11 @@ Add or change time approval permission of user type
 
 ### HTTP Request
 
-`PUT /time-approval-permission/[:submittingUserTypeId]`
+`PUT /time-approval-permission/[:approving_user_type_id]`
 
 ### Query Parameters
 
 | Required | Parameter            | Type  | Default | Description                                                                                   |
 | -------- | -------------------- | ----- | ------- | --------------------------------------------------------------------------------------------- |
-| **true** | submittingUserTypeId | Int   | null    | ID of the submitting user type for which approvers should be changed                          |
-| false    | approversUserTypeIds | Int[] | []      | Array of IDs of allowed to approve user types, if empty previous permissions will get removed |
+| **true** | approving_user_type_id | Int   | null    | ID of the approving user type, who will be able to apprve should be changed                          |
+| false    | submitting__user_type_id | Int[] | []      | Array of IDs of user types, whose time entry will be approved by  the approving_user_type_id |

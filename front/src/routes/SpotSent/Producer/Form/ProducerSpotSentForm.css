@@ -23,6 +23,18 @@
   }
 }
 
+.acceptButtonsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: -6px;
+    margin-left: -12px;
+    margin-right: -12px;
+    flex-direction: row-reverse;
+    &>label {
+         margin: 6px 12px;
+    }
+}
+
 .typeFinishingOptions {
     float: right;
 }
@@ -73,4 +85,9 @@
     display: inline-flex;
     vertical-align: top;
     margin-right: 12px;
+}
+.fileCheckbox{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

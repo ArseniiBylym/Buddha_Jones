@@ -126,6 +126,7 @@ export class PersonRoleDropdown extends React.Component<PersonRoleDropdownPropsT
             await UsersActions.fetchUsersProjectRoles();
             this.isLoading = false;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.fetchRoles();
             }, 2048);

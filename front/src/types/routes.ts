@@ -12,6 +12,7 @@ export interface Route {
     entry?: string;
     exact: boolean;
     allowAllUsers: boolean;
+    subModuleAccess?: number;
 }
 
 export enum RouteAccessKey {

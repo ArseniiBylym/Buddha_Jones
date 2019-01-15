@@ -21,6 +21,14 @@ export class StudioRateCard {
         return '';
     }
 
+    @computed
+    public get selectedRateCardFile() {
+        if (this.selectedRateCardId && this.rateCardTypes.data[this.selectedRateCardId]) {
+            return this.rateCardTypes.data[this.selectedRateCardId].file;
+        }
+        return null;
+    }
+
     @observable name: string = '';
     @observable loading: boolean = false;
 

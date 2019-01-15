@@ -77,6 +77,13 @@ class RediProject
      */
     private $type;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="confidential", type="smallint", nullable=true)
+     */
+    private $confidential;
+
 
 
     /**
@@ -271,5 +278,28 @@ class RediProject
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Set confidential
+     *
+     * @param integer $confidential
+     * @return RediProject
+     */
+    public function setConfidential($confidential)
+    {
+        $this->confidential = $confidential;
+
+        return $this;
+    }
+
+    /**
+     * Get confidential
+     *
+     * @return integer 
+     */
+    public function getConfidential()
+    {
+        return $this->confidential;
     }
 }

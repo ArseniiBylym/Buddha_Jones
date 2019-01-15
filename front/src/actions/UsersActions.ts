@@ -71,6 +71,9 @@ export class UsersActionsClass {
                     .map(type => ({
                         id: type.id,
                         name: type.type_name,
+                        timeEntryApprover: type.timeEntryApprover,
+                        timeEntryApprovingCount: type.timeEntryApprovingCount,
+                        userCount: type.userCount,
                     }));
                 UsersStore.typesLastFetchTimestamp = Date.now();
                 UsersStore.typesLoading = false;
@@ -78,6 +81,7 @@ export class UsersActionsClass {
 
             return true;
         } catch (error) {
+            // TODO fix this kind of error handlings all over the project
             setTimeout(() => {
                 this.fetchUsersTypes(true);
             }, 512);

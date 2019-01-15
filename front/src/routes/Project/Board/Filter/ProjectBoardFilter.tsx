@@ -35,7 +35,7 @@ export class ProjectBoardFilter extends React.Component<ProjectBoardFilterProps,
             label: '',
             value: {
                 id: null,
-                name: 'No status'
+                name: 'All status'
             },
             float: 'none',
             options: []
@@ -58,7 +58,7 @@ export class ProjectBoardFilter extends React.Component<ProjectBoardFilterProps,
                             ...[
                                 {
                                     value: null,
-                                    label: 'No status',
+                                    label: 'All status',
                                 },
                             ],
                             ...this.props.options.map(status => ({

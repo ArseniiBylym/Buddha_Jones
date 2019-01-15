@@ -347,6 +347,9 @@ export class TimeEntryActionsClass {
 
             return true;
         } catch (error) {
+            if (error.message === 'Request failed with status code 400') {
+                this.showErrorMessage('Time entry overlaps with an existing time entry');
+            } 
             throw error;
         }
     };
@@ -453,6 +456,11 @@ export class TimeEntryActionsClass {
         if (TimeEntryStore.values) {
             TimeEntryStore.values.isModified = true;
             if (index === null) {
+                if (TimeEntryStore.values.files.length > 0 &&
+                    TimeEntryStore.values.files[TimeEntryStore.values.files.length - 1].filename === '') { 
+                        return;
+                    }
+
                 TimeEntryStore.values.files.push({
                     filename: details.filename || '',
                     description: details.description || '',
@@ -473,6 +481,37 @@ export class TimeEntryActionsClass {
             }
         }
     };
+
+    @action
+    public setFileDetailsArray = (filesArr) => {
+        if (TimeEntryStore.values) {
+            TimeEntryStore.values.isModified = true;
+            if (TimeEntryStore.values.files.length > 0 && 
+                TimeEntryStore.values.files[TimeEntryStore.values.files.length - 1].filename === '') {
+                    TimeEntryStore.values.files[TimeEntryStore.values.files.length - 1].filename = filesArr[0];
+                    filesArr = filesArr.slice(1);
+                    filesArr.forEach((item, i) => {
+                        if (TimeEntryStore.values) {
+                            TimeEntryStore.values.files.push({
+                                filename: item || '',
+                                description: '',
+                                durationInMinutes:  60,
+                            });
+                        }
+                    });
+                    return;
+                }
+            filesArr.forEach((item, i) => {
+                if (TimeEntryStore.values) {
+                    TimeEntryStore.values.files.push({
+                        filename: item || '',
+                        description: '',
+                        durationInMinutes:  60,
+                    });
+                }
+            });
+        }
+    }
 
     @action
     public removeFile = (index: number) => {
@@ -614,32 +653,53 @@ export class TimeEntryActionsClass {
     @action
     public setEntryStartTime = (totalMinutes: number) => {
         if (TimeEntryStore.values !== null) {
-            if (totalMinutes >= TimeEntryStore.values.endTimeInMinutes) {
-                this.showErrorMessage(`Start time cannot be after end time`);
-            } else {
+            const delta = totalMinutes - TimeEntryStore.values.startTimeInMinutes;
+            let newEndTime = TimeEntryStore.values.endTimeInMinutes + delta;
+
+            // if ( totalMinutes > 1440) {
+            //     return;
+            // }
+            // if ( totalMinutes > 1440 + 720 || totalMinutes < 0) {
+            //     return;
+            // }
+            if ( newEndTime > 1440 ) {
+                // let diff = Math.floor(newEndTime / 1440);
+                // newEndTime -= diff * 1440;
+                // totalMinutes -= diff * 1440; 
+                newEndTime -= 720;
+                totalMinutes -= 720;
+            }
                 TimeEntryStore.values.isModified = true;
                 TimeEntryStore.values.startTimeInMinutes = totalMinutes;
-            }
+                TimeEntryStore.values.endTimeInMinutes = newEndTime;
         }
     };
 
     @action
     public setEntryEndTime = (totalMinutes: number) => {
         if (TimeEntryStore.values !== null) {
-            if (totalMinutes <= TimeEntryStore.values.startTimeInMinutes) {
-                this.showErrorMessage(`End time cannot be before start time`);
-            } else {
-                TimeEntryStore.values.isModified = true;
-                TimeEntryStore.values.endTimeInMinutes = totalMinutes;
+            const delta = totalMinutes - TimeEntryStore.values.endTimeInMinutes;
+            let newStartTime = TimeEntryStore.values.startTimeInMinutes + delta;
+
+            if (newStartTime < 0) {
+                newStartTime += 720;
+                totalMinutes += 720;
             }
+                TimeEntryStore.values.isModified = true;
+                TimeEntryStore.values.startTimeInMinutes = newStartTime;
+                TimeEntryStore.values.endTimeInMinutes = totalMinutes;
         }
     };
 
     @action
     public setEntryDuration = (duration: number) => {
         if (TimeEntryStore.values !== null) {
-            TimeEntryStore.values.isModified = true;
-            TimeEntryStore.values.endTimeInMinutes = TimeEntryStore.values.startTimeInMinutes + duration;
+            if (TimeEntryStore.values.startTimeInMinutes + duration > 1440) {
+                this.showErrorMessage(`End time cannot be after end of the day`);
+            } else {
+                TimeEntryStore.values.isModified = true;
+                TimeEntryStore.values.endTimeInMinutes = TimeEntryStore.values.startTimeInMinutes + duration;
+            }
         }
     };
 

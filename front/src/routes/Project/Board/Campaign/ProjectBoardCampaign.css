@@ -11,3 +11,17 @@
     padding-top: 53px;
   }
 }
+
+.collapseButton{
+  padding: 24px 24px 0 24px;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  font-size: 0.95em;
+  font-weight: 600;
+  color: rgb(126, 117, 109);
+}
+.collapseButtonLabel{
+  margin-right: 10px;
+
+}

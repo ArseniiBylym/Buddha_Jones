@@ -41,4 +41,5 @@
     padding: 12px 64px;
     background: #f2f0ed;
     border-bottom: 1px solid #eeeae7;
+    overflow: hidden;
 }

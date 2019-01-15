@@ -14,6 +14,7 @@
 .rateCardContainer {
     display: flex;
     position: relative;
+    align-items: center;
 }
 
 .rateCardSelector {
@@ -34,7 +35,7 @@
 
 .addRateModalButtonsWrapper {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     margin-top: 8px;
     padding: 0 8px;
 }
@@ -57,7 +58,7 @@
 }
 
 .rateCardAddButton {
-
+    margin-left: 4px!important;
 }
 
 .rowEditButton {
@@ -134,4 +135,12 @@
     left: 0;
     right: 0;
     bottom: 0;
+}
+
+.attachPDF {
+    display: none;
+}
+
+.attachButton {
+    margin-left: 20px!important;
 }

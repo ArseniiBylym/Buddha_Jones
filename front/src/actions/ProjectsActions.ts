@@ -28,6 +28,7 @@ export class ProjectsActionsClass {
                 name: project.name.trim(),
                 project_code: project.codeName.trim(),
                 studio_id: project.studioId !== null ? project.studioId : '',
+                project_prefix: project.prefix && project.prefix.trim(),
                 project_release: project.releaseDate !== null ? project.releaseDate : '',
                 notes:
                     typeof project.notes !== 'undefined' && project.notes !== null && project.notes.trim() !== ''

@@ -6,12 +6,15 @@ import { Section, Row, Col } from 'components/Section';
 import { UserTypeClassId } from 'types/user';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { LoadingIndicator, LoadingBar } from 'components/Loaders';
-import { observable, computed } from 'mobx';
-import { ButtonClose, ButtonEdit } from 'components/Button';
+import { observable, computed, action } from 'mobx';
+import { ButtonClose, ButtonEdit, Button } from 'components/Button';
 import { Paragraph } from 'components/Content';
 import { PersonWithRole, PersonPickerByType } from 'components/Buddha';
 import { OptionsListValuePropType, DropdownContainer, OptionsList } from 'components/Form';
 import { ProjectsDetailsActions } from 'actions';
+import { ButtonIcon } from 'components/Button';
+import { IconArrowTopBlue, IconDropdownArrow } from 'components/Icons';
+import AnimateHeight from 'react-animate-height';
 
 // Styles
 const s = require('./ProjectBoardCampaignPeople.css');
@@ -24,6 +27,7 @@ interface ProjectBoardCampaignCopyablePeople {
     campaignDescription: string;
     users: ProjectBoardCampaignCopyableUser[];
 }
+
 interface ProjectBoardCampaignCopyableUser {
     id: number;
     name: string;
@@ -33,6 +37,7 @@ interface ProjectBoardCampaignCopyableUser {
 interface ProjectBoardCampaignPeopleProps {
     userCanView: boolean;
     userCanEdit: boolean;
+    withAnimation?: boolean;
     type: ProjectBoardCampaignPeopleType;
     projectId: number;
     projectCampaignId: number;
@@ -61,6 +66,7 @@ export class ProjectBoardCampaignPeople extends React.Component<
             userCanEdit: false,
             userCanView: false,
             type: 'creative',
+            withAnimation: false,
             projectId: 0,
             projectCampaignId: 0,
             campaignId: 0,
@@ -70,6 +76,12 @@ export class ProjectBoardCampaignPeople extends React.Component<
 
     @observable private isEditing: boolean = false;
     @observable private copyingStatus: 'none' | 'saving' | 'success' | 'error' = 'none';
+    @observable private showTeam: boolean = false;
+
+    @action
+    private showTeamSwitch = () => {
+        this.showTeam = !this.showTeam;
+    }
 
     @computed
     private get copyableUsersFromOtherCampaigns(): ProjectBoardCampaignCopyablePeople[] {
@@ -140,6 +152,14 @@ export class ProjectBoardCampaignPeople extends React.Component<
                                 : this.props.type === 'design'
                                     ? 'Graphics team'
                                     : ''
+                }
+                collapseButton={
+                    this.props.withAnimation 
+                    ?   <Button
+                            onClick={this.showTeamSwitch}
+                            icon={this.getVersionNameButtonIcon()}
+                    />
+                    :   null
                 }
                 removeTitleGutter={false}
                 removeTitleMargins={true}
@@ -244,6 +264,52 @@ export class ProjectBoardCampaignPeople extends React.Component<
                         : []),
                 ]}
             >
+
+                {this.props.withAnimation && 
+                    <AnimateHeight height={(this.showTeam) ? 'auto' : 0} duration={500}>
+                     <Row removeMargins={true} className={s.peopleList} doWrap={true}>
+                    <Col className={s.peopleContainer} size={0}>
+                        {(this.props.selectedUsers.length > 0 &&
+                            this.props.selectedUsers.map(user => (
+                                <PersonWithRole
+                                    key={'user-' + user.userId}
+                                    onChange={this.handleUserRoleChange(user.userId)}
+                                    className={s.person}
+                                    userId={user.userId}
+                                    userFullName={user.fullName}
+                                    userImage={user.image}
+                                    roleId={
+                                        typeof user.creativeRole !== 'undefined' && user.creativeRole
+                                            ? user.creativeRole.roleId
+                                            : null
+                                    }
+                                    roleName={
+                                        this.props.type === 'design'
+                                            ? 'Designer'
+                                            : typeof user.creativeRole !== 'undefined' && user.creativeRole
+                                                ? user.creativeRole.role
+                                                : null
+                                    }
+                                    hideRole={this.props.type !== 'creative'}
+                                    selected={true}
+                                    editing={this.isEditing}
+                                    updating={users.updatingUserTypes}
+                                />
+                            ))) ||
+                            ((users.loadingUsersProjectRoles || users.loadingUserTypes) && (
+                                <div className={s.loadingBarContainer}>
+                                    <LoadingBar />
+                                </div>
+                            )) || (
+                                <Paragraph className={s.empty} type="dim">
+                                    Team has no people assigned.
+                                </Paragraph>
+                            )}
+                    </Col>
+                </Row>
+                    </AnimateHeight>
+                }
+                {!this.props.withAnimation && 
                 <Row removeMargins={true} className={s.peopleList} doWrap={true}>
                     <Col className={s.peopleContainer} size={0}>
                         {(this.props.selectedUsers.length > 0 &&
@@ -284,6 +350,7 @@ export class ProjectBoardCampaignPeople extends React.Component<
                             )}
                     </Col>
                 </Row>
+                }
             </Section>
         ) : null;
     }
@@ -291,6 +358,18 @@ export class ProjectBoardCampaignPeople extends React.Component<
     private handleEditingToggle = () => {
         this.isEditing = !this.isEditing;
     };
+
+    private getVersionNameButtonIcon(): ButtonIcon {
+        return {
+            size: 'small',
+            background: this.showTeam ? 'none-alt' : 'white',
+            element: this.showTeam ? (
+                <IconArrowTopBlue width={10} height={16}/>
+            ) : (
+                <IconDropdownArrow width={12} height={8}/>
+            ),
+        };
+    }
 
     private handleUsersCopy = async (option: { value: OptionsListValuePropType; label: string }) => {
         const addedUsersById: number[] = [];

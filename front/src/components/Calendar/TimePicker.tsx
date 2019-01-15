@@ -107,6 +107,8 @@ export class TimePicker extends React.Component<TimePickerProps, {}> {
                         onChange={this.onChangeTimeEntryInputs}
                         name="hours"
                         type="number"
+                        min="0"
+                        max="13"
                     />
 
                     <div className={styles.separator}/>
@@ -119,6 +121,7 @@ export class TimePicker extends React.Component<TimePickerProps, {}> {
                         onBlur={this.handleMinutesManualInput}
                         name="minutes"
                         type="number"
+                        step="15"
                     />
 
                     <input
@@ -142,14 +145,44 @@ export class TimePicker extends React.Component<TimePickerProps, {}> {
 
         let value: number = Number(e.target.value);
         let valuePeriod: string = e.target.value.toLowerCase();
-
-        if (name === 'hours' && value > 12) {
-            return false;
+        if (name === 'hours' && value > 13) {
+            return;
+            // if ( value > 12) {
+            //     return;
+            // }
+            // if (this.selectedPeriod === 'PM') {
+            //     this.handleTimeChange(name)({
+            //         value: [value - 12, value],
+            //         label: padStart(value.toString(), 2, '0')
+            //     });
+            // } else if (this.selectedPeriod === 'AM') {
+            //     this.handleTimeChange(name)({
+            //         value: [value - 12, value - 12],
+            //         label: padStart(value.toString(), 2, '0')
+            //     });
+            // } else {
+            //     return false;
+            // }
+        // } else if (value < 12 && this.selectedPeriod === 'PM') {
+        //     value = 11;
         } else if (name === 'hours') {
-            this.handleTimeChange(name)({
-                value: [value, value + 12],
-                label: padStart(value.toString(), 2, '0')
-            });
+            if (this.selectedPeriod === 'PM' && value === 11 ) {
+                this.handleTimeChange(name)({
+                    value: [value, value],
+                    label: padStart(value.toString(), 2, '0')
+                });
+            } else if (this.selectedPeriod === 'AM') {
+            // if (this.selectedPeriod === 'AM') {
+                this.handleTimeChange(name)({
+                    value: [value, value],
+                    label: padStart(value.toString(), 2, '0')
+                });
+            } else {
+                this.handleTimeChange(name)({
+                    value: [value, value + 12],
+                    label: padStart(value.toString(), 2, '0')
+                });
+            }
         }
 
         if (name === 'minutes' && value > 60) {

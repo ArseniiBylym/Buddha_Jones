@@ -12,7 +12,7 @@
   justify-content: space-evenly;
   margin-top: 12px;
   &>div {
-    flex: 0 1 50%;
+    flex: 0 1 100%;
   }
 }
 
@@ -49,4 +49,15 @@
     padding-left: 0;
     padding-bottom: 0;
   }
+}
+.spotsColumn3{
+  width: 100%;
+}
+.disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+button.disabled:hover span{
+  border-bottom-color: transparent !important;
+  background: #ffffff !important;
 }

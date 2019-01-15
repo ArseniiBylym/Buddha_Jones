@@ -173,6 +173,7 @@ class SpotRepository extends EntityRepository
                 "rasterSize",
                 "rasterSizeNote",
                 "musicCueSheet",
+                "musicNote",
                 "gfxFinish",
                 "audioPrep",
                 "audio",
@@ -188,6 +189,10 @@ class SpotRepository extends EntityRepository
                 "statusId",
                 // "editor",
                 "customerContact",
+                "spotSentType",
+                "allGraphicsResend",
+                "graphicsNote",
+                "finalNarr",
                 "createdBy",
                 "updatedBy",
                 "createdAt",
@@ -199,6 +204,7 @@ class SpotRepository extends EntityRepository
                 "projectId",
                 "statusId",
                 "spotSentDate",
+                "spotSentType",
                 "createdBy",
                 "createdAt",
                 "updatedBy",
@@ -245,6 +251,10 @@ class SpotRepository extends EntityRepository
             $dqlFilter[] = "sc.statusId = :status_id";
         }
 
+        if (!empty($filter['spot_sent_type'])) {
+            $dqlFilter[] = "sc.spotSentType = :spot_sent_type";
+        }
+
         if (count($dqlFilter)) {
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
@@ -275,9 +285,12 @@ class SpotRepository extends EntityRepository
             $query->setParameter("status_id", $filter['status_id']);
         }
 
+        if (!empty($filter['spot_sent_type'])) {
+            $query->setParameter("spot_sent_type", $filter['spot_sent_type']);
+        }
+
         $result = $query->getArrayResult();
 
-        $methodes = $this->getSpotSentOption('sent_via_method');
         $finishingOptions = $this->getSpotSentOption('finishing_option');
         $audioOptions = $this->getSpotSentOption('audio_option');
         $delToClientOption = $this->getSpotSentOption('delivery_to_client_option');
@@ -289,6 +302,12 @@ class SpotRepository extends EntityRepository
         }
 
         foreach ($result as &$row) {
+            if (isset($row['spotSentType']) && $row['spotSentType'] == 2) {
+                $methodes = $this->getSpotSentOption('graphics_sent_via_method');
+            } else {
+                $methodes = $this->getSpotSentOption('sent_via_method');
+            }
+
             unset($row['sortBy']);
 
             $row['requestId'] = (int)$row['requestId'];
@@ -296,6 +315,8 @@ class SpotRepository extends EntityRepository
             $row['statusId'] = (int)$row['statusId'];
             $row['createdByUser'] = trim($row['createdByFirstName'] . ' ' . $row['createdByLastName']);
             $row['updatedByUser'] = trim($row['updatedByFirstName'] . ' ' . $row['updatedByLastName']);
+            $row['spotSentType'] = (int)$row['spotSentType'];
+
             $row['statusName'] = (!empty($row['statusId'])
                 && !empty($allStatusArray[$row['statusId']]['name']))
                 ? $allStatusArray[$row['statusId']]['name']
@@ -319,6 +340,9 @@ class SpotRepository extends EntityRepository
                     && !empty($allStatusArray[$spotDataRow['lineStatusId']]['name']))
                     ? $allStatusArray[$spotDataRow['lineStatusId']]['name']
                     : null;
+                $spotDataRow['graphicsFile'] = $this->getSpotSendFiles($spotDataRow['spotSentId']);
+
+                unset($spotDataRow['spotSentId']);
             }
 
             if (!empty($filter['details'])) {
@@ -490,6 +514,8 @@ class SpotRepository extends EntityRepository
     public function getSpotVersionDataByRequestId($requestId)
     {
         $dql = "SELECT 
+                    sc.id AS spotSentId,
+                    sc.requestId,
                     sc.campaignId,
                     ca.campaignName,
                     sc.projectCampaignId,
@@ -504,9 +530,12 @@ class SpotRepository extends EntityRepository
                     sc.prodAccept,
                     sc.finishAccept,
                     sc.lineStatusId,
+                    sc.graphicsStatusId,
                     sc.editor,
                     s.trtId,
-                    trt.runtime
+                    trt.runtime,
+                    sc.noGraphics,
+                    sc.isPdf
                 FROM \Application\Entity\RediSpotSent sc
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id = sc.campaignId
@@ -523,14 +552,16 @@ class SpotRepository extends EntityRepository
 
         $result = $query->getArrayResult();
 
-        foreach ($result as &$row) {
+        $result = array_map(function ($row) {
             $row['campaignId'] = (int)$row['campaignId'];
             $row['projectCampaignId'] = (int)$row['projectCampaignId'];
             $row['spotId'] = (int)$row['spotId'];
             $row['versionId'] = (int)$row['versionId'];
             $row['spotVersionId'] = (int)$row['spotVersionId'];
             $row['lineStatusId'] = (int)$row['lineStatusId'];
-        }
+
+            return $row;
+        }, $result);
 
         return $result;
     }
@@ -666,6 +697,38 @@ class SpotRepository extends EntityRepository
         return $result;
     }
 
+    public function getSpotSendFiles($spotSentId)
+    {
+        $dql = "SELECT 
+                  s.spotSentId, s.fileName, s.fileDescription, s.resend, s.creativeUserId
+                FROM \Application\Entity\RediSpotSentFile s
+                WHERE s.spotSentId=:spot_sent_id";
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter("spot_sent_id", $spotSentId);
+
+        $result = $query->getArrayResult();
+
+        return $result;
+    }
+
+    public function deleteSpotSentFileByRequestId($requestId)
+    {
+        $dql1 = "DELETE
+                FROM \Application\Entity\RediSpotSentFile s
+                WHERE s.spotSentId IN (
+                  SELECT 
+                    ss.id 
+                  FROM \Application\Entity\RediSpotSent ss
+                  WHERE ss.requestId=:request_id
+                )";
+
+        $query1 = $this->getEntityManager()->createQuery($dql1);
+        $query1->setParameter("request_id", $requestId);
+
+        $query1->execute();
+    }
+
     public function clearSpotSentSpotVersion($spotSentId)
     {
         $dql1 = "DELETE
@@ -794,7 +857,7 @@ class SpotRepository extends EntityRepository
         return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
     }
 
-    public function getSpotSentOption($key = null)
+    public function getSpotSentOption($key = null, $asIdHash = false)
     {
         $dql = "SELECT 
                   sso.value
@@ -819,7 +882,24 @@ class SpotRepository extends EntityRepository
             }
         }
 
+        if ($asIdHash) {
+            $response = $this->getSpotSentOptionAsIdHash($response);
+        }
+
         return $response;
+    }
+
+    public function getSpotSentOptionAsIdHash($arr)
+    {
+        $result = array();
+
+        foreach ($arr as $row) {
+            if (!empty($row['id'])) {
+                $result[$row['id']] = $row;
+            }
+        }
+
+        return $result;
     }
 
     public function getAllFinishingHouse()
@@ -923,5 +1003,424 @@ class SpotRepository extends EntityRepository
         $updateSetting->execute();
 
         return $maxRequestId;
+    }
+
+    public function getSpotSentListTree($filter = array())
+    {
+        if (empty($filter['get_count'])) {
+            $columns = "ss.projectId,
+                        p.projectName,
+                        std.id AS studioId,
+                        std.studioName,
+                        ss.campaignId,
+                        c.campaignName,
+                        cu.id AS customerId,
+                        cu.customerName,
+                        ss.projectCampaignId,
+                        ss.spotId,
+                        s.spotName,
+                        ss.versionId,
+                        v.versionName,
+                        ss.id AS spotSentId,
+                        ss.requestId AS spotSentRequestId,
+                        ss.spotSentDate,
+                        ss.lineStatusId AS spotLineStatusId,
+                        ss.graphicsStatusId,
+                        s.trtId,
+                        trt.runtime,
+                        ss.noGraphics,
+                        ss.allGraphicsResend,
+                        ss.finishRequest,
+                        ss.finishOption,
+                        fh.name AS finishingHouse,
+                        ss.allGraphicsResend,
+                        ss.noGraphics,
+                        ss.isPdf,
+                        ss.spotSentType,
+                        ss.internalNote,
+                        ss.spotResend,
+                        ss.editor,
+                        ss.customerContact,
+                        ss.spotSentDate,
+                        ss.createdAt,
+                        ss.updatedAt";
+        } else {
+            $columns = "COUNT(DISTINCT ss.id) AS total_count";
+        }
+
+        $dql = "SELECT 
+                    " . $columns . "
+                FROM \Application\Entity\RediSpotSent ss
+                LEFT JOIN \Application\Entity\RediProject p 
+                    WITH p.id = ss.projectId
+                LEFT JOIN \Application\Entity\RediCampaign c 
+                    WITH c.id = ss.campaignId
+                LEFT JOIN \Application\Entity\RediSpot s 
+                    WITH s.id = ss.spotId
+                LEFT JOIN \Application\Entity\RediVersion v 
+                    WITH v.id = ss.versionId
+                LEFT JOIN \Application\Entity\RediStudio std
+                    WITH p.studioId = std.id
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
+                    WITH ss.projectCampaignId = ptc.id
+                LEFT JOIN \Application\Entity\RediCustomer cu
+                    WITH cu.id = ptc.customerId
+                LEFT JOIN \Application\Entity\RediTrt trt
+                    WITH trt.id = s.trtId
+                LEFT JOIN \Application\Entity\RediFinishingHouse fh
+                    WITH ss.finishingHouse = fh.id
+                LEFT JOIN \Application\Entity\RediProjectToCampaignUser ptcu
+                    WITH ptcu.projectCampaignId = ss.projectCampaignId
+                WHERE ss.billId IS NULL
+                    AND ss.projectId IS NOT NULL
+                    AND ss.campaignId IS NOT NULL
+                ";
+
+        $dqlFilter = [];
+
+        if (!empty($filter['current_user_id'])) {
+            $dqlFilter[] = " (((ss.createdBy= :current_user_id OR ptcu.userId = :current_user_id) AND ss.lineStatusId <= 1) OR ss.lineStatusId > 1) ";
+        }
+
+        if (!empty($filter['spot_sent_id'])) {
+            $dqlFilter[] = " (ss.id = :spot_sent_id) ";
+        }
+
+        if (!empty($filter['line_status_id'])) {
+            $dqlFilter[] = " (ss.lineStatusId IN (:line_status_id)) ";
+
+            if (!is_array($filter['line_status_id'])) {
+                $filter['line_status_id'] = (array)$filter['line_status_id'];
+            }
+        }
+
+        if (!empty($filter['graphics_status_id'])) {
+            $dqlFilter[] = " (ss.graphicsStatusId IN (:graphics_status_id)) ";
+
+            if (!is_array($filter['graphics_status_id'])) {
+                $filter['graphics_status_id'] = (array)$filter['graphics_status_id'];
+            }
+        }
+
+        if (!empty($filter['spot_sent_type'])) {
+            $dqlFilter[] = " (ss.spotSentType = :spot_sent_type) ";
+        }
+
+        if (!empty($filter['spot_sent_for_billing'])) {
+            $dqlFilter[] = " (ss.lineStatusId = 4 OR ss.graphicsStatusId = 4) ";
+        }
+
+        if (!empty($filter['project_id'])) {
+            $dqlFilter[] = " ss.projectId = :project_id ";
+        }
+
+        if (!empty($filter['campaign_id'])) {
+            $dqlFilter[] = " ss.campaignId = :campaign_id ";
+        }
+
+        if (!empty($filter['project_campaign_id'])) {
+            $dqlFilter[] = " ss.projectCampaignId = :project_campaign_id ";
+        }
+
+        if (!empty($filter['spot_id'])) {
+            $dqlFilter[] = " ss.spotId = :spot_id ";
+        }
+
+        if (!empty($filter['version_id'])) {
+            $dqlFilter[] = " ss.versionId = :version_id ";
+        }
+
+        if (!empty($filter['start_date'])) {
+            $dqlFilter[] = " ss.spotSentDate >= :start_date ";
+
+            $startDate = new \DateTime($filter['start_date']);
+            $startDate = $startDate->format('Y-m-d 00:00:00');
+        }
+
+        if (!empty($filter['end_date'])) {
+            $dqlFilter[] = " ss.spotSentDate <= :end_date ";
+
+            $endDate = new \DateTime($filter['end_date']);
+            $endDate = $endDate->format('Y-m-d 23:59:59');
+        }
+
+        if (empty($filter['return_flat_result'])) {
+            $dqlFilter[] = " (ss.projectId IS NOT NULL AND ss.campaignId IS NOT NULL AND ss.spotId IS NOT NULL) ";
+        }
+
+        if (count($dqlFilter)) {
+            $dql .= " AND " . implode(" AND ", $dqlFilter);
+        }
+
+        if (empty($filter['get_count'])) {
+            if (!empty($filter['return_flat_result'])) {
+                $dql .= " GROUP BY ss.id 
+                    ORDER BY ss.id ASC";
+            } else {
+                $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId
+                    ORDER BY p.projectName ASC , c.campaignName ASC";
+            }
+        }
+
+        $query = $this->getEntityManager()->createQuery($dql);
+
+        if (empty($filter['get_count'])) {
+            if (isset($filter['offset'])) {
+                $query->setFirstResult($filter['offset']);
+            }
+
+            if (!empty($filter['length'])) {
+                $query->setMaxResults($filter['length']);
+            }
+        }
+
+        if (!empty($filter['current_user_id'])) {
+            $query->setParameter("current_user_id", $filter['current_user_id']);
+        }
+
+        if (!empty($filter['spot_sent_id'])) {
+            $query->setParameter("spot_sent_id", $filter['spot_sent_id']);
+        }
+
+        if (!empty($filter['spot_sent_type'])) {
+            $query->setParameter("spot_sent_type", $filter['spot_sent_type']);
+        }
+
+        if (!empty($filter['line_status_id'])) {
+            $query->setParameter("line_status_id", $filter['line_status_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+        }
+
+        if (!empty($filter['graphics_status_id'])) {
+            $query->setParameter("graphics_status_id", $filter['graphics_status_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+        }
+
+        if (!empty($filter['project_id'])) {
+            $query->setParameter("project_id", $filter['project_id']);
+        }
+
+        if (!empty($filter['campaign_id'])) {
+            $query->setParameter("campaign_id", $filter['campaign_id']);
+        }
+
+        if (!empty($filter['project_campaign_id'])) {
+            $query->setParameter("project_campaign_id", $filter['project_campaign_id']);
+        }
+
+        if (!empty($filter['spot_id'])) {
+            $query->setParameter("spot_id", $filter['spot_id']);
+        }
+
+        if (!empty($filter['version_id'])) {
+            $query->setParameter("version_id", $filter['version_id']);
+        }
+
+        if (!empty($filter['start_date'])) {
+            $query->setParameter('start_date', $startDate);
+        }
+
+        if (!empty($filter['end_date'])) {
+            $query->setParameter('end_date', $endDate);
+        }
+
+
+        $result = $query->getArrayResult();
+
+        if (!empty($filter['get_count'])) {
+            return (!empty($result[0]['total_count'])) ? (int)$result[0]['total_count'] : 0;
+        }
+
+        $statusOptions = $this->getSpotSentOption('status', true);
+        $graphicsStatusOptions = $this->getSpotSentOption('graphics_status', true);
+        $userRepo = new UsersRepository($this->_entityManager);
+
+        // update status
+        $result = array_map(function ($ssRow) use ($statusOptions, $graphicsStatusOptions, $userRepo, $filter) {
+            $ssRow['spotLineStatus'] = (!empty($statusOptions[$ssRow['spotLineStatusId']])) ? $statusOptions[$ssRow['spotLineStatusId']]['name'] : null;
+            $graphicsStatus = (!empty($graphicsStatusOptions[$ssRow['graphicsStatusId']])) ? $graphicsStatusOptions[$ssRow['graphicsStatusId']]['name'] : null;
+
+            if ($ssRow['noGraphics'] === null) {
+                if ($ssRow['graphicsStatusId'] == 2) {
+                    $graphicsStatus = 'EDL Requested';
+                }
+
+                if ($ssRow['graphicsStatusId'] == 3) {
+                    $graphicsStatus = 'EDL Exported';
+                }
+            } else {
+                if ($ssRow['noGraphics'] === 1 && $ssRow['graphicsStatusId'] == 4) {
+                    $graphicsStatus = 'No Graphics';
+                }
+
+                if ($ssRow['noGraphics'] === 0) {
+                    if ($ssRow['allGraphicsResend'] == 0 && $ssRow['graphicsStatusId'] == 4) {
+                        $graphicsStatus = 'Ready to Bill';
+                    }
+
+                    if ($ssRow['allGraphicsResend'] == 1 && $ssRow['graphicsStatusId'] == 4) {
+                        $graphicsStatus = 'All Resend';
+                    }
+                }
+            }
+
+            if (!empty($ssRow['finishOption'])) {
+                $finishingOptions = $this->getSpotSentOption('finishing_option');
+                $finishingOptionIds = explode(',', $ssRow['finishOption']);
+
+                if (count($finishingOptionIds)) {
+                    $finishingOptionIds = array_map('trim', $finishingOptionIds);
+
+                    if (count($finishingOptionIds) === 2) {
+                        $ssRow['finishOption'] = array_values(array_filter($finishingOptions, function ($option) use ($finishingOptionIds) {
+                            return $option['id'] == $finishingOptionIds[0];
+                        }));
+                        if (count($ssRow['finishOption'])) {
+                            $ssRow['finishOption'] = $ssRow['finishOption'][0]['name'];
+                        }
+                    } else {
+                        $ssRow['finishOption'] = null;
+                    }
+                }
+            }
+
+            $ssRow['graphicsStatus'] = $graphicsStatus;
+
+            if (!empty($filter['return_producer_list'])) {
+                $ssRow['producers'] = $userRepo->getCreativeUsersFromProjectCampaignByRole($ssRow['projectCampaignId'], array(1, 2, 3));
+            }
+
+            if (!empty($filter['return_editor_list'])) {
+                $ssRow['editors'] = array();
+
+                if (!empty($ssRow['editor'])) {
+                    $editorIds = explode(',', $ssRow['editor']);
+
+                    if (count($editorIds)) {
+                        $editorIds = array_map('trim', $editorIds);
+                        $userRepo = new UsersRepository($this->_entityManager);
+                        $ssRow['editors'] = $userRepo->getUsersById($editorIds);
+                    }
+                }
+            }
+
+            if (!empty($filter['return_customer_contact_list'])) {
+                $ssRow['customerContacts'] = array();
+
+                if (!empty($ssRow['customerContact'])) {
+                    $customerContactIds = explode(',', $ssRow['customerContact']);
+
+                    if (count($customerContactIds)) {
+                        $customerContactIds = array_map('trim', $customerContactIds);
+                        $customerRepo = new CustomerRepository($this->_entityManager);
+
+                        $ssRow['customerContacts'] = $customerRepo->getCustomerContactsById($customerContactIds);
+                    }
+                }
+            }
+
+            if (!empty($filter['return_graphics_file_list'])) {
+                $ssRow['graphicsFile'] = $this->getSpotSendFiles($ssRow['spotSentId']);
+            }
+
+            unset($ssRow['editor']);
+            unset($ssRow['customerContact']);
+
+            return $ssRow;
+        }, $result);
+
+        if (!empty($filter['return_flat_result'])) {
+            return $result;
+        }
+
+        $response = array();
+
+        foreach ($result as $row) {
+            if (empty($response[$row['projectId']])) {
+                $response[$row['projectId']] = array(
+                    'projectId' => (int)$row['projectId'],
+                    'projectName' => $row['projectName'],
+                    'studioId' => (int)$row['studioId'],
+                    'studioName' => $row['studioName'],
+                    'campaign' => array(),
+                );
+            }
+
+            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']])) {
+                $response[$row['projectId']]['campaign'][$row['campaignId']] = array(
+                    'campaignId' => (int)$row['campaignId'],
+                    'campaignName' => $row['campaignName'],
+                    'projectCampaignId' => (int)$row['projectCampaignId'],
+                    'customerId' => (int)$row['customerId'],
+                    'customerName' => $row['customerName'],
+                    'spot' => array(),
+                );
+            }
+
+            if (empty($row['spotId'])) {
+                continue;
+            }
+
+            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']])) {
+                $spotRes = array(
+                    'spotId' => (int)$row['spotId'],
+                    'spotName' => $row['spotName'],
+                    'spotSentId' => (int)$row['spotSentId'],
+                    'spotSentRequestId' => (int)$row['spotSentRequestId'],
+                    'spotLineStatusId' => $row['spotLineStatusId'],
+                    'spotLineStatus' => $row['spotLineStatus'],
+                    'graphicsStatusId' => $row['graphicsStatusId'],
+                    'graphicsStatus' => $row['graphicsStatus'],
+                    'spotSentDate' => $row['spotSentDate'],
+                    'trtId' => $row['trtId'],
+                    'runtime' => $row['runtime'],
+                    'versionId' => $row['versionId'],
+                    'versionName' => $row['versionName'],
+                    'finishRequest' => (int)$row['finishRequest'],
+                    'finishOption' => $row['finishOption'],
+                    'finishingHouse' => $row['finishingHouse'],
+                    'producers' => $row['producers'],
+                    'allGraphicsResend' => $row['allGraphicsResend'],
+                    'isPdf' => $row['isPdf'],
+                    'spotSentType' => $row['spotSentType'],
+                    'noGraphics' => $row['noGraphics'],
+                );
+
+                if (!empty($filter['return_graphics_file_list'])) {
+                    $spotRes['graphicsFile'] = $row['graphicsFile'];
+                }
+
+                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']] = $spotRes;
+            }
+        }
+
+        $response = array_values(array_map(function ($project) {
+            $project['campaign'] = array_values(array_map(function ($campaign) {
+                $campaign['spot'] = array_values(array_map(function ($spot) {
+                    // $spot['version'] = array_values($spot['version']);
+                    return $spot;
+                }, $campaign['spot']));
+
+                return $campaign;
+            }, $project['campaign']));
+
+            return $project;
+        }, $response));
+
+        return $response;
+    }
+
+    public function getSpotSentTreeById($spotSentId)
+    {
+        $data = $this->getSpotSentListTree(array(
+            'spot_sent_id' => $spotSentId,
+            'return_flat_result' => true,
+        ));
+
+        $data = (isset($data[0]) ? $data[0] : null);
+
+        if ($data) {
+            $data['graphicsFile'] = $this->getSpotSendFiles($spotSentId);
+
+            return $data;
+        }
     }
 }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
 import { observer, inject } from 'mobx-react';
-import { observable, computed, reaction } from 'mobx';
+import { observable, computed, reaction, action } from 'mobx';
 import AnimateHeight from 'react-animate-height';
 import { CampaignDetails } from 'types/projectDetails';
 import { ProjectBoardCampaignHeader } from '.';
@@ -13,9 +13,12 @@ import { ProjectBoardCampaignMisc } from './Misc';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { UserPermission, UserPermissionKey } from 'types/projectPermissions';
 import { ProjectsVersionsStore } from '../../../../store/AllStores';
-import { ProjectBoardCampaignChannel } from './Channel';
+// import { ProjectBoardCampaignChannel } from './Channel';
 import { ProjectBoardCampaignStudioContacts } from './StudioContacts/ProjectBoardCampaignStudioContacts';
 import { ProjectsCampaignsSpotsActions } from '../../../../actions';
+import { Button, ButtonIcon } from 'components/Button';
+import { Col } from 'components/Section';
+import { IconArrowTopBlue, IconDropdownArrow } from 'components/Icons';
 
 const zenscroll = require('zenscroll');
 
@@ -44,7 +47,12 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
     @observable private campaignIsExpanded: boolean = false;
     @observable private spotsAreExpanded: boolean = false;
     @observable private containerWidth: number = 0;
+    @observable private peopleAreExpanded: boolean = false;
 
+    @action
+    private peopleAreExpandedSwitch = () => {
+        this.peopleAreExpanded = !this.peopleAreExpanded;
+    }
     @computed
     private get userPermissions(): { [key: string]: UserPermission } {
         if (this.props.store) {
@@ -54,23 +62,23 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
         return {};
     }
 
-    @computed
-    private get userCanViewCampaignChannel(): boolean {
-        if (this.userPermissions[UserPermissionKey.CampaignChannel]) {
-            return this.userPermissions[UserPermissionKey.CampaignChannel].canView;
-        }
+    // @computed
+    // private get userCanViewCampaignChannel(): boolean {
+    //     if (this.userPermissions[UserPermissionKey.CampaignChannel]) {
+    //         return this.userPermissions[UserPermissionKey.CampaignChannel].canView;
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
-    @computed
-    private get userCanEditCampaignChannel(): boolean {
-        if (this.userPermissions[UserPermissionKey.CampaignChannel]) {
-            return this.userPermissions[UserPermissionKey.CampaignChannel].canEdit;
-        }
+    // @computed
+    // private get userCanEditCampaignChannel(): boolean {
+    //     if (this.userPermissions[UserPermissionKey.CampaignChannel]) {
+    //         return this.userPermissions[UserPermissionKey.CampaignChannel].canEdit;
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
     @computed
     private get userCanViewCampaignDescription(): boolean {
@@ -331,6 +339,7 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                     onClientChange={this.props.onClientChange}
                     campaign={this.props.campaign}
                     isExpanded={this.campaignIsExpanded}
+                    approvedByBilling={this.props.campaign.approvedByBilling}
                     isFixed={this.props.isHeaderFixed}
                     fixedWidth={this.containerWidth}
                     userCanViewNotes={this.userCanViewCampaignDescription}
@@ -340,7 +349,8 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                 <AnimateHeight height={(this.campaignIsExpanded) ? 'auto' : 0} duration={500}>
                     {!this.isVersionStatusFilterApplied &&
                     <>
-                        <ProjectBoardCampaignChannel
+                    
+                        {/* <ProjectBoardCampaignChannel
                             userCanView={this.userCanViewCampaignChannel}
                             userCanEdit={this.userCanEditCampaignChannel}
                             campaignId={this.props.campaign.campaignId}
@@ -349,7 +359,7 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                             approvedByBilling={this.props.campaign.approvedByBilling}
                             channelId={this.props.campaign.channelId}
                             channelName={this.props.campaign.channelName}
-                        />
+                        /> */}
 
                         <ProjectBoardCampaignDescription
                             userCanView={this.userCanViewCampaignDescription}
@@ -387,54 +397,63 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                             campaignId={this.props.campaign.campaignId}
                             executiveId={this.props.campaign.firstPointOfContactId}
                         />*/}
+                         <Col className={s.collapseButton}>
+                                <div className={s.collapseButtonLabel}>View teams </div>
+                                <Button
+                                    onClick={this.peopleAreExpandedSwitch}
+                                    icon={this.getVersionNameButtonIcon()}
+                                />
+                        </Col>
+                        <AnimateHeight height={(this.peopleAreExpanded) ? 'auto' : 0} duration={500}>
+                            <ProjectBoardCampaignPeople
+                                userCanView={this.userCanViewCreativeTeam}
+                                userCanEdit={this.userCanEditCreativeTeam}
+                                type="creative"
+                                // withAnimation={true}
+                                projectId={this.props.projectId}
+                                projectCampaignId={this.props.campaign.projectCampaignId}
+                                campaignId={this.props.campaign.campaignId}
+                                selectedUsers={this.props.campaign.creativeTeam.map(user => ({
+                                    userId: user.userId,
+                                    fullName: user.fullName,
+                                    image: user.image,
+                                    creativeRole: {
+                                        role: user.role,
+                                        roleId: user.roleId,
+                                    },
+                                }))}
+                            />
 
-                        <ProjectBoardCampaignPeople
-                            userCanView={this.userCanViewCreativeTeam}
-                            userCanEdit={this.userCanEditCreativeTeam}
-                            type="creative"
-                            projectId={this.props.projectId}
-                            projectCampaignId={this.props.campaign.projectCampaignId}
-                            campaignId={this.props.campaign.campaignId}
-                            selectedUsers={this.props.campaign.creativeTeam.map(user => ({
-                                userId: user.userId,
-                                fullName: user.fullName,
-                                image: user.image,
-                                creativeRole: {
-                                    role: user.role,
-                                    roleId: user.roleId,
-                                },
-                            }))}
-                        />
+                            <ProjectBoardCampaignPeople
+                                userCanView={this.userCanViewBillingTeam}
+                                userCanEdit={this.userCanEditBillingTeam}
+                                type="billing"
+                                projectId={this.props.projectId}
+                                projectCampaignId={this.props.campaign.projectCampaignId}
+                                campaignId={this.props.campaign.campaignId}
+                                selectedUsers={this.props.campaign.billingTeam}
+                            />
 
-                        <ProjectBoardCampaignPeople
-                            userCanView={this.userCanViewBillingTeam}
-                            userCanEdit={this.userCanEditBillingTeam}
-                            type="billing"
-                            projectId={this.props.projectId}
-                            projectCampaignId={this.props.campaign.projectCampaignId}
-                            campaignId={this.props.campaign.campaignId}
-                            selectedUsers={this.props.campaign.billingTeam}
-                        />
+                            <ProjectBoardCampaignPeople
+                                userCanView={this.userCanViewEditorialTeam}
+                                userCanEdit={this.userCanEditEditorialTeam}
+                                type="editorial"
+                                projectId={this.props.projectId}
+                                projectCampaignId={this.props.campaign.projectCampaignId}
+                                campaignId={this.props.campaign.campaignId}
+                                selectedUsers={this.props.campaign.editorialTeam}
+                            />
 
-                        <ProjectBoardCampaignPeople
-                            userCanView={this.userCanViewEditorialTeam}
-                            userCanEdit={this.userCanEditEditorialTeam}
-                            type="editorial"
-                            projectId={this.props.projectId}
-                            projectCampaignId={this.props.campaign.projectCampaignId}
-                            campaignId={this.props.campaign.campaignId}
-                            selectedUsers={this.props.campaign.editorialTeam}
-                        />
-
-                        <ProjectBoardCampaignPeople
-                            userCanView={this.userCanViewGraphicsTeam}
-                            userCanEdit={this.userCanEditGraphicsTeam}
-                            type="design"
-                            projectId={this.props.projectId}
-                            projectCampaignId={this.props.campaign.projectCampaignId}
-                            campaignId={this.props.campaign.campaignId}
-                            selectedUsers={this.props.campaign.designTeam}
-                        />
+                            <ProjectBoardCampaignPeople
+                                userCanView={this.userCanViewGraphicsTeam}
+                                userCanEdit={this.userCanEditGraphicsTeam}
+                                type="design"
+                                projectId={this.props.projectId}
+                                projectCampaignId={this.props.campaign.projectCampaignId}
+                                campaignId={this.props.campaign.campaignId}
+                                selectedUsers={this.props.campaign.designTeam}
+                            />
+                        </AnimateHeight>
 
                         <ProjectBoardCampaignWritingAndMusicTeams
                             userCanViewWriting={this.userCanViewWriting}
@@ -458,10 +477,23 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                         projectCampaignId={this.props.campaign.projectCampaignId}
                         campaignId={this.props.campaign.campaignId}
                         spots={this.props.campaign.spots}
+                        approvedByBilling={this.props.campaign.approvedByBilling}
                     />
                 </AnimateHeight>
             </div>
         );
+    }
+
+    private getVersionNameButtonIcon(): ButtonIcon {
+        return {
+            size: 'small',
+            background: this.peopleAreExpanded ? 'none-alt' : 'white',
+            element: this.peopleAreExpanded ? (
+                <IconArrowTopBlue width={10} height={16}/>
+            ) : (
+                <IconDropdownArrow width={12} height={8}/>
+            ),
+        };
     }
 
     private referenceCampaignContainer = (ref: HTMLDivElement) => {

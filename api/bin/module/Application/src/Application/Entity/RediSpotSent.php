@@ -148,6 +148,13 @@ class RediSpotSent
     private $musicCueSheet;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="music_note", type="text", nullable=true)
+     */
+    private $musicNote;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="gfx_finish", type="smallint", nullable=true)
@@ -314,6 +321,55 @@ class RediSpotSent
      * @ORM\Column(name="bill_line_id", type="bigint", nullable=true)
      */
     private $billLineId;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="spot_sent_type", type="smallint", nullable=true)
+     */
+    private $spotSentType;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="no_graphics", type="smallint", nullable=true)
+     */
+    private $noGraphics;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="is_pdf", type="smallint", nullable=true)
+     */
+    private $isPdf;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="all_graphics_resend", type="smallint", nullable=true)
+     */
+    private $allGraphicsResend;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="graphics_status_id", type="integer", nullable=true)
+     */
+    private $graphicsStatusId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="graphics_note", type="text", nullable=true)
+     */
+    private $graphicsNote;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="final_narr", type="string", length=20, nullable=true)
+     */
+    private $finalNarr;
 
     /**
      * @var integer
@@ -767,6 +823,29 @@ class RediSpotSent
     public function getMusicCueSheet()
     {
         return $this->musicCueSheet;
+    }
+
+    /**
+     * Set musicNote
+     *
+     * @param string $musicNote
+     * @return RediSpotSent
+     */
+    public function setMusicNote($musicNote)
+    {
+        $this->musicNote = $musicNote;
+
+        return $this;
+    }
+
+    /**
+     * Get musicNote
+     *
+     * @return string 
+     */
+    public function getMusicNote()
+    {
+        return $this->musicNote;
     }
 
     /**
@@ -1319,6 +1398,167 @@ class RediSpotSent
     public function getBillLineId()
     {
         return $this->billLineId;
+    }
+
+    /**
+     * Set spotSentType
+     *
+     * @param integer $spotSentType
+     * @return RediSpotSent
+     */
+    public function setSpotSentType($spotSentType)
+    {
+        $this->spotSentType = $spotSentType;
+
+        return $this;
+    }
+
+    /**
+     * Get spotSentType
+     *
+     * @return integer 
+     */
+    public function getSpotSentType()
+    {
+        return $this->spotSentType;
+    }
+
+    /**
+     * Set noGraphics
+     *
+     * @param integer $noGraphics
+     * @return RediSpotSent
+     */
+    public function setNoGraphics($noGraphics)
+    {
+        $this->noGraphics = $noGraphics;
+
+        return $this;
+    }
+
+    /**
+     * Get noGraphics
+     *
+     * @return integer 
+     */
+    public function getNoGraphics()
+    {
+        return $this->noGraphics;
+    }
+
+    /**
+     * Set isPdf
+     *
+     * @param integer $isPdf
+     * @return RediSpotSent
+     */
+    public function setIsPdf($isPdf)
+    {
+        $this->isPdf = $isPdf;
+
+        return $this;
+    }
+
+    /**
+     * Get isPdf
+     *
+     * @return integer 
+     */
+    public function getIsPdf()
+    {
+        return $this->isPdf;
+    }
+
+    /**
+     * Set allGraphicsResend
+     *
+     * @param integer $allGraphicsResend
+     * @return RediSpotSent
+     */
+    public function setAllGraphicsResend($allGraphicsResend)
+    {
+        $this->allGraphicsResend = $allGraphicsResend;
+
+        return $this;
+    }
+
+    /**
+     * Get allGraphicsResend
+     *
+     * @return integer 
+     */
+    public function getAllGraphicsResend()
+    {
+        return $this->allGraphicsResend;
+    }
+
+    /**
+     * Set graphicsStatusId
+     *
+     * @param integer $graphicsStatusId
+     * @return RediSpotSent
+     */
+    public function setGraphicsStatusId($graphicsStatusId)
+    {
+        $this->graphicsStatusId = $graphicsStatusId;
+
+        return $this;
+    }
+
+    /**
+     * Get graphicsStatusId
+     *
+     * @return integer 
+     */
+    public function getGraphicsStatusId()
+    {
+        return $this->graphicsStatusId;
+    }
+
+    /**
+     * Set graphicsNote
+     *
+     * @param string $graphicsNote
+     * @return RediSpotSent
+     */
+    public function setGraphicsNote($graphicsNote)
+    {
+        $this->graphicsNote = $graphicsNote;
+
+        return $this;
+    }
+
+    /**
+     * Get graphicsNote
+     *
+     * @return string 
+     */
+    public function getGraphicsNote()
+    {
+        return $this->graphicsNote;
+    }
+
+    /**
+     * Set finalNarr
+     *
+     * @param string $finalNarr
+     * @return RediSpotSent
+     */
+    public function setFinalNarr($finalNarr)
+    {
+        $this->finalNarr = $finalNarr;
+
+        return $this;
+    }
+
+    /**
+     * Get finalNarr
+     *
+     * @return string 
+     */
+    public function getFinalNarr()
+    {
+        return $this->finalNarr;
     }
 
     /**

@@ -37,3 +37,7 @@ tbody tr.rowBorder td {
   padding-bottom: 16px;
   padding-top: 16px;
 }
+
+tbody tr.spotPost__finishRequest {
+  cursor: pointer;
+}

@@ -2,7 +2,7 @@ import { OutgoingHttpHeaders } from 'http';
 
 export type RequestDataTransformation = 'post-data' | 'put-data';
 
-export type ContentType = 'text/plain' | 'multipart/form-data' | 'application/x-www-form-urlencoded';
+export type ContentType = 'text/plain' | 'multipart/form-data' | 'application/x-www-form-urlencoded' | 'application/json';
 
 export interface ApiRequestConfig {
     headers?: RequestHeaders;

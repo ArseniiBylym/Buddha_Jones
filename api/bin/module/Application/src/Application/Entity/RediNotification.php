@@ -43,6 +43,13 @@ class RediNotification
     private $link;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="note", type="text", nullable=true)
+     */
+    private $note;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="confirm", type="smallint", nullable=true)
@@ -156,6 +163,29 @@ class RediNotification
     public function getLink()
     {
         return $this->link;
+    }
+
+    /**
+     * Set note
+     *
+     * @param string $note
+     * @return RediNotification
+     */
+    public function setNote($note)
+    {
+        $this->note = $note;
+
+        return $this;
+    }
+
+    /**
+     * Get note
+     *
+     * @return string 
+     */
+    public function getNote()
+    {
+        return $this->note;
     }
 
     /**

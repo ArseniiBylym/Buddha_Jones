@@ -6,7 +6,9 @@
         "start": "node scripts/start.js",
         "build": "node scripts/build.js",
         "test": "node scripts/test.js --env=jsdom",
-        "deploy-dev": "node scripts/deploy-dev.js"
+        "deploy-dev": "node scripts/deploy-dev.js",
+        "lint": "./node_modules/tslint/bin/tslint -p tsconfig.json -c tslint.json",
+        "lint:fix": "./node_modules/tslint/bin/tslint -p tsconfig.json -c tslint.json --fix"
     },
     "dependencies": {
         "accounting": "^0.4.1",
@@ -21,6 +23,7 @@
         "lodash-es": "^4.17.8",
         "mobx": "^4.2.0",
         "mobx-react": "^5.0.0",
+        "moment": "^2.23.0",
         "object-assign": "4.1.1",
         "path-to-regexp": "^2.2.0",
         "postcss-cssnext": "^3.1.0",

@@ -24,7 +24,8 @@ class ProjectCampaignRepository extends EntityRepository
                   ptc.requestWritingTeam, ptc.writingTeamNotes,
                   ptc.requestMusicTeam, ptc.musicTeamNotes,
                   MAX(ph.createdAt) AS maxHistoryCreatedAt,
-                  ptc.note, ptc.budget, ptc.budgetNote,
+                  ptc.note, ptc.budget, 
+                  ptc.budgetNote,ptc.graphicsBudgetNote,
                   ptc.por, ptc.invoiceContact,
                   ptc.materialReceiveDate,
                   ptc.approvedByBilling,
@@ -89,6 +90,10 @@ class ProjectCampaignRepository extends EntityRepository
             $dqlFilter[] = " (ptcu.userId IS NOT NULL OR ptcbu.userId IS NOT NULL OR ptcd.userId IS NOT NULL OR ptce.userId  IS NOT NULL) ";
         }
 
+        if (!empty($filter['customer_id'])) {
+            $dqlFilter[] = " ptc.customer_id=:customer_id ";
+        }
+
         if (count($dqlFilter)) {
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
@@ -127,6 +132,10 @@ class ProjectCampaignRepository extends EntityRepository
 
         if(!empty($filter['user_id'])){
             $query->setParameter('user_id', $filter['user_id']);
+        }
+
+        if(!empty($filter['customer_id'])){
+            $query->setParameter('customer_id', $filter['customer_id']);
         }
 
         $query->setFirstResult($offset);

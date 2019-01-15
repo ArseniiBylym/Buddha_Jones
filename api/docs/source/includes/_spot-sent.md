@@ -622,6 +622,7 @@ false | status | string | null | Status id
 false | length | int | null | Limit number of returned results
 false | offset | int | null | Offset returned results
 false | sort | string | 'update' | By default it will sort by updated date DESC. send sort=priority to sort to show draft first and it will order by updated date after status
+false | spot_sent_type | string | null | send 1/2 . 1= AV, 2=graphics only
 
 ## Get Single Spot Sent 
 
@@ -862,9 +863,9 @@ false | status | string | null | Status id
 false | full_lock | int | 0 | send 0/1
 false | deadline | date | null | deadline date in Y-M-D format (2018-03-09)
 false | finishing_house | string | null | Finishing house id
-false | framerate | string | null | framerate string, like '29.97i'
+false | framerate | JSON | null | framerate string, like ["29.97i","22.9"]
 false | framerate_note | string | null | Finishing note
-false | raster_size | int | null | raster size ,like '1x1'
+false | raster_size | JSON | null | raster size ,like ["1x1","6x6"]
 false | raster_size_note | string | null | raster size note
 false | music_cue_sheet | int | 0 | send 0/1
 false | audio_prep | int | 0 | send 0/1
@@ -876,12 +877,16 @@ false | delivery_to_client | string| null | Sent delivery to client option, json
 false | delivery_note | string | null | Delivery note
 false | audio | string | null | Sent audio option, json encoded  array ids like "[1,2,3,4]"
 false | audio_note | string | null | audio note
+false | music_note | string | null | music note
+false | graphics_note | string | null | graphics note
+false | final_narr | string | null | sent 'yes'/'no'/'not applicable'
 false | graphics_finish | int | 0 | send 0/1
 false | gfx_finish | int | 0 | send 0/1
 false | customer_contact | string| null | customer contact ids json encoded array ids like "[1,2,3,4]"
 false | internal_note | string| null | internal note
 false | studio_note | string| null |  studio note
 false | spot_sent_date | date| null | spot sent date
+false | spot_sent_type | date| 1 | spot sent type. send 1/2 (1=AV, 2=graphicsonly)
 
 
 
@@ -897,7 +902,11 @@ false | version_id | int| null | Version Id
 false | spot_resend | int | 0 | send 0/1
 false | prod_accept | int | 0 | send 0/1
 false | finish_accept | int | 0 | send 0/1
+false | no_graphics | int | null | send 0/1/null
+false | is_pdf | int | 0 | send 0/1
 false | editors | JSON encoded array | null | list of editor ids (Like: [12,4,5,3,4])
+false | sent_via_method | JSON encoded array | null | list of method ids (Like: [12,4,5,3,4]). for graphics only spot sent- send value from 'graphics_sent_via_method', and for av send values from 'sent_vai_method'
+false | graphics_file | JSON encoded array | null | list of files (like: [{"file_name":"abc1.jpg","file_description":"some desc112","resend":1},{"file_name":"def3.jpg"}]}])
 
 ### sample spot version data
 
@@ -911,7 +920,7 @@ campaign_id, spot_version_id, editors, spot_resend, finish_request, line_status_
 
 ## Update Spot Sent 
 
-Create a new spot sent entry.
+update a new spot sent entry.
 
 > Sample request
 
@@ -971,9 +980,9 @@ false | status | string | null | Status id
 false | full_lock | int | 0 | send 0/1
 false | deadline | date | null | deadline date in Y-M-D format (2018-03-09)
 false | finishing_house | string | null | Finishing house id
-false | framerate | string | null | framerate string, like '29.97i'
+false | framerate | JSON | null | framerate string, like ["29.97i","22.9"]
 false | framerate_note | string | null | Finishing note
-false | raster_size | int | null | raster size ,like '1x1'
+false | raster_size | JSON | null | raster size ,like ["1x1","6x6"]
 false | raster_size_note | string | null | raster size note
 false | music_cue_sheet | int | 0 | send 0/1
 false | audio_prep | int | 0 | send 0/1
@@ -985,12 +994,17 @@ false | delivery_to_client | string| null | Sent delivery to client option, json
 false | delivery_note | string | null | Delivery note
 false | audio | string | null | Sent audio option, json encoded  array ids like "[1,2,3,4]"
 false | audio_note | string | null | audio note
+false | music_note | string | null | music note
+false | graphics_note | string | null | graphics note
+false | final_narr | string | null | sent 'yes'/'no'/'not applicable'
 false | graphics_finish | int | 0 | send 0/1
 false | gfx_finish | int | 0 | send 0/1
 false | customer_contact | string| null | customer contact ids json encoded array ids like "[1,2,3,4]"
 false | internal_note | string| null | internal note
 false | studio_note | string| null |  studio note
 false | spot_sent_date | date| null | spot sent date
+false | spot_sent_type | date| null | spot sent type. send 1/2 (1=AV, 2=graphicsonly)
+
 
 **In update send all data, full dataset is requred as prevoius entry will be deleted and new entry will be created in db**
 

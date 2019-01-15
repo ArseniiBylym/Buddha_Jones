@@ -44,6 +44,7 @@ export class ActivitiesActionsClass {
 
             return true;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.fetchActivityList(true);
             }, 512);
@@ -77,6 +78,7 @@ export class ActivitiesActionsClass {
 
             return true;
         } catch (error) {
+            // TODO fix this kind of error handling all over the project
             setTimeout(() => {
                 this.fetchActivitiesTypes(true);
             }, 512);
