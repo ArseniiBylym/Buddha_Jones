@@ -4,18 +4,14 @@ import { action, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { SpotGraphicsApiQueryParams } from 'types/spotsToGraphics';
-import { SpotsPostFilter } from './SpotsPostFilter';
 import './SpotsPost.css';
+import { SpotsPostFilter } from './SpotsPostFilter';
 
-export interface SpotsPostPorps {
-
-}
+export interface SpotsPostPorps {}
 
 @inject('store')
 @observer
 class SpotsPost extends React.Component<SpotsPostPorps, {}> {
-    private DATA_REFRESH_RATE_IN_MS: number = 1000 * 60;
-
     @observable private search: string = '';
 
     componentDidMount() {
@@ -27,34 +23,35 @@ class SpotsPost extends React.Component<SpotsPostPorps, {}> {
     render() {
         return (
             <FetchQuery<any, SpotGraphicsApiQueryParams>
-                dataExpiresInMiliseconds={this.DATA_REFRESH_RATE_IN_MS}
-                apiEndpoint={APIPath.SPOTS_POST}
-                queryObject={{
-                    // sub_module_id: this.getPermissionId(),
-                }}
-                withoutCaching={true}
+                dataExpiresInMiliseconds={null}
+                getQueries={[
+                    {
+                        apiEndpoint: APIPath.SPOTS_POST,
+                        queryObject: undefined,
+                    },
+                ]}
             >
-            {spotsFromApi => (
-                <React.Fragment>
-                    <SpotsPostFilter
-                        onChangeSearch={this.changeSearch}
-                        search={this.search}
-                        loading={spotsFromApi.loading}
-                        fetchError={spotsFromApi.fetchError}
-                        retryFetch={spotsFromApi.retry}
-                        spots={spotsFromApi.response}
-                        routeType="spotSent"
-                        forceUpdating={this.updateComponent}
-                    />
-                </React.Fragment>
-            )}
+                {([spotsFromApi]) => (
+                    <React.Fragment>
+                        <SpotsPostFilter
+                            onChangeSearch={this.changeSearch}
+                            search={this.search}
+                            loading={spotsFromApi.loading}
+                            fetchError={spotsFromApi.fetchError}
+                            retryFetch={spotsFromApi.retry}
+                            spots={spotsFromApi.response}
+                            routeType="spotSent"
+                            forceUpdating={this.updateComponent}
+                        />
+                    </React.Fragment>
+                )}
             </FetchQuery>
         );
     }
 
     updateComponent = () => {
         this.forceUpdate();
-    }
+    };
 
     @action
     private changeSearch = (search: string) => {

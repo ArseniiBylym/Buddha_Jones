@@ -17,8 +17,6 @@ export interface SpotProjectCampaignGroup {
 @inject('store')
 @observer
 class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
-    private DATA_REFRESH_RATE_IN_MS: number = 1000 * 60;
-
     @observable private search: string = '';
     @observable private producer: SpotToGraphicsProducerOption | null = null;
 
@@ -46,38 +44,43 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
             spots: arr,
             len: arr.length,
         };
-    }
+    };
     getPermissionId = () => {
         let permissionId: number | null = null;
-        if (this.props.store && 
-            this.props.store.user.data && 
-            this.props.store.user.data.moduleAccess) {
-            const moduleAccessArray = this.props.store.user.data.moduleAccess.find(elem => elem.moduleName === 'Spot Sent');
+        if (this.props.store && this.props.store.user.data && this.props.store.user.data.moduleAccess) {
+            const moduleAccessArray = this.props.store.user.data.moduleAccess.find(
+                elem => elem.moduleName === 'Spot Sent'
+            );
             if (moduleAccessArray && moduleAccessArray.subModule && moduleAccessArray.subModule.length > 0) {
-                const moduleAccessItem = moduleAccessArray.subModule.find(elem => elem.subModuleName === 'Graphics for Spot');
+                const moduleAccessItem = moduleAccessArray.subModule.find(
+                    elem => elem.subModuleName === 'Graphics for Spot'
+                );
                 if (moduleAccessItem && moduleAccessItem.canAccess === true) {
                     permissionId = moduleAccessItem.id;
                 }
             }
         }
         return permissionId;
-    }
+    };
 
     updateComponent = () => {
         this.forceUpdate();
-    }
+    };
 
     public render() {
         return (
             <FetchQuery<SpotGraphicsApiResponse, SpotGraphicsApiQueryParams>
-                dataExpiresInMiliseconds={this.DATA_REFRESH_RATE_IN_MS}
-                apiEndpoint={APIPath.SPOTS_TO_GRAPHICS}
-                queryObject={{
-                    sub_module_id: this.getPermissionId(),
-                }}
-                withoutCaching={true}
+                dataExpiresInMiliseconds={null}
+                getQueries={[
+                    {
+                        apiEndpoint: APIPath.SPOTS_TO_GRAPHICS,
+                        queryObject: {
+                            sub_module_id: this.getPermissionId(),
+                        },
+                    },
+                ]}
             >
-                {spotsToGraphicsFromApi => (
+                {([spotsToGraphicsFromApi]) => (
                     <React.Fragment>
                         <SpotsToGrapnicsFilters
                             onChangeSearch={this.changeSearch}
@@ -127,7 +130,6 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
         //     this.selectedSpots = [...this.selectedSpots.slice(0, index), ...this.selectedSpots.slice(index + 1)];
         // }
     };
-
 }
 
 export default SpotsToGraphics;

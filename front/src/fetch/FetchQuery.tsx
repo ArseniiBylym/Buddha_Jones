@@ -18,7 +18,7 @@ interface FetchQueryData<Q = {}> {
     /** API endpoint path name */
     apiEndpoint: string;
     /** Object representing query string to be appended to GET request */
-    queryObject: Q | undefined;
+    queryObject?: Q | undefined;
 }
 
 interface FetchQueryProps<R, Q = {}> extends AppOnlyStoreState {
