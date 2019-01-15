@@ -45,6 +45,7 @@ export class BillSpotFormProjectCampaignActivities extends React.Component<Props
                 userFirstName: entry.userFirstName,
                 userLastName: entry.userLastName,
                 userImage: entry.userImage,
+                activityId: entry.activityId,
                 activityName: entry.activityName,
                 activityDescription: entry.activityDescription,
                 durationInMinutes: durationInMinutes,
@@ -54,9 +55,9 @@ export class BillSpotFormProjectCampaignActivities extends React.Component<Props
                 endDate: endDate,
                 isBillable: entry.activityIsBillable,
                 isSelectedToBill: selectedToBill !== null,
-                regularHoursInMinutes: selectedToBill ? selectedToBill.regularHoursInMinutes : 0,
-                overtimeHoursInMinutes: selectedToBill ? selectedToBill.overtimeHoursInMinutes : 0,
-                doubletimeHoursInMinutes: selectedToBill ? selectedToBill.doubletimeHoursInMinutes : 0,
+                regularHoursInMinutes: selectedToBill ? selectedToBill.regularHours : 0,
+                overtimeHoursInMinutes: selectedToBill ? selectedToBill.overtimeHours : 0,
+                doubletimeHoursInMinutes: selectedToBill ? selectedToBill.doubletimeHours : 0,
             });
 
             // Return

@@ -14,21 +14,29 @@ export interface ActivityInBillWithBaseTime extends ActivityInBill {
 
 export interface SpotBillFormFirstStage {
     spotId: number;
-    versionIds: number[];
+    timeEntriesIds: number[];
+}
+
+export interface SpotBillFormActivityTimeEntry {
+    timeEntryId: number;
+    activityId: number;
+    activityName: string;
+    spotId: number | null;
+    spotName: string | null;
+    versionId: number | null;
+    versionName: string | null;
+    hoursAreSplit: boolean;
+    regularHours: number;
+    overtimeHours: number;
+    doubletimeHours: number;
 }
 
 export interface SpotBillFormActivityGroup {
     name: string;
     note: string | null;
-    timeEntries: {
-        activityId: number;
-        activityName: string;
-        versionId: number;
-        versionName: string;
-        regularHours: number;
-        overtimeHours: number;
-        doubletimeHours: number;
-    }[];
+    spot: string;
+    version: string;
+    timeEntries: SpotBillFormActivityTimeEntry[];
 }
 
 export interface SpotBillFormData {

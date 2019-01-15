@@ -84,9 +84,7 @@ export class BillSpotFormActivities extends React.Component<Props, {}> {
                         const selection = this.props.store!.spotToBillForm.selectedActivities[selectionIndex];
                         daySelectedBaseMinutes += duration;
                         daySelectedAdjustedMinutes +=
-                            selection.regularHoursInMinutes +
-                            selection.overtimeHoursInMinutes +
-                            selection.doubletimeHoursInMinutes;
+                            selection.regularHours + selection.overtimeHours + selection.doubletimeHours;
                     }
                 });
             });

@@ -23,6 +23,7 @@ export interface FormattedInBillTimeEntry extends ActivityInBill {
     userFirstName: string | null;
     userLastName: string | null;
     userImage: string | null;
+    activityId: number;
     activityName: string;
     activityDescription: string | null;
     durationInMinutes: number;
@@ -157,7 +158,7 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                 <div>
                                     {entry.isSelectedToBill && (
                                         <DurationCounter
-                                            onChange={this.handleSelectedEntryHours(entry.timeEntryId, 'regular')}
+                                            onChange={this.handleSelectedEntryHours(entry, 'regular')}
                                             valueLessThan={{
                                                 value: entry.durationInMinutes,
                                                 color: 'alert',
@@ -194,7 +195,7 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                         <p>Overtime:</p>
 
                                         <DurationCounter
-                                            onChange={this.handleSelectedEntryHours(entry.timeEntryId, 'overtime')}
+                                            onChange={this.handleSelectedEntryHours(entry, 'overtime')}
                                             value={entry.overtimeHoursInMinutes}
                                         />
                                     </div>
@@ -210,7 +211,7 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                         <p>Double time: </p>
 
                                         <DurationCounter
-                                            onChange={this.handleSelectedEntryHours(entry.timeEntryId, 'doubletime')}
+                                            onChange={this.handleSelectedEntryHours(entry, 'doubletime')}
                                             value={entry.doubletimeHoursInMinutes}
                                         />
                                     </div>
@@ -225,7 +226,7 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
 
     private handleToggleActivityInBill = (entry: FormattedInBillTimeEntry) => (checked: boolean, value: boolean) => {
         if (checked) {
-            SpotToBillFormActions.addTimeEntryToActivitiesSelection(entry.timeEntryId, {
+            SpotToBillFormActions.addTimeEntryToActivitiesSelection(entry, {
                 regularHoursInMinutes: entry.durationInMinutes,
             });
         } else {
@@ -233,10 +234,11 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
         }
     };
 
-    private handleSelectedEntryHours = (timeEntryId: number, hours: 'regular' | 'overtime' | 'doubletime') => (
-        totalMinutes: number
-    ) => {
-        SpotToBillFormActions.addTimeEntryToActivitiesSelection(timeEntryId, {
+    private handleSelectedEntryHours = (
+        entry: FormattedInBillTimeEntry,
+        hours: 'regular' | 'overtime' | 'doubletime'
+    ) => (totalMinutes: number) => {
+        SpotToBillFormActions.addTimeEntryToActivitiesSelection(entry, {
             [hours === 'doubletime'
                 ? 'doubletimeHoursInMinutes'
                 : hours === 'overtime'

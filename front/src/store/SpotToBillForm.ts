@@ -1,5 +1,7 @@
 import { computed, observable } from 'mobx';
-import { ActivityInBill, SpotBillFormActivityGroup, SpotBillFormFirstStage } from 'types/spotBilling';
+import { SpotBillFormActivityGroup, SpotBillFormActivityTimeEntry, SpotBillFormFirstStage } from 'types/spotBilling';
+
+export type AddingActivityToBillStatus = 'none' | 'saving' | 'success' | 'error';
 
 export class SpotToBillForm {
     @observable public typeId: number | null = null;
@@ -8,7 +10,9 @@ export class SpotToBillForm {
     @observable public activities: SpotBillFormActivityGroup[] = [];
     @observable public spotsAddedToBill: number[] = [];
 
-    @observable public selectedActivities: ActivityInBill[] = [];
+    @observable public addingActivityToBillStatus: AddingActivityToBillStatus = 'none';
+
+    @observable public selectedActivities: SpotBillFormActivityTimeEntry[] = [];
     @computed public get selectedActivitiesIds(): number[] {
         return this.selectedActivities.map(a => a.timeEntryId);
     }

@@ -68,7 +68,11 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                 const selection = this.props.store!.spotToBillForm.selectedActivities[inSelection];
 
                 activities.push({
-                    ...selection,
+                    timeEntryId: selection.timeEntryId,
+                    hoursAreSplit: selection.hoursAreSplit,
+                    regularHoursInMinutes: selection.regularHours,
+                    overtimeHoursInMinutes: selection.overtimeHours,
+                    doubletimeHoursInMinutes: selection.doubletimeHours,
                     baseHoursInMinutes: DateHandler.convertHoursDotMinutesToTotalMinutes(timeEntry.duration),
                 });
             }
@@ -87,7 +91,11 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                     const selection = this.props.store!.spotToBillForm.selectedActivities[inSelection];
 
                     activities.push({
-                        ...selection,
+                        timeEntryId: selection.timeEntryId,
+                        hoursAreSplit: selection.hoursAreSplit,
+                        regularHoursInMinutes: selection.regularHours,
+                        overtimeHoursInMinutes: selection.overtimeHours,
+                        doubletimeHoursInMinutes: selection.doubletimeHours,
                         baseHoursInMinutes: DateHandler.convertHoursDotMinutesToTotalMinutes(timeEntry.duration),
                     });
                 }
