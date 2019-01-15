@@ -64,6 +64,7 @@ class TimeApprovalPermissions extends React.Component<TimeEntryPermissionsProps,
                     ) : (
                         <Table>{this.getTableRows()}</Table>
                     )}
+
                     {
                         <BottomBar show={this.props.store!.timeApprovalPermissions.touched}>
                             <ButtonSave

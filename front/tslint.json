@@ -6,6 +6,7 @@
         "class-name": true,
         "comment-format": [true, "check-space"],
         "curly": true,
+        "jsx-curly-spacing": [false],
         "eofline": false,
         "forin": true,
         "indent": [true, "spaces"],
