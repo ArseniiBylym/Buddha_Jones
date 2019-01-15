@@ -29,6 +29,10 @@
   & .spotName {
     margin: 4px;
   }
+  & .spotNameActive {
+    margin: 4px;
+    background-color: #dfd7d1;
+  }
 }
 
 .createNewSpotFormContainer {
