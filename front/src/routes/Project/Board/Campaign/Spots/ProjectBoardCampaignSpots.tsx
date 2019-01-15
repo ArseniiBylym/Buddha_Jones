@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
-import { observable, computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { SpotDetails } from 'types/projectDetails';
 import { Section } from 'components/Section';
@@ -38,6 +38,34 @@ type ProjectBoardCampaignsSpotsPropsTypes = ProjectBoardCampaignsSpotsProps & Ap
 @observer
 export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCampaignsSpotsPropsTypes, {}> {
     @observable private addingNewSpotFormVisible: boolean = false;
+    @observable private visibleSpots: any[] = [];
+
+    @action
+    private addSpotToVisible = (spot) => {
+        this.visibleSpots.push(spot);
+    }
+
+    @action
+    private removeSpotFromVisible = (id) => {
+        const spots = this.visibleSpots.filter(item => item.id !== id);
+        this.visibleSpots = spots;
+    }
+
+    @action
+    private clearAllSelectedSpots = () => {
+        this.visibleSpots = [];
+    }
+    
+    @action
+    private spotVisibleToggleHandler = (spot) => {
+        const matchedSpot = this.visibleSpots.find(item => item.id === spot.id);
+        if (matchedSpot) {
+            this.removeSpotFromVisible(spot.id);
+        } else {
+            this.addSpotToVisible(spot);
+        }
+
+    }
 
     @computed
     private get userPermissions(): { [key: string]: UserPermission } {
@@ -209,19 +237,32 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
                 }
             >
                 {this.props.spotsAreExpanded ? this.renderExpandedSpots() : this.renderCollapsedSpots()}
+               
             </Section>
         ) : null;
+    }
+
+    private getVisibleSpots = () => {
+        if (!this.visibleSpots || this.visibleSpots.length === 0) {
+            return null;
+        }
+        return this.visibleSpots.map((spot, spotIndex) => 
+            this.renderSpot(spot, spotIndex + 1 < this.spotsFromColumn1.length, false)
+        );
+
+        // {this.spotsFromColumn1.map((spot, spotIndex) =>
+        //     this.renderSpot(spot, spotIndex + 1 < this.spotsFromColumn1.length, false)
+        // )}
     }
 
     private renderCollapsedSpots() {
         return (
             <React.Fragment>
                 <div className={s.spotsInlineList}>
-
                     {this.renderSpotsList()}
-
                     {this.props.spots.length <= 0 && <Tag className={s.spotName} isBig={true} title="No spots"/>}
                 </div>
+                {this.getVisibleSpots()}
                 {this.props.userCanCreateNewSpot && this.props.spots.length > 0
                     ? this.renderSpotNewButton('small')
                     : null}
@@ -322,8 +363,13 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
     private handleToggleSpotsExpansion = () => {
         if (this.props.onExpansionToggle) {
             this.props.onExpansionToggle();
+            this.clearAllSelectedSpots();
         }
     };
+
+    private spotClickHandler = (spot: any) => () => {
+        this.spotVisibleToggleHandler(spot);
+    }
 
     private handleExpandSpotsFromSpotClick = (spotId: number) => () => {
         if (this.props.onExpansionToggle) {
@@ -363,6 +409,11 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
         this.addingNewSpotFormVisible = false;
     };
 
+    private setClassName = (id) => {
+        const isSpotInVisibleList = this.visibleSpots.find(item => item.id === id);
+        return isSpotInVisibleList ? s.spotNameActive : s.spotName;
+    }
+
     private renderSpotsList = (): JSX.Element[] => {
         let spotsList: SpotDetails[] = this.props.spots;
         return spotsList
@@ -375,8 +426,8 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
                             key={spot.id}
                             isBig={true}
                             title={spot.name}
-                            className={s.spotName}
-                            onTagClick={this.handleExpandSpotsFromSpotClick(spot.id)}
+                            className={classNames(this.setClassName(spot.id))}
+                            onTagClick={this.spotClickHandler(spot)}
                         />
                     );
                 }

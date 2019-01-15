@@ -1,32 +1,31 @@
-import * as React from 'react';
-import { parse } from 'query-string';
-import { AppState } from '../../../../../store/AllStores';
 import { HeaderActions, UsersActions } from 'actions/index';
-import { inject, observer } from 'mobx-react';
-import { ProjectPermissionData, ProjectPermissionsType } from 'types/users';
+import { history } from 'App';
 import { ButtonBack, ButtonSave } from 'components/Button/index';
-import { Col, Row } from 'components/Section/index';
-import { LoadingSpinner } from 'components/Loaders/index';
-import { action, computed, observable } from 'mobx';
-import { Table, TableCell, TableRow } from 'components/Table/index';
 import { Checkmark } from 'components/Form/index';
 import { BottomBar } from 'components/Layout/index';
-import { history } from 'App';
+import { LoadingSpinner } from 'components/Loaders/index';
 import { Modal } from 'components/Modals/index';
+import { Col, Row } from 'components/Section/index';
+import { Table, TableCell, TableRow } from 'components/Table/index';
+import { action, computed, observable } from 'mobx';
+import { inject, observer } from 'mobx-react';
+import { parse } from 'query-string';
+import * as React from 'react';
+import { ProjectPermissionData, ProjectPermissionsType } from 'types/users';
+import { AppState } from '../../../../../store/AllStores';
 
 export enum uploadStatus {
     none = 'none',
     success = 'success',
     saving = 'saving',
-    error = 'error'
+    error = 'error',
 }
 
 // Styles
 const s = require('../../../ActivitiesDefinition/Form/ActivityDefinitionForm.css');
 
 // Props
-interface ProjectBoardPermissionEditProps {
-}
+interface ProjectBoardPermissionEditProps {}
 
 // Props types
 type ProjectBoardPermissionEditPropsTypes = ProjectBoardPermissionEditProps & AppState;
@@ -35,7 +34,6 @@ type ProjectBoardPermissionEditPropsTypes = ProjectBoardPermissionEditProps & Ap
 @inject('store')
 @observer
 class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionEditPropsTypes, {}> {
-
     @observable private isProjectBoardPermissionsModified: boolean = false;
     @observable private uploadStatus: uploadStatus = uploadStatus.none;
     @observable private showCancelModal: boolean = false;
@@ -69,9 +67,7 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
                 {this.getModalWarning()}
             </>
         ) : (
-            <>
-                {this.getTableWithLoadingSpinner()}
-            </>
+            <>{this.getTableWithLoadingSpinner()}</>
         );
     }
 
@@ -80,8 +76,8 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
         if (!this.props.match) {
             return;
         }
-        const query = (this.props.location) ? parse(this.props.location.search) : null;
-        const typeName: string = (query && query.type_name) ? query.type_name : null;
+        const query = this.props.location ? parse(this.props.location.search) : null;
+        const typeName: string = query && query.type_name ? query.type_name : null;
 
         // Fetch required data
         UsersActions.fetchProjectPermissionsTypes(this.props.match.params['id'], true);
@@ -98,7 +94,9 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
                     onClick={this.handleGoBackToProjectBoardPermissionList}
                     label="Back to Project Board permissions"
                 />,
-            ]
+            ],
+            [],
+            false
         );
     };
 
@@ -121,11 +119,16 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
     };
 
     @action
-    private handleProjectBoardPermissionToggle(ind: number, val: 1 | 0, _projectPermissionId: number, type: 'canView' | 'canEdit'): void {
+    private handleProjectBoardPermissionToggle(
+        ind: number,
+        val: 1 | 0,
+        _projectPermissionId: number,
+        type: 'canView' | 'canEdit'
+    ): void {
         if (!this.props.match || !this.props.store) {
             return;
         }
-        let newVal: 1 | 0 = (val === 1) ? 0 : 1;
+        let newVal: 1 | 0 = val === 1 ? 0 : 1;
         this.props.store.users.projectPermissionsTypes[ind][type] = newVal;
         if (type === 'canEdit' && newVal === 1) {
             this.props.store.users.projectPermissionsTypes[ind]['canView'] = 1;
@@ -136,10 +139,10 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
     private getButtonText(): string {
         let buttonText: string;
         switch (this.uploadStatus) {
-            case 'none' :
+            case 'none':
                 buttonText = 'Save changes';
                 break;
-            case 'success' :
+            case 'success':
                 buttonText = 'Saved successfully';
                 break;
             default:
@@ -151,35 +154,49 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
     // render table data
     private getTableWithData(): JSX.Element {
         if (this.props.store) {
-            let tableRowsArr: JSX.Element[] = this.props.store.users.projectPermissionsTypes.map((permissionType: ProjectPermissionsType, ind: number) => {
-                return (
-                    <TableRow key={`permission-type-${ind}`}>
-                        <TableCell align="left">
-                            {permissionType.projectPermissionLabel}
-                        </TableCell>
-                        <TableCell align="center">
-                            <Checkmark
-                                onClick={() => this.handleProjectBoardPermissionToggle(ind, permissionType.canView, permissionType.projectPermissionId, 'canView')}
-                                checked={permissionType.canView === 1}
-                                type={'no-icon'}
-                            />
-                        </TableCell>
-                        <TableCell align="center">
-                            <Checkmark
-                                onClick={() => this.handleProjectBoardPermissionToggle(ind, permissionType.canEdit, permissionType.projectPermissionId, 'canEdit')}
-                                checked={permissionType.canEdit === 1}
-                                type={'no-icon'}
-                            />
-                        </TableCell>
-                    </TableRow>
-                );
-            });
+            let tableRowsArr: JSX.Element[] = this.props.store.users.projectPermissionsTypes.map(
+                (permissionType: ProjectPermissionsType, ind: number) => {
+                    return (
+                        <TableRow key={`permission-type-${ind}`}>
+                            <TableCell align="left">{permissionType.projectPermissionLabel}</TableCell>
+                            <TableCell align="center">
+                                <Checkmark
+                                    onClick={() =>
+                                        this.handleProjectBoardPermissionToggle(
+                                            ind,
+                                            permissionType.canView,
+                                            permissionType.projectPermissionId,
+                                            'canView'
+                                        )
+                                    }
+                                    checked={permissionType.canView === 1}
+                                    type={'no-icon'}
+                                />
+                            </TableCell>
+                            <TableCell align="center">
+                                <Checkmark
+                                    onClick={() =>
+                                        this.handleProjectBoardPermissionToggle(
+                                            ind,
+                                            permissionType.canEdit,
+                                            permissionType.projectPermissionId,
+                                            'canEdit'
+                                        )
+                                    }
+                                    checked={permissionType.canEdit === 1}
+                                    type={'no-icon'}
+                                />
+                            </TableCell>
+                        </TableRow>
+                    );
+                }
+            );
             return (
                 <Table
                     header={[
                         { title: 'Project name', align: 'left' },
                         { title: 'View', align: 'center' },
-                        { title: 'Edit', align: 'center' }
+                        { title: 'Edit', align: 'center' },
                     ]}
                     columnsWidths={['50%', '25%', '25%']}
                 >
@@ -187,9 +204,7 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
                 </Table>
             );
         } else {
-            return (
-                <></>
-            );
+            return <></>;
         }
     }
 
@@ -206,8 +221,8 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
                                 : this.uploadStatus === 'success'
                                 ? 'green'
                                 : this.uploadStatus === 'saving'
-                                    ? 'black'
-                                    : 'orange'
+                                ? 'black'
+                                : 'orange'
                         }
                         isSaving={this.uploadStatus === 'saving'}
                         savingLabel="Saving"
@@ -250,7 +265,7 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
         return (
             <Row justifyContent="center">
                 <Col width={64}>
-                    <LoadingSpinner size={64}/>
+                    <LoadingSpinner size={64} />
                 </Col>
             </Row>
         );
@@ -264,14 +279,17 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
         try {
             const projectBoardPermissionData: ProjectPermissionData = {
                 user_type_id: this.props.match.params['id'],
-                permissions: JSON.stringify(this.props.store.users.projectPermissionsTypes
-                    .map((projectBoardPermission: ProjectPermissionsType) => {
-                        return {
-                            project_permission_id: projectBoardPermission.projectPermissionId,
-                            can_view: projectBoardPermission.canView,
-                            can_edit: projectBoardPermission.canEdit
-                        };
-                    }))
+                permissions: JSON.stringify(
+                    this.props.store.users.projectPermissionsTypes.map(
+                        (projectBoardPermission: ProjectPermissionsType) => {
+                            return {
+                                project_permission_id: projectBoardPermission.projectPermissionId,
+                                can_view: projectBoardPermission.canView,
+                                can_edit: projectBoardPermission.canEdit,
+                            };
+                        }
+                    )
+                ),
             };
             this.uploadStatus = uploadStatus.saving;
             await UsersActions.saveProjectBoardPermission(projectBoardPermissionData);

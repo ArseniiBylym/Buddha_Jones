@@ -1,8 +1,12 @@
+import {
+    ProjectPicker,
+    ProjectPickerGroupValues,
+    ProjectPickerSections,
+    ProjectPickerValues
+    } from 'components/Buddha';
+import { inject, observer } from 'mobx-react';
 import * as React from 'react';
-import { observer, inject } from 'mobx-react';
-import { ProjectPicker, ProjectPickerValues, ProjectPickerGroupValues, ProjectPickerSections } from 'components/Buddha';
 import { AppOnlyStoreState } from 'store/AllStores';
-import { DatePicker } from '../../../../components/Calendar';
 
 // Props
 interface ProducerSpotSentFormProjectProps {
@@ -48,7 +52,7 @@ export class ProducerSpotSentFormProject extends React.Component<ProducerSpotSen
                     }}
                     title="Pick project"
                     show="project"
-                    openOn={(this.props.isClosedWhenInit) ? null : ProjectPickerSections.project}
+                    openOn={this.props.isClosedWhenInit ? null : ProjectPickerSections.project}
                     requiredSelection="project"
                     noSeparator={true}
                 />

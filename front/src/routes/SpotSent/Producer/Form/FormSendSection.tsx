@@ -90,9 +90,12 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
             this.props.store.spotSent.spotSentDetails && 
             this.props.store.spotSent.spotSentDetails.spot_version) {
                 let lineStatus = 0;
-                this.props.store.spotSent.spotSentDetails.spot_version.forEach(item => {
-                    lineStatus = item.line_status_id;
-                });
+                if (this.props.store.spotSent.spotSentDetails.spot_version[0]) {
+                    lineStatus = this.props.store.spotSent.spotSentDetails.spot_version[0].line_status_id;
+                }
+                // this.props.store.spotSent.spotSentDetails.spot_version.forEach(item => {
+                //     lineStatus = item.line_status_id;
+                // });
                 return lineStatus;
         }
     }

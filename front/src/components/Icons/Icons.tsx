@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { observer } from 'mobx-react';
 import { Icon, IconProps } from '.';
+import { observer } from 'mobx-react';
+import * as React from 'react';
 
 // Styles
 require('./Icons.css');
@@ -29,6 +29,9 @@ export const IconArrowRightYellow: React.SFC<IconProps> = observer(props => {
 });
 export const IconArrowRight: React.SFC<IconProps> = observer(props => {
     return <Icon {...props} iconName="iconArrowRight" />;
+});
+export const IconArrowRightWhite: React.SFC<IconProps> = observer(props => {
+    return <Icon {...props} iconName="iconArrowRightWhite" />;
 });
 export const IconArrowTopBlue: React.SFC<IconProps> = observer(props => {
     return <Icon {...props} iconName="iconArrowTopBlue" />;

@@ -7,4 +7,6 @@ export class Header {
     @observable public preSubTitleSpan: string | null = null;
     @observable public elementsOnLeft: JSX.Element[] = [];
     @observable public elements: JSX.Element[] = [];
+
+    @observable public pageHasWideLayout: boolean = false;
 }

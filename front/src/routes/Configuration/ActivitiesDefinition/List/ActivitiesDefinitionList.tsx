@@ -1,16 +1,21 @@
-import * as React from 'react';
-import { observer, inject } from 'mobx-react';
-import { HeaderActions, ActivitiesActions, UsersActions } from 'actions';
-import { ButtonAdd } from 'components/Button';
-import { history } from 'App';
-import { AppState } from 'store/AllStores';
-import { computed, reaction } from 'mobx';
-import { Row, Col, Section } from 'components/Section';
-import { LoadingSpinner } from 'components/Loaders';
-import { InputSearch, DropdownContainer, OptionsList, OptionsListValuePropType } from 'components/Form';
-import { Table, TableRow, TableCell } from 'components/Table';
 import { ActivitiesDefinitionListEntry } from '.';
+import { ActivitiesActions, HeaderActions, UsersActions } from 'actions';
+import { history } from 'App';
+import { ButtonAdd } from 'components/Button';
 import { Paragraph } from 'components/Content';
+import {
+    DropdownContainer,
+    InputSearch,
+    OptionsList,
+    OptionsListValuePropType
+    } from 'components/Form';
+import { LoadingSpinner } from 'components/Loaders';
+import { Col, Row, Section } from 'components/Section';
+import { Table, TableCell, TableRow } from 'components/Table';
+import { computed, reaction } from 'mobx';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { AppState } from 'store/AllStores';
 
 const zenscroll = require('zenscroll');
 
@@ -26,8 +31,8 @@ class ActivitiesDefinitionList extends React.Component<ComponentProps, {}> {
         if (this.props.store) {
             return Boolean(
                 this.props.store.activities.activitiesLoading ||
-                this.props.store.activities.activitiesTypesLoading ||
-                this.props.store.users.typesLoading
+                    this.props.store.activities.activitiesTypesLoading ||
+                    this.props.store.users.typesLoading
             );
         }
 
@@ -58,14 +63,22 @@ class ActivitiesDefinitionList extends React.Component<ComponentProps, {}> {
         UsersActions.fetchUsersTypes();
 
         // Set header
-        HeaderActions.setMainHeaderTitlesAndElements('Activities list', 'Configuration', null, null, [
-            <ButtonAdd
-                key="define-new-activity-button"
-                onClick={this.handleOpenNewActivityPage}
-                isWhite={true}
-                label="Define new activity"
-            />,
-        ]);
+        HeaderActions.setMainHeaderTitlesAndElements(
+            'Activities list',
+            'Configuration',
+            null,
+            null,
+            [
+                <ButtonAdd
+                    key="define-new-activity-button"
+                    onClick={this.handleOpenNewActivityPage}
+                    isWhite={true}
+                    label="Define new activity"
+                />,
+            ],
+            [],
+            false
+        );
 
         // Scroll to element
         if (
@@ -191,7 +204,7 @@ class ActivitiesDefinitionList extends React.Component<ComponentProps, {}> {
         ) : (
             <Row justifyContent="center">
                 <Col width={64}>
-                    <LoadingSpinner size={64}/>
+                    <LoadingSpinner size={64} />
                 </Col>
             </Row>
         );

@@ -27,7 +27,8 @@ export class TimeApprovalActionsClass {
                     offset: 0,
                     length: 9999999,
                     exclude_user_time_entry: 1,
-                    status: TimeEntryStatus.UnderReview,
+                    // status: TimeEntryStatus.UnderReview,
+                    status: TimeEntryStatus.Final,
                     ...(TimeApprovalStore.filters.project !== null
                         ? {
                               project_id: TimeApprovalStore.filters.project.id,

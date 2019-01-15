@@ -1,12 +1,12 @@
-import * as React from 'react';
-import { observer, inject } from 'mobx-react';
-import { AppState } from 'store/AllStores';
-import { HeaderActions, ActivitiesActions, TimeEntryActions } from 'actions';
-import { computed } from 'mobx';
-import { LoadingSpinner } from 'components/Loaders';
-import { Row, Col } from 'components/Section';
 import { TimeEntryCalendar } from '.';
+import { ActivitiesActions, HeaderActions, TimeEntryActions } from 'actions';
+import { LoadingSpinner } from 'components/Loaders';
 import { Modal } from 'components/Modals';
+import { Col, Row } from 'components/Section';
+import { computed } from 'mobx';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { AppState } from 'store/AllStores';
 import { TimeEntryModal } from './TimeEntryModal';
 
 interface TimeEntryUserWithType {
@@ -45,7 +45,7 @@ class TimeEntry extends React.Component<AppState, {}> {
     }
 
     public componentDidMount() {
-        HeaderActions.setMainHeaderTitlesAndElements('Time entry', 'Activities');
+        HeaderActions.replaceMainHeaderContent({ title: 'Time entry', subTitle: 'Activities' });
         ActivitiesActions.fetchActivitiesTypes();
         ActivitiesActions.fetchActivityList();
 
@@ -63,8 +63,8 @@ class TimeEntry extends React.Component<AppState, {}> {
 
         return !this.essentialDataIsLoading ? (
             <>
-                <TimeEntryCalendar/>
-                <TimeEntryModal openOnPage="time-entry"/>
+                <TimeEntryCalendar />
+                <TimeEntryModal openOnPage="time-entry" />
 
                 <Modal
                     show={timeEntry.minimumHoursNotMetModal.show && timeEntry.minimumHoursNotMetModal.minHours > 0}
@@ -130,7 +130,7 @@ class TimeEntry extends React.Component<AppState, {}> {
         ) : (
             <Row justifyContent="center">
                 <Col width={64}>
-                    <LoadingSpinner size={64}/>
+                    <LoadingSpinner size={64} />
                 </Col>
             </Row>
         );

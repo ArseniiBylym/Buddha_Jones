@@ -1,8 +1,8 @@
-import * as React from 'react';
 import * as classNames from 'classnames';
-import { observer } from 'mobx-react';
+import { capitalize as _capitalize, get as _get } from 'lodash';
 import { observable, reaction } from 'mobx';
-import { get as _get, capitalize as _capitalize } from 'lodash';
+import { observer } from 'mobx-react';
+import * as React from 'react';
 
 // Styles
 require('./Button.css');
@@ -21,6 +21,7 @@ export interface ButtonLabel {
     size?: ButtonLabelSizePropType;
     color?: ButtonLabelColorPropType;
     onLeft?: boolean;
+    isBold?: boolean;
 }
 
 export interface ButtonIcon {
@@ -103,8 +104,8 @@ export class Button extends React.Component<ButtonProps, {}> {
                             : tooltipOn === 'bottom'
                             ? 'buttonTooltipOnbottomIn'
                             : tooltipOn === 'right'
-                                ? 'buttonTooltipOnrightIn'
-                                : 'buttonTooltipOnleftIn';
+                            ? 'buttonTooltipOnrightIn'
+                            : 'buttonTooltipOnleftIn';
                 } else {
                     this.tooltipClassName =
                         tooltipOn === 'top'
@@ -112,8 +113,8 @@ export class Button extends React.Component<ButtonProps, {}> {
                             : tooltipOn === 'bottom'
                             ? 'buttonTooltipOnbottomOut'
                             : tooltipOn === 'right'
-                                ? 'buttonTooltipOnrightOut'
-                                : 'buttonTooltipOnleftOut';
+                            ? 'buttonTooltipOnrightOut'
+                            : 'buttonTooltipOnleftOut';
                 }
 
                 this.tooltipStyle = {
@@ -123,8 +124,8 @@ export class Button extends React.Component<ButtonProps, {}> {
                     marginTop: isOnTopOrBottom
                         ? null
                         : tooltipHeight
-                            ? -(tooltipHeight / 2) + 'px'
-                            : this.tooltipStyle.marginTop,
+                        ? -(tooltipHeight / 2) + 'px'
+                        : this.tooltipStyle.marginTop,
                     marginLeft: isOnTopOrBottom
                         ? tooltipWidth
                             ? -(tooltipWidth / 2) + 'px'
@@ -152,8 +153,7 @@ export class Button extends React.Component<ButtonProps, {}> {
                             this.props.label && typeof this.props.label.color !== 'undefined'
                                 ? this.props.label.color
                                 : ''
-                        )]:
-                        this.props.isInBox && this.props.label && typeof this.props.label.color !== 'undefined',
+                        )]: this.props.isInBox && this.props.label && typeof this.props.label.color !== 'undefined',
                     },
                     this.props.className
                 )}
@@ -164,14 +164,12 @@ export class Button extends React.Component<ButtonProps, {}> {
                 onMouseLeave={this.handleButtonHover(false)}
             >
                 {this.props.label &&
-                typeof this.props.label.text !== 'undefined' &&
-                this.props.label.text &&
-                (typeof this.props.label.onLeft === 'undefined' || this.props.label.onLeft) &&
-                this.renderLabel()}
+                    typeof this.props.label.text !== 'undefined' &&
+                    this.props.label.text &&
+                    (typeof this.props.label.onLeft === 'undefined' || this.props.label.onLeft) &&
+                    this.renderLabel()}
 
-                {this.props.icon &&
-                typeof this.props.icon.element !== 'undefined' &&
-                this.props.icon.element && (
+                {this.props.icon && typeof this.props.icon.element !== 'undefined' && this.props.icon.element && (
                     <span
                         className={classNames('buttonIcon', {
                             ['buttonIcon' +
@@ -191,13 +189,12 @@ export class Button extends React.Component<ButtonProps, {}> {
                 )}
 
                 {this.props.label &&
-                typeof this.props.label.text !== 'undefined' &&
-                this.props.label.text &&
-                (typeof this.props.label.onLeft !== 'undefined' && !this.props.label.onLeft) &&
-                this.renderLabel()}
+                    typeof this.props.label.text !== 'undefined' &&
+                    this.props.label.text &&
+                    (typeof this.props.label.onLeft !== 'undefined' && !this.props.label.onLeft) &&
+                    this.renderLabel()}
 
-                {this.props.tooltip &&
-                typeof this.props.tooltip.text !== 'undefined' && (
+                {this.props.tooltip && typeof this.props.tooltip.text !== 'undefined' && (
                     <span
                         ref={this.referenceTooltip}
                         style={{
@@ -237,10 +234,11 @@ export class Button extends React.Component<ButtonProps, {}> {
                             : 'Right')]: true,
                         ['buttonLabel' +
                         _capitalize(typeof this.props.label.color !== 'undefined' ? this.props.label.color : '')]:
-                        typeof this.props.label.color !== 'undefined',
+                            typeof this.props.label.color !== 'undefined',
                         ['buttonLabel' +
                         _capitalize(typeof this.props.label.size !== 'undefined' ? this.props.label.size : '')]:
-                        typeof this.props.label.size !== 'undefined',
+                            typeof this.props.label.size !== 'undefined',
+                        ['buttonLabelIsBold']: this.props.label.isBold,
                     })}
                 >
                     {this.props.label.text}

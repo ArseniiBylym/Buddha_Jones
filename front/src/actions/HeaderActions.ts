@@ -8,6 +8,7 @@ interface HeaderAll {
     preSubTitleSpan?: string | null;
     elements?: JSX.Element[];
     elementsOnLeft?: JSX.Element[];
+    isLayoutWide?: boolean;
 }
 
 export class HeaderActionsClass {
@@ -64,11 +65,13 @@ export class HeaderActionsClass {
         preTitleSpan: string | null = null,
         preSubTitleSpan: string | null = null,
         elements: JSX.Element[] = [],
-        elementsOnLeft: JSX.Element[] = []
+        elementsOnLeft: JSX.Element[] = [],
+        widePageLayout: boolean = false
     ): Promise<boolean> => {
         this.setMainHeaderTitles(title, subTitle, preTitleSpan, preSubTitleSpan);
         this.setMainHeaderElements(elements);
         this.setMainHeaderElementsOnLeft(elementsOnLeft);
+        this.setMainHeaderLayoutWidth();
 
         return true;
     };
@@ -82,6 +85,8 @@ export class HeaderActionsClass {
         HeaderStore.elements = content.elements || [];
         HeaderStore.elementsOnLeft = content.elementsOnLeft || [];
 
+        HeaderStore.pageHasWideLayout = content.isLayoutWide || false;
+
         return true;
     };
 
@@ -93,6 +98,15 @@ export class HeaderActionsClass {
         HeaderStore.preSubTitleSpan = null;
         HeaderStore.elements = [];
         HeaderStore.elementsOnLeft = [];
+
+        HeaderStore.pageHasWideLayout = false;
+
+        return true;
+    };
+
+    @action
+    public setMainHeaderLayoutWidth = async (isWide: boolean = false): Promise<boolean> => {
+        HeaderStore.pageHasWideLayout = isWide;
 
         return true;
     };

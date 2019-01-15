@@ -141,64 +141,67 @@ class BillingStudioRateCards extends React.Component<BillingStudioRateCardsProps
                             )}
                         </Table>
                     )}
-                    {!this.getStudioRateCardData.rateCard.loading && this.getStudioRateCardData.selectedRateCardId !== null && (
-                        <div className={styles.rateCardNoteWrapper}>
-                            <h3 className={styles.noteLabel}>Additional Rate Card Notes</h3>
-                            <div className={styles.rateCardNote}>
-                                {this.state.noteEditMode ? (
-                                    <TextArea
-                                        label="Note"
-                                        value={this.state.noteValue}
-                                        onChange={this.handleNoteChange}
-                                        className={styles.noteTextAreaWrapperStyles}
-                                        fieldClassName={styles.noteTextAreaStyles}
-                                    />
-                                ) : this.getStudioRateCardData.selectedRateCardNote ? (
-                                    this.getStudioRateCardData.selectedRateCardNote
-                                ) : (
-                                    'No Notes Found'
-                                )}
-                                {this.state.noteEditMode ? (
-                                    <div className={styles.rateCardNoteActions}>
-                                        <ButtonSave
-                                            label="Save"
-                                            labelColor="green"
-                                            isSaving={this.state.noteSaving}
-                                            savingLabel="Saving"
-                                            onClick={this.handleSaveNote}
+                    {!this.getStudioRateCardData.rateCard.loading &&
+                        this.getStudioRateCardData.selectedRateCardId !== null && (
+                            <div className={styles.rateCardNoteWrapper}>
+                                <h3 className={styles.noteLabel}>Additional Rate Card Notes</h3>
+                                <div className={styles.rateCardNote}>
+                                    {this.state.noteEditMode ? (
+                                        <TextArea
+                                            label="Note"
+                                            value={this.state.noteValue}
+                                            onChange={this.handleNoteChange}
+                                            className={styles.noteTextAreaWrapperStyles}
+                                            fieldClassName={styles.noteTextAreaStyles}
                                         />
-                                        <ButtonClose
-                                            className={styles.rowCancelButton}
-                                            label="Close"
-                                            onClick={this.exitNoteEditMode}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className={styles.rateCardNoteActions}>
-                                        <ButtonEdit
-                                            className={styles.rowEditButton}
-                                            onClick={this.enterNoteEditMode}
-                                            label="Edit"
-                                            labelOnLeft={true}
-                                            float="none"
-                                        />
-                                    </div>
-                                )}
+                                    ) : this.getStudioRateCardData.selectedRateCardNote ? (
+                                        this.getStudioRateCardData.selectedRateCardNote
+                                    ) : (
+                                        'No Notes Found'
+                                    )}
+                                    {this.state.noteEditMode ? (
+                                        <div className={styles.rateCardNoteActions}>
+                                            <ButtonSave
+                                                label="Save"
+                                                labelColor="green"
+                                                isSaving={this.state.noteSaving}
+                                                savingLabel="Saving"
+                                                onClick={this.handleSaveNote}
+                                            />
+                                            <ButtonClose
+                                                className={styles.rowCancelButton}
+                                                label="Close"
+                                                onClick={this.exitNoteEditMode}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className={styles.rateCardNoteActions}>
+                                            <ButtonEdit
+                                                className={styles.rowEditButton}
+                                                onClick={this.enterNoteEditMode}
+                                                label="Edit"
+                                                labelOnLeft={true}
+                                                float="none"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    )}
-                    {!this.state.addNew && !this.getStudioRateCardData.rateCard.loading && this.getStudioRateCardData.selectedRateCardId !== null && (
-                        <ButtonAdd
-                            label="New Activity"
-                            labelOnLeft={true}
-                            float="right"
-                            isWhite={true}
-                            labelSize="small"
-                            labelColor="black"
-                            onClick={this.handleAdd}
-                            adding={false}
-                        />
-                    )}
+                        )}
+                    {!this.state.addNew &&
+                        !this.getStudioRateCardData.rateCard.loading &&
+                        this.getStudioRateCardData.selectedRateCardId !== null && (
+                            <ButtonAdd
+                                label="New Activity"
+                                labelOnLeft={true}
+                                float="right"
+                                isWhite={true}
+                                labelSize="small"
+                                labelColor="black"
+                                onClick={this.handleAdd}
+                                adding={false}
+                            />
+                        )}
                     <RemoveConfirmationModal
                         isActive={this.state.isDeleteModalOpened}
                         onConfirmationModalClose={this.closeDeleteActivityModal}
@@ -214,7 +217,9 @@ class BillingStudioRateCards extends React.Component<BillingStudioRateCardsProps
 
     private enterNoteEditMode = () => {
         this.setState({
-            noteValue: this.getStudioRateCardData.selectedRateCardNote ? this.getStudioRateCardData.selectedRateCardNote : '',
+            noteValue: this.getStudioRateCardData.selectedRateCardNote
+                ? this.getStudioRateCardData.selectedRateCardNote
+                : '',
             noteEditMode: true,
         });
     };
@@ -227,7 +232,7 @@ class BillingStudioRateCards extends React.Component<BillingStudioRateCardsProps
 
     private handleNoteChange = e => {
         this.setState({
-            noteValue: e.target.value
+            noteValue: e.target.value,
         });
     };
 
@@ -235,14 +240,15 @@ class BillingStudioRateCards extends React.Component<BillingStudioRateCardsProps
         this.setState({
             noteSaving: true,
         });
-        StudioRateCardActions.saveRateCardType(this.getStudioRateCardData.selectedRateCardLabel, this.state.noteValue).then(
-            () => {
-                this.setState({
-                    noteSaving: false,
-                });
-                this.exitNoteEditMode();
-            }
-        );
+        StudioRateCardActions.saveRateCardType(
+            this.getStudioRateCardData.selectedRateCardLabel,
+            this.state.noteValue
+        ).then(() => {
+            this.setState({
+                noteSaving: false,
+            });
+            this.exitNoteEditMode();
+        });
     };
 
     private openDeleteActivityModal = (activityId: number) => {
@@ -363,7 +369,9 @@ class BillingStudioRateCards extends React.Component<BillingStudioRateCardsProps
                     onClick={this.goBackToProjectBoardPermissionList}
                     label="Back to studios list"
                 />,
-            ]
+            ],
+            [],
+            false
         ).then();
     };
 }

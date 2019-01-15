@@ -1,29 +1,25 @@
-import * as React from 'react';
-import { observer } from 'mobx-react';
-import { observable } from 'mobx';
 import * as classNames from 'classnames';
-import { IconTickWhite, IconTickGreen } from '../Icons';
+import { observable } from 'mobx';
+import { observer } from 'mobx-react';
+import * as React from 'react';
+import { IconTickWhite } from '../Icons';
 
-// Styles
 const s = require('./Checkbox.css');
 
-// Types
 export type CheckboxValue = string | number | boolean | null;
 
-// Props
 interface CheckboxProps {
     onChange?: (checked: boolean, value: CheckboxValue) => void;
     className?: string;
     align?: 'left' | 'center' | 'right';
     checked?: boolean;
     disabled?: boolean;
-    value: CheckboxValue;
+    value?: CheckboxValue;
     valueUnchecked?: CheckboxValue;
     label?: string;
     labelOnLeft?: boolean;
 }
 
-// Component
 @observer
 export class Checkbox extends React.Component<CheckboxProps, {}> {
     static get defaultProps(): CheckboxProps {
@@ -71,10 +67,10 @@ export class Checkbox extends React.Component<CheckboxProps, {}> {
                         this.props.value === null
                             ? 'null'
                             : this.props.value === true
-                                ? 'true'
-                                : this.props.value === false
-                                    ? 'false'
-                                    : this.props.value
+                            ? 'true'
+                            : this.props.value === false
+                            ? 'false'
+                            : this.props.value
                     }
                     checked={this.isChecked}
                 />
@@ -86,9 +82,7 @@ export class Checkbox extends React.Component<CheckboxProps, {}> {
                     onClick={this.handleIconButtonClick}
                     className={s.icon}
                 >
-                    {(this.isChecked && <IconTickWhite width={12} height={9} />) || (
-                        <IconTickGreen width={12} height={9} />
-                    )}
+                    <IconTickWhite width={12} height={9} />
                 </button>
             </label>
         );
