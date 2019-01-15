@@ -32,6 +32,8 @@ export class ProjectBoardCampaignMisc extends React.Component<ProjectBoardCampai
     @observable private budget: number | null = null;
     @observable private budgetNotes: string = '';
     @observable private budgetModified: boolean = false;
+    @observable private graphicsNotes: string = '';
+    @observable private graphicsModified: boolean = false;
     @observable private dateMaterialsWillBeReceived: Date | null = null;
     @observable private dateMaterialsWillBeReceivedModifed: boolean = false;
     @observable private status: 'default' | 'saving' | 'success' | 'error' = 'default';
@@ -100,6 +102,18 @@ export class ProjectBoardCampaignMisc extends React.Component<ProjectBoardCampai
                                     </div>
                                 )}
 
+                                {this.props.userCanEditBudget && (
+                                    <div className={s.budgetNotesWrapper}>
+                                        <Paragraph>Graphics budget notes</Paragraph>
+                                        <Input
+                                            maxWidth={1152}
+                                            onChange={this.handleGraphicsNotesChange}
+                                            value={this.graphicsNotes}
+                                            label={this.graphicsNotes ? '' : 'No graphics notes'}
+                                        />
+                                    </div>
+                                )}
+
                                 {this.props.userCanEditMaterialsDate && (
                                     <div className={s.dateMaterialsWillBeReceivedWrapper}>
                                         <DatePicker
@@ -144,6 +158,14 @@ export class ProjectBoardCampaignMisc extends React.Component<ProjectBoardCampai
                                             {this.props.campaign.budgetNotes}
                                         </Paragraph>
                                     )}
+
+                                {this.props.userCanViewBudget &&
+                                    this.props.campaign.graphicsBudgetNote && (
+                                        <Paragraph>
+                                            <span>Graphics budget notes: </span>
+                                            {this.props.campaign.graphicsBudgetNote}
+                                        </Paragraph>
+                                )}
 
                                 {this.props.userCanViewMaterialsDate && (
                                     <Paragraph>
@@ -191,6 +213,12 @@ export class ProjectBoardCampaignMisc extends React.Component<ProjectBoardCampai
     };
 
     @action
+    private handleGraphicsNotesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.graphicsNotes = e.target.value;
+        this.graphicsModified = true;
+    };
+
+    @action
     private handleMaterialsDateChange = (date: Date | null) => {
         this.dateMaterialsWillBeReceived = date;
         this.dateMaterialsWillBeReceivedModifed = true;
@@ -207,6 +235,14 @@ export class ProjectBoardCampaignMisc extends React.Component<ProjectBoardCampai
                     this.props.campaign.projectCampaignId,
                     this.budget,
                     this.budgetNotes || null
+                );
+            }
+
+            if (this.graphicsModified && this.props.userCanEditBudget) {
+                await ProjectsDetailsActions.changeProjectCampaignGraphicsBudget(
+                    this.props.projectId,
+                    this.props.campaign.projectCampaignId,
+                    this.graphicsNotes || null
                 );
             }
 

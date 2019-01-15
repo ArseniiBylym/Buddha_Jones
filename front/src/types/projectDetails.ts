@@ -85,6 +85,7 @@ export interface CampaignDetails {
     musicTeamNotes: string | null;
     budget: number | null;
     budgetNotes: string | null;
+    graphicsBudgetNote?: string | null;
     dateMaterialsWillBeReceived: Date | null;
     spots: SpotDetails[];
     creativeTeam: ProjectCampaignCreativeUser[];
@@ -197,6 +198,7 @@ interface ProjectDetailsCampaignFromApi {
     channelId: number | null;
     channelName: string | null;
     customerContact: ProjectDetailsCustomerContactFromApi[];
+    graphicsBudgetNote?: string;
 }
 
 export interface ProjectSpotCreateFromApi {

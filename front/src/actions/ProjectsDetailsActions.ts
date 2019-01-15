@@ -126,6 +126,7 @@ export class ProjectDetailsActionsClass {
                     musicTeamNotes: c.musicTeamNotes,
                     budget: typeof c.budget !== 'undefined' ? c.budget : null,
                     budgetNotes: typeof c.budgetNote !== 'undefined' ? c.budgetNote : null,
+                    graphicsBudgetNote: c.graphicsBudgetNote,
                     dateMaterialsWillBeReceived: null,
                     creativeTeam: c.user,
                     billingTeam: c.billingUser,
@@ -286,6 +287,28 @@ export class ProjectDetailsActionsClass {
 
                 campaign.budget = budget;
                 campaign.budgetNotes = budgetNotes;
+            }
+
+            return true;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    @action
+    public changeProjectCampaignGraphicsBudget = async (
+        projectId: number,
+        projectCampaignId: number,
+        graphicsNotes: string | null
+    ): Promise<boolean> => {
+        try {
+            const campaign = this.findCampaign(projectId, projectCampaignId);
+            if (campaign) {
+                await API.putData(APIPath.PROJECT_CAMPAIGN + '/' + projectCampaignId, {
+                    graphics_budget_note: graphicsNotes,
+                });
+
+                campaign.graphicsBudgetNote = graphicsNotes;
             }
 
             return true;
