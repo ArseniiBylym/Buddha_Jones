@@ -1,19 +1,29 @@
-import * as dateDifferenceInMilliseconds from 'date-fns/difference_in_milliseconds';
-import * as dateDistanceInWords from 'date-fns/distance_in_words';
-import * as dateFormat from 'date-fns/format';
-import * as dateGetHours from 'date-fns/get_hours';
-import * as dateGeMinutes from 'date-fns/get_minutes';
-import padStart from 'lodash-es/padStart';
 import { unformat } from 'accounting';
+import * as addMinutes from 'date-fns/add_minutes';
+import * as datesDifferenceInMilliseconds from 'date-fns/difference_in_milliseconds';
+import * as datesDistanceInWords from 'date-fns/distance_in_words';
+import * as formatDate from 'date-fns/format';
+import * as getHoursFromDate from 'date-fns/get_hours';
+import * as getMinutesFromDate from 'date-fns/get_minutes';
+import * as isDateAfterAnotherDate from 'date-fns/is_after';
+import * as parseDate from 'date-fns/parse';
+import * as setHoursOnDate from 'date-fns/set_hours';
+import * as setMinutesOnDate from 'date-fns/set_minutes';
+import padStart from 'lodash-es/padStart';
+import { DateObjectFromApi } from 'types/api';
 
 export class DateHandler {
+    static printDateObjectAsString = (date: Date, format: string = 'MM/DD/YYYY'): string => {
+        return formatDate(date, format);
+    };
+
     static printAsTimeAgoFromNow = (
         date: Date,
         olderThanDayAsFullDate: boolean = false,
         newerThanMinuteAsJustNow: boolean = false
     ) => {
         const now: Date = new Date();
-        const differenceInMilliseconds = dateDifferenceInMilliseconds(now, date);
+        const differenceInMilliseconds = datesDifferenceInMilliseconds(now, date);
         const differenceInSeconds = Math.floor(differenceInMilliseconds / 1000);
 
         if (newerThanMinuteAsJustNow && differenceInSeconds <= 60) {
@@ -21,10 +31,28 @@ export class DateHandler {
         }
 
         if (olderThanDayAsFullDate && differenceInSeconds > 86400) {
-            return dateFormat(date, 'MM/DD/YYYY hh:mm a');
+            return formatDate(date, 'MM/DD/YYYY hh:mm a');
         }
 
-        return dateDistanceInWords(date, now, { includeSeconds: false });
+        return datesDistanceInWords(date, now, { includeSeconds: false });
+    };
+
+    static printPeriodBetweenTwoDatesAsHoursString = (
+        dateFrom: Date,
+        dateTil: Date,
+        padLeftWithZero: boolean = false
+    ): string => {
+        const format = padLeftWithZero ? 'hh:mm a' : 'h:mm a';
+        return formatDate(dateFrom, format) + ' – ' + formatDate(dateTil, format);
+    };
+
+    static printPeriodBetweenDateAndDuration = (
+        startDate: Date,
+        durationInMinutes: number,
+        padLeftWithZero: boolean = false
+    ): string => {
+        const endDate = addMinutes(startDate, durationInMinutes);
+        return DateHandler.printPeriodBetweenTwoDatesAsHoursString(startDate, endDate, padLeftWithZero);
     };
 
     static convertTotalMinutesToTimeLabel = (totalMinutes: number = 0): { value: number; label: string } => {
@@ -82,8 +110,26 @@ export class DateHandler {
         return comparedTo - timestamp > 1000 * 60 * minutes;
     };
 
+    static checkIfDateIsOlderThanOtherDate = (date1: Date, date2: Date): boolean => {
+        return isDateAfterAnotherDate(date1, date2);
+    };
+
+    static getHoursFromDateTime = (date: Date): number => {
+        return getHoursFromDate(date);
+    };
+
+    static getMinutesFromDateTime = (date: Date): number => {
+        return getMinutesFromDate(date);
+    };
+
     static getTotalMinutesFromDateTime = (date: Date): number => {
-        return dateGetHours(date) * 60 + dateGeMinutes(date);
+        return getHoursFromDate(date) * 60 + getMinutesFromDate(date);
+    };
+
+    static setTotalMinutesOnDate = (date: Date, totalMinutes: number): Date => {
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes - hours * 60;
+        return setHoursOnDate(setMinutesOnDate(date, minutes), hours);
     };
 
     static convertHoursNumberToHM = (hours: number): string => {
@@ -92,16 +138,16 @@ export class DateHandler {
 
     static convertHoursNumberToTotalMinutes = (hours: number): number => {
         return hours * 60;
-    }
+    };
 
-    static convertTotalMinutesToHM = (totalMinutes: number, ensureTimesHaveTwoCharacters: boolean = false): string => {
+    static convertTotalMinutesToHM = (totalMinutes: number, padLeftWithZero: boolean = false): string => {
         const hoursDotMinutes = DateHandler.convertTotalMinutesToHoursDotMinutes(totalMinutes);
         const split = hoursDotMinutes.split('.');
         return (
-            (ensureTimesHaveTwoCharacters ? padStart(split[0], 2, '0') : split[0]) +
+            (padLeftWithZero ? padStart(split[0], 2, '0') : split[0]) +
             'h' +
             ' ' +
-            (ensureTimesHaveTwoCharacters ? padStart(split[1], 2, '0') : split[1]) +
+            (padLeftWithZero ? padStart(split[1], 2, '0') : split[1]) +
             'min'
         );
     };
@@ -119,5 +165,19 @@ export class DateHandler {
         const durationHours = unformat(splitDuration[0]);
         const durationMinutes = splitDuration.length >= 2 ? unformat(splitDuration[1]) : 0;
         return durationHours * 60 + durationMinutes;
+    };
+
+    static parseDateStringAsDateObject = (dateObj: DateObjectFromApi | string): Date => {
+        if (typeof dateObj === 'string') {
+            return parseDate(dateObj);
+        } else if (typeof dateObj === 'object' && typeof dateObj.date !== 'undefined') {
+            if (dateObj.timezone === 'US/Eastern' && dateObj.timezone_type === 3) {
+                return parseDate(dateObj.date.replace(' ', 'T') + '-09:00');
+            } else {
+                return parseDate(dateObj.date);
+            }
+        } else {
+            return new Date();
+        }
     };
 }

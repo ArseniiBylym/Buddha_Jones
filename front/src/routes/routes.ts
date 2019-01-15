@@ -7,18 +7,19 @@ import { UserManagementUsersListAsync } from './Configuration/UserManagement/Use
 import { DashboardAsync } from './Dashboard';
 import { ProjectCreateAsync, ProjectsBoardAsync } from './Project';
 import { ProjectsListAsync } from './Projects';
+import { BillSpotFormAsync } from './SpotBilling/BillSpotForm/BillSpotFormAsync';
 import { SpotsToBillAsync } from './SpotBilling/SpotsToBill/SpotsToBillAsync';
+import { SpotsToEDLAsync } from './SpotEDL/SpotsToEDL/SpotsToEDLAsync';
 import { SpotsToGraphicsAsync } from './SpotGraphics/SpotsToGraphics/SpotsToGraphicsAsync';
+import { SpotsToGraphicsSentAsync } from './SpotGraphicsSent/SpotsToGraphicsSent/SpotsToGraphicsSentAsync';
+import { SpotsPostAsync } from './SpotPost/SpotsPostAsync';
 import { ProducerSpotSentFormAsync, ProducerSpotSentListAsync } from './SpotSent';
 import { NewClientRequestListAsync } from './StudioClient/NewClientRequest/List';
+import { TimeApprovalPermissionsAsync } from './TimeCardPermissions/TimeApprovalPermissions';
+import { TimeEntryPermissionsAsync } from './TimeCardPermissions/TimeEntryPermissions';
 import { TimeEntryAsync } from './TimeTracking';
 import { TimeApprovalAsync } from './TimeTracking/Approval';
 import { UserAccountAsync } from './User';
-import { TimeEntryPermissionsAsync } from './TimeCardPermissions/TimeEntryPermissions';
-import { TimeApprovalPermissionsAsync } from './TimeCardPermissions/TimeApprovalPermissions';
-import { SpotsToEDLAsync } from './SpotEDL/SpotsToEDL/SpotsToEDLAsync';
-import { SpotsToGraphicsSentAsync } from './SpotGraphicsSent/SpotsToGraphicsSent/SpotsToGraphicsSentAsync';
-import { SpotsPostAsync } from './SpotPost/SpotsPostAsync';
 
 // Icons
 const dashboardIcon = require('../assets/images/navigation/navigation-icon-dashboard.png');
@@ -138,6 +139,15 @@ export const routes: Route[] = [
         path: '/portal/spots-to-bill',
         entry: '/portal/spots-to-bill',
         exact: true,
+        allowAllUsers: true,
+    },
+    {
+        component: BillSpotFormAsync,
+        key: 'bill-spot-form',
+        accessKey: RouteAccessKey.SpotBilling,
+        name: 'Bill spot form',
+        path: '/portal/bill-spot-form/:id',
+        exact: false,
         allowAllUsers: true,
     },
     {

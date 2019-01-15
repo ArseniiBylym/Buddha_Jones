@@ -1,14 +1,14 @@
-import * as React from 'react';
 import * as classNames from 'classnames';
-import { observer } from 'mobx-react';
 import { observable } from 'mobx';
-import { Row, Col } from './../Section';
+import { observer } from 'mobx-react';
+import * as React from 'react';
+import { Col, Row } from './../Section';
 
 const s = require('./LoadingShade.css');
 
 interface LoadingShadeProps {
     className?: string | null;
-    background?: string | null;
+    background?: 'transparent' | 'none' | string | null;
     border?: string | null;
     contentCentered?: boolean;
     contentCenteredToTop?: boolean;
@@ -51,7 +51,7 @@ export class LoadingShade extends React.Component<LoadingShadeProps, {}> {
                     [s.visible]: this.visible,
                     [s.alignLeft]: !this.props.contentCentered,
                     [s.alignTop]: this.props.contentCentered && this.props.contentCenteredToTop,
-                    [s.static]: this.props.isStatic
+                    [s.static]: this.props.isStatic,
                 })}
                 style={{
                     background: this.props.background || undefined,
