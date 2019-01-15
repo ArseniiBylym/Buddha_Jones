@@ -32,6 +32,7 @@ interface ProducerSpotSentFormSpotCardProps {
     forUserId: number;
     withGraphicsSection?: boolean;
     updateFileList: any;
+    finishAccept?: boolean;
 }
 
 interface ProducerSpotSentFormSpotCardState {
@@ -286,27 +287,29 @@ export class ProducerSpotSentFormSpotCard extends React.Component<ProducerSpotSe
         <ButtonClose key="remove-spot" onClick={this.handleSpotRemove} label="Remove spot" />,
     ]
 
-    private getCardHeaders = () => [
-        <Checkmark
-            key="finishing-request-checkmark"
-            onClick={this.handleFinishingRequestToggle}
-            checked={this.props.spot.isFinishingRequest}
-            label="Finish Request"
-            labelOnLeft={true}
-            readOnly={(!this.props.spot.spot)}
-            type={'no-icon'}
-        />,
-        <Checkmark
-            key="spot-resend-checkmark"
-            onClick={this.handleSpotResendToggle}
-            checked={this.props.spot.isResend}
-            label="Spot resend"
-            labelOnLeft={true}
-            readOnly={(!this.props.spot.spot)}
-            type={'no-icon'}
-        />,
-        <ButtonClose key="remove-spot" onClick={this.handleSpotRemove} label="Remove spot" />,
-    ]
+    private getCardHeaders = () => {
+            return [
+                <Checkmark
+                    key="finishing-request-checkmark"
+                    onClick={this.handleFinishingRequestToggle}
+                    checked={this.props.spot.isFinishingRequest}
+                    label="Finish Request"
+                    labelOnLeft={true}
+                    readOnly={this.props.spot.finishAccept && this.props.spot.isFinishingRequest && this.props.spot.line_status_id === 3}
+                    type={'no-icon'}
+                />,
+                <Checkmark
+                    key="spot-resend-checkmark"
+                    onClick={this.handleSpotResendToggle}
+                    checked={this.props.spot.isResend}
+                    label="Spot resend"
+                    labelOnLeft={true}
+                    readOnly={(!this.props.spot.spot)}
+                    type={'no-icon'}
+                />,
+                <ButtonClose key="remove-spot" onClick={this.handleSpotRemove} label="Remove spot" />
+            ];
+    }
 
     private onRemoveEditorHandler = (ind: number): void => this.handleSpotRemovingEditor(ind);
 

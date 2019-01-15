@@ -198,6 +198,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                                 finishAccept: spot.finish_accept === 1,
                                                 prodAccept: spot.prod_accept === 1,
                                             } : null,
+                                            finishAccept: (spot.finish_accept === 1) ? true : false,
                                             isResend: (spot.spot_resend === 1) ? true : false,
                                             isPDF: (spot.is_pdf === 1) ? true : false,
                                             isFinishingRequest: (spot.finish_request === 1) ? true : false,
