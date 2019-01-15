@@ -78,7 +78,12 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
 
                 <BillSpotFormActivities
                     spots={this.filteredSpots}
-                    marginBottom={this.isAnyActivitySelected ? 64 : 24}
+                    marginBottom={
+                        this.isAnyActivitySelected ||
+                        this.props.store!.spotToBillForm.addingActivityToBillStatus !== 'none'
+                            ? 64
+                            : 24
+                    }
                 />
 
                 <BillSpotFormBottomBar isBillSaving={false} spots={billData.spots} />
