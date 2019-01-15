@@ -160,7 +160,7 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                             <Checkmark
                                 onClick={this.handlePermissionChange(userType.id)}
                                 checked={this.props.store!.timeEntryPermissions.data.includes(userType.id)}
-                                label={this.props.store!.timeEntryPermissions.data.includes(userType.id) ? 'Allowed' : 'Not allowed'}
+                                label={this.props.store!.timeEntryPermissions.data.includes(userType.id) ? 'Required' : 'Not Required'}
                                 labelOnLeft={true}
                                 type={'blue'}
                             />
