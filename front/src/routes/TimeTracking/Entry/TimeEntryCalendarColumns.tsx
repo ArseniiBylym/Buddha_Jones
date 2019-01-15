@@ -203,7 +203,7 @@ export class TimeEntryCalendarColumns extends React.Component<TimeEntryCalendarC
                                                         : undefined
                                                 }
                                             >
-                                                {day.timeEntries.length > 0
+                                                {/* {day.timeEntries.length > 0
                                                     ? day.isDayClosed
                                                         ? day.isDayApproved
                                                             ? 'Day approved'
@@ -211,6 +211,13 @@ export class TimeEntryCalendarColumns extends React.Component<TimeEntryCalendarC
                                                         : day.isDayLoading
                                                             ? 'Submitting'
                                                             : 'Submit'
+                                                    : isDayInTheFuture
+                                                        ? 'Future date'
+                                                        : 'No time tracked'} */}
+                                                {day.timeEntries.length > 0
+                                                    ? this.getTimeTrackingLabel(day.timeEntries[0])
+                                                        // ? this.getTimeTrackingLabel(day.timeEntries[0])
+                                                        // : this.getTimeTrackingLabel(day.timeEntries[0])
                                                     : isDayInTheFuture
                                                         ? 'Future date'
                                                         : 'No time tracked'}
@@ -225,6 +232,18 @@ export class TimeEntryCalendarColumns extends React.Component<TimeEntryCalendarC
                 )}
             </table>
         );
+    }
+
+    private getTimeTrackingLabel = (timeEntries) => {
+        const status = timeEntries.status;
+        switch (status) {
+            case 2: 
+                return 'Under review';
+            case 3:
+                return 'Approved';
+            default: 
+                return 'Draft';
+        }
     }
 
     private referenceContainerTable = (ref: HTMLTableElement) => {
