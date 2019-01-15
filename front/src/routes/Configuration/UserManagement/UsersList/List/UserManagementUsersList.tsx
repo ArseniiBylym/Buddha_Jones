@@ -1,19 +1,24 @@
-import * as React from 'react';
-import * as styles from './styles.scss';
 import { HeaderActions, UsersActions } from 'actions/index';
-import { AppState } from 'store/AllStores';
-import { Section, SectionElement } from 'components/Section/index';
-import { Checkmark, InputSearch } from 'components/Form/index';
-import { inject, observer } from 'mobx-react';
 import { history } from 'App';
 import { ButtonBack, ButtonEdit } from 'components/Button';
-import { match } from 'react-router';
-import { OtherUserFromApi } from 'types/users';
-import { Table, TableCell, TableHeader, TableRow } from 'components/Table';
+import { Checkmark, InputSearch } from 'components/Form/index';
 import { LoadingSpinner } from 'components/Loaders';
-import { Pagination } from '../../../../../components/Pagination';
+import { Section, SectionElement } from 'components/Section/index';
+import {
+    Table,
+    TableCell,
+    TableHeader,
+    TableRow
+    } from 'components/Table';
 import { action, observable } from 'mobx';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { match } from 'react-router';
+import { AppState } from 'store/AllStores';
+import { OtherUserFromApi } from 'types/users';
+import { Pagination } from '../../../../../components/Pagination';
 import { EditUserModal } from './EditUserModal';
+import * as styles from './styles.scss';
 
 interface Props {
     match: match<MatchRouteParams>;
@@ -35,14 +40,14 @@ class UserManagementUsersList extends React.Component<Props & AppState, {}> {
             { title: 'User name', align: 'center' },
             { title: 'Email', align: 'center' },
             { title: 'Active', align: 'center' },
-            { title: '', align: 'right' }
+            { title: '', align: 'right' },
         ];
     }
 
     private static getTableWithLoadingSpinner(): JSX.Element {
         return (
             <div className={styles.loadingSpinnerBlock}>
-                <LoadingSpinner size={64}/>
+                <LoadingSpinner size={64} />
             </div>
         );
     }
@@ -74,14 +79,10 @@ class UserManagementUsersList extends React.Component<Props & AppState, {}> {
                     title="Users management by user type"
                     headerElements={this.getHeaderElements()}
                 >
-                    {
-                        this.props.store!.users.isPageableUsersListLoading &&
-                        UserManagementUsersList.getTableWithLoadingSpinner()
-                    }
+                    {this.props.store!.users.isPageableUsersListLoading &&
+                        UserManagementUsersList.getTableWithLoadingSpinner()}
 
-                    <Table header={UserManagementUsersList.getTableHeader()}>
-                        {this.getTableRows()}
-                    </Table>
+                    <Table header={UserManagementUsersList.getTableHeader()}>{this.getTableRows()}</Table>
 
                     <Pagination
                         countPerPage={Number(this.props.store!.users.usersListRequestParams.length)}
@@ -95,45 +96,32 @@ class UserManagementUsersList extends React.Component<Props & AppState, {}> {
     }
 
     private getTableRows(): JSX.Element[] {
-        return this.props.store!.users.pageableUsersList.data.map(
-            (user: OtherUserFromApi) => {
-                return (
-                    <TableRow key={user.id}>
-                        <TableCell align="center">
-                            {user.nickName}
-                        </TableCell>
+        return this.props.store!.users.pageableUsersList.data.map((user: OtherUserFromApi) => {
+            return (
+                <TableRow key={user.id}>
+                    <TableCell align="center">{user.nickName}</TableCell>
 
-                        <TableCell align="center">
-                            {user.fullName}
-                        </TableCell>
+                    <TableCell align="center">{user.fullName}</TableCell>
 
-                        <TableCell align="center">
-                            {user.username}
-                        </TableCell>
+                    <TableCell align="center">{user.username}</TableCell>
 
-                        <TableCell align="center">
-                            {user.email}
-                        </TableCell>
+                    <TableCell align="center">{user.email}</TableCell>
 
-                        <TableCell align="center">
-                            <Checkmark
-                                checked={Boolean(user.status)}
-                                type={'no-icon'}
-                            />
-                        </TableCell>
+                    <TableCell align="center">
+                        <Checkmark checked={Boolean(user.status)} type={'no-icon'} />
+                    </TableCell>
 
-                        <TableCell align="right">
-                            <ButtonEdit
-                                onClick={this.onTableEditButtonHandler(user)}
-                                label="Edit"
-                                labelOnLeft={false}
-                                float="right"
-                            />
-                        </TableCell>
-                    </TableRow>
-                );
-            }
-        );
+                    <TableCell align="right">
+                        <ButtonEdit
+                            onClick={this.onTableEditButtonHandler(user)}
+                            label="Edit"
+                            labelOnLeft={false}
+                            float="right"
+                        />
+                    </TableCell>
+                </TableRow>
+            );
+        });
     }
 
     private getHeaderElements(): SectionElement[] {
@@ -170,7 +158,7 @@ class UserManagementUsersList extends React.Component<Props & AppState, {}> {
     private onChangeSearchInputHandler = (event: React.FormEvent<HTMLInputElement>): void => {
         UsersActions.setUsersRequestParams({
             search: event.currentTarget.value,
-            page: 1
+            page: 1,
         });
 
         UsersActions.fetchUsersByTypeId().then();
@@ -198,7 +186,9 @@ class UserManagementUsersList extends React.Component<Props & AppState, {}> {
                     onClick={this.goBackToProjectBoardPermissionList}
                     label="Back to user management"
                 />,
-            ]
+            ],
+            [],
+            false
         ).then();
     };
 }

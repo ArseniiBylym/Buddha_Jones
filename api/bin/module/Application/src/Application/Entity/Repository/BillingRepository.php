@@ -549,6 +549,10 @@ class BillingRepository extends EntityRepository
                     ptc.note AS projectCampaignName,
                     ss.spotId,
                     s.spotName,
+                    s.revisions AS numberOfRevisions,
+                    s.firstRevisionCost AS firstRevisionCost,
+                    0 AS firstRevisionIsBilled,
+                    COALESCE(s.graphicsRevisions, 0) AS graphicsIncluded,
                     MAX(COALESCE(ss.updatedAt, ss.createdAt)) AS updatedAt
                 FROM \Application\Entity\RediSpotSent ss
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc

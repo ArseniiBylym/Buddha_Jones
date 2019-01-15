@@ -1,32 +1,36 @@
 p {
-  font-size: 0.95em;
-  color: #0B0C32;
+    font-size: 0.95em;
+    color: #0b0c32;
 }
 
 .typeBrown {
-  color: #7E756D;
+    color: #7e756d;
 }
 
 .typeWhite {
-  color: #F7F7F7;
+    color: #f7f7f7;
 }
 
 .typeDim {
-  color: #A59E97;
+    color: #a59e97;
 }
 
 .typeBlue {
-  color: #0768D8;
+    color: #0768d8;
 }
 
 .typeAlert {
-  color: #D75B2B;
+    color: #d75b2b;
 }
 
 .typeSuccess {
-  color: #189E44;
+    color: #189e44;
 }
 
 .styleBold {
-  font-weight: bold;
+    font-weight: bold;
+}
+
+.sizeSmall {
+    font-size: 0.8em;
 }

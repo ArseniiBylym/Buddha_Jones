@@ -1,24 +1,24 @@
-import * as React from 'react';
+import { unformat } from 'accounting';
+import { ActivitiesActions, HeaderActions, TimeApprovalActions } from 'actions';
+import { Paragraph } from 'components/Content';
+import { DropdownContainer, OptionsList, OptionsListValuePropType } from 'components/Form';
+import { LoadingSpinner } from 'components/Loaders';
+import { Col, Row, Section } from 'components/Section';
 import * as dateFormat from 'date-fns/format';
 import * as dateParse from 'date-fns/parse';
-import { observer, inject } from 'mobx-react';
-import { computed } from 'mobx';
-import { unformat } from 'accounting';
-import { Section, Row, Col } from 'components/Section';
-import { LoadingSpinner } from 'components/Loaders';
-import { TimeApprovalActions, HeaderActions, ActivitiesActions } from 'actions';
-import { DropdownContainer, OptionsList, OptionsListValuePropType } from 'components/Form';
-import { AppOnlyStoreState } from 'store/AllStores';
-import { TimeApprovalFilterType, TimeApprovalDay } from 'types/timeApproval';
-import { Paragraph } from 'components/Content';
-import { TimeApprovalDayCard } from './TimeApprovalDayCard';
 import { DateHandler } from 'helpers/DateHandler';
+import { computed } from 'mobx';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { AppOnlyStoreState } from 'store/AllStores';
+import { TimeApprovalDay, TimeApprovalFilterType } from 'types/timeApproval';
+import { TimeEntryModal } from '../Entry';
+import { TimeApprovalDayCard } from './TimeApprovalDayCard';
 import {
     TIME_ENTRY_LUNCH_BREAK_ACTIVITY_ID,
     TIME_ENTRY_OVERTIME_AFTER_X_HOURS,
     TIME_ENTRY_DOUBLETIME_AFTER_X_HOURS,
 } from 'types/timeEntry';
-import { TimeEntryModal } from '../Entry';
 
 // Types
 type TimeApprovalPropsTypes = TimeApprovalProps & AppOnlyStoreState;
@@ -202,7 +202,7 @@ class TimeApproval extends React.Component<TimeApprovalPropsTypes, {}> {
     private dateFilterDropdown: DropdownContainer | null = null;
 
     public componentDidMount() {
-        HeaderActions.setMainHeaderTitlesAndElements('Time approval');
+        HeaderActions.replaceMainHeaderContent({ title: 'Time approval' });
         TimeApprovalActions.fetchTimeEntriesPendingReview();
         ActivitiesActions.fetchActivitiesTypes();
         ActivitiesActions.fetchActivityList();
@@ -286,10 +286,10 @@ class TimeApproval extends React.Component<TimeApprovalPropsTypes, {}> {
                                         timeApproval.filters.daysAgo === null
                                             ? 'All'
                                             : timeApproval.filters.daysAgo === 0
-                                                ? 'Today'
-                                                : timeApproval.filters.daysAgo === 1
-                                                    ? 'Yesterday'
-                                                    : timeApproval.filters.daysAgo + ' days ago'
+                                            ? 'Today'
+                                            : timeApproval.filters.daysAgo === 1
+                                            ? 'Yesterday'
+                                            : timeApproval.filters.daysAgo + ' days ago'
                                     }
                                 >
                                     <OptionsList
@@ -373,8 +373,8 @@ class TimeApproval extends React.Component<TimeApprovalPropsTypes, {}> {
             typeof option.value === 'string'
                 ? unformat(option.value)
                 : typeof option.value === 'number'
-                    ? option.value
-                    : null
+                ? option.value
+                : null
         );
 
         if (this.userFilterDropdown) {

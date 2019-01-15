@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { observer, inject } from 'mobx-react';
-import { AppOnlyStoreState } from 'store/AllStores';
 import { HeaderActions, NavigationActions } from 'actions';
 import { history } from 'App';
 import { Section } from 'components/Section';
-import { NavigationLinkDetails, NavigationGroupDetails } from 'types/navigation';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { AppOnlyStoreState } from 'store/AllStores';
+import { NavigationGroupDetails, NavigationLinkDetails } from 'types/navigation';
 
 // Styles
 const s = require('./Dashboard.css');
@@ -18,7 +18,7 @@ interface DashboardProps {}
 @observer
 export default class Dashboard extends React.Component<DashboardProps & AppOnlyStoreState, {}> {
     public componentDidMount() {
-        HeaderActions.setMainHeaderTitlesAndElements('Dashboard');
+        HeaderActions.replaceMainHeaderContent({ title: 'Dashboard' });
     }
 
     public render() {

@@ -1,10 +1,16 @@
+import {
+    Button,
+    ButtonFloatPropType,
+    ButtonIconColorPropType,
+    ButtonOnClickPropType
+    } from '.';
+import { observer } from 'mobx-react';
 import * as React from 'react';
-import { Button, ButtonFloatPropType, ButtonOnClickPropType, ButtonIconColorPropType } from '.';
+import { IconRemoveBlue } from '../Icons';
+import { LoadingIndicator } from '../Loaders';
+import { ButtonLabelColorPropType } from './Button';
 
 // Styles
-import { IconRemoveBlue } from '../Icons';
-import { observer } from 'mobx-react';
-import { LoadingIndicator } from '../Loaders';
 
 // Props
 interface ButtonDeleteProps {
@@ -13,6 +19,8 @@ interface ButtonDeleteProps {
     onClick?: ButtonOnClickPropType;
     label?: string;
     labelOnLeft?: boolean;
+    labelColor?: ButtonLabelColorPropType;
+    labelIsBold?: boolean;
     float?: ButtonFloatPropType;
     iconBackground?: ButtonIconColorPropType;
     loading?: boolean;
@@ -28,6 +36,8 @@ export class ButtonDelete extends React.Component<ButtonDeleteProps, {}> {
             onClick: null,
             label: 'Edit',
             labelOnLeft: true,
+            labelColor: 'black',
+            labelIsBold: false,
             float: 'none',
             iconBackground: 'white',
             loading: false,
@@ -53,11 +63,12 @@ export class ButtonDelete extends React.Component<ButtonDeleteProps, {}> {
                 label={
                     this.props.label
                         ? {
-                            text: this.props.label,
-                            color: 'black',
-                            size: 'small',
-                            onLeft: this.props.labelOnLeft,
-                        }
+                              text: this.props.label,
+                              color: this.props.labelColor,
+                              size: 'small',
+                              onLeft: this.props.labelOnLeft,
+                              isBold: this.props.labelIsBold,
+                          }
                         : undefined
                 }
                 icon={{

@@ -1,26 +1,25 @@
-import * as React from 'react';
-import { AppState } from 'store/AllStores';
 import { HeaderActions, UsersActions } from 'actions';
-import { inject, observer } from 'mobx-react';
-import { action, computed, observable } from 'mobx';
-import { Col, Row, Section } from 'components/Section';
-import { InputSearch, Checkmark } from 'components/Form';
-import { Table, TableCell, TableRow } from 'components/Table';
-import { LoadingSpinner } from 'components/Loaders';
-import { UserType } from 'types/users';
-import { Paragraph } from 'components/Content';
 import { history } from 'App';
 import { ButtonEdit } from 'components/Button';
+import { Paragraph } from 'components/Content';
+import { Checkmark, InputSearch } from 'components/Form';
+import { LoadingSpinner } from 'components/Loaders';
+import { Col, Row, Section } from 'components/Section';
+import { Table, TableCell, TableRow } from 'components/Table';
+import { action, computed, observable } from 'mobx';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { AppState } from 'store/AllStores';
+import { UserType } from 'types/users';
 import { TimeEntryPermissionsActions } from '../../../../../actions';
-import { BottomBar } from '../../../../../components/Layout/BottomBar';
 import { ButtonSave } from '../../../../../components/Button/ButtonSave';
+import { BottomBar } from '../../../../../components/Layout/BottomBar';
 
 const s = require('./ProjectBoardPermissionList.css');
 
 @inject('store')
 @observer
 class ProjectBoardPermissionList extends React.Component<AppState, {}> {
-
     @observable private userTypesArrFiltered: UserType[] | null = null;
 
     @computed
@@ -47,34 +46,25 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                 headerElements={[
                     {
                         key: 'search-filter',
-                        element: (
-                            <InputSearch
-                                onChange={this.handleUserTypeSearchChange}
-                                label="Search user type..."
-                            />
-                        ),
+                        element: <InputSearch onChange={this.handleUserTypeSearchChange} label="Search user type..." />,
                     },
                 ]}
             >
                 {this.getTableWithData()}
                 {
-                        <BottomBar
-                            show={this.props.store!.timeEntryPermissions.touched}
-                        >
-                            <ButtonSave
-                                onClick={TimeEntryPermissionsActions.saveTimeEntryPermissions}
-                                float={'right'}
-                                label={'Save Changes'}
-                                savingLabel={'Saving'}
-                                isSaving={this.props.store!.timeEntryPermissions.saving}
-                            />
-                        </BottomBar>
-                    }
+                    <BottomBar show={this.props.store!.timeEntryPermissions.touched}>
+                        <ButtonSave
+                            onClick={TimeEntryPermissionsActions.saveTimeEntryPermissions}
+                            float={'right'}
+                            label={'Save Changes'}
+                            savingLabel={'Saving'}
+                            isSaving={this.props.store!.timeEntryPermissions.saving}
+                        />
+                    </BottomBar>
+                }
             </Section>
         ) : (
-            <>
-                {this.getTableWithLoadingSpinner()}
-            </>
+            <>{this.getTableWithLoadingSpinner()}</>
         );
     }
 
@@ -85,12 +75,7 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
         TimeEntryPermissionsActions.getTimeEntryPermissions();
 
         // Set header
-        HeaderActions.setMainHeaderTitlesAndElements(
-            'User Management',
-            'Configuration',
-            null,
-            null
-        );
+        HeaderActions.setMainHeaderTitlesAndElements('User Management', 'Configuration', null, null, [], [], false);
     };
 
     private searchInArrByKeysArrAndValue(arr: UserType[], keysArr: string[], value: string | number): UserType[] {
@@ -104,7 +89,9 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
     @action
     private handleUserTypeSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         if (this.props.store) {
-            this.userTypesArrFiltered = (e.target.value) ? this.searchInArrByKeysArrAndValue(this.props.store.users.types, ['name'], e.target.value) : null;
+            this.userTypesArrFiltered = e.target.value
+                ? this.searchInArrByKeysArrAndValue(this.props.store.users.types, ['name'], e.target.value)
+                : null;
         }
     };
 
@@ -112,7 +99,7 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
         return (
             <Row justifyContent="center">
                 <Col width={64}>
-                    <LoadingSpinner size={64}/>
+                    <LoadingSpinner size={64} />
                 </Col>
             </Row>
         );
@@ -138,7 +125,8 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
     // render table data
     private getTableWithData(): JSX.Element {
         if (this.props.store) {
-            let userTypesArr = (this.userTypesArrFiltered === null) ? this.props.store.users.types : this.userTypesArrFiltered;
+            let userTypesArr =
+                this.userTypesArrFiltered === null ? this.props.store.users.types : this.userTypesArrFiltered;
             let tableRowsArr: JSX.Element[] = userTypesArr.map((userType: UserType, ind: number) => {
                 return (
                     <TableRow key={`user-type-${ind}`}>
@@ -151,7 +139,9 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                         <TableCell align="right">
                             <ButtonEdit
                                 onClick={this.onEditClick(userType.id)}
-                                label={`approving ${userType.timeEntryApprovingCount ? userType.timeEntryApprovingCount : 0}`}
+                                label={`approving ${
+                                    userType.timeEntryApprovingCount ? userType.timeEntryApprovingCount : 0
+                                }`}
                                 labelOnLeft={true}
                                 float="right"
                             />
@@ -195,37 +185,35 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                     ]}
                     columnsWidths={['28%', '18%', '18%', '18%', '18%']}
                 >
-                    {(this.isSearchResultsEmpty()) ? this.getTableWithNoMatchingText() : tableRowsArr}
+                    {this.isSearchResultsEmpty() ? this.getTableWithNoMatchingText() : tableRowsArr}
                 </Table>
             );
         } else {
-            return (
-                <></>
-            );
+            return <></>;
         }
     }
 
     private handlePermissionChange = (id: number) => e => {
         TimeEntryPermissionsActions.changeTimeEntryPermission(id);
-    }
+    };
 
     private onEditClick = (id: number) => e => {
         history.push(`/portal/configuration/user-management/time-approval-permissions/${id}`);
-    }
+    };
 
-    private handleUsersEdit = (
-        userTypeId: number, userTypeName: string
-    ) => (): void => {
+    private handleUsersEdit = (userTypeId: number, userTypeName: string) => (): void => {
         history.push(
-            `/portal/configuration/user-management/users-list/${userTypeId}/?type_name=${encodeURIComponent(userTypeName)}`
+            `/portal/configuration/user-management/users-list/${userTypeId}/?type_name=${encodeURIComponent(
+                userTypeName
+            )}`
         );
     };
 
-    private handlePermissionEdit = (
-        userTypeId: number, userTypeName: string
-    ) => (): void => {
+    private handlePermissionEdit = (userTypeId: number, userTypeName: string) => (): void => {
         history.push(
-            `/portal/configuration/user-management/project-board-permission/${userTypeId}/?type_name=${encodeURIComponent(userTypeName)}`
+            `/portal/configuration/user-management/project-board-permission/${userTypeId}/?type_name=${encodeURIComponent(
+                userTypeName
+            )}`
         );
     };
 }

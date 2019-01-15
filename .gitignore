@@ -13,6 +13,7 @@ public/dist
 # misc
 .DS_Store
 npm-debug.log
+api/bin/php_errors.log
 
 vendor/
 *.swp

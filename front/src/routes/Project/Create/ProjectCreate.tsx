@@ -131,10 +131,12 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
 
     @action
     private loadPageHeader = () => {
-        HeaderActions.setMainHeaderTitles('Define new project');
-        HeaderActions.setMainHeaderElements([
-            <ButtonBack key="back" label="Back to projects board" onClick={this.handleBackToBoardNavigation} />,
-        ]);
+        HeaderActions.replaceMainHeaderContent({
+            title: 'Define new project',
+            elements: [
+                <ButtonBack key="back" label="Back to projects board" onClick={this.handleBackToBoardNavigation} />,
+            ],
+        });
     };
 
     private handleStudioFilterChange = (studio: { id: number; name: string } | null = null) => {
@@ -151,7 +153,9 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
         this.releaseDate = date;
     };
 
-    private handleProjectNameChange = (whichName: 'name' | 'codeName' | 'prefix') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    private handleProjectNameChange = (whichName: 'name' | 'codeName' | 'prefix') => (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
         this[whichName] = e.target.value;
     };
 
@@ -175,11 +179,11 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
             NotificationsActions.AlertUser('Project name or code name is required');
             return;
         }
-        if (projectData.prefix && projectData.prefix.length === 0 ) {
+        if (projectData.prefix && projectData.prefix.length === 0) {
             NotificationsActions.AlertUser('Project prefix is required');
             return;
         }
-        
+
         if (projectData.prefix && (projectData.prefix.length < 3 || projectData.prefix.length > 10)) {
             NotificationsActions.AlertUser('Project prefix lenght should be from 3 to 10');
             return;

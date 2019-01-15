@@ -1,0 +1,44 @@
+.selection {
+    display: flex;
+    justify-content: flex-end;
+    align-content: center;
+    align-items: center;
+
+    & p {
+        font-weight: 600;
+        font-size: 0.8rem;
+        color: #a59e97;
+        margin-left: 16px;
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        & span {
+            font-weight: inherit;
+        }
+
+        & strong {
+            font-weight: 700;
+            color: #0768d8;
+        }
+
+        &.total {
+            & strong {
+                color: #f55b1e;
+            }
+        }
+
+        &.positive {
+            & strong {
+                color: #189e44;
+            }
+        }
+
+        &.negative {
+            & strong {
+                color: #f55b1e;
+            }
+        }
+    }
+}

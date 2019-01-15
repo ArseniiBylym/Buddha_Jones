@@ -1,17 +1,14 @@
-import * as React from 'react';
 import * as classNames from 'classnames';
 import { observer } from 'mobx-react';
-import { Row, Col } from '../Section';
+import * as React from 'react';
 import { Checkmark } from '../Form';
-
-// Style
-require('./Person.css');
 import { IconClose } from '../Icons';
+import { Col, Row } from '../Section';
 
-// Types
+require('./Person.css');
+
 type PersonAlignProp = 'left' | 'center' | 'right';
 
-// Props
 interface PersonProps {
     onClick?: ((checked?: boolean) => void) | null;
     showCheckmark?: boolean;
@@ -24,12 +21,12 @@ interface PersonProps {
     personId?: number | null;
     personName?: string | null;
     personImage: string | null;
+    showSmallPersonName?: boolean;
     showPersonNameOnLeft?: boolean;
     showSmallPersonImage?: boolean;
     showDarkPersonImage?: boolean;
 }
 
-// Component
 @observer
 export class Person extends React.Component<PersonProps, {}> {
     static get defaultProps(): PersonProps {
@@ -44,6 +41,8 @@ export class Person extends React.Component<PersonProps, {}> {
             personId: null,
             personName: null,
             personImage: null,
+            showSmallPersonName: false,
+            showPersonNameOnLeft: false,
             showSmallPersonImage: false,
             showDarkPersonImage: false,
         };
@@ -60,8 +59,10 @@ export class Person extends React.Component<PersonProps, {}> {
                 justifyContent={
                     this.props.align !== null
                         ? this.props.align === 'center'
-                        ? 'center'
-                        : this.props.align === 'right' ? 'flex-end' : 'flex-start'
+                            ? 'center'
+                            : this.props.align === 'right'
+                            ? 'flex-end'
+                            : 'flex-start'
                         : undefined
                 }
                 alignContent="center"
@@ -72,7 +73,10 @@ export class Person extends React.Component<PersonProps, {}> {
 
                 {this.props.showPersonNameOnLeft === false && this.renderProfilePicture()}
 
-                <Col className="personName" size={0}>
+                <Col
+                    className={classNames('personName', { ['personNameSmall']: this.props.showSmallPersonName })}
+                    size={0}
+                >
                     {this.renderPersonContent()}
                 </Col>
 
@@ -126,7 +130,7 @@ export class Person extends React.Component<PersonProps, {}> {
                     {this.props.personName}
                     {this.props.showRemoveIcon && (
                         <span className="personCloseIcon">
-                            <IconClose width={8} height={8}/>
+                            <IconClose width={8} height={8} />
                         </span>
                     )}
                 </p>

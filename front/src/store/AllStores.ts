@@ -24,7 +24,7 @@ import {
     TimeApproval,
     Time,
     SpotSent,
-    SpotsToBillFromApi,
+    SpotToBillForm,
     Channels,
     StudioRateCard,
     SpotToGraphics,
@@ -54,7 +54,7 @@ export const TimeEntryStore = new TimeEntry();
 export const TimeApprovalStore = new TimeApproval();
 export const TimeStore = new Time();
 export const SpotSentStore = new SpotSent();
-export const SpotsToBillFromApiStore = new SpotsToBillFromApi();
+export const SpotToBillFormStore = new SpotToBillForm();
 export const ChannelsStore = new Channels();
 export const StudioRateCardStore = new StudioRateCard();
 export const TimeEntryPermissionsStore = new TimeEntryPermissions();
@@ -84,7 +84,7 @@ export interface AppStoreState {
     timeApproval: TimeApproval;
     time: Time;
     spotSent: SpotSent;
-    spotsToBillFromApi: SpotsToBillFromApi;
+    spotToBillForm: SpotToBillForm;
     channels: Channels;
     studioRateCard: StudioRateCard;
     timeApprovalPermissions: TimeApprovalPermissions;
@@ -115,7 +115,7 @@ export const store: AppStoreState = {
     timeApproval: TimeApprovalStore,
     time: TimeStore,
     spotSent: SpotSentStore,
-    spotsToBillFromApi: SpotsToBillFromApiStore,
+    spotToBillForm: SpotToBillFormStore,
     channels: ChannelsStore,
     studioRateCard: StudioRateCardStore,
     timeEntryPermissions: TimeEntryPermissionsStore,
@@ -129,7 +129,6 @@ export interface AppState {
     readonly history?: H.History;
     readonly location?: H.Location;
     readonly match?: match<string>;
-    readonly params?: { [param: string]: string };
 }
 
 export interface AppOnlyStoreState {
