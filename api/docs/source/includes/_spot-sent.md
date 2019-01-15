@@ -907,6 +907,9 @@ false | is_pdf | int | 0 | send 0/1
 false | editors | JSON encoded array | null | list of editor ids (Like: [12,4,5,3,4])
 false | sent_via_method | JSON encoded array | null | list of method ids (Like: [12,4,5,3,4]). for graphics only spot sent- send value from 'graphics_sent_via_method', and for av send values from 'sent_vai_method'
 false | graphics_file | JSON encoded array | null | list of files (like: [{"file_name":"abc1.jpg","file_description":"some desc112","resend":1},{"file_name":"def3.jpg"}]}])
+false | qc_approved | int | null | send 0/1
+false | qc_note | string | null | send note
+false | qc_link | string | null | send qc link
 
 ### sample spot version data
 

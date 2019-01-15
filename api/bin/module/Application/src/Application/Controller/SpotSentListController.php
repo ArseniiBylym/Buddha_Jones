@@ -25,7 +25,7 @@ class SpotSentListController extends CustomAbstractActionController
 
         if ($checkSubModuleAccess) {
             if ($subModuleId == 1) { // initiate
-                $filter['line_status_id'] = array(1,2,3,4);
+                $filter['line_status_id'] = array(1,2,3,4,5,6);
             } else if ($subModuleId == 2) { // post spot sent
                 $filter['line_status_id'] = array(2,3);
             } else if ($subModuleId == 3) { // Spot sent for finish
@@ -37,7 +37,7 @@ class SpotSentListController extends CustomAbstractActionController
             } else if ($subModuleId == 6) { // Spot for Billing
                 $filter['spot_sent_for_billing'] = true;
             } else if ($subModuleId == 7) { // Graphics only requests
-                $filter['line_status_id'] = array(1,4);
+                $filter['line_status_id'] = array(1,6);
                 $filter['spot_sent_type'] = array(2);
             }
 
@@ -94,6 +94,9 @@ class SpotSentListController extends CustomAbstractActionController
         $noGraphics = $this->_commonRepo->filterPostData($data, 'no_graphics', 'boolean', null);
         $graphicsFiles = $this->_commonRepo->filterPostData($data, 'graphics_file', 'array', null);
         $isPdf = $this->_commonRepo->filterPostData($data, 'is_pdf', 'int', null);
+        $qcApproved = $this->_commonRepo->filterPostData($data, 'qc_approved', 'int', null);
+        $qcNote = $this->_commonRepo->filterPostData($data, 'qc_note', 'string', null);
+        $qcLink = $this->_commonRepo->filterPostData($data, 'qc_link', 'string', null);
 
         if ($spotLineStatusId && $spotLineStatusId < 4) {
             $graphicsStatusId = null;
@@ -128,6 +131,16 @@ class SpotSentListController extends CustomAbstractActionController
 
             if ($isPdf !== null) {
                 $spotSent->setIsPdf($isPdf);
+            }
+
+            if ($qcApproved !== null) {
+                $spotSent->setQcApproved($qcApproved);
+            }
+            if ($qcNote !== null) {
+                $spotSent->setQcNote($qcNote);
+            }
+            if ($qcLink !== null) {
+                $spotSent->setQcLink($qcLink);
             }
 
             $this->_em->persist($spotSent);

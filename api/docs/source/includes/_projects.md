@@ -3992,7 +3992,7 @@ false | notes | string | null | Project note
 false | project_prefix | string | null | Project prefix (needs to be unique)
 false | project_release | date string | null | Project release date (2018-01-01)
 false | user | JSON | null | users associated to this project(manager, producer). Send JSON encoded array of user ids, like : [{"id":2,"role_id":2},{"id":3,"role_id":1},{"id":6,"role_id":2},{"id":7,"role_id":4}]
-
+false | confidential | int | 0 | Send 0/1
 
 
 ## Update Project
@@ -4035,6 +4035,7 @@ false | project_code | string | null | Project Code
 false | project_prefix | string | null | Project prefix (needs to be unique)
 false | project_release | date string | null | Project release date (2018-01-01)
 false | user | JSON | null | users associated to this project(manager, producer). Send JSON encoded array of user ids, like : [{"id":2,"role_id":2},{"id":3,"role_id":1},{"id":6,"role_id":2},{"id":7,"role_id":4}]
+false | confidential | int | 0 | Send 0/1
 
 
 ## Get campaigns list
