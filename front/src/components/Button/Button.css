@@ -46,6 +46,15 @@
             }
         }
 
+        &:global(.boxColorGray) {
+            background: #0b0c32;
+            border-color: #0b0c32;
+
+            & > :global(.buttonLabelGray) {
+                color: #838383;
+            }
+        }
+
         &:global(.boxColorWhite) {
             background: #ffffff;
             border-color: #ffffff;
@@ -106,6 +115,14 @@
                 }
             }
 
+            &:global(.boxColorGray) {
+                background: #0b0c32;
+
+                & > :global(.buttonLabelGray) {
+                    color: #838383;
+                }
+            }
+
             &:global(.boxColorWhite) {
                 background: #0b0c32;
 
@@ -158,6 +175,10 @@
 
         &:global(.buttonLabelBlack) {
             color: #0b0c32;
+        }
+
+        &:global(.buttonLabelGray) {
+            color: #838383;
         }
 
         &:global(.buttonLabelWhite) {
@@ -368,6 +389,10 @@
         & > :global(.buttonLabel) {
             &:global(.buttonLabelBlack) {
                 border-bottom-color: #0b0c32;
+            }
+
+            &:global(.buttonLabelGray) {
+                color: #838383;
             }
 
             &:global(.buttonLabelWhite) {
