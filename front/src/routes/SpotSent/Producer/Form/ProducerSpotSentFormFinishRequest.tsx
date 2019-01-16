@@ -10,6 +10,7 @@ import { FinishingHousesPicker } from '../../../../components/Buddha/FinishingHo
 import { SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
 import AudioSection from './AudioSection';
 import FinishOptions from './FinishOptions';
+import * as classNames from 'classnames';
 
 const s = require('./ProducerSpotSentForm.css');
 
@@ -114,14 +115,21 @@ class ProducerSpotSentFormFinishRequest extends React.Component<ProducerSpotSent
                 }
                 <div className={s.finishRequestSection}>
                     <h3>Additional Finishing needs</h3>
-                    <div className={s.sentViaMethodsContainer}>
+                    <div className={classNames(s.sentViaMethodsContainer, s.sentViaMethodsContainer__withInputFields)}>
                         {spotSentDetails.finish_option && (spotSentDetails.finish_option as SpotSentValueParentChildForSubmit).parent === 2 &&
-                        <Checkmark
-                            onClick={SpotSentActions.handleFinishingTypeCheckmarkSelect.bind(this, 'gfx_finish')}
-                            checked={(spotSentDetails.gfx_finish === 1)}
-                            label={'GFX finishing request'}
-                            type={'no-icon'}
-                        />
+                            <>
+                            <Checkmark
+                                onClick={SpotSentActions.handleFinishingTypeCheckmarkSelect.bind(this, 'gfx_finish')}
+                                checked={(spotSentDetails.gfx_finish === 1)}
+                                label={'GFX finishing request'}
+                                type={'no-icon'}
+                            />
+                            <Input
+                                onChange={this.graphicsNoteChangeHandler}
+                                value={(spotSentDetails.graphics_note) as string}
+                                label="Graphics Notes..."
+                            />
+                            </>
                         }
                         <Checkmark
                             onClick={SpotSentActions.handleFinishingTypeCheckmarkSelect.bind(this, 'music_cue_sheet')}
@@ -129,6 +137,12 @@ class ProducerSpotSentFormFinishRequest extends React.Component<ProducerSpotSent
                             label={'Music Cue Sheet'}
                             type={'no-icon'}
                         />
+                         {spotSentDetails.finish_option && (spotSentDetails.finish_option as SpotSentValueParentChildForSubmit).parent === 2 &&
+                            <Input
+                                onChange={this.musicNoteChangeHandler}
+                                value={(spotSentDetails.music_note) as string}
+                                label="Music Notes..."
+                            />}
                         {spotSentDetails.finish_option && (spotSentDetails.finish_option as SpotSentValueParentChildForSubmit).parent === 1 &&
                         <>
                             <Checkmark
@@ -265,6 +279,16 @@ class ProducerSpotSentFormFinishRequest extends React.Component<ProducerSpotSent
         } else {
             return [];
         }
+    }
+
+    private graphicsNoteChangeHandler = (e) => {
+        const value = e.target.value;
+        SpotSentActions.handleGraphicsNoteChange(value);
+    }
+    
+    private musicNoteChangeHandler = (e) => {
+        const value = e.target.value;
+        SpotSentActions.handleMusicNoteChange(value);
     }
 
     private get getDeliverToClientOptionsChildren(): SpotSentOptionsChildrenFromApi[] | null {

@@ -176,6 +176,9 @@ export class SpotSentActionsClass {
                     graphics_finish: response.graphicsFinish,
                     gfx_finish: response.gfxFinish,
                     customer_contact: response.customerContact,
+                    graphics_note: response.graphicsNote,
+                    music_note: response.musicNote,
+                    final_narr: response.finalNarr,
                 };
 
                 SpotSentStore.spotSentDetailsLastFetchTimestamp = Date.now();
@@ -516,6 +519,21 @@ export class SpotSentActionsClass {
         } else {
             SpotSentStore.spotSentDetails[param] = 0;
         }
+    };
+
+    @action
+    public handleGraphicsNoteChange = (value: string): void => {
+            SpotSentStore.spotSentDetails.graphics_note = value;
+    };
+
+    @action
+    public handleMusicNoteChange = (value: string): void => {
+            SpotSentStore.spotSentDetails.music_note = value;
+    };
+
+    @action
+    public finalNarrOptionsChange = (value: string): void => {
+            SpotSentStore.spotSentDetails.final_narr = value;
     };
 
     @action

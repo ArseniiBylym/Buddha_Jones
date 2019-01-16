@@ -374,6 +374,27 @@ class RediSpotSent
     /**
      * @var integer
      *
+     * @ORM\Column(name="qc_approved", type="smallint", nullable=true)
+     */
+    private $qcApproved;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="qc_note", type="text", nullable=true)
+     */
+    private $qcNote;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="qc_link", type="string", length=200, nullable=true)
+     */
+    private $qcLink;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="created_by", type="integer", nullable=true)
      */
     private $createdBy;
@@ -1559,6 +1580,75 @@ class RediSpotSent
     public function getFinalNarr()
     {
         return $this->finalNarr;
+    }
+
+    /**
+     * Set qcApproved
+     *
+     * @param integer $qcApproved
+     * @return RediSpotSent
+     */
+    public function setQcApproved($qcApproved)
+    {
+        $this->qcApproved = $qcApproved;
+
+        return $this;
+    }
+
+    /**
+     * Get qcApproved
+     *
+     * @return integer 
+     */
+    public function getQcApproved()
+    {
+        return $this->qcApproved;
+    }
+
+    /**
+     * Set qcNote
+     *
+     * @param string $qcNote
+     * @return RediSpotSent
+     */
+    public function setQcNote($qcNote)
+    {
+        $this->qcNote = $qcNote;
+
+        return $this;
+    }
+
+    /**
+     * Get qcNote
+     *
+     * @return string 
+     */
+    public function getQcNote()
+    {
+        return $this->qcNote;
+    }
+
+    /**
+     * Set qcLink
+     *
+     * @param string $qcLink
+     * @return RediSpotSent
+     */
+    public function setQcLink($qcLink)
+    {
+        $this->qcLink = $qcLink;
+
+        return $this;
+    }
+
+    /**
+     * Get qcLink
+     *
+     * @return string 
+     */
+    public function getQcLink()
+    {
+        return $this->qcLink;
     }
 
     /**

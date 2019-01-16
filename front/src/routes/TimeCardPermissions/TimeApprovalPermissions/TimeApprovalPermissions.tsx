@@ -1,21 +1,17 @@
-import * as React from 'react';
-import * as styles from '../TimeEntryPermissions/styles.scss';
-import { AppState } from 'store/AllStores';
 import { inject, observer } from 'mobx-react';
+import * as React from 'react';
 import { match } from 'react-router';
-import { Section, SectionElement } from '../../../components/Section';
-import { InputSearch } from '../../../components/Form';
-import { Table } from '../../../components/Table';
-import { LoadingSpinner } from '../../../components/Loaders';
-import {
-    HeaderActions,
-    TimeApprovalPermissionsActions,
-    UsersActions
-} from '../../../actions';
-import { BottomBar } from '../../../components/Layout/BottomBar';
-import { ButtonSave } from '../../../components/Button/ButtonSave';
-import { ButtonBack } from '../../../components/Button';
+import { AppState } from 'store/AllStores';
+import { HeaderActions, TimeApprovalPermissionsActions, UsersActions } from '../../../actions';
 import { history } from '../../../App';
+import { ButtonBack } from '../../../components/Button';
+import { ButtonSave } from '../../../components/Button/ButtonSave';
+import { InputSearch } from '../../../components/Form';
+import { BottomBar } from '../../../components/Layout/BottomBar';
+import { LoadingSpinner } from '../../../components/Loaders';
+import { Section, SectionElement } from '../../../components/Section';
+import { Table } from '../../../components/Table';
+import * as styles from '../TimeEntryPermissions/styles.scss';
 import TimeApprovalPermissionsRow from './TimeApprovalPermissionsRow';
 
 interface Props {
@@ -46,7 +42,7 @@ class TimeApprovalPermissions extends React.Component<TimeEntryPermissionsProps,
     private static getTableWithLoadingSpinner(): JSX.Element {
         return (
             <div className={styles.loadingSpinnerBlock}>
-                <LoadingSpinner size={64}/>
+                <LoadingSpinner size={64} />
             </div>
         );
     }
@@ -56,22 +52,21 @@ class TimeApprovalPermissions extends React.Component<TimeEntryPermissionsProps,
     }
 
     public render() {
-        return(
+        return (
             <>
                 <Section
                     noSeparator={true}
                     title="User groups allowed to create time entries:"
                     headerElements={this.getHeaderElements()}
                 >
+                    {this.props.store!.users.loadingUserTypes || this.props.store!.timeApprovalPermissions.loading ? (
+                        TimeApprovalPermissions.getTableWithLoadingSpinner()
+                    ) : (
+                        <Table>{this.getTableRows()}</Table>
+                    )}
+
                     {
-                        (this.props.store!.users.loadingUserTypes || this.props.store!.timeApprovalPermissions.loading) ?
-                            TimeApprovalPermissions.getTableWithLoadingSpinner() :
-                            <Table>{this.getTableRows()}</Table>
-                    }
-                    {
-                        <BottomBar
-                            show={this.props.store!.timeApprovalPermissions.touched}
-                        >
+                        <BottomBar show={this.props.store!.timeApprovalPermissions.touched}>
                             <ButtonSave
                                 onClick={this.saveTimeApprovalPermissions}
                                 float={'right'}
@@ -86,26 +81,30 @@ class TimeApprovalPermissions extends React.Component<TimeEntryPermissionsProps,
         );
     }
 
-    private saveTimeApprovalPermissions = () => TimeApprovalPermissionsActions.saveTimeApprovalPermission(this.props.match.params['id']);
+    private saveTimeApprovalPermissions = () =>
+        TimeApprovalPermissionsActions.saveTimeApprovalPermission(this.props.match.params['id']);
 
     private getTableRows(): JSX.Element[] {
         if (!this.props.store || !this.props.store.users) {
             return [];
         }
         const id = this.props.match.params['id'];
-        return this.props.store.users.types.filter((userType) => userType.name.toLowerCase().indexOf(this.state.searchString.toLowerCase()) !== -1).map(
-            (userType) => {
+        return this.props.store.users.types
+            .filter(userType => userType.name.toLowerCase().indexOf(this.state.searchString.toLowerCase()) !== -1)
+            .map(userType => {
                 return (
                     <TimeApprovalPermissionsRow
                         key={userType.id}
                         id={userType.id}
                         name={userType.name}
-                        isChecked={this.props.store!.timeApprovalPermissions.data[id] && this.props.store!.timeApprovalPermissions.data[id].includes(userType.id)}
+                        isChecked={
+                            this.props.store!.timeApprovalPermissions.data[id] &&
+                            this.props.store!.timeApprovalPermissions.data[id].includes(userType.id)
+                        }
                         submitterId={id}
                     />
                 );
-            }
-        );
+            });
     }
 
     private getHeaderElements = (): SectionElement[] => {
@@ -127,29 +126,28 @@ class TimeApprovalPermissions extends React.Component<TimeEntryPermissionsProps,
         UsersActions.fetchUsersTypes();
         TimeApprovalPermissionsActions.getTimeApprovalPermissions();
         // Set header
-        HeaderActions.setMainHeaderTitlesAndElements(
-            'Time approval permissions',
-            'Configuration',
-            null,
-            null,
-            [
+        HeaderActions.replaceMainHeaderContent({
+            title: 'Time approval permissions',
+            subTitle: 'Configuration',
+            elements: [
                 <ButtonBack
                     key="back-button"
                     onClick={this.goBackToUserManagment}
                     // label="Back to time entry permissions"
                     label="Back to user managment"
                 />,
-            ]
-        ).then();
+            ],
+        });
     };
 
     // private goBackToTimeEntryPermissions = () => history.push(`/portal/configuration/user-management/time-entry-permissions`);
 
-    private goBackToUserManagment = () => history.push(`/portal/configuration/user-management/project-board-permission`);
+    private goBackToUserManagment = () =>
+        history.push(`/portal/configuration/user-management/project-board-permission`);
 
     private onChangeSearchInputHandler = (event: React.FormEvent<HTMLInputElement>): void => {
         this.setState({
-            searchString: event.currentTarget.value
+            searchString: event.currentTarget.value,
         });
     };
 }

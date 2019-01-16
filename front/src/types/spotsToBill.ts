@@ -28,6 +28,10 @@ export interface SpotToBillFromApi {
     projectCampaignName: string | null;
     spotId: number;
     spotName: string;
+    numberOfRevisions: number | null;
+    firstRevisionCost: number | null;
+    firstRevisionIsBilled: boolean;
+    graphicsIncluded: boolean;
     producers: SpotToBillProducer[];
     updatedAt: DateObjectFromApi;
 }
@@ -42,4 +46,5 @@ export interface SpotBillingApiQueryParams {
     length: number;
     search?: string;
     studio_id?: number;
+    project_campaign_id?: number;
 }

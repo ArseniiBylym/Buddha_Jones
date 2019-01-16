@@ -484,6 +484,9 @@ false | graphics_status_id | int | null | send 0/1
 false | no_graphics | int | null | send 0/1
 false | is_pdf | int | null | send 0/1
 false | graphics_file | JSON encoded array | null | list of files (like: [{"file_name":"abc1.jpg","file_description":"some desc112","resend":1},{"file_name":"def3.jpg"}]}])
+false | qc_approved | int | null | send 0/1
+false | qc_note | string | null | send note
+false | qc_link | string | null | send qc link
 
 
 

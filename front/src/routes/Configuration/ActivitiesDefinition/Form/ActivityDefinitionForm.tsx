@@ -1,19 +1,24 @@
-import * as React from 'react';
-import { observer, inject } from 'mobx-react';
-import { HeaderActions, ActivitiesActions, UsersActions } from 'actions';
-import { ButtonBack, ButtonSave } from 'components/Button';
-import { history } from 'App';
-import { AppState } from 'store/AllStores';
 import { unformat } from 'accounting';
-import { observable, computed, action } from 'mobx';
-import { Activity, ActivityData } from 'types/activities';
-import { Row, Col, Section } from 'components/Section';
-import { LoadingSpinner } from 'components/Loaders';
-import { Input, Select, ToggleButtonsValueProp, Checkmark } from 'components/Form';
+import { ActivitiesActions, HeaderActions, UsersActions } from 'actions';
+import { history } from 'App';
+import { ButtonBack, ButtonSave } from 'components/Button';
 import { Paragraph } from 'components/Content';
-import { Table, TableRow, TableCell } from 'components/Table';
-import { Modal } from 'components/Modals';
+import {
+    Checkmark,
+    Input,
+    Select,
+    ToggleButtonsValueProp
+    } from 'components/Form';
 import { BottomBar } from 'components/Layout';
+import { LoadingSpinner } from 'components/Loaders';
+import { Modal } from 'components/Modals';
+import { Col, Row, Section } from 'components/Section';
+import { Table, TableCell, TableRow } from 'components/Table';
+import { action, computed, observable } from 'mobx';
+import { inject, observer } from 'mobx-react';
+import * as React from 'react';
+import { AppState } from 'store/AllStores';
+import { Activity, ActivityData } from 'types/activities';
 
 // Styles
 const s = require('./ActivityDefinitionForm.css');
@@ -28,8 +33,7 @@ export enum ActivityTypeId {
 type ActivityDefinitionFormPropsTypes = ActivityDefinitionFormProps & AppState;
 
 // Props
-interface ActivityDefinitionFormProps {
-}
+interface ActivityDefinitionFormProps {}
 
 // Component
 @inject('store')
@@ -58,8 +62,8 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
             return this.props.store.activities.activitiesLoading
                 ? true
                 : this.props.store.activities.activitiesTypesLoading
-                    ? true
-                    : this.props.store.users.typesLoading;
+                ? true
+                : this.props.store.users.typesLoading;
         }
 
         return true;
@@ -269,8 +273,8 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
                                     : this.activity.uploadStatus === 'success'
                                     ? 'green'
                                     : this.activity.uploadStatus === 'saving'
-                                        ? 'black'
-                                        : 'orange'
+                                    ? 'black'
+                                    : 'orange'
                             }
                             isSaving={this.activity.uploadStatus === 'saving'}
                             savingLabel="Saving"
@@ -280,8 +284,8 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
                                     : this.activity.uploadStatus === 'error'
                                     ? 'Could not save, try again'
                                     : this.activity.uploadStatus === 'error-nameisrequired'
-                                        ? 'Could not save, name is required'
-                                        : 'Save changes'
+                                    ? 'Could not save, name is required'
+                                    : 'Save changes'
                             }
                         />
                     </div>
@@ -312,7 +316,7 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
         ) : (
             <Row justifyContent="center">
                 <Col width={64}>
-                    <LoadingSpinner size={64}/>
+                    <LoadingSpinner size={64} />
                 </Col>
             </Row>
         );
@@ -449,8 +453,8 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
         const id: number | null =
             this.props.match && this.props.match.params && this.props.match.params['id']
                 ? !isNaN(unformat(this.props.match.params['id']))
-                ? unformat(this.props.match.params['id'])
-                : null
+                    ? unformat(this.props.match.params['id'])
+                    : null
                 : null;
 
         // Get existing activity details
@@ -487,7 +491,9 @@ class ActivityDefinitionForm extends React.Component<ActivityDefinitionFormProps
                     onClick={this.handleGoingBackToActivitiesList}
                     label="Back to activities list"
                 />,
-            ]
+            ],
+            [],
+            false
         );
     };
 }

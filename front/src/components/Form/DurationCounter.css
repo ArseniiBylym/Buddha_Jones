@@ -1,0 +1,105 @@
+.counter {
+    display: inline-flex;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+    box-sizing: border-box;
+    height: 24px;
+
+    & button {
+        cursor: default;
+        outline: none;
+        padding: 0;
+        margin: 0;
+        width: 21px;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        background: #eeeae7;
+        border: 1px solid #e2dbd5;
+        box-sizing: border-box;
+        box-shadow: inset 0px 0px 0px rgba(126, 117, 109, 0);
+        transition: 300ms box-shadow 0ms cubic-bezier(0.645, 0.045, 0.355, 1),
+            300ms background 0ms cubic-bezier(0.645, 0.045, 0.355, 1),
+            300ms border 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
+
+        & svg {
+            margin: 0;
+            padding: 0;
+
+            & rect {
+                fill: #a59e97;
+            }
+        }
+
+        &.minus {
+            border-top-left-radius: 2px;
+            border-bottom-left-radius: 2px;
+        }
+
+        &.plus {
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 2px;
+        }
+
+        &.enabled {
+            cursor: pointer;
+
+            &.minus {
+                & svg rect {
+                    fill: #cc2525;
+                }
+            }
+
+            &.plus {
+                & svg rect {
+                    fill: #189e44;
+                }
+            }
+
+            &:hover {
+                box-shadow: inset 0px 0px 3px rgba(126, 117, 109, 0.66);
+            }
+
+            &:focus {
+                border: 1px solid #0768d8;
+            }
+        }
+    }
+
+    & input {
+        width: 92px;
+        height: 100%;
+        text-align: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #0b0c32;
+        background: #f4f2f0;
+        border: 1px solid #e2dbd5;
+        border-left: none;
+        border-right: none;
+        box-shadow: none;
+        box-sizing: border-box;
+        transition: 300ms background 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
+
+        &.enabled {
+            &:hover {
+                background: #f5f5f5;
+            }
+        }
+    }
+
+    &.success {
+        & input {
+            color: #189e44;
+        }
+    }
+
+    &.alert {
+        & input {
+            color: #cc2525;
+        }
+    }
+}

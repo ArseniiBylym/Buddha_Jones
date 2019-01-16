@@ -25,6 +25,7 @@ class ProjectRepository extends EntityRepository
                   p.id, 
                   p.studioId, st.studioName,
                   p.notes,  p.projectRelease, p.type,
+                  p.confidential,
                   p.projectPrefix,
                   MAX(ph.createdAt) as lastUpdatedAt
                 FROM \Application\Entity\RediProject p
@@ -288,6 +289,7 @@ class ProjectRepository extends EntityRepository
                   p.project_release AS projectRelease,
                   p.notes,
                   p.type,
+                  p.confidential,
                   MAX(ph.created_at) AS lastUpdatedAt,
                   (SELECT
                     user_id

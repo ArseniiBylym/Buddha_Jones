@@ -1,0 +1,19 @@
+.dayTitle {
+    & > strong {
+        font-size: 1rem !important;
+        font-weight: 700 !important;
+    }
+}
+
+.activitiesSpotHeadline {
+    display: block;
+    width: 100%;
+    padding: 8px 24px;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #a59e97;
+    background: #eeeae7;
+    border-top: 1px solid #e2dbd5;
+    box-sizing: border-box;
+}

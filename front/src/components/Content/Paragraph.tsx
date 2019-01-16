@@ -1,7 +1,7 @@
-import * as React from 'react';
 import * as classNames from 'classnames';
-import { observer } from 'mobx-react';
 import { capitalize as _capitalize } from 'lodash';
+import { observer } from 'mobx-react';
+import * as React from 'react';
 
 // Styles
 const s = require('./Paragraph.css');
@@ -13,6 +13,7 @@ interface ParagraphProps {
     align?: 'left' | 'center' | 'right' | null;
     float?: 'none' | 'left' | 'right';
     type?: 'default' | 'white' | 'brown' | 'dim' | 'blue' | 'alert' | 'success';
+    size?: 'default' | 'normal' | 'small';
     bold?: boolean;
 }
 
@@ -25,6 +26,7 @@ export class Paragraph extends React.Component<ParagraphProps, {}> {
             align: null,
             float: 'none',
             type: 'default',
+            size: 'default',
             bold: false,
         };
     }
@@ -34,11 +36,26 @@ export class Paragraph extends React.Component<ParagraphProps, {}> {
             <p
                 className={classNames(this.props.className, {
                     [s['type' + _capitalize(this.props.type)]]: this.props.type !== 'default',
+                    [s['size' + _capitalize(this.props.size)]]: this.props.size !== 'default',
                     [s.styleBold]: this.props.bold,
                 })}
                 style={{
                     ...{
                         textAlign: this.props.align ? this.props.align : null,
+                        marginLeft: this.props.align
+                            ? this.props.align === 'right'
+                                ? 'auto'
+                                : this.props.align === 'center'
+                                ? 'auto'
+                                : '0'
+                            : '0',
+                        marginRight: this.props.align
+                            ? this.props.align === 'left'
+                                ? 'auto'
+                                : this.props.align === 'center'
+                                ? 'auto'
+                                : '0'
+                            : '0',
                         float: this.props.float !== 'none' ? this.props.float : null,
                     },
                     ...(this.props.style && typeof this.props.style === 'object' && this.props.style),

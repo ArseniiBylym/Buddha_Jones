@@ -193,6 +193,9 @@ class SpotRepository extends EntityRepository
                 "allGraphicsResend",
                 "graphicsNote",
                 "finalNarr",
+                "qcApproved",
+                "qcNote",
+                "qcLink",
                 "createdBy",
                 "updatedBy",
                 "createdAt",
@@ -535,7 +538,10 @@ class SpotRepository extends EntityRepository
                     s.trtId,
                     trt.runtime,
                     sc.noGraphics,
-                    sc.isPdf
+                    sc.isPdf,
+                    sc.qcApproved,
+                    sc.qcNote,
+                    sc.qcLink
                 FROM \Application\Entity\RediSpotSent sc
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id = sc.campaignId
@@ -1042,6 +1048,9 @@ class SpotRepository extends EntityRepository
                         ss.editor,
                         ss.customerContact,
                         ss.spotSentDate,
+                        ss.qcApproved,
+                        ss.qcNote,
+                        ss.qcLink,
                         ss.createdAt,
                         ss.updatedAt";
         } else {
@@ -1382,6 +1391,9 @@ class SpotRepository extends EntityRepository
                     'isPdf' => $row['isPdf'],
                     'spotSentType' => $row['spotSentType'],
                     'noGraphics' => $row['noGraphics'],
+                    'qcApproved' => $row['qcApproved'],
+                    'qcNote' => $row['qcNote'],
+                    'qcLink' => $row['qcLink'],
                 );
 
                 if (!empty($filter['return_graphics_file_list'])) {

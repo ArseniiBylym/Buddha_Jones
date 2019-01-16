@@ -1,12 +1,12 @@
-import * as React from 'react';
+import { Header, Sidebar } from '.';
 import * as classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
-import { Switch, Route } from 'react-router';
+import * as React from 'react';
+import { Route, Switch } from 'react-router';
+import { computed } from '../../../node_modules/mobx';
+import { AppState } from '../../store/AllStores';
 import { AuthorizeUser } from '../Authorization';
 import { NotificationsCenter } from '../Notifications';
-import { Sidebar, Header } from '.';
-import { AppState } from '../../store/AllStores';
-import { computed } from '../../../node_modules/mobx';
 
 // Styles
 const s = require('./Layout.css');
@@ -37,7 +37,7 @@ export class Layout extends React.Component<AppState, {}> {
         return (
             <AuthorizeUser history={this.props.history} location={this.props.location} match={this.props.match}>
                 <main>
-                    <div className={s.content}>
+                    <div className={classNames(s.content, { [s.wide]: this.props.store!.header.pageHasWideLayout })}>
                         <Header />
                         <div
                             className={classNames(s.contentInner, {
@@ -46,14 +46,14 @@ export class Layout extends React.Component<AppState, {}> {
                         >
                             <Switch>
                                 {this.props.store.user.routes.map(route => {
-                                        return (
-                                            <Route
-                                                key={typeof route.key !== 'undefined' && route.key ? route.key : route.path}
-                                                path={route.path}
-                                                exact={route.exact}
-                                                component={route.component}
-                                            />
-                                        );
+                                    return (
+                                        <Route
+                                            key={typeof route.key !== 'undefined' && route.key ? route.key : route.path}
+                                            path={route.path}
+                                            exact={route.exact}
+                                            component={route.component}
+                                        />
+                                    );
                                 })}
                             </Switch>
                         </div>

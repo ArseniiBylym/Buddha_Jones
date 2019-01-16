@@ -23,6 +23,12 @@
   }
 }
 
+.sentViaMethodsContainer__withInputFields{
+    flex-flow: column nowrap;
+    margin-left: 0;
+    margin-right: 0;
+}
+
 .acceptButtonsContainer {
     display: flex;
     flex-wrap: wrap;
