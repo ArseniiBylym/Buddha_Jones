@@ -309,6 +309,7 @@ export class ProjectBoardCampaignPeople extends React.Component<
                 </Row>
                     </AnimateHeight>
                 }
+                {this.isEditing && <hr className={s.separator} />}
                 {!this.props.withAnimation && 
                 <Row removeMargins={true} className={s.peopleList} doWrap={true}>
                     <Col className={s.peopleContainer} size={0}>
