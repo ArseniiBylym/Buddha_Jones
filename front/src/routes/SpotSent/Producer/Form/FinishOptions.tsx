@@ -3,6 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { AppState } from '../../../../store/AllStores';
 import { SpotSentActions } from 'actions';
 import { Checkmark, Input } from '../../../../components/Form';
+import * as classNames from 'classnames';
 
 const s = require('./ProducerSpotSentForm.css');
 // Props
@@ -30,7 +31,7 @@ class FinishOptions extends React.Component<ProducerSpotSentFormPropsTypes, {}> 
             <>
                 <div className={s.finishRequestSection}>
                     <h3>Framerate</h3>
-                    <div className={s.sentViaMethodsContainer}>
+                    <div className={classNames(s.sentViaMethodsContainer, s.sentViaMethodsContainer__squareCheckbox)}>
                         {this.getFrameRate()}
                     </div>
                 </div>
@@ -44,7 +45,7 @@ class FinishOptions extends React.Component<ProducerSpotSentFormPropsTypes, {}> 
                 </div>
                 <div className={s.finishRequestSection}>
                     <h3>Raster Size</h3>
-                    <div className={s.sentViaMethodsContainer}>
+                    <div className={classNames(s.sentViaMethodsContainer, s.sentViaMethodsContainer__squareCheckbox)}>
                         {this.getRasterSize()}
                     </div>
                 </div>
@@ -72,10 +73,8 @@ class FinishOptions extends React.Component<ProducerSpotSentFormPropsTypes, {}> 
                 return (
                     <Checkmark
                         key={'frame-rate-' + index}
-                        onClick={() => {
-                            spotSentDetails.framerate = frameRate;
-                        }}
-                        checked={(spotSentDetails.framerate === frameRate) ? true : false}
+                        onClick={this.framrateClickHandler(frameRate)}
+                        checked={(spotSentDetails.framerate) ? spotSentDetails.framerate.includes(frameRate) : false}
                         label={frameRate}
                         type={'no-icon'}
                     />
@@ -98,10 +97,8 @@ class FinishOptions extends React.Component<ProducerSpotSentFormPropsTypes, {}> 
                 return (
                     <Checkmark
                         key={'raster-size-' + index}
-                        onClick={() => {
-                            spotSentDetails.raster_size = rasterSize;
-                        }}
-                        checked={(spotSentDetails.raster_size === rasterSize) ? true : false}
+                        onClick={this.rastersizeClickHandler(rasterSize)}
+                        checked={(spotSentDetails.raster_size) ? spotSentDetails.raster_size.includes(rasterSize) : false}
                         label={rasterSize}
                         type={'no-icon'}
                     />
@@ -110,6 +107,13 @@ class FinishOptions extends React.Component<ProducerSpotSentFormPropsTypes, {}> 
         } else {
             return [];
         }
+    }
+
+    private framrateClickHandler = frameRate => e => {
+        SpotSentActions.framrateClickHandler(frameRate);
+    }
+    private rastersizeClickHandler = rasterSize => e => {
+        SpotSentActions.restersizeClickHandler(rasterSize);
     }
 }
 

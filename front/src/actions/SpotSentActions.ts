@@ -554,6 +554,30 @@ export class SpotSentActionsClass {
         }
     }
 
+    @action
+    public framrateClickHandler = (framRate) => {
+        if (SpotSentStore.spotSentDetails.framerate && SpotSentStore.spotSentDetails.framerate.includes(framRate)) {
+            let i: number = SpotSentStore.spotSentDetails.framerate.indexOf(framRate);
+            if (i !== -1) {
+                SpotSentStore.spotSentDetails.framerate.splice(i, 1);
+            }
+        } else if (SpotSentStore.spotSentDetails.framerate && !SpotSentStore.spotSentDetails.framerate.includes(framRate)) {
+            SpotSentStore.spotSentDetails.framerate.push(framRate);
+        }
+    
+    }
+    @action
+    public restersizeClickHandler = (resterSize) => {
+        if (SpotSentStore.spotSentDetails.raster_size && SpotSentStore.spotSentDetails.raster_size.includes(resterSize)) {
+            let i: number = SpotSentStore.spotSentDetails.raster_size.indexOf(resterSize);
+            if (i !== -1) {
+                SpotSentStore.spotSentDetails.raster_size.splice(i, 1);
+            }
+        } else if (SpotSentStore.spotSentDetails.raster_size && !SpotSentStore.spotSentDetails.raster_size.includes(resterSize)) {
+            SpotSentStore.spotSentDetails.raster_size.push(resterSize);
+        }
+    }
+
     private get defaultSpotElement(): SpotSentVersionForSubmit {
         return {
             campaign_id: null,

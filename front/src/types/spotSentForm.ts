@@ -38,10 +38,12 @@ export interface SpotSentValueForSubmit {
     spot_sent_date?: Date | string | null;
     deadline?: Date | string | null;
     finishing_house?: number | null;
-    finishing_house_name?: string | null;
-    framerate?: string | null;
+    finishing_house_name?: string | string | null;
+    // framerate?: string[] | null;
+    framerate?: any;
     framerate_note?: string;
-    raster_size?: string | null;
+    // raster_size?: string[] | string | null;
+    raster_size?: any;
     raster_size_note?: string;
     music_cue_sheet?: 0 | 1;
     audio_prep?: 0 | 1;
