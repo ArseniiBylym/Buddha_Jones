@@ -582,6 +582,9 @@ export class TimeEntryActionsClass {
 
     @action
     public setCurrentViewToWeek = (forUser: TimeEntryUserWithType, anyDateFromTheWeek: Date) => {
+        if (new Date(anyDateFromTheWeek).getTime() > new Date().getTime() + 60 + 1000) {
+            return;
+        }
         anyDateFromTheWeek = typeof anyDateFromTheWeek !== 'undefined' ? anyDateFromTheWeek : new Date();
 
         const firstSunday = dateSetDayOfTheWeek(anyDateFromTheWeek, 0);

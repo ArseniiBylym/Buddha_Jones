@@ -135,6 +135,19 @@ export class TimeEntryCalendarHeader extends React.Component<TimeEntryCalendarHe
                         />
                     )}
 
+                    {!viewSingleDayOnly && (
+                        <Button
+                            onClick={this.handleCurrentWeekSwitch()}
+                            float="right"
+                            label={{
+                                text: 'Current week',
+                                size: 'small',
+                                color: 'yellow',
+                                onLeft: true,
+                            }}
+                        />
+                    )}
+
                     {viewSingleDayOnly && (
                         <Button
                             onClick={this.handleDailyWeeklyViewSwitch(false)}
@@ -153,6 +166,16 @@ export class TimeEntryCalendarHeader extends React.Component<TimeEntryCalendarHe
                     )}
                 </Col>
             </Row>
+        );
+    }
+
+    private handleCurrentWeekSwitch = () => e => {
+        if (!this.props.store || this.props.store.timeEntry.viewEntriesOfUser === null) {
+            return;
+        }
+        TimeEntryActions.setCurrentViewToWeek(
+            this.props.store.timeEntry.viewEntriesOfUser,
+            new Date()
         );
     }
 
