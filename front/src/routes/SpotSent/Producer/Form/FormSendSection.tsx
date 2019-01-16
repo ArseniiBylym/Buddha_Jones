@@ -90,9 +90,12 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
             this.props.store.spotSent.spotSentDetails && 
             this.props.store.spotSent.spotSentDetails.spot_version) {
                 let lineStatus = 0;
-                this.props.store.spotSent.spotSentDetails.spot_version.forEach(item => {
-                    lineStatus = item.line_status_id;
-                });
+                if (this.props.store.spotSent.spotSentDetails.spot_version[0]) {
+                    lineStatus = this.props.store.spotSent.spotSentDetails.spot_version[0].line_status_id;
+                }
+                // this.props.store.spotSent.spotSentDetails.spot_version.forEach(item => {
+                //     lineStatus = item.line_status_id;
+                // });
                 return lineStatus;
         }
     }
@@ -140,6 +143,7 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
             }));
             delete data.finishing_house_name;
             data.deadline = (data.deadline) ? dateFormat(data.deadline, 'YYYY-MM-DD') : null;
+            (data.spec_sheet_file as string) = JSON.stringify(data.spec_sheet_file);
             if (this.isEditMode) {
                 await SpotSentActions.updateSpotSent((this.props.match as match<string>).params['id'], data);
             } else {

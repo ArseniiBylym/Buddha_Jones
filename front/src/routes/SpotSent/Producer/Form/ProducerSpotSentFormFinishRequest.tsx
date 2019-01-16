@@ -176,7 +176,7 @@ class ProducerSpotSentFormFinishRequest extends React.Component<ProducerSpotSent
                 <>
                     <div className={s.finishRequestSection}>
                         <h3>Spec sheet</h3>
-                        <input type="file" id="file" name="file" multiple={true}/>
+                        <input type="file" id="file" name="file" multiple={true} onChange={this.inputFilesHandler}/>
                     </div>
                     <div className={s.finishRequestSection}>
                         <h3>Spec Notes</h3>
@@ -307,6 +307,10 @@ class ProducerSpotSentFormFinishRequest extends React.Component<ProducerSpotSent
         } else {
             return null;
         }
+    }
+
+    private inputFilesHandler = (e) => {
+        SpotSentActions.handleInputFiles(e.target.files);
     }
 }
 

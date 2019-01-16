@@ -21,6 +21,7 @@ import {
     SpotSentVersionForSubmit
 } from '../types/spotSentForm';
 import { ToggleSideContent } from '../components/Form';
+import { FileHandler } from  '../helpers/FileHandler';
 // import { stringify } from 'querystring';
 
 export class SpotSentActionsClass {
@@ -534,6 +535,18 @@ export class SpotSentActionsClass {
         } else if (SpotSentStore.spotSentDetails.audio && !SpotSentStore.spotSentDetails.audio.includes(audio.id)) {
             SpotSentStore.spotSentDetails.audio.push(audio.id);
         }
+    }
+
+    @action
+    public handleInputFiles = files => {
+        let filesArray: any[] = [];
+        for (let file of files) {
+            FileHandler.readFileAsDataUri(file).then((result) => {
+                filesArray.push(result.target.result);
+                SpotSentStore.spotSentDetails.spec_sheet_file = filesArray;
+            });
+        }
+
     }
 
     private get defaultSpotElement(): SpotSentVersionForSubmit {
