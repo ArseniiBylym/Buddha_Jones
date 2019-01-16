@@ -5,6 +5,7 @@ import { Input, Checkmark } from '../../../../components/Form';
 import { SpotSentActions } from 'actions';
 import { SpotSentAudioOptionsFromApi } from '../../../../types/spotSent';
 import AudioCheckMark from './AudioCheckMark';
+import * as classNames from 'classnames';
 
 const s = require('./ProducerSpotSentForm.css');
 
