@@ -42,6 +42,7 @@ interface ProducerSpotSentFormSpotCardProps {
     forUserId: number;
     withGraphicsSection?: boolean;
     updateFileList: any;
+    finishAccept?: boolean;
 }
 
 interface ProducerSpotSentFormSpotCardState {
@@ -299,7 +300,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                 checked={this.props.spot.isFinishingRequest}
                 label="Finish Request"
                 labelOnLeft={true}
-                readOnly={!this.props.spot.spot}
+                readOnly={(!this.props.spot.spot) || (this.props.spot.finishAccept && this.props.spot.isFinishingRequest && this.props.spot.line_status_id === 3)}
                 type={'no-icon'}
             />
 

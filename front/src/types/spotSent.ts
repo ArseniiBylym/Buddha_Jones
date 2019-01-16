@@ -12,6 +12,7 @@ export interface SpotSentSpot {
     sentViaMethod: number[];
     line_status_id: number | null;
     sentGraphicsViaMethod: number[];
+    finishAccept?: boolean;
 }
 
 export interface SentViaOption {

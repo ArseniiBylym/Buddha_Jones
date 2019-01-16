@@ -166,13 +166,12 @@ export class TimePicker extends React.Component<TimePickerProps, {}> {
         // } else if (value < 12 && this.selectedPeriod === 'PM') {
         //     value = 11;
         } else if (name === 'hours') {
-            if (this.selectedPeriod === 'PM' && value === 11 ) {
+            if (this.selectedPeriod === 'PM' && value === 11 && this.props.label === 'Start time') {
                 this.handleTimeChange(name)({
                     value: [value, value],
                     label: padStart(value.toString(), 2, '0')
                 });
             } else if (this.selectedPeriod === 'AM') {
-            // if (this.selectedPeriod === 'AM') {
                 this.handleTimeChange(name)({
                     value: [value, value],
                     label: padStart(value.toString(), 2, '0')

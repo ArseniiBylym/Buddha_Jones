@@ -143,6 +143,7 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
             }));
             delete data.finishing_house_name;
             data.deadline = (data.deadline) ? dateFormat(data.deadline, 'YYYY-MM-DD') : null;
+            (data.spec_sheet_file as string) = JSON.stringify(data.spec_sheet_file);
             if (this.isEditMode) {
                 await SpotSentActions.updateSpotSent((this.props.match as match<string>).params['id'], data);
             } else {

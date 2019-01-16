@@ -662,6 +662,7 @@ export class TimeEntryActionsClass {
             // if ( totalMinutes > 1440 + 720 || totalMinutes < 0) {
             //     return;
             // }
+           
             if ( newEndTime > 1440 ) {
                 // let diff = Math.floor(newEndTime / 1440);
                 // newEndTime -= diff * 1440;
@@ -680,13 +681,18 @@ export class TimeEntryActionsClass {
         if (TimeEntryStore.values !== null) {
             const delta = totalMinutes - TimeEntryStore.values.endTimeInMinutes;
             let newStartTime = TimeEntryStore.values.startTimeInMinutes + delta;
-
-            if (newStartTime < 0) {
-                newStartTime += 720;
-                totalMinutes += 720;
+            // if (newStartTime < 0) {
+            //     newStartTime += 720;
+            //     totalMinutes += 720;
+            // }
+            // if (totalMinutes <= TimeEntryStore.values.startTimeInMinutes) {
+            //     return;
+            // } 
+            if (totalMinutes > 1440) {
+                return; 
             }
                 TimeEntryStore.values.isModified = true;
-                TimeEntryStore.values.startTimeInMinutes = newStartTime;
+                // TimeEntryStore.values.startTimeInMinutes = newStartTime;
                 TimeEntryStore.values.endTimeInMinutes = totalMinutes;
         }
     };
