@@ -65,7 +65,8 @@ export class TimeEntryCalendarColumns extends React.Component<TimeEntryCalendarC
                                     [s.creatable]: day.isDayClosed === false,
                                 })}
                             >
-                                <p>{dateFormat(day.date, 'dddd')}</p>
+                                {/* <p>{dateFormat(day.date, 'D')}</p> */}
+                                <p><span className={s.dayDate}>{dateFormat(day.date, 'D')}</span> {dateFormat(day.date, 'dddd')}</p>
                                 {/* <span>{padStart(dateGetDayOfTheMonth(day.date).toString(), 2, '0')}</span> */}
                                 <hr/>
 

@@ -213,6 +213,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                                 sentGraphicsViaMethod: spot.graphics_sent_via_method
                                                     ? (spot.graphics_sent_via_method as number[])
                                                     : [],
+                                                finishAccept: (spot.finish_accept === 1) ? true : false,
                                             }}
                                             spotIndex={spotIndex}
                                             forUserId={this.props.store!.user.data!.id}

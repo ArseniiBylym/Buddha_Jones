@@ -57,7 +57,7 @@ class SpotsPostTable extends React.Component<any, any> {
                     <TableCell colSpan={1} align="left">{spot.projectName}</TableCell>
                     <TableCell colSpan={1} align="left">{spot.campaignName}</TableCell>
                     <TableCell colSpan={1} align="left">({spot.runtime})</TableCell>
-                    <TableCell colSpan={1} align="left">{spot.spotName} {spot.finishRequest && <span>FINISH</span>}</TableCell>
+                    <TableCell colSpan={1} align="left">{spot.spotName} {spot.finishRequest && <span>F</span>}</TableCell>
                     <TableCell colSpan={1} align="left">{spot.versionName}</TableCell>
                     <TableCell colSpan={1} align="left"><div className={s.editorsContainer}>{this.getEditors(spot.editors)}</div></TableCell>
                     <TableCell colSpan={1} align="left"><div className={s.editorsContainer}>{this.getCustomerContacts(spot.customerContacts)}</div></TableCell>

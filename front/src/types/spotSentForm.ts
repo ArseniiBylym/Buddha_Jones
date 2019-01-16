@@ -49,7 +49,8 @@ export interface SpotSentValueForSubmit {
     audio_prep?: 0 | 1;
     video_prep?: 0 | 1;
     spec_note?: string;
-    spec_sheet_file?: JSON | null;
+    // spec_sheet_file?: JSON | null;
+    spec_sheet_file?: any;
     tag_chart?: string;
     delivery_to_client?: SpotSentValueParentChildForSubmit | string | null;
     delivery_note?: string;

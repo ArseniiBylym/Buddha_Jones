@@ -145,6 +145,7 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
             data.deadline = (data.deadline) ? dateFormat(data.deadline, 'YYYY-MM-DD') : null;
             (data.framerate as string) = JSON.stringify(data.framerate);
             (data.raster_size as string) = JSON.stringify(data.raster_size);
+            (data.spec_sheet_file as string) = JSON.stringify(data.spec_sheet_file);
             if (this.isEditMode) {
                 await SpotSentActions.updateSpotSent((this.props.match as match<string>).params['id'], data);
             } else {
