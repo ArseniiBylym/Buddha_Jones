@@ -39,6 +39,8 @@ class SpotSentListController extends CustomAbstractActionController
             } else if ($subModuleId == 7) { // Graphics only requests
                 $filter['line_status_id'] = array(1,6);
                 $filter['spot_sent_type'] = array(2);
+            }  else if ($subModuleId == 9) { // Spot to qc
+                $filter['line_status_id'] = array(4);
             }
 
             $data = $this->_spotRepo->getSpotSentListTree($filter);
@@ -98,9 +100,9 @@ class SpotSentListController extends CustomAbstractActionController
         $qcNote = $this->_commonRepo->filterPostData($data, 'qc_note', 'string', null);
         $qcLink = $this->_commonRepo->filterPostData($data, 'qc_link', 'string', null);
 
-        if ($spotLineStatusId && $spotLineStatusId < 4) {
+        if ($spotLineStatusId && $spotLineStatusId < 6) {
             $graphicsStatusId = null;
-        } else if ($spotLineStatusId == 4 && !$graphicsStatusId) {
+        } else if ($spotLineStatusId == 6 && !$graphicsStatusId) {
             $graphicsStatusId = 1;
         }
 

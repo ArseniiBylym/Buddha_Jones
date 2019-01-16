@@ -302,9 +302,9 @@ class SpotSentController extends CustomAbstractActionController
                 $sv['qc_note'] = $this->_commonRepo->filterPostData($sv, 'qc_note', 'string', null);
                 $sv['qc_link'] = $this->_commonRepo->filterPostData($sv, 'qc_link', 'string', null);
 
-                if ($sv['line_status_id'] < 4) {
+                if ($sv['line_status_id'] < 6) {
                     $sv['graphics_status_id'] = null;
-                } else if ($sv['line_status_id'] == 4 && !$sv['graphics_status_id']) {
+                } else if ($sv['line_status_id'] == 6 && !$sv['graphics_status_id']) {
                     $sv['graphics_status_id'] = 1;
                 }
 
