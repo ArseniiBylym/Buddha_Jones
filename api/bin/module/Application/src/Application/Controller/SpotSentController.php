@@ -308,6 +308,10 @@ class SpotSentController extends CustomAbstractActionController
                     $sv['graphics_status_id'] = 1;
                 }
 
+                if ($sv['line_status_id'] == 5) {
+                    $sv['qc_approved'] = 1;
+                }
+
                 $sentViaMethod = $this->_commonRepo->filterPostData($sv, 'sent_via_method', 'array', array());
 
                 if (!$sentViaMethod) {
@@ -749,5 +753,7 @@ class SpotSentController extends CustomAbstractActionController
 
             $this->_em->flush();
         }
+
+        $this->_notificationRepo->sendSpotSentNoficationByRequestId($requestId, $this->_user_id);
     }
 }

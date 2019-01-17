@@ -106,6 +106,10 @@ class SpotSentListController extends CustomAbstractActionController
             $graphicsStatusId = 1;
         }
 
+        if ($spotLineStatusId == 5) {
+            $qcApproved = 1;
+        }
+
         if ($graphicsFiles) {
             $graphicsFiles = array_map(function ($file) {
                 $file['file_name'] = (!empty($file['file_name'])) ? $file['file_name'] : null;
@@ -216,6 +220,6 @@ class SpotSentListController extends CustomAbstractActionController
 
         $this->_em->flush();
 
-        // $this->_notificationRepo->sendSpotSentNoficationById($spotSentId);
+        $this->_notificationRepo->sendSpotSentNoficationById($spotSentId, $this->_user_id);
     }
 }

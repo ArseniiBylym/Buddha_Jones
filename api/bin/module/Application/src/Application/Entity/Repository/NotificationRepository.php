@@ -38,17 +38,39 @@ class NotificationRepository extends EntityRepository
     $dql = "SELECT 
                 %s
               FROM \Application\Entity\RediNotification n
+              INNER JOIN \Application\Entity\RediNotificationMessageType nmt
+                WITH nmt.id = n.messageTypeId
               LEFT JOIN \Application\Entity\RediNotificationUser nu
-                WITH nu.notificationId = n.id ";
+                WITH nu.notificationId = n.id 
+              LEFT JOIN \Application\Entity\RediNotificationData nd
+                WITH nd.notificationId = n.id";
 
     if (!empty($filter['user_type_id'])) {
       $dqlParam['user_type_id'] = $filter['user_type_id'];
       $dqlFilter[] = " nu.userTypeId = :user_type_id ";
     }
 
+    if (!empty($filter['user_id'])) {
+      $dqlParam['user_id'] = $filter['user_id'];
+      $dqlFilter[] = " nu.userId = :user_id ";
+    }
+
     if (isset($filter['confirm'])) {
       $dqlParam['confirm'] = $filter['confirm'];
       $dqlFilter[] = " n.confirm = :confirm ";
+    }
+
+    if (isset($filter['message_type_name'])) {
+      $dqlParam['message_type_name'] = $filter['message_type_name'];
+      $dqlFilter[] = " nmt.name = :message_type_name ";
+    }
+
+    if (isset($filter['data']) && is_array($filter['data'])) {
+      foreach ($filter['data'] as $key => $value) {
+        $dqlParam["data_name_" . $key] = $key;
+        $dqlParam["data_value_" . $key] = $value;
+        $dqlFilter[] = " (nd.name = :data_name_" . $key . " AND nd.value = :data_value_" . $key . ") ";
+      }
     }
 
     if (count($dqlFilter)) {
@@ -107,7 +129,7 @@ class NotificationRepository extends EntityRepository
   {
     $ids = (array($ids));
 
-    if(!$ids) {
+    if (!$ids) {
       return array();
     }
 
@@ -138,7 +160,7 @@ class NotificationRepository extends EntityRepository
    * @param int $createdByUserId
    * @return void
    */
-  public function create($key, $data, $notificationUserTypeIds, $createdByUserId)
+  public function create($key, $data, $notificationUserTypeIds, $notificationUserIds, $createdByUserId = 0)
   {
     try {
       $messageData = $this->getFullMessageData($key, $data);
@@ -171,6 +193,18 @@ class NotificationRepository extends EntityRepository
             $notificationUser = new RediNotificationUser();
             $notificationUser->setNotificationId($notificationId);
             $notificationUser->setUserTypeId($userTypeId);
+            $notificationUser->setUserId(0);
+
+            $this->_entityManager->persist($notificationUser);
+          }
+        }
+
+        if ($notificationUserIds) {
+          foreach ($notificationUserIds as $userId) {
+            $notificationUser = new RediNotificationUser();
+            $notificationUser->setNotificationId($notificationId);
+            $notificationUser->setUserTypeId(0);
+            $notificationUser->setUserId($userId);
 
             $this->_entityManager->persist($notificationUser);
           }
@@ -208,7 +242,7 @@ class NotificationRepository extends EntityRepository
 
         if ($params) {
           $paramsNotProvided = array_filter($params, function ($param, $paramKey) use ($data) {
-            return (!$param || !isset($data[$paramKey]));
+            return ($param === true && empty($data[$paramKey])); //|| (!$param || !isset($data[$paramKey]));
           }, ARRAY_FILTER_USE_BOTH);
 
           if (count($paramsNotProvided)) {
@@ -260,8 +294,22 @@ class NotificationRepository extends EntityRepository
    * @param int $spotSentRequestId Spot sent request ID
    * @return void
    */
-  public function sendSpotSentNoficationByRequestId($spotSentRequestId) {
+  public function sendSpotSentNoficationByRequestId($spotSentRequestId, $createdByUserId = 0)
+  {
+    // get all spot sent row id
+    $dql = "SELECT 
+              sc.id AS spotSentId
+            FROM \Application\Entity\RediSpotSent sc
+            WHERE sc.requestId = :request_id";
 
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter("request_id", $spotSentRequestId);
+
+        $result = $query->getArrayResult();
+
+        foreach ($result as $row) {
+          $this->sendSpotSentNoficationById($row['spotSentId'], $createdByUserId);
+        }
   }
 
   /**
@@ -270,12 +318,61 @@ class NotificationRepository extends EntityRepository
    * @param int $spotSentId Spot sent id
    * @return void
    */
-  public function sendSpotSentNoficationById($spotSentId) {
+  public function sendSpotSentNoficationById($spotSentId, $createdByUserId = 0)
+  {
     $spotRepo = new SpotRepository($this->_entityManager);
     $spotSent = $spotRepo->getSpotSentTreeById($spotSentId);
 
-    if ($spotSent) {
-        var_dump($spotSent); exit;
+    if ($spotSent && !empty($spotSent['spotLineStatusId'])) {
+      $spotLineStatusId = (int)$spotSent['spotLineStatusId'];
+      $spotSentId = (int)$spotSent['spotSentId'];
+      $messageTypeName = null;
+      $userTypeIds = array();
+      $userIds = array();
+
+      /**
+       * When Ready to be sent is checked and Finish Request IS NOT CHECKED – User type 3, 23 will get an ALERT.  LineStatus = 2
+       * If Finish Request is also checked, then all below user types will get Alert 3,4,9,13,18,23
+       */
+      if ($spotLineStatusId == 2) {
+        $messageTypeName = 'spot_sent_notify_sent_to_post';
+
+        if (!empty($spotSent['finishRequest'])) {
+          $userTypeIds = array(3, 4, 9, 13, 19, 23);
+        } else {
+          $userTypeIds = array(3, 23);
+        }
+      }
+
+      if ($messageTypeName) {
+        // check if there is already any unconfirmed message
+        // if not then add a message for that user
+          $checkMessage = $this->search(array(
+            'type_name' => $messageTypeName,
+            'data' => array(
+              'spotSentId' => $spotSentId,
+            )
+          ), 0, 1);
+
+          if (empty($checkMessage['data'])) {
+            $data = array(
+              "spotSentId" => $spotSentId,
+              "spotLineStatusId" => $spotLineStatusId,
+              "projectId" => $spotSent["projectId"],
+              "projectName" => $spotSent["projectName"],
+              "campaignId" => $spotSent["campaignId"],
+              "campaignName" => $spotSent["campaignName"],
+              "studioId" => $spotSent["studioId"],
+              "studioName" => $spotSent["studioName"],
+              "spotId" => $spotSent["spotId"],
+              "spotName" => $spotSent["spotName"],
+              "versionId" => $spotSent["versionId"],
+              "versionName" => $spotSent["versionName"]
+            );
+
+            $this->create($messageTypeName, $data, $userTypeIds, array(), $createdByUserId);
+          }
+      }
     }
   }
 }
