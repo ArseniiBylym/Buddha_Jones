@@ -76,6 +76,7 @@ export class TimeEntry {
     @observable public viewEntriesOfUser: TimeEntryUserWithType | null = null;
     @observable public viewEntriesFromDay: Date | null = null;
     @observable public viewEntriesTilDay: Date | null = null;
+    @observable public isModalDamperVisible: boolean = false;
 
     @computed
     public get viewSingleDayOnly(): boolean {

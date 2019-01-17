@@ -352,7 +352,7 @@
 }
 
 .days tfoot td p span.dayApproved {
-  color: #189E44;
+  color: #e17f4b;
 }
 
 .days tfoot td p span.dayApproved::after {

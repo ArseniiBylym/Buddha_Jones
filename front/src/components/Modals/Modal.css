@@ -200,6 +200,7 @@
 
 .children {
     text-align: left;
+    position: relative;
 }
 
 .footer {

@@ -221,8 +221,10 @@
               }
             }
             &.closed {
+              cursor: pointer;
               & i::before {
-                background: #189E44;
+                /* background: #189E44; */
+                background: #e17f4b;
               }
             }
             &.pendingApproval {
@@ -339,10 +341,11 @@
             color: #D75B2B;
           }
           &.dayApproved {
-            color: #189E44;
+            /* color: #189E44; */
+            color: #e17f4b;
             &::after {
               border: none;
-              background: url("./../../../assets/images/form/checkmark-circle-green.svg") center no-repeat;
+              background: url("./../../../assets/images/form/checkmark-circle-red.svg") center no-repeat;
               background-size: 18px 18px;
             }
           }
