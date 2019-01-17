@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observer, inject } from 'mobx-react';
 import { AppState } from '../../../../store/AllStores';
-import { Checkmark, CheckmarkSquare } from '../../../../components/Form';
+import { CheckmarkSquare } from '../../../../components/Form';
 import { SpotSentActions } from 'actions';
 import { SpotSentAudioOptionsFromApi } from '../../../../types/spotSent';
 

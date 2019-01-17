@@ -7,7 +7,6 @@ import {
 import { ButtonAdd, ButtonClose } from 'components/Button';
 import { Paragraph } from 'components/Content';
 import {
-    Checkmark,
     DropdownContainer,
     OptionsList,
     OptionsListValuePropType,
