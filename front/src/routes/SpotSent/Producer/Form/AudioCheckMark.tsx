@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observer, inject } from 'mobx-react';
 import { AppState } from '../../../../store/AllStores';
-import { Checkmark } from '../../../../components/Form';
+import { Checkmark, CheckmarkSquare } from '../../../../components/Form';
 import { SpotSentActions } from 'actions';
 import { SpotSentAudioOptionsFromApi } from '../../../../types/spotSent';
 
@@ -31,7 +31,7 @@ class AudioCheckMark extends React.Component<ProducerSpotSentFormPropsTypes, {}>
         } = this.props;
 
         return (
-            <Checkmark
+            <CheckmarkSquare
                 onClick={this.handleAudioCheck}
                 checked={(spotSentDetails.audio) ? spotSentDetails.audio.includes(audio.id) : false}
                 label={audio.name}
