@@ -74,6 +74,7 @@ interface Props {
     obClearButtonClick?: () => void;
     index?: number;
     additionalElements?: any;
+    isSubmoduleVisible?: boolean;
 }
 
 declare type ComponentProps = Props & AppOnlyStoreState;
@@ -461,44 +462,44 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
         return (
             <Section
                 title={this.props.title}
-                // subTitle={this.getSectionSubtitle()}
+                subTitle={this.getSectionSubtitle()}
                 noSeparator={this.props.noSeparator}
                 headerElements={this.getHeaderElementsArray()}
-                className="Spot_project_picker"
+                className={this.props.isSubmoduleVisible ? '' : 'Spot_project_picker'}
             >
-                {/* <Row removeGutter={true}>
-                    {this.columns.map((col, colIndex) => (
-                        <Col className="dots" key={col.section ? col.section : colIndex} size={1}>
+                {this.props.isSubmoduleVisible ?
+                     <Row removeGutter={true}>
+                        {this.columns.map((col, colIndex) => (
+                            <Col className="dots" key={col.section ? col.section : colIndex} size={1}>
+                                <Button
+                                    onClick={this.handleOpeningSection(col.section)}
+                                    className={classNames(col.classNames)}
+                                    disabled={this.props.readOnly || col.isDisabled}
+                                    isInBox={true}
+                                    label={{
+                                        text: col.label,
+                                    }}
+                                />
+                            </Col>
+                        ))}
+                    </Row> : 
+                    <div className="secontHeaderSpotContainer">
+                        <div className="controls">{this.props.additionalElements}</div>
+                        <div className="clearSectionAndSubtile">
+                            <div className="notificationContainer">Spot and version have to be selected</div>
                             <Button
-                                onClick={this.handleOpeningSection(col.section)}
-                                className={classNames(col.classNames)}
-                                disabled={this.props.readOnly || col.isDisabled}
-                                isInBox={true}
+                                onClick={this.clearSelectionModalToggle}
+                                className={s.clearButton}
                                 label={{
-                                    text: col.label,
+                                    text: 'Clear selection',
+                                    size: 'small',
+                                    color: 'gray',
                                 }}
                             />
-                        </Col>
-                    ))}
-                </Row> */}
-                {/* {this.getSectionSubtitle()}
-                {this.getHeaderElementsArray()} */}
-                <div className="secontHeaderSpotContainer">
-                    <div className="controls">{this.props.additionalElements}</div>
-                    <div className="clearSectionAndSubtile">
-                        <div className="notificationContainer">{this.getSectionSubtitle()}</div>
-                        <Button
-                            onClick={this.clearSelectionModalToggle}
-                            className={s.clearButton}
-                            label={{
-                                text: 'Clear selection',
-                                size: 'small',
-                                color: 'gray',
-                            }}
-                        />
+                        </div>
                     </div>
-                </div>
-
+                }
+                
                 <ProjectPickerContent
                     trtList={projectsCampaignsSpots.trtList}
                     onResultPicked={this.handleResultPick}
@@ -587,6 +588,9 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
     };
 
     private getSectionSubtitle(): string | undefined {
+        if (!this.props.isSubmoduleVisible) {
+            return undefined;
+        }
         if (!this.subTitleLabel) {
             return undefined;
         }
@@ -597,24 +601,24 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
     private getHeaderElementsArray(): SectionElement[] {
         return [
             ...(this.props.headerElements || []),
-            // ...(
-            //     this.showClearValuesButton ? [
-            //         {
-            //             element: (
-            //                 <Button
-            //                     onClick={this.clearSelectionModalToggle}
-            //                     className={s.clearButton}
-            //                     label={{
-            //                         text: 'Clear selection',
-            //                         size: 'small',
-            //                         color: 'gray',
-            //                     }}
-            //                 />
-            //             ),
-            //         },
-            //     ] : []
-            // ),
-            ...(true ? [
+            ...(
+                this.showClearValuesButton && this.props.isSubmoduleVisible ? [
+                    {
+                        element: (
+                            <Button
+                                onClick={this.clearSelectionModalToggle}
+                                className={s.clearButton}
+                                label={{
+                                    text: 'Clear selection',
+                                    size: 'small',
+                                    color: 'gray',
+                                }}
+                            />
+                        ),
+                    },
+                ] : []
+            ),
+            ...(!this.props.isSubmoduleVisible ? [
                 {
                     element: (
                         <Row removeGutter={true}>

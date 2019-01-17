@@ -1,7 +1,7 @@
 export enum ProjectPickerSelectionRequirementLabel {
-    SpotAndVersionAreRequired = 'Spot and version have to be selected',
-    CampaignAndSpotAreRequired = 'Campaign and spot have to be selected',
-    ProjectAndCampaignAreRequired = 'Project and campaign have to be selected',
-    ProjectIsRequired = 'Project has to be selected',
-    Optional = 'Optional',
+    SpotAndVersionAreRequired = 'spot and version have to be selected',
+    CampaignAndSpotAreRequired = 'campaign and spot have to be selected',
+    ProjectAndCampaignAreRequired = 'project and campaign have to be selected',
+    ProjectIsRequired = 'project has to be selected',
+    Optional = 'optional',
 }

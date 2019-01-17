@@ -94,7 +94,7 @@
     justify-content: flex-start;
     background-color: #eeeae7;
     margin: -24px -24px 12px -24px;
-    padding: 24px 24px 12px 24px;
+    padding: 10px 24px 12px 24px;
 
     & > :global(.col.sectionHeaderTitle) {
       flex-grow: 0;

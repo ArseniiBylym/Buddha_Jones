@@ -55,6 +55,7 @@ export class ProducerSpotSentFormProject extends React.Component<ProducerSpotSen
                     openOn={this.props.isClosedWhenInit ? null : ProjectPickerSections.project}
                     requiredSelection="project"
                     noSeparator={true}
+                    isSubmoduleVisible={true}
                 />
             </>
         );
