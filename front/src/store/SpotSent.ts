@@ -60,6 +60,7 @@ export class SpotSent {
         graphics_note: '',
         music_note: '',
         final_narr: '',
+        qc_link: '',
     };
 
     @observable public spotSentDetailsLastFetchTimestamp: number = 0;

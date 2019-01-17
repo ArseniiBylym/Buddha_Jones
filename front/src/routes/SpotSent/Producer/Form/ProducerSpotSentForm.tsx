@@ -272,7 +272,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     <AnimateHeight height={this.isFinishingTypeSectionOpen ? 'auto' : 0}>
                         <ProducerSpotSentFormFinishRequest />
                     </AnimateHeight>
-                    <FormSendSection {...this.props} prevLocation={this.state.prevLocation} files={this.state.files} />
+                    <FormSendSection {...this.props} prevLocation={this.state.prevLocation} files={this.state.files} prodAccept={spotSentDetails.spot_version[0]} />
                 </AnimateHeight>
                 <FormJsonSection spotSentDetails={spotSentDetails} />
             </>
