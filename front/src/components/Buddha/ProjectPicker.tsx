@@ -72,6 +72,8 @@ interface Props {
         maxWidth?: number;
     }>;
     obClearButtonClick?: () => void;
+    index?: number;
+    additionalElements?: any;
 }
 
 declare type ComponentProps = Props & AppOnlyStoreState;
@@ -458,12 +460,14 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
 
         return (
             <Section
+                // title={this.props.title}
                 title={this.props.title}
-                subTitle={this.getSectionSubtitle()}
+                // subTitle={this.getSectionSubtitle()}
                 noSeparator={this.props.noSeparator}
                 headerElements={this.getHeaderElementsArray()}
+                className="Spot_project_picker"
             >
-                <Row removeGutter={true}>
+                {/* <Row removeGutter={true}>
                     {this.columns.map((col, colIndex) => (
                         <Col className="dots" key={col.section ? col.section : colIndex} size={1}>
                             <Button
@@ -477,7 +481,21 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
                             />
                         </Col>
                     ))}
-                </Row>
+                </Row> */}
+                {/* {this.getSectionSubtitle()}
+                {this.getHeaderElementsArray()} */}
+                <div className="secontHeaderSpotContainer">
+                    <div className="controls">{this.props.additionalElements}</div>
+                    <Button
+                        onClick={this.clearSelectionModalToggle}
+                        className={s.clearButton}
+                        label={{
+                            text: 'Clear selection',
+                            size: 'small',
+                            color: 'gray',
+                        }}
+                    />
+                </div>
 
                 <ProjectPickerContent
                     trtList={projectsCampaignsSpots.trtList}
@@ -577,23 +595,44 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
     private getHeaderElementsArray(): SectionElement[] {
         return [
             ...(this.props.headerElements || []),
-            ...(
-                this.showClearValuesButton ? [
-                    {
-                        element: (
-                            <Button
-                                onClick={this.clearSelectionModalToggle}
-                                className={s.clearButton}
-                                label={{
-                                    text: 'Clear selection',
-                                    size: 'small',
-                                    color: 'gray',
-                                }}
-                            />
-                        ),
-                    },
-                ] : []
-            ),
+            // ...(
+            //     this.showClearValuesButton ? [
+            //         {
+            //             element: (
+            //                 <Button
+            //                     onClick={this.clearSelectionModalToggle}
+            //                     className={s.clearButton}
+            //                     label={{
+            //                         text: 'Clear selection',
+            //                         size: 'small',
+            //                         color: 'gray',
+            //                     }}
+            //                 />
+            //             ),
+            //         },
+            //     ] : []
+            // ),
+            ...(true ? [
+                {
+                    element: (
+                        <Row removeGutter={true}>
+                            {this.columns.map((col, colIndex) => (
+                                <Col className="dots" key={col.section ? col.section : colIndex} size={1}>
+                                    <Button
+                                        onClick={this.handleOpeningSection(col.section)}
+                                        className={classNames(col.classNames)}
+                                        disabled={this.props.readOnly || col.isDisabled}
+                                        isInBox={true}
+                                        label={{
+                                            text: col.label,
+                                        }}
+                                    />
+                                </Col>
+                            ))}
+                        </Row>
+                    )
+                }
+                ] : []),
         ];
     }
 

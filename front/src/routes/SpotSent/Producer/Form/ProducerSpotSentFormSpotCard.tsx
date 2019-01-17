@@ -127,12 +127,12 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
     public render() {
         return (
             <Card
-                title={'#' + (this.props.spotIndex + 1)}
-                subTitle="Spot sent"
+                // title={'#' + (this.props.spotIndex + 1)}
+                // subTitle="Spot sent"
                 isExpandable={false}
-                headerElements={
-                    this.props.withGraphicsSection ? this.getCardHeadersForGraphics() : this.getCardHeaders()
-                }
+                // headerElements={
+                //     this.props.withGraphicsSection ? this.getCardHeadersForGraphics() : this.getCardHeaders()
+                // }
             >
                 <ProjectPicker
                     onChange={this.handleSpotChange}
@@ -147,6 +147,9 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                         version: this.props.spot.version,
                         customerId: this.props.clientId,
                     }}
+                    title={'#' + (this.props.spotIndex + 1)}
+                    index={this.props.spotIndex + 1}
+                    additionalElements={ this.props.withGraphicsSection ? this.getCardHeadersForGraphics() : this.getCardHeaders()}
                 />
 
                 <Section title={'Sent via'}>

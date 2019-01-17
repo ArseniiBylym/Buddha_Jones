@@ -52,3 +52,48 @@
 :global(.sectionInner) {
   width: 100%;
 }
+
+:global(.secontHeaderSpotContainer) {
+  display: none;
+}
+
+:global(.sectionInner .Spot_project_picker) {
+
+  /* background-color: pink; */
+  & > :global(.sectionInner) {
+    display: flex;
+    flex-flow: column nowrap;
+    & > :global(.secontHeaderSpotContainer) {
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: flex-end;
+      width: 100%;
+
+      & > :global(.controls) {
+        display: flex;
+        & > :global(label){
+          margin-right: 10px
+        }
+      }
+    }
+  }
+  
+  & > :global(.sectionHeader){
+    justify-content: flex-start;
+    background-color: #eeeae7;
+    margin: -24px -24px 12px -24px;
+    padding: 24px 24px 12px 24px;
+
+    & > :global(.col.sectionHeaderTitle) {
+      flex-grow: 0;
+    }
+
+    & > :global(.col.sectionElements) {
+      & > :global(.row.rowNoGutter){
+        & > :global(.col) {
+          flex-grow: 1;
+        }
+      }
+    }
+  }
+}
