@@ -371,18 +371,18 @@ export class ProjectBoardCampaignsSpots extends React.Component<ProjectBoardCamp
         this.spotVisibleToggleHandler(spot);
     }
 
-    private handleExpandSpotsFromSpotClick = (spotId: number) => () => {
-        if (this.props.onExpansionToggle) {
-            this.props.onExpansionToggle();
-        }
+    // private handleExpandSpotsFromSpotClick = (spotId: number) => () => {
+    //     if (this.props.onExpansionToggle) {
+    //         this.props.onExpansionToggle();
+    //     }
 
-        setTimeout(() => {
-            const spot = document.getElementById(`project-board-spot-id-${spotId}`);
-            if (spot) {
-                zenscroll.intoView(spot);
-            }
-        }, 128);
-    };
+    //     setTimeout(() => {
+    //         const spot = document.getElementById(`project-board-spot-id-${spotId}`);
+    //         if (spot) {
+    //             zenscroll.intoView(spot);
+    //         }
+    //     }, 128);
+    // };
 
     private handleNewSpotFormToggle = () => {
         if (this.props.approvedByBilling === false ) {

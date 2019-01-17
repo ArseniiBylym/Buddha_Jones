@@ -44,3 +44,7 @@
     font-size: 0.85em;
   }
 }
+.separator {
+  margin: 0 auto 10px auto;
+  width: 95%;
+}

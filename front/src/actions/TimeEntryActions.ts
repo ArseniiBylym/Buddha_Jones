@@ -692,8 +692,8 @@ export class TimeEntryActionsClass {
     @action
     public setEntryEndTime = (totalMinutes: number) => {
         if (TimeEntryStore.values !== null) {
-            const delta = totalMinutes - TimeEntryStore.values.endTimeInMinutes;
-            let newStartTime = TimeEntryStore.values.startTimeInMinutes + delta;
+            // const delta = totalMinutes - TimeEntryStore.values.endTimeInMinutes;
+            // let newStartTime = TimeEntryStore.values.startTimeInMinutes + delta;
             // if (newStartTime < 0) {
             //     newStartTime += 720;
             //     totalMinutes += 720;
