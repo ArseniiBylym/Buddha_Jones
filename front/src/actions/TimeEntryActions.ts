@@ -609,6 +609,16 @@ export class TimeEntryActionsClass {
     };
 
     @action
+    public showModalDamper = () => {
+        TimeEntryStore.isModalDamperVisible = true;
+    }
+
+    @action
+    public hideModalDamper = () => {
+        TimeEntryStore.isModalDamperVisible = false;
+    }
+
+    @action
     public setEntryStartDate = (forUser: TimeEntryUserWithType, startDate: Date, resetValues: boolean = false) => {
         const now = new Date();
         const nowMinutes = dateGetMinutes(now);

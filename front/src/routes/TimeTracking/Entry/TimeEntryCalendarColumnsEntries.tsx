@@ -77,9 +77,7 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
                                 }
                             >
                                 <dt
-                                    onClick={
-                                        day.isDayClosed === false ? this.handleExistingEntryEditClick(entry) : undefined
-                                    }
+                                    onClick={this.handleExistingEntryEditClick(entry, day.isDayClosed)}
                                     className={classNames({
                                         [s.closed]: day.isDayClosed,
                                         [s.editable]: day.isDayClosed === false,
@@ -114,7 +112,7 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
                     {day.isDayClosed === false && (
                         <dt
                             className={s.creatable}
-                            onClick={this.handleChangingTimeEntryDateFromCalendarView(day.date, dayIndex)}
+                            onClick={this.handleChangingTimeEntryDateFromCalendarView(day.date, dayIndex, day.isDayClosed)}
                         >
                             <i/>
                             <p>Create new entry</p>
@@ -131,11 +129,7 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
         } else {
             return (
                 <dl
-                    onClick={
-                        day.isDayClosed === false
-                            ? this.handleChangingTimeEntryDateFromCalendarView(day.date, dayIndex)
-                            : undefined
-                    }
+                    onClick={this.handleChangingTimeEntryDateFromCalendarView(day.date, dayIndex, day.isDayClosed)}
                     className={classNames({
                         [s.fullSizeEntriesList]: day.isDayClosed === false,
                         [s.hoverable]: day.isDayClosed === false,
@@ -154,11 +148,14 @@ export class TimeEntryCalendarColumnsEntries extends React.Component<TimeEntryCa
         }
     }
 
-    private handleExistingEntryEditClick = (entry: TimeEntryCalendarEntry) => () => {
+    private handleExistingEntryEditClick = (entry: TimeEntryCalendarEntry, isDayClosed) => () => {
+        isDayClosed ? TimeEntryActions.showModalDamper() : TimeEntryActions.hideModalDamper();
         TimeEntryActions.editExistingEntry(entry);
     };
 
-    private handleChangingTimeEntryDateFromCalendarView = (date: Date, dayIndex: number) => () => {
+    private handleChangingTimeEntryDateFromCalendarView = (date: Date, dayIndex: number, isDayClosed) => () => {
+        isDayClosed ? TimeEntryActions.showModalDamper() : TimeEntryActions.hideModalDamper();
+
         if (!this.props.store || !this.props.store.user.data) {
             return;
         }

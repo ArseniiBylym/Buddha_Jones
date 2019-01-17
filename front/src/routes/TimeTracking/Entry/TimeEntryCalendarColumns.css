@@ -221,6 +221,7 @@
               }
             }
             &.closed {
+              cursor: pointer;
               & i::before {
                 /* background: #189E44; */
                 background: #e17f4b;
