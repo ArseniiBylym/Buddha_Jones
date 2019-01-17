@@ -74,7 +74,6 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
     }
 
     private inputLinkHandler = (e) => {
-        console.log(e.target.value);
         SpotSentActions.inputLinkHandler(e.target.value);
     }
 
