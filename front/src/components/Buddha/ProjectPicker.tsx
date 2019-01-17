@@ -460,7 +460,6 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
 
         return (
             <Section
-                // title={this.props.title}
                 title={this.props.title}
                 // subTitle={this.getSectionSubtitle()}
                 noSeparator={this.props.noSeparator}
@@ -486,15 +485,18 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
                 {this.getHeaderElementsArray()} */}
                 <div className="secontHeaderSpotContainer">
                     <div className="controls">{this.props.additionalElements}</div>
-                    <Button
-                        onClick={this.clearSelectionModalToggle}
-                        className={s.clearButton}
-                        label={{
-                            text: 'Clear selection',
-                            size: 'small',
-                            color: 'gray',
-                        }}
-                    />
+                    <div className="clearSectionAndSubtile">
+                        <div className="notificationContainer">{this.getSectionSubtitle()}</div>
+                        <Button
+                            onClick={this.clearSelectionModalToggle}
+                            className={s.clearButton}
+                            label={{
+                                text: 'Clear selection',
+                                size: 'small',
+                                color: 'gray',
+                            }}
+                        />
+                    </div>
                 </div>
 
                 <ProjectPickerContent

@@ -75,6 +75,18 @@
           margin-right: 10px
         }
       }
+      & > :global(.clearSectionAndSubtile) {
+        align-self: stretch;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: space-between;
+
+        & > :global(.notificationContainer) {
+          font-size: 14px;
+          color: #838383;
+        }
+      }
     }
   }
   
