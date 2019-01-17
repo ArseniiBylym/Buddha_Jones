@@ -10,7 +10,8 @@ import {
     Checkmark,
     DropdownContainer,
     OptionsList,
-    OptionsListValuePropType
+    OptionsListValuePropType,
+    CheckmarkSquare
     } from 'components/Form';
 import { Input } from 'components/Form';
 import TextAreaFile from 'components/Form/TextAreaFile';
@@ -219,7 +220,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                                 {this.props.spot.isFinishingRequest &&
                                     this.props.spot.version &&
                                     this.props.spot.version.finishAccept !== undefined && (
-                                        <Checkmark
+                                        <CheckmarkSquare
                                             key={'finish-accept'}
                                             onClick={this.handleFinishAccept}
                                             checked={this.props.spot.version.finishAccept}
@@ -229,7 +230,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                                         />
                                     )}
                                 {this.props.spot.version && this.props.spot.version.prodAccept !== undefined && (
-                                    <Checkmark
+                                    <CheckmarkSquare
                                         key={'prod-accept'}
                                         onClick={this.handleProdAccept}
                                         checked={this.props.spot.version.prodAccept}
@@ -281,7 +282,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
 
     private getCardHeadersForGraphics = () => (
         <React.Fragment>
-            <Checkmark
+            <CheckmarkSquare
                 key="spot-resend-checkmark"
                 onClick={this.handleSpotPDFToggle(this.props.spot.isPDF)}
                 checked={this.props.spot.isPDF}
@@ -297,7 +298,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
 
     private getCardHeaders = () => (
         <React.Fragment>
-            <Checkmark
+            <CheckmarkSquare
                 key="finishing-request-checkmark"
                 onClick={this.handleFinishingRequestToggle}
                 checked={this.props.spot.isFinishingRequest}
@@ -307,7 +308,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                 type={'no-icon'}
             />
 
-            <Checkmark
+            <CheckmarkSquare
                 key="spot-resend-checkmark"
                 onClick={this.handleSpotResendToggle}
                 checked={this.props.spot.isResend}
@@ -369,7 +370,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
             return SpotSentStore.spotSentSentViaMethodOptions.map(
                 (method: SpotSentOptionsChildrenFromApi, index: number) => {
                     return (
-                        <Checkmark
+                        <CheckmarkSquare
                             key={'sent-via-method-' + index}
                             onClick={() => {
                                 this.handleSentViaMethodsChange(method.id);
@@ -394,7 +395,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
             return SpotSentStore.spotSentGraphicsSentViaMethodOptions.map(
                 (method: SpotSentOptionsChildrenFromApi, index: number) => {
                     return (
-                        <Checkmark
+                        <CheckmarkSquare
                             key={'sent-via-method-' + index}
                             onClick={() => {
                                 this.handleGraphicsSentViaMethodsChange(method.id);
