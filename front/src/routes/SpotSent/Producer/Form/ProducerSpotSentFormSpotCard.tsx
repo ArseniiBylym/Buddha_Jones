@@ -214,12 +214,14 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                     this.projectPermissions.loggedInUserPermissions[UserPermissionKey.SpotSentFinishProdAccept]
                         .canEdit &&
                     this.props.spot.line_status_id &&
-                    this.props.spot.line_status_id === 2 && (
+                    (this.props.spot.line_status_id === 2 || this.props.spot.line_status_id === 3) && (
                         <Section>
                             <div className={s.acceptButtonsContainer}>
                                 {this.props.spot.isFinishingRequest &&
                                     this.props.spot.version &&
-                                    this.props.spot.version.finishAccept !== undefined && (
+                                    this.props.spot.version.finishAccept !== undefined && 
+                                    (this.props.spot.line_status_id === 2 || 
+                                    this.props.spot.line_status_id === 3 && !this.props.spot.version.finishAccept) && (
                                         <CheckmarkSquare
                                             key={'finish-accept'}
                                             onClick={this.handleFinishAccept}
@@ -229,7 +231,9 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                                             labelOnLeft={true}
                                         />
                                     )}
-                                {this.props.spot.version && this.props.spot.version.prodAccept !== undefined && (
+                                {this.props.spot.version && this.props.spot.version.prodAccept !== undefined && 
+                                (this.props.spot.line_status_id === 2 || 
+                                this.props.spot.line_status_id === 3 && !this.props.spot.version.prodAccept) && (
                                     <CheckmarkSquare
                                         key={'prod-accept'}
                                         onClick={this.handleProdAccept}
@@ -239,11 +243,25 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                                         labelOnLeft={true}
                                     />
                                 )}
+                                {this.props.spot.line_status_id === 3 && this.isAcceptButtonVisible() && 
+                                    <div className={s.acceptedLabels}>
+                                        {this.props.spot.version && this.props.spot.version.finishAccept && <span>Finish accepted</span>}
+                                        {this.props.spot.version && this.props.spot.version.prodAccept && <span>Production accepted</span>}
+                                    </div>} 
                             </div>
                         </Section>
                     )}
             </Card>
         );
+    }
+
+    private isAcceptButtonVisible = () => {
+        if (this.props.spot && this.props.spot.version) {
+            if (this.props.spot.version.finishAccept || this.props.spot.version.prodAccept) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private getSectionHeaders = () => {
