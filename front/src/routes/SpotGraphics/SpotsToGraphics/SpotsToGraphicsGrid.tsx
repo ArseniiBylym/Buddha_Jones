@@ -7,6 +7,7 @@ import * as React from 'react';
 import { history } from 'App';
 import * as moment from 'moment';
 import { SpotsToGraphicsModal } from './SpotsToGraphicsModal/SpotsToGraphicsModal';
+import { SpotsToQCModal } from '../../SpotQC/SpotsToQC/SpotsToQCModal/SpotsToQCModal';
 import { Modal } from 'components/Modals';
 
 const s = require('./SpotsToGraphicsGrid.css');
@@ -138,6 +139,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
         return (
             <div className={s.grid}>
                 <SpotsToGraphicsModal forceUpdating={this.props.forceUpdating}/>
+                <SpotsToQCModal forceUpdating={this.props.forceUpdating} />
                 {this.projectCampaignCards.map((projectCampaign, i) => (
                     <Card
                         className={s.card}
@@ -288,7 +290,10 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
     private handleSpotSelectionToggle = (type, spot) => e => {
         switch (type) {
             case 'graphics': 
-                this.props.store.spotToGraphics.getSpotFromApi(spot.spotSentId);
+                this.props.store.spotToGraphics.getSpotFromApi(spot.spotSentId, 'graphics');
+                break;
+            case 'qc': 
+                this.props.store.spotToGraphics.getSpotFromApi(spot.spotSentId, 'qc');
                 break;
             case 'sent': 
                 history.push('/portal/studio/producer-spot-sent-details/' + spot.spotSentRequestId);

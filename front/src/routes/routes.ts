@@ -10,6 +10,7 @@ import { ProjectsListAsync } from './Projects';
 import { BillSpotFormAsync } from './SpotBilling/BillSpotForm/BillSpotFormAsync';
 import { SpotsToBillAsync } from './SpotBilling/SpotsToBill/SpotsToBillAsync';
 import { SpotsToEDLAsync } from './SpotEDL/SpotsToEDL/SpotsToEDLAsync';
+import { SpotsToQCAsync } from './SpotQC/SpotsToQC/SpotsToQCAsync';
 import { SpotsToGraphicsAsync } from './SpotGraphics/SpotsToGraphics/SpotsToGraphicsAsync';
 import { SpotsToGraphicsSentAsync } from './SpotGraphicsSent/SpotsToGraphicsSent/SpotsToGraphicsSentAsync';
 import { SpotsPostAsync } from './SpotPost/SpotsPostAsync';
@@ -169,6 +170,17 @@ export const routes: Route[] = [
         name: 'Spots to EDL',
         path: '/portal/spots-to-edl',
         entry: '/portal/spots-to-edl',
+        exact: true,
+        allowAllUsers: true,
+    },
+    {
+        component: SpotsToQCAsync,
+        key: 'spots-to-qc',
+        accessKey: RouteAccessKey.SpotBilling,
+        group: studioGroup,
+        name: 'Spots to QC',
+        path: '/portal/spots-to-qc',
+        entry: '/portal/spots-to-qc',
         exact: true,
         allowAllUsers: true,
     },

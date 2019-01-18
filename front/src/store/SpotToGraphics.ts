@@ -3,6 +3,7 @@ import { API, APIPath } from 'fetch';
 
 export class SpotToGraphics {
     @observable public isModalOpen: boolean = false;  // change it before commit 
+    @observable public isModalQCOpen: boolean = false;  // change it before commit 
     @observable public fetchedSpot: any = '';
     @observable public pending: boolean = false;
 
@@ -16,13 +17,17 @@ export class SpotToGraphics {
     }
     
     @action
-    public getSpotFromApi = async (id: number) => {
+    public getSpotFromApi = async (id: number, modalName: string) => {
         this.pending = true;
         try {
             const response = (await API.getData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + `/${id}`)) as string[];
             this.fetchedSpot = response;
             this.pending = false;
-            this.isModalOpen = true;
+            if (modalName === 'graphics') {
+                this.isModalOpen = true;
+            } else if (modalName === 'qc') {
+                this.isModalQCOpen = true;
+            }
             return response;
         } catch (error) {
             throw error;
@@ -88,6 +93,11 @@ export class SpotToGraphics {
     @action
     public toggleModal = () => {
         this.isModalOpen = !this.isModalOpen;
+    }
+
+    @action
+    public toggleQCModal = () => {
+        this.isModalQCOpen = !this.isModalQCOpen;
     }
 
     @action 
