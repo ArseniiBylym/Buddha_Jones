@@ -152,12 +152,6 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                     additionalElements={ this.props.withGraphicsSection ? this.getCardHeadersForGraphics() : this.getCardHeaders()}
                 />
 
-                <Section title={'Sent via'}>
-                    <div className={s.sentViaMethodsContainer}>
-                        {this.props.withGraphicsSection ? this.getGraphicsSentViaMethods() : this.getSentViaMethods()}
-                    </div>
-                </Section>
-
                 {this.props.withGraphicsSection && <>{this.getFilesWorkOnSection()}</>}
 
                 {!this.props.withGraphicsSection && (
@@ -207,6 +201,13 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                         ))}
                     </Section>
                 )}
+
+                <Section title={'Sent via'}>
+                    <div className={s.sentViaMethodsContainer}>
+                        {this.props.withGraphicsSection ? this.getGraphicsSentViaMethods() : this.getSentViaMethods()}
+                    </div>
+                </Section>
+
                 {this.projectPermissions &&
                     this.projectPermissions.loggedInUserPermissions[UserPermissionKey.SpotSentFinishProdAccept] &&
                     this.projectPermissions &&
