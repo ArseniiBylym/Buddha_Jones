@@ -11,7 +11,6 @@ import {
     TextArea,
     DropdownContainer,
     OptionsList,
-    Toggle,
     Counter,
     OptionsListValuePropType,
     OptionsListOptionProp,
@@ -481,10 +480,10 @@ export class ProjectBoardSpotForm extends React.Component<Props & AppOnlyStoreSt
         }
     };
 
-    @action
-    private handleGraphicsIncludeToggle = (isSetToRight: boolean) => {
-        this.form.graphicsIncluded = isSetToRight;
-    };
+    // @action
+    // private handleGraphicsIncludeToggle = (isSetToRight: boolean) => {
+    //     this.form.graphicsIncluded = isSetToRight;
+    // };
 
     @action
     private handleSpotBillingChange = (option: { value: OptionsListValuePropType; label: string }) => {
