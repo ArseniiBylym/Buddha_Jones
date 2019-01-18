@@ -91,10 +91,11 @@ export class SpotsToQCModal extends React.Component<any, any> {
         );
     }
 
-    private saveHandler = () => {
-        // console.log(this.props.store.spotToGraphics.spotQCApprovedToSend);
-        // console.log(this.props.store.spotToGraphics.spotQCNotApproved);
-        // console.log(this.commentText);
+    private saveHandler = async() => {
+        await this.props.store.spotToGraphics.changeQCApi(this.commentText);
+        if (this.props.forceUpdating) {
+            this.props.forceUpdating();
+        }
     }
 
     private textChangeHandler = (e) => {

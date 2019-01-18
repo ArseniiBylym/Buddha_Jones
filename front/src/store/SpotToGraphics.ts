@@ -159,4 +159,28 @@ export class SpotToGraphics {
             throw (error);
         }
     }
+
+    @action
+    public changeQCApi = async (note: string) => {
+        const body: any = {
+            line_status_id: 4,
+        };
+        if (this.spotQCApprovedToSend) {
+            body.line_status_id = 5;
+            body.qc_approved = 1;
+        }
+        if (this.spotQCNotApproved) {
+            body.line_status_id = 3;
+            body.qc_approved = 0;
+        } 
+        if (this.spotQCNotApproved && note && note.length > 0) {
+            body.qc_note = note;
+        }
+        try {
+           await API.putData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + this.fetchedSpot.spotSentId, body);
+            this.toggleQCModal();
+        } catch (error) {
+            throw (error);
+        }
+    }
 }
