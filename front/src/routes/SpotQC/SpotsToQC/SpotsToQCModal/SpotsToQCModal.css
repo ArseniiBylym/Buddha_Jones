@@ -165,3 +165,42 @@
         font-weight: 700;
     }
 }
+
+
+.linkContainer{
+    padding: 10px 0;
+    & > .linkContainer__title{
+        padding-bottom: 5px;
+    }
+    & > .linkContainer__content{
+        width: 100%;
+        padding: 10px 16px;
+        border: 1px solid #cac7c4;
+        background: #f7f5f3;
+        font-size: .9em;
+        box-sizing: border-box;
+        border-radius: 3px;
+
+        & > a {
+            text-decoration: none;
+            color: black;
+        }
+    }
+}
+
+.navContainer {
+    padding: 20px 10px;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: flex-end;
+    & > label {
+        margin-right: 10px;
+    }
+}
+.commentsContainer {
+    padding: 10px 0;
+    & > .commentsContainer__title{
+        padding-bottom: 5px;
+    }
+}

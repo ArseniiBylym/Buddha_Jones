@@ -6,7 +6,9 @@ export class SpotToGraphics {
     @observable public isModalQCOpen: boolean = false;  // change it before commit 
     @observable public fetchedSpot: any = '';
     @observable public pending: boolean = false;
-
+    @observable public spotQCNotApproved: boolean = false;
+    @observable public spotQCApprovedToSend: boolean = false;
+    
     @computed
     public get isFilesEmpty (): boolean {
         if (this.fetchedSpot.graphicsFile.length === 0 || (this.fetchedSpot.graphicsFile.length === 1 && this.fetchedSpot.graphicsFile[0].fileName === '')) {
@@ -15,7 +17,24 @@ export class SpotToGraphics {
             return false;
         }
     }
+
+    @action
+    public toggleSpotQCApproved = () => {
+        this.spotQCNotApproved = !this.spotQCNotApproved;
+    }
     
+    @action
+    public toggleSpotQCApprovedToSend = () => {
+        this.spotQCApprovedToSend = !this.spotQCApprovedToSend;
+    
+    }
+
+    @action
+    public clearApproverCheckboxes = () => {
+        this.spotQCApprovedToSend = false;
+        this.spotQCNotApproved = false;
+    }
+
     @action
     public getSpotFromApi = async (id: number, modalName: string) => {
         this.pending = true;

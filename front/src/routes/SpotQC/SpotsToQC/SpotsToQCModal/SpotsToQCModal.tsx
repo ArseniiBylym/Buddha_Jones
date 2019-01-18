@@ -1,15 +1,10 @@
 import * as React from 'react';
-import { observable, action, computed } from 'mobx';
+import { observable, action } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { Modal } from 'components/Modals';
-import { TableRow, Table, TableCell } from 'components/Table';
-import { Input, TextArea } from 'components/Form';
-import { ButtonAdd, ButtonClose, ButtonSend } from 'components/Button';
-import { Section } from 'components/Section';
-import { Paragraph } from 'components/Content';
-import { IconTickBlue, IconTickWhite, IconArrowLeftYellow } from 'components/Icons';
-import TextAreaFile from 'components/Form/TextAreaFile';
-// import * as moment from 'moment';
+import { TextArea, Checkmark } from 'components/Form';
+import { ButtonSend } from 'components/Button';
+import { IconArrowLeftYellow } from 'components/Icons';
 
 const s = require('./SpotsToQCModal.css');
 
@@ -17,42 +12,11 @@ const s = require('./SpotsToQCModal.css');
 @observer
 export class SpotsToQCModal extends React.Component<any, any> {
 
-    state = {
-        textareaValue: '',
-        textareaEmpty: true,
-    };
-
-    @observable private withGraphics: boolean = false;
-    @observable private modalConfirmOpen: boolean = false;
-    @observable private completedCheckbox: boolean = false;
-
-    @computed
-    private get withGraphicsStatus() {
-        return this.withGraphics;
-    }
-    @computed
-    private get completedCheckboxStatus() {
-        return this.completedCheckbox;
-    }
+    @observable public commentText = '';
 
     @action
-    private completedCheckboxToggle = () => {
-        this.completedCheckbox = !this.completedCheckbox;
-    }
-
-    @action
-    private modalConfirmToggle = () => {
-        this.modalConfirmOpen = !this.modalConfirmOpen;
-    }
-
-    @action 
-    private withGraphicsTogle = () => {
-        this.withGraphics = !this.withGraphics;
-    }
-
-    @action
-    private withGraphicsReset = () => {
-        this.withGraphics = false;
+    private commentTextHandler = (value: string) => {
+        this.commentText = value;
     }
 
     public render() {
@@ -65,6 +29,7 @@ export class SpotsToQCModal extends React.Component<any, any> {
         if (!spotToGraphics.fetchedSpot) {
             return null;
         }
+        const spot = spotToGraphics.fetchedSpot;
 
         return (
             <>
@@ -81,44 +46,44 @@ export class SpotsToQCModal extends React.Component<any, any> {
                     <div className={s.SpotToGraphicsModal}>
                         <div className={s.header}>
                                 <div className={s.header__spotDetails}>
-                                    <span>{spotToGraphics.fetchedSpot.projectName ? spotToGraphics.fetchedSpot.projectName : null}</span>
+                                    <span>{spot.projectName ? spot.projectName : null}</span>
                                     {` - `}
-                                    <span>{spotToGraphics.fetchedSpot.campaignName ? spotToGraphics.fetchedSpot.campaignName : null}</span>
+                                    <span>{spot.campaignName ? spot.campaignName : null}</span>
                                 </div>
                                 <div className={s.header__mainInfo}>
                                     <h3 className={s.header__spotName}>
-                                        {spotToGraphics.fetchedSpot.spotName}
-                                        {spotToGraphics.fetchedSpot.runtime && ` (${spotToGraphics.fetchedSpot.runtime})`}
+                                        {spot.spotName}
+                                        {spot.runtime && ` (${spot.runtime})`}
                                     </h3>
                                     <IconArrowLeftYellow marginLeftAuto={true} marginRight={10} width={12} height={9} />
-                                    <div className={s.header_backButton} onClick={this.handleModalClose}>Back to Apots to QC list</div>
+                                    <div className={s.header_backButton} onClick={this.handleModalClose}>Back to Spots to QC list</div>
                                 </div>
                         </div>
                         <div className={s.content}>
                             <div className={s.noGraphicsContainer} >
-                                {spotToGraphics.fetchedSpot.versionName && 
+                                {spot.versionName && 
                                     <div className={s.noGraphicsVersion}>
-                                        <span>Version:</span>{spotToGraphics.fetchedSpot.versionName}
+                                        <span>Version:</span>{spot.versionName}
                                     </div>
                                 }
-                                {/* <div className={s.noGraphicsContainer__wrapper} onClick={this.withGraphicsTogle}>
-                                    <div className={s.noGraphicsCheckbox}>
-                                        {this.withGraphics && <IconTickBlue width={12} height={9} />}
-                                    </div>
-                                    <div className={s.noGraphicsLabel}>NO GRAPHICS</div>
-                                </div> */}
                             </div>
                             <div className={s.linkContainer}>
                                 <div className={s.linkContainer__title}>Link:</div>
-                                <Input label="some link paste here" /> 
+                                <div className={s.linkContainer__content}>
+                                    {spot.qcLink ? <a href={spot.qcLink} target="_blanck">{spot.qcLink}</a> : 'some link paste here'}
+                                </div>
                             </div>
                             <div className={s.navContainer} >
-                                Buttons
+                                <Checkmark onClick={this.isApprovedHandler} type="no-icon" checked={this.isApproved()} label="Not Approved" labelOnLeft={false}/>
+                                <Checkmark onClick={this.isApprovedToSendHandler} type="no-icon" checked={this.isApprovedToSend()} label="Approved to send" labelOnLeft={false}/>
+                                <ButtonSend label="Save" iconColor="green" labelColor="green" labelSize="large" onClick={this.saveHandler}/>
                             </div>
-                            <div className={s.commentsContainer}>
-                                <div className={s.commentsContainer__title}>Comments:</div>
-                                <TextArea value="" label="write your comments here" />
-                            </div>
+                            {spotToGraphics.spotQCNotApproved && 
+                                <div className={s.commentsContainer}>
+                                    <div className={s.commentsContainer__title}>Comments:</div>
+                                    <TextArea value={this.commentText}  onChange={this.textChangeHandler} label="write your comments here" width={1400}/>
+                                </div>
+                            }
                         </div>
                     </div>
                 </Modal>
@@ -126,89 +91,50 @@ export class SpotsToQCModal extends React.Component<any, any> {
         );
     }
 
+    private saveHandler = () => {
+        // console.log(this.props.store.spotToGraphics.spotQCApprovedToSend);
+        // console.log(this.props.store.spotToGraphics.spotQCNotApproved);
+        // console.log(this.commentText);
+    }
+
+    private textChangeHandler = (e) => {
+        this.commentTextHandler(e.target.value);
+    }
+
+    private isApproved = () => {
+        if (!this.props.store.spotToGraphics.spotQCApprovedToSend && this.props.store.spotToGraphics.spotQCNotApproved) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private isApprovedToSend = () => {
+        if (!this.props.store.spotToGraphics.spotQCNotApproved && this.props.store.spotToGraphics.spotQCApprovedToSend) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private isApprovedHandler = () => {
+        if (this.props.store.spotToGraphics.spotQCApprovedToSend) {
+            this.props.store.spotToGraphics.toggleSpotQCApprovedToSend();
+        }
+        this.props.store.spotToGraphics.toggleSpotQCApproved();
+    }
+
+    private isApprovedToSendHandler = () => {
+        if (this.props.store.spotToGraphics.spotQCNotApproved) {
+            this.props.store.spotToGraphics.toggleSpotQCApproved();
+        }
+        this.props.store.spotToGraphics.toggleSpotQCApprovedToSend();
+    }
+
     @action
     private handleModalClose = (): void => {
-        this.withGraphicsReset();
+        this.props.store.spotToGraphics.clearApproverCheckboxes();
         this.props.store.spotToGraphics.clearStorage();
         this.props.store.spotToGraphics.toggleQCModal();
     };
-
-    textareaOnChangeHandler = e => {
-        this.setState({
-            textareaValue: e.target.value,
-        });
-    }
-
-    textareaOnBlurHandler = () => {
-        if (!this.state.textareaValue) {
-            this.setState({
-                textareaEmpty: true
-            });
-        }
-    }
-
-    textareaOnFocusHandler = () => {
-        if (this.state.textareaEmpty) {
-            this.setState({
-                textareaEmpty: false
-            });
-        }
-    }
-
-    private handleFileAdd = () => {
-        if (this.state.textareaValue) {
-            const arr: string[] | null = this.state.textareaValue.match(/[^\r\n]+/g);
-            if (arr) {
-                this.props.store.spotToGraphics.addFileArray(arr);
-                this.setState({
-                    textareaValue: '',
-                    textareaEmpty: true,
-                });
-            }
-        } else {
-            this.props.store.spotToGraphics.addEmptyFileItem();
-        }
-    };
-
-    private handleFileChangeName = (index: number) => e => {
-        this.props.store.spotToGraphics.setFileName(index, e.target.value);
-    }
-
-    private handleFileChangeDescription = (index: number) => e => {
-        this.props.store.spotToGraphics.setFileDescription(index, e.target.value);
-    }
-
-    private handleFileChangeResend = (index: number) => e => {
-        this.props.store.spotToGraphics.setFileResend(index);
-    }
-
-    private handleFileRemove = (fileIndex: number) => () => {
-        this.props.store.spotToGraphics.removeFileItem(fileIndex);
-    };
-
-    private sendFilesHandler =  async (toEDL) => {
-        await this.props.store.spotToGraphics.sendFiles(this.withGraphicsStatus, this.completedCheckboxStatus, toEDL);
-        if (this.props.forceUpdating) {
-            this.props.forceUpdating();
-        }
-    }
-
-    private sendHandler = (bool) => e => {
-        if (bool) {
-            this.sendFilesHandler(false);
-            return;
-        } else {
-            this.modalConfirmToggle();
-        }
-    }
-
-    modalButtonHandler = (value) => {
-        if (value) {
-            this.modalConfirmToggle();
-            this.sendFilesHandler(true);
-        } else {
-            this.modalConfirmToggle();
-        }
-    }
-
 }
