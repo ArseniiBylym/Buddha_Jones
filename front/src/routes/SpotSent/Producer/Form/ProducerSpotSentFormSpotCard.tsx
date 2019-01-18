@@ -28,6 +28,7 @@ import { ProjectPermissions } from '../../../../store';
 import { SpotSentStore } from '../../../../store/AllStores';
 import { UserPermissionKey } from '../../../../types/projectPermissions';
 import { SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
+import { Modal } from 'components/Modals';
 
 // Styles
 const s = require('./ProducerSpotSentForm.css');
@@ -49,6 +50,8 @@ interface ProducerSpotSentFormSpotCardState {
     textareaValue: string;
     textareaEmpty: boolean;
     files: any;
+    finishModal: boolean;
+    modalCallback: string;
 }
 
 // Types
@@ -65,6 +68,8 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
         textareaValue: '',
         textareaEmpty: true,
         files: [],
+        finishModal: false,
+        modalCallback: ''
     };
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -126,6 +131,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
 
     public render() {
         return (
+            <>
             <Card
                 // title={'#' + (this.props.spotIndex + 1)}
                 // subTitle="Spot sent"
@@ -214,17 +220,18 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                     this.projectPermissions.loggedInUserPermissions[UserPermissionKey.SpotSentFinishProdAccept]
                         .canEdit &&
                     this.props.spot.line_status_id &&
-                    (this.props.spot.line_status_id === 2 || this.props.spot.line_status_id === 3) && (
+                    (this.props.spot.line_status_id === 2 || this.props.spot.line_status_id === 3 || this.props.spot.line_status_id === 4) && (
                         <Section>
                             <div className={s.acceptButtonsContainer}>
                                 {this.props.spot.isFinishingRequest &&
                                     this.props.spot.version &&
                                     this.props.spot.version.finishAccept !== undefined && 
                                     (this.props.spot.line_status_id === 2 || 
-                                    this.props.spot.line_status_id === 3 && !this.props.spot.version.finishAccept) && (
+                                    this.props.spot.line_status_id === 3 && !this.props.spot.version.finishAccept ||
+                                    this.props.spot.line_status_id === 4 && !this.props.spot.version.finishAccept) && (
                                         <CheckmarkSquare
                                             key={'finish-accept'}
-                                            onClick={this.handleFinishAccept}
+                                            onClick={this.props.spot.version.finishAccept ? this.handleFinishAccept : this.showModal('finish')}
                                             checked={this.props.spot.version.finishAccept}
                                             label={'Finish Accept'}
                                             type={'no-icon'}
@@ -233,17 +240,18 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                                     )}
                                 {this.props.spot.version && this.props.spot.version.prodAccept !== undefined && 
                                 (this.props.spot.line_status_id === 2 || 
-                                this.props.spot.line_status_id === 3 && !this.props.spot.version.prodAccept) && (
+                                this.props.spot.line_status_id === 3 && !this.props.spot.version.prodAccept ||
+                                this.props.spot.line_status_id === 4 && !this.props.spot.version.prodAccept) && (
                                     <CheckmarkSquare
                                         key={'prod-accept'}
-                                        onClick={this.handleProdAccept}
+                                        onClick={this.props.spot.version.prodAccept ? this.handleProdAccept : this.showModal('production')}
                                         checked={this.props.spot.version.prodAccept}
                                         label={'Production Accept'}
                                         type={'no-icon'}
                                         labelOnLeft={true}
                                     />
                                 )}
-                                {this.props.spot.line_status_id === 3 && this.isAcceptButtonVisible() && 
+                                {(this.props.spot.line_status_id === 3 || this.props.spot.line_status_id === 4) && this.isAcceptButtonVisible() && 
                                     <div className={s.acceptedLabels}>
                                         {this.props.spot.version && this.props.spot.version.finishAccept && <span>Finish accepted</span>}
                                         {this.props.spot.version && this.props.spot.version.prodAccept && <span>Production accepted</span>}
@@ -252,7 +260,50 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                         </Section>
                     )}
             </Card>
+            <Modal
+                show={this.state.finishModal}
+                title={`Please confirm acceptance`}
+                closeButton={false}
+                type="alert"
+                actions={[
+                    {
+                        onClick: () => { this.modalButtonHandler(true); },
+                        closeOnClick: false,
+                        label: 'Confirm',
+                        type: 'default',
+                    },
+                    {
+                        onClick: () => { this.modalButtonHandler(false); },
+                        closeOnClick: false,
+                        label: 'Cancel',
+                        type: 'alert',
+                    },
+                ]}
+            />
+            </>
         );
+    }
+
+    private modalButtonHandler = (isConfirm) => {
+        this.setState({
+            finishModal: false,
+        });
+        if (isConfirm) {
+            if ( this.props.spot.version && this.state.modalCallback === 'finish') {
+                this.props.spot.version.finishAccept ? this.handleFinishAccept(false) : this.handleFinishAccept(true);
+            } else if ( this.props.spot.version && this.state.modalCallback === 'production') {
+                this.props.spot.version.prodAccept ? this.handleProdAccept(false) : this.handleProdAccept(true);
+            }
+        } else {
+            return;
+        }
+    }
+
+    private showModal = (callback) => e => {
+        this.setState({
+            finishModal: true,
+            modalCallback: callback,
+        });
     }
 
     private isAcceptButtonVisible = () => {
