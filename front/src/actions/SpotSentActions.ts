@@ -569,6 +569,9 @@ export class SpotSentActionsClass {
             }
         } else if (SpotSentStore.spotSentDetails.framerate && !SpotSentStore.spotSentDetails.framerate.includes(framRate)) {
             SpotSentStore.spotSentDetails.framerate.push(framRate);
+        } else if (!SpotSentStore.spotSentDetails.framerate) {
+            SpotSentStore.spotSentDetails.framerate = [];
+            SpotSentStore.spotSentDetails.framerate.push(framRate);
         }
     
     }
@@ -580,6 +583,9 @@ export class SpotSentActionsClass {
                 SpotSentStore.spotSentDetails.raster_size.splice(i, 1);
             }
         } else if (SpotSentStore.spotSentDetails.raster_size && !SpotSentStore.spotSentDetails.raster_size.includes(resterSize)) {
+            SpotSentStore.spotSentDetails.raster_size.push(resterSize);
+        } else if (!SpotSentStore.spotSentDetails.raster_size) {
+            SpotSentStore.spotSentDetails.raster_size = [];
             SpotSentStore.spotSentDetails.raster_size.push(resterSize);
         }
     }
