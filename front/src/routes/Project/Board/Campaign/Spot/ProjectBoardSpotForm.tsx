@@ -229,7 +229,7 @@ export class ProjectBoardSpotForm extends React.Component<Props & AppOnlyStoreSt
                                     </DropdownContainer>
                                 )}
                             </div>
-                            <div>
+                            {/* <div>
                                 {this.props.userCanEditGraphicsRevisions &&
                                 this.form.numberOfRevisions !== 0 && (
                                     <Toggle
@@ -248,7 +248,7 @@ export class ProjectBoardSpotForm extends React.Component<Props & AppOnlyStoreSt
                                         }}
                                     />
                                 )}
-                            </div>
+                            </div> */}
                         </div>
                     )}
 

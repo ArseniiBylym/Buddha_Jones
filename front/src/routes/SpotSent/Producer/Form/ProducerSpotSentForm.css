@@ -116,3 +116,6 @@
         font-size: 12px;
     }
 }
+.withFlexRow{
+    flex-flow: row nowrap;
+}
