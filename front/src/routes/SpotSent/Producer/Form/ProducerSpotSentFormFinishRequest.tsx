@@ -115,7 +115,7 @@ class ProducerSpotSentFormFinishRequest extends React.Component<ProducerSpotSent
                 }
                 <div className={s.finishRequestSection}>
                     <h3>Additional Finishing needs</h3>
-                    <div className={classNames(s.sentViaMethodsContainer, s.sentViaMethodsContainer__withInputFields)}>
+                    <div className={classNames(s.sentViaMethodsContainer, s.sentViaMethodsContainer__withInputFields, this.getFlexDirrection(spotSentDetails.finish_option))}>
                         {spotSentDetails.finish_option && (spotSentDetails.finish_option as SpotSentValueParentChildForSubmit).parent === 2 &&
                             <>
                             <Checkmark
@@ -226,6 +226,14 @@ class ProducerSpotSentFormFinishRequest extends React.Component<ProducerSpotSent
                 }
             </Section>
         );
+    }
+
+    private getFlexDirrection = (value) => {
+        if (value.parent === 1) {
+            return s.withFlexRow;
+        } else {
+            return '';
+        }
     }
 
     private getTypeFinishingChildren(): JSX.Element[] {
