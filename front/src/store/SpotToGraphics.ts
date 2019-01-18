@@ -3,9 +3,12 @@ import { API, APIPath } from 'fetch';
 
 export class SpotToGraphics {
     @observable public isModalOpen: boolean = false;  // change it before commit 
+    @observable public isModalQCOpen: boolean = false;  // change it before commit 
     @observable public fetchedSpot: any = '';
     @observable public pending: boolean = false;
-
+    @observable public spotQCNotApproved: boolean = false;
+    @observable public spotQCApprovedToSend: boolean = false;
+    
     @computed
     public get isFilesEmpty (): boolean {
         if (this.fetchedSpot.graphicsFile.length === 0 || (this.fetchedSpot.graphicsFile.length === 1 && this.fetchedSpot.graphicsFile[0].fileName === '')) {
@@ -14,15 +17,36 @@ export class SpotToGraphics {
             return false;
         }
     }
+
+    @action
+    public toggleSpotQCApproved = () => {
+        this.spotQCNotApproved = !this.spotQCNotApproved;
+    }
     
     @action
-    public getSpotFromApi = async (id: number) => {
+    public toggleSpotQCApprovedToSend = () => {
+        this.spotQCApprovedToSend = !this.spotQCApprovedToSend;
+    
+    }
+
+    @action
+    public clearApproverCheckboxes = () => {
+        this.spotQCApprovedToSend = false;
+        this.spotQCNotApproved = false;
+    }
+
+    @action
+    public getSpotFromApi = async (id: number, modalName: string) => {
         this.pending = true;
         try {
             const response = (await API.getData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + `/${id}`)) as string[];
             this.fetchedSpot = response;
             this.pending = false;
-            this.isModalOpen = true;
+            if (modalName === 'graphics') {
+                this.isModalOpen = true;
+            } else if (modalName === 'qc') {
+                this.isModalQCOpen = true;
+            }
             return response;
         } catch (error) {
             throw error;
@@ -90,6 +114,11 @@ export class SpotToGraphics {
         this.isModalOpen = !this.isModalOpen;
     }
 
+    @action
+    public toggleQCModal = () => {
+        this.isModalQCOpen = !this.isModalQCOpen;
+    }
+
     @action 
     public clearStorage = () => {
         this.fetchedSpot.graphicsFile = [];
@@ -126,6 +155,30 @@ export class SpotToGraphics {
             // await API.putJSONData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + this.fetchedSpot.spotSentId, body);
             await API.putData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + this.fetchedSpot.spotSentId, body);
             this.toggleModal();
+        } catch (error) {
+            throw (error);
+        }
+    }
+
+    @action
+    public changeQCApi = async (note: string) => {
+        const body: any = {
+            line_status_id: 4,
+        };
+        if (this.spotQCApprovedToSend) {
+            body.line_status_id = 5;
+            body.qc_approved = 1;
+        }
+        if (this.spotQCNotApproved) {
+            body.line_status_id = 3;
+            body.qc_approved = 0;
+        } 
+        if (this.spotQCNotApproved && note && note.length > 0) {
+            body.qc_note = note;
+        }
+        try {
+           await API.putData(APIPath.SPOT_SENT_FOR_GRAPHICS_USER + '/' + this.fetchedSpot.spotSentId, body);
+            this.toggleQCModal();
         } catch (error) {
             throw (error);
         }

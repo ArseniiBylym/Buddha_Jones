@@ -1,0 +1,206 @@
+.SpotToGraphicsModal{
+    /* width: 100vw;
+    height: 100vh; */
+
+}
+.header{
+    background-color: #3e99b9;
+    padding: 30px;
+    /* display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: space-between; */
+
+}
+.header__spotDetails{
+    color: white;
+    font-size: 16px;
+}
+.header__mainInfo{
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+}
+.header_backButton{
+    cursor: pointer;
+    color: #F7F7F7;
+    font-size: 1.2em;
+}
+.dateSelect{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: .8em;
+    padding: 20px;
+    padding-bottom: 0;
+}
+.dateSelect__item{
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+.labels{
+    padding: 20px;
+    background-color: #e8dfd7;
+    margin-top: 20px;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+.label__item{
+    padding: 5px;
+    border: 2px solid #5a4d3f;
+    margin: 0 5px;
+    font-size: .8em;
+}
+.noGraphicsContainer{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #e8dfd7;
+    padding: 20px;
+    position: relative;
+}
+.noGraphicsVersion{
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    & > span {
+        color: #a2a2a2;
+        display: block;
+        margin-right: 5px;
+    };
+}
+.noGraphicsContainer__wrapper{
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #e8dfd7;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.noGraphicsCheckbox{
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #3e99b9;
+    margin-right: 5px;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.buttonSend__container{
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 10px;
+}
+.buttonSend__item{
+    /* margin: 10px 20px 0 auto;  */
+    margin: 9px 0;
+    padding: 5px;
+    background-color: #e8dfd7;
+    width: 100px;
+    text-align: center;
+    cursor: pointer;
+    /* display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: flex-end; */
+}
+
+.modalsConfirmButtons__container{
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.fileCheckbox{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.fileCheckbox__empty{
+    border: 1px solid #3e99b9;
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.fileCheckbox__fill{
+    background-color: #3e99b9;
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.fileCheckbox__label{
+    margin-right: 30px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+.finishHouseContainer{
+    padding-top: 10px;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+}
+.finishHouseContainer__item{
+    font-size: .95em;
+    margin-right: 20px;
+    &>span{
+        margin-right: 10px;
+        color: rgb(126, 117, 109);
+        font-weight: 700;
+    }
+}
+
+
+.linkContainer{
+    padding: 10px 0;
+    & > .linkContainer__title{
+        padding-bottom: 5px;
+    }
+    & > .linkContainer__content{
+        width: 100%;
+        padding: 10px 16px;
+        border: 1px solid #cac7c4;
+        background: #f7f5f3;
+        font-size: .9em;
+        box-sizing: border-box;
+        border-radius: 3px;
+
+        & > a {
+            text-decoration: none;
+            color: black;
+        }
+    }
+}
+
+.navContainer {
+    padding: 20px 10px;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: flex-end;
+    & > label {
+        margin-right: 10px;
+    }
+}
+.commentsContainer {
+    padding: 10px 0;
+    & > .commentsContainer__title{
+        padding-bottom: 5px;
+    }
+}
