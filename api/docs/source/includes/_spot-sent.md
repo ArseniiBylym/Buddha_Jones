@@ -896,7 +896,7 @@ false | spot_sent_type | date| 1 | spot sent type. send 1/2 (1=AV, 2=graphicsonl
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-false | spot_sent_id | int | null | spot sent it (send it for update or deleting existing entry)
+false | spot_sent_id | int | null | spot sent it (send it for update or deleting existing entry). send spot_sent_id = null or ignore this param to add a new row
 **true** | campaign_id | int | null | campaign id
 **true** | spot_id | int | null | spot id
 false | version_id | int| null | Version Id
