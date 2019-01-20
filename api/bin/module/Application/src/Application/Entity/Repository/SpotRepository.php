@@ -345,7 +345,7 @@ class SpotRepository extends EntityRepository
                     : null;
                 $spotDataRow['graphicsFile'] = $this->getSpotSendFiles($spotDataRow['spotSentId']);
 
-                unset($spotDataRow['spotSentId']);
+                // unset($spotDataRow['spotSentId']);
             }
 
             if (!empty($filter['details'])) {
@@ -559,6 +559,8 @@ class SpotRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         $result = array_map(function ($row) {
+            $row['spotSentId'] = (int)$row['spotSentId'];
+            $row['requestId'] = (int)$row['requestId'];
             $row['campaignId'] = (int)$row['campaignId'];
             $row['projectCampaignId'] = (int)$row['projectCampaignId'];
             $row['spotId'] = (int)$row['spotId'];
@@ -1166,8 +1168,8 @@ class SpotRepository extends EntityRepository
                 $dql .= " GROUP BY ss.id 
                     ORDER BY ss.id ASC";
             } else {
-                $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId
-                    ORDER BY p.projectName ASC , c.campaignName ASC";
+                $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId, ss.lineStatusId
+                    ORDER BY p.projectName ASC , c.campaignName ASC, s.spotName ASC, v.versionName ASC";
             }
         }
 
@@ -1231,7 +1233,6 @@ class SpotRepository extends EntityRepository
             $query->setParameter('end_date', $endDate);
         }
 
-
         $result = $query->getArrayResult();
 
         if (!empty($filter['get_count'])) {
@@ -1269,6 +1270,10 @@ class SpotRepository extends EntityRepository
                         $graphicsStatus = 'All Resend';
                     }
                 }
+            }
+
+            if ($ssRow['spotLineStatusId'] == 3 and $ssRow['qcApproved'] === 0) {
+                $ssRow['spotLineStatus'] = "QC Not Approved";
             }
 
             if (!empty($ssRow['finishOption'])) {
@@ -1368,7 +1373,7 @@ class SpotRepository extends EntityRepository
                 continue;
             }
 
-            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']])) {
+            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId'] . '_' . $row['versionId']])) {
                 $spotRes = array(
                     'spotId' => (int)$row['spotId'],
                     'spotName' => $row['spotName'],
@@ -1400,7 +1405,7 @@ class SpotRepository extends EntityRepository
                     $spotRes['graphicsFile'] = $row['graphicsFile'];
                 }
 
-                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId']] = $spotRes;
+                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId'] . '_' . $row['versionId']] = $spotRes;
             }
         }
 

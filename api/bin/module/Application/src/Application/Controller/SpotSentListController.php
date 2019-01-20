@@ -96,7 +96,7 @@ class SpotSentListController extends CustomAbstractActionController
         $noGraphics = $this->_commonRepo->filterPostData($data, 'no_graphics', 'boolean', null);
         $graphicsFiles = $this->_commonRepo->filterPostData($data, 'graphics_file', 'array', null);
         $isPdf = $this->_commonRepo->filterPostData($data, 'is_pdf', 'int', null);
-        $qcApproved = $this->_commonRepo->filterPostData($data, 'qc_approved', 'int', null);
+        $qcApproved = (isset($data['qc_approved'])) ? (int)$data['qc_approved'] : null;
         $qcNote = $this->_commonRepo->filterPostData($data, 'qc_note', 'string', null);
         $qcLink = $this->_commonRepo->filterPostData($data, 'qc_link', 'string', null);
 
@@ -104,6 +104,10 @@ class SpotSentListController extends CustomAbstractActionController
             $graphicsStatusId = null;
         } else if ($spotLineStatusId == 6 && !$graphicsStatusId) {
             $graphicsStatusId = 1;
+        }
+
+        if ($spotLineStatusId == 5) {
+            $qcApproved = 1;
         }
 
         if ($graphicsFiles) {
@@ -216,6 +220,6 @@ class SpotSentListController extends CustomAbstractActionController
 
         $this->_em->flush();
 
-        // $this->_notificationRepo->sendSpotSentNoficationById($spotSentId);
+        $this->_notificationRepo->sendSpotSentNoficationById($spotSentId, $this->_user_id);
     }
 }
