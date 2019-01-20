@@ -472,6 +472,11 @@ export class SpotSentActionsClass {
     };
 
     @action
+    public inputLinkHandler = (value: string | null) => {
+        SpotSentStore.spotSentDetails.qc_link = value;
+    };
+
+    @action
     public resetFinishRequestForm = (): void => {
         SpotSentStore.spotSentDetails.full_lock = 0;
         SpotSentStore.spotSentDetails.notes = '';

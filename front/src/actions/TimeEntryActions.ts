@@ -582,6 +582,9 @@ export class TimeEntryActionsClass {
 
     @action
     public setCurrentViewToWeek = (forUser: TimeEntryUserWithType, anyDateFromTheWeek: Date) => {
+        if (new Date(anyDateFromTheWeek).getTime() > new Date().getTime() + 60 + 1000) {
+            return;
+        }
         anyDateFromTheWeek = typeof anyDateFromTheWeek !== 'undefined' ? anyDateFromTheWeek : new Date();
 
         const firstSunday = dateSetDayOfTheWeek(anyDateFromTheWeek, 0);
@@ -604,6 +607,16 @@ export class TimeEntryActionsClass {
 
         this.fetchTimeEntriesOfUser(forUser, date);
     };
+
+    @action
+    public showModalDamper = () => {
+        TimeEntryStore.isModalDamperVisible = true;
+    }
+
+    @action
+    public hideModalDamper = () => {
+        TimeEntryStore.isModalDamperVisible = false;
+    }
 
     @action
     public setEntryStartDate = (forUser: TimeEntryUserWithType, startDate: Date, resetValues: boolean = false) => {

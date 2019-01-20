@@ -8,6 +8,8 @@ import { TimeEntryActions, TimeApprovalActions } from 'actions';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { RemoveConfirmationModal } from '../../../components/RemoveConfiramtionModal';
 
+const s = require('./TimeEntryModal.scss');
+
 interface Props {
     openOnPage: 'time-entry' | 'time-approve';
 }
@@ -51,6 +53,7 @@ export class TimeEntryModal extends React.Component<Props & AppOnlyStoreState, {
                     closeButton={true}
                     preventBackdropClick={true}
                 >
+                    {timeEntry.isModalDamperVisible && <div className={s.modalDamper} />}
                     <TimeEntryCalendarDuration/>
 
                     <TimeEntryContent

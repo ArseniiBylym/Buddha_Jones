@@ -7,10 +7,10 @@ import {
 import { ButtonAdd, ButtonClose } from 'components/Button';
 import { Paragraph } from 'components/Content';
 import {
-    Checkmark,
     DropdownContainer,
     OptionsList,
-    OptionsListValuePropType
+    OptionsListValuePropType,
+    CheckmarkSquare
     } from 'components/Form';
 import { Input } from 'components/Form';
 import TextAreaFile from 'components/Form/TextAreaFile';
@@ -127,12 +127,12 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
     public render() {
         return (
             <Card
-                title={'#' + (this.props.spotIndex + 1)}
-                subTitle="Spot sent"
+                // title={'#' + (this.props.spotIndex + 1)}
+                // subTitle="Spot sent"
                 isExpandable={false}
-                headerElements={
-                    this.props.withGraphicsSection ? this.getCardHeadersForGraphics() : this.getCardHeaders()
-                }
+                // headerElements={
+                //     this.props.withGraphicsSection ? this.getCardHeadersForGraphics() : this.getCardHeaders()
+                // }
             >
                 <ProjectPicker
                     onChange={this.handleSpotChange}
@@ -147,6 +147,9 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                         version: this.props.spot.version,
                         customerId: this.props.clientId,
                     }}
+                    title={'#' + (this.props.spotIndex + 1)}
+                    index={this.props.spotIndex + 1}
+                    additionalElements={ this.props.withGraphicsSection ? this.getCardHeadersForGraphics() : this.getCardHeaders()}
                 />
 
                 <Section title={'Sent via'}>
@@ -210,13 +213,15 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                     this.projectPermissions.loggedInUserPermissions[UserPermissionKey.SpotSentFinishProdAccept]
                         .canEdit &&
                     this.props.spot.line_status_id &&
-                    this.props.spot.line_status_id === 2 && (
+                    (this.props.spot.line_status_id === 2 || this.props.spot.line_status_id === 3) && (
                         <Section>
                             <div className={s.acceptButtonsContainer}>
                                 {this.props.spot.isFinishingRequest &&
                                     this.props.spot.version &&
-                                    this.props.spot.version.finishAccept !== undefined && (
-                                        <Checkmark
+                                    this.props.spot.version.finishAccept !== undefined && 
+                                    (this.props.spot.line_status_id === 2 || 
+                                    this.props.spot.line_status_id === 3 && !this.props.spot.version.finishAccept) && (
+                                        <CheckmarkSquare
                                             key={'finish-accept'}
                                             onClick={this.handleFinishAccept}
                                             checked={this.props.spot.version.finishAccept}
@@ -225,8 +230,10 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                                             labelOnLeft={true}
                                         />
                                     )}
-                                {this.props.spot.version && this.props.spot.version.prodAccept !== undefined && (
-                                    <Checkmark
+                                {this.props.spot.version && this.props.spot.version.prodAccept !== undefined && 
+                                (this.props.spot.line_status_id === 2 || 
+                                this.props.spot.line_status_id === 3 && !this.props.spot.version.prodAccept) && (
+                                    <CheckmarkSquare
                                         key={'prod-accept'}
                                         onClick={this.handleProdAccept}
                                         checked={this.props.spot.version.prodAccept}
@@ -235,11 +242,25 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                                         labelOnLeft={true}
                                     />
                                 )}
+                                {this.props.spot.line_status_id === 3 && this.isAcceptButtonVisible() && 
+                                    <div className={s.acceptedLabels}>
+                                        {this.props.spot.version && this.props.spot.version.finishAccept && <span>Finish accepted</span>}
+                                        {this.props.spot.version && this.props.spot.version.prodAccept && <span>Production accepted</span>}
+                                    </div>} 
                             </div>
                         </Section>
                     )}
             </Card>
         );
+    }
+
+    private isAcceptButtonVisible = () => {
+        if (this.props.spot && this.props.spot.version) {
+            if (this.props.spot.version.finishAccept || this.props.spot.version.prodAccept) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private getSectionHeaders = () => {
@@ -278,7 +299,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
 
     private getCardHeadersForGraphics = () => (
         <React.Fragment>
-            <Checkmark
+            <CheckmarkSquare
                 key="spot-resend-checkmark"
                 onClick={this.handleSpotPDFToggle(this.props.spot.isPDF)}
                 checked={this.props.spot.isPDF}
@@ -294,7 +315,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
 
     private getCardHeaders = () => (
         <React.Fragment>
-            <Checkmark
+            <CheckmarkSquare
                 key="finishing-request-checkmark"
                 onClick={this.handleFinishingRequestToggle}
                 checked={this.props.spot.isFinishingRequest}
@@ -304,7 +325,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                 type={'no-icon'}
             />
 
-            <Checkmark
+            <CheckmarkSquare
                 key="spot-resend-checkmark"
                 onClick={this.handleSpotResendToggle}
                 checked={this.props.spot.isResend}
@@ -366,7 +387,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
             return SpotSentStore.spotSentSentViaMethodOptions.map(
                 (method: SpotSentOptionsChildrenFromApi, index: number) => {
                     return (
-                        <Checkmark
+                        <CheckmarkSquare
                             key={'sent-via-method-' + index}
                             onClick={() => {
                                 this.handleSentViaMethodsChange(method.id);
@@ -391,7 +412,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
             return SpotSentStore.spotSentGraphicsSentViaMethodOptions.map(
                 (method: SpotSentOptionsChildrenFromApi, index: number) => {
                     return (
-                        <Checkmark
+                        <CheckmarkSquare
                             key={'sent-via-method-' + index}
                             onClick={() => {
                                 this.handleGraphicsSentViaMethodsChange(method.id);

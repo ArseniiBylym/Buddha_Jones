@@ -206,4 +206,9 @@
     &.noPadding {
         padding: 0;
     }
+    & > div {
+        & > hr{
+            margin: 10px 0px;
+        }
+    }
 }

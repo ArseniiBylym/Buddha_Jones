@@ -3,6 +3,7 @@
 }
 
 :global(.sectionHeader) {
+  margin-top: 12px;
   margin-bottom: 12px;
   align-items: center;
 }
@@ -51,4 +52,61 @@
 
 :global(.sectionInner) {
   width: 100%;
+}
+
+:global(.secontHeaderSpotContainer) {
+  display: none;
+}
+
+:global(.sectionInner .Spot_project_picker) {
+
+  /* background-color: pink; */
+  & > :global(.sectionInner) {
+    display: flex;
+    flex-flow: column nowrap;
+    & > :global(.secontHeaderSpotContainer) {
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: flex-end;
+      width: 100%;
+
+      & > :global(.controls) {
+        display: flex;
+        & > :global(label){
+          margin-right: 10px
+        }
+      }
+      & > :global(.clearSectionAndSubtile) {
+        align-self: stretch;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: space-between;
+
+        & > :global(.notificationContainer) {
+          font-size: 14px;
+          color: #838383;
+        }
+      }
+    }
+  }
+  
+  & > :global(.sectionHeader){
+    justify-content: flex-start;
+    background-color: #eeeae7;
+    margin: -24px -24px 12px -24px;
+    padding: 10px 24px 12px 24px;
+
+    & > :global(.col.sectionHeaderTitle) {
+      flex-grow: 0;
+    }
+
+    & > :global(.col.sectionElements) {
+      & > :global(.row.rowNoGutter){
+        & > :global(.col) {
+          flex-grow: 1;
+        }
+      }
+    }
+  }
 }

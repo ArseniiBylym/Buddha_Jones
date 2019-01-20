@@ -3,7 +3,7 @@ import { SpotSentActions } from 'actions';
 import { ButtonSend } from 'components/Button';
 import { history } from 'App';
 import { Section } from 'components/Section';
-import { Checkmark } from 'components/Form';
+import { CheckmarkSquare, Input } from 'components/Form';
 import { ClientContact } from 'types/clients';
 // import { AppState } from '../../../../store/AllStores';
 import { match } from 'react-router';
@@ -42,42 +42,66 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
         return (
             <Section>
                 <div className={s.summary}>
-                        {this.getSpotLineStatusId() !== 2 && <Checkmark
-                            onClick={this.completedToggleHandler}
-                            checked={this.state.isGraphicsCompleted}
-                            label={this.props.prevLocation && this.props.prevLocation === 'graphics' ? 'Completed' : 'Ready to be sent'}
-                            labelOnLeft={true}
-                            type={'no-icon'}
-                        />}
-                    {/* {this.props.prevLocation && this.props.prevLocation === 'graphics' ? (
-                        <Checkmark
-                            onClick={this.completedToggleHandler}
-                            checked={this.state.isGraphicsCompleted}
-                            label="Completed"
-                            labelOnLeft={true}
-                            type={'no-icon'}
-                        />
-                        ) 
-                        : (
-                        <Checkmark
-                            onClick={this.completedToggleHandler}
-                            checked={this.state.isGraphicsCompleted}
-                            label="Ready to be sent"
-                            labelOnLeft={true}
-                            type={'no-icon'}
-                        />
-                        )
-
-                    } */}
-                    
+                    {this.getCheckmark()}
+                    {/* {this.getSpotLineStatusId() !== 2 && <Checkmark
+                        onClick={this.completedToggleHandler}
+                        checked={this.state.isGraphicsCompleted}
+                        label={this.props.prevLocation && this.props.prevLocation === 'graphics' ? 'Completed' : 'Ready to be sent'}
+                        labelOnLeft={true}
+                        type={'no-icon'}
+                    />} */}
                     <ButtonSend
                         onClick={this.handleSubmit}
                         label={this.saveButtonText}
                         iconColor="orange"
                     />
                 </div>
+                {this.getLinkField()} 
             </Section>
         );
+    }
+
+    private getLinkField = () => {
+        if (this.getSpotLineStatusId() === 3 && this.state.isGraphicsCompleted) {
+            return (
+                <div className={s.link}>
+                    <div>Link:</div>
+                    <Input label="Paste link here .." onChange={this.inputLinkHandler}/>
+                </div> 
+            );
+        }
+        return null;
+    }
+
+    private inputLinkHandler = (e) => {
+        SpotSentActions.inputLinkHandler(e.target.value);
+    }
+
+    private getCheckmark = () => {
+        if (this.getSpotLineStatusId() === 2) {
+            return null;
+        } else if (this.getSpotLineStatusId() === 3 && 
+            this.props.prodAccept && this.props.prodAccept.prod_accept === 1) {
+                return (
+                    <CheckmarkSquare
+                        onClick={this.completedToggleHandler}
+                        checked={this.state.isGraphicsCompleted}
+                        label="Ready for QC"
+                        labelOnLeft={true}
+                        type={'no-icon'}
+                    />
+                );
+        } else {
+            return (
+                <CheckmarkSquare
+                    onClick={this.completedToggleHandler}
+                    checked={this.state.isGraphicsCompleted}
+                    label={this.props.prevLocation && this.props.prevLocation === 'graphics' ? 'Completed' : 'Ready to be sent'}
+                    labelOnLeft={true}
+                    type={'no-icon'}
+                />
+            );
+        }
     }
 
     private completedToggleHandler = () => {
@@ -121,6 +145,12 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                     } else {
                         spot.line_status_id = 2;
                     }
+                } else if (this.getSpotLineStatusId() === 3) {
+                    if (this.state.isGraphicsCompleted) {
+                        spot.line_status_id = 4;
+                    } else {
+                        spot.line_status_id = 3;
+                    }
                 } else if (this.props.prevLocation && this.props.prevLocation === 'graphics') {
                     if (this.state.isGraphicsCompleted) {
                         spot.line_status_id = 4;
@@ -162,7 +192,7 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
     }
 
     private get saveButtonText(): string {
-        if (this.getSpotLineStatusId() === 2) {
+        if (this.getSpotLineStatusId() === 2 || this.getSpotLineStatusId() === 3) {
             return 'Save';
         } else if (this.state.isGraphicsCompleted) {
             return 'Save';

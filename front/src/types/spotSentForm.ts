@@ -62,4 +62,5 @@ export interface SpotSentValueForSubmit {
     graphics_note: string | null;
     music_note: string | null;
     final_narr: string | null;
+    qc_link?: string | null;
 }

@@ -96,7 +96,7 @@ class SpotSentListController extends CustomAbstractActionController
         $noGraphics = $this->_commonRepo->filterPostData($data, 'no_graphics', 'boolean', null);
         $graphicsFiles = $this->_commonRepo->filterPostData($data, 'graphics_file', 'array', null);
         $isPdf = $this->_commonRepo->filterPostData($data, 'is_pdf', 'int', null);
-        $qcApproved = $this->_commonRepo->filterPostData($data, 'qc_approved', 'int', null);
+        $qcApproved = (isset($data['qc_approved'])) ? (int)$data['qc_approved'] : null;
         $qcNote = $this->_commonRepo->filterPostData($data, 'qc_note', 'string', null);
         $qcLink = $this->_commonRepo->filterPostData($data, 'qc_link', 'string', null);
 

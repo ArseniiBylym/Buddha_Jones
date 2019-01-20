@@ -169,7 +169,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
                 <AnimateHeight height={spotSentDetails.project_id ? 'auto' : 0}>
                     {spotSentDetails.spot_version instanceof Array && (
-                        <Section title="Spots">
+                        <Section title="Spots" noSeparator={true}>
                             {(spotSentDetails.spot_version as SpotSentVersionForSubmit[]).map(
                                 (spot: SpotSentVersionForSubmit, spotIndex: number) => {
                                     return (
@@ -272,7 +272,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     <AnimateHeight height={this.isFinishingTypeSectionOpen ? 'auto' : 0}>
                         <ProducerSpotSentFormFinishRequest />
                     </AnimateHeight>
-                    <FormSendSection {...this.props} prevLocation={this.state.prevLocation} files={this.state.files} />
+                    <FormSendSection {...this.props} prevLocation={this.state.prevLocation} files={this.state.files} prodAccept={spotSentDetails.spot_version[0]} />
                 </AnimateHeight>
                 <FormJsonSection spotSentDetails={spotSentDetails} />
             </>
