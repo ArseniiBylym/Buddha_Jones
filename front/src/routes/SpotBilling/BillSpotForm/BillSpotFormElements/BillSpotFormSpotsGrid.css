@@ -5,7 +5,7 @@
     align-items: stretch;
 
     & > div {
-        flex: 1 0 50%;
+        flex: 1 0 33%;
         padding: 24px;
         box-sizing: border-box;
         border-left: 1px solid #e2dbd5;

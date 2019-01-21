@@ -2,6 +2,7 @@ import { ButtonEdit } from 'components/Button';
 import { Paragraph } from 'components/Content';
 import { Card, Section } from 'components/Section';
 import { DateHandler } from 'helpers/DateHandler';
+import { StringHandler } from 'helpers/StringHandler';
 import { computed, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
@@ -36,20 +37,8 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
         return this.calculateTotalMinutesOfTimeEntries(this.props.unbilledProjectTimeEntries);
     }
 
-    @computed private get unbilledProjectNonBillableTimeEntriesTotalMinutes(): number {
-        return this.calculateTotalMinutesOfTimeEntries(
-            this.props.unbilledProjectTimeEntries.filter(e => e.activityIsBillable === false)
-        );
-    }
-
     @computed private get unbilledProjectCampaignTimeEntriesTotalMinutes(): number {
         return this.calculateTotalMinutesOfTimeEntries(this.props.unbilledProjectCampaignTimeEntries);
-    }
-
-    @computed private get unbilledProjectCampaignNonBillableTimeEntriesTotalMinutes(): number {
-        return this.calculateTotalMinutesOfTimeEntries(
-            this.props.unbilledProjectCampaignTimeEntries.filter(e => e.activityIsBillable === false)
-        );
     }
 
     @computed private get remainingSpotsToBill(): SpotBillFormSpot[] {
@@ -154,33 +143,24 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                                 <div>
                                     <div className={s.titles}>
                                         <h3>
+                                            {this.props.projectCampaignName
+                                                ? this.props.projectCampaignName
+                                                : this.props.campaignName}
+                                        </h3>
+                                        <h4>{this.props.projectCampaignName ? this.props.campaignName : 'Campaign'}</h4>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div className={s.titles}>
+                                        <h3>
                                             {this.unbilledProjectTimeEntriesTotalMinutes > 0
                                                 ? DateHandler.convertTotalMinutesToHM(
                                                       this.unbilledProjectTimeEntriesTotalMinutes
                                                   )
-                                                : 'None'}
+                                                : '0h 0min'}
                                         </h3>
                                         <h4>Unbilled project activities</h4>
-
-                                        <Paragraph
-                                            size="small"
-                                            type={
-                                                this.unbilledProjectNonBillableTimeEntriesTotalMinutes > 0
-                                                    ? 'alert'
-                                                    : 'dim'
-                                            }
-                                        >
-                                            {(this.unbilledProjectNonBillableTimeEntriesTotalMinutes > 0 && (
-                                                <React.Fragment>
-                                                    <strong>
-                                                        {DateHandler.convertTotalMinutesToHM(
-                                                            this.unbilledProjectNonBillableTimeEntriesTotalMinutes
-                                                        )}
-                                                    </strong>
-                                                    {' non-billable'}
-                                                </React.Fragment>
-                                            )) || <span>No non-billable hours</span>}
-                                        </Paragraph>
                                     </div>
                                 </div>
 
@@ -191,30 +171,9 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                                                 ? DateHandler.convertTotalMinutesToHM(
                                                       this.unbilledProjectCampaignTimeEntriesTotalMinutes
                                                   )
-                                                : 'None'}
+                                                : '0h 0min'}
                                         </h3>
                                         <h4>Unbilled campaign activities</h4>
-
-                                        <Paragraph
-                                            size="small"
-                                            type={
-                                                this.unbilledProjectCampaignNonBillableTimeEntriesTotalMinutes > 0
-                                                    ? 'alert'
-                                                    : 'dim'
-                                            }
-                                        >
-                                            {(this.unbilledProjectCampaignNonBillableTimeEntriesTotalMinutes > 0 && (
-                                                <React.Fragment>
-                                                    <strong>
-                                                        {DateHandler.convertTotalMinutesToHM(
-                                                            this
-                                                                .unbilledProjectCampaignNonBillableTimeEntriesTotalMinutes
-                                                        )}
-                                                    </strong>
-                                                    {' non-billable'}
-                                                </React.Fragment>
-                                            )) || <span>No non-billable hours</span>}
-                                        </Paragraph>
                                     </div>
                                 </div>
                             </React.Fragment>
