@@ -2,19 +2,13 @@
 
 namespace Application\Controller;
 
-use Application\Entity\RediProjectHistory;
-use Application\Entity\RediSpot;
 use Zend\View\Model\JsonModel;
-use League\Csv\Reader;
-
-use Application\Entity\RediCcStatement;
-use Application\Entity\RediCcStatementLine;
 
 class SpotSentListController extends CustomAbstractActionController
 {
     public function getList()
     {
-        $subModuleId = (int)trim($this->getRequest()->getQuery('sub_module_id', 0));
+        $subModuleId = (int) trim($this->getRequest()->getQuery('sub_module_id', 0));
 
         $filter['current_user_id'] = $this->_user_id;
         $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
@@ -25,11 +19,11 @@ class SpotSentListController extends CustomAbstractActionController
 
         if ($checkSubModuleAccess) {
             if ($subModuleId == 1) { // initiate
-                $filter['line_status_id'] = array(1,2,3,4,5,6);
+                $filter['line_status_id'] = array(1, 2, 3, 4, 5, 6);
             } else if ($subModuleId == 2) { // post spot sent
-                $filter['line_status_id'] = array(2,3);
+                $filter['line_status_id'] = array(2, 3);
             } else if ($subModuleId == 3) { // Spot sent for finish
-                $filter['line_status_id'] = array(2,3);
+                $filter['line_status_id'] = array(2, 3);
             } else if ($subModuleId == 4) { // Spots for Graphics
                 $filter['graphics_status_id'] = array(1, 3);
             } else if ($subModuleId == 5) { // Spots for EDL
@@ -37,9 +31,9 @@ class SpotSentListController extends CustomAbstractActionController
             } else if ($subModuleId == 6) { // Spot for Billing
                 $filter['spot_sent_for_billing'] = true;
             } else if ($subModuleId == 7) { // Graphics only requests
-                $filter['line_status_id'] = array(1,6);
+                $filter['line_status_id'] = array(1, 6);
                 $filter['spot_sent_type'] = array(2);
-            }  else if ($subModuleId == 9) { // Spot to qc
+            } else if ($subModuleId == 9) { // Spot to qc
                 $filter['line_status_id'] = array(4);
             }
 
@@ -72,15 +66,14 @@ class SpotSentListController extends CustomAbstractActionController
             $response = array(
                 'status' => 1,
                 'message' => "Request successful",
-                'data' => $responseData
+                'data' => $responseData,
             );
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Spot sent not found'
+                'message' => 'Spot sent not found',
             );
         }
-
 
         if ($response['status'] == 0) {
             $this->getResponse()->setStatusCode(400);
@@ -96,7 +89,7 @@ class SpotSentListController extends CustomAbstractActionController
         $noGraphics = $this->_commonRepo->filterPostData($data, 'no_graphics', 'boolean', null);
         $graphicsFiles = $this->_commonRepo->filterPostData($data, 'graphics_file', 'array', null);
         $isPdf = $this->_commonRepo->filterPostData($data, 'is_pdf', 'int', null);
-        $qcApproved = (isset($data['qc_approved'])) ? (int)$data['qc_approved'] : null;
+        $qcApproved = (isset($data['qc_approved'])) ? (int) $data['qc_approved'] : null;
         $qcNote = $this->_commonRepo->filterPostData($data, 'qc_note', 'string', null);
         $qcLink = $this->_commonRepo->filterPostData($data, 'qc_link', 'string', null);
 
@@ -198,6 +191,32 @@ class SpotSentListController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
+    public function delete($id)
+    {
+        $spotSentRow = $this->_spotSentRepository->find($id);
+
+        if ($spotSentRow) {
+            $this->_em->remove($spotSentRow);
+            $this->_em->flush();
+
+            $response = array(
+                'status' => 1,
+                'message' => 'Spot sent deleted successfully.',
+            );
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'Spot sent not found.',
+            );
+        }
+
+        if (!$response['status']) {
+            $this->getResponse()->setStatusCode(400);
+        }
+
+        return new JsonModel($response);
+    }
+
     public function spotSentSubmissionPostProcess($spotSentId)
     {
         $spotSent = $this->_spotSentRepository->find($spotSentId);
@@ -208,7 +227,7 @@ class SpotSentListController extends CustomAbstractActionController
 
         // update all graphics resend field
         $spotSentFiles = $this->_spotSentFileRepository->findBy(array('spotSentId' => $spotSentId));
-        $spotSentFiles = array_map(function($file) {
+        $spotSentFiles = array_map(function ($file) {
             return $file->getResend();
         }, $spotSentFiles);
 
