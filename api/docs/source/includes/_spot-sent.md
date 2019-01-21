@@ -1185,7 +1185,7 @@ axios.post('/spot-sent-validate', {
 
 ### HTTP Request
 
-`POST /spot-sent-validate/:spot_sent_id`
+`POST /spot-sent-validate`
 
 ### Query Parameters
 
