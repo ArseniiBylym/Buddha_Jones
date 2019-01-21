@@ -4547,47 +4547,6 @@ Retrieve list of sent spot via method list.
 }
 ```
 
-## Validate Spot Sent 
-
-Validate spot sent entry.
-
-> Sample request
-
-```javascript
-axios.put('/spot-sent-validate/:spot_sent_id', {
-    final:1,
-    status:5,
-    spot_version:[{"spot_id":1,"version_id":2,"worker":[1,2,3]},{"spot_id":2,"version_id":3,"worker":[4]}],
-    work_stage:[2,3,4],
-    file:[{"name":"file one","description":"some file desc"},{"name":"file two"}]
-});
-```
-
-> 200: success response
-
-```json
-{
-  "status": 1,
-  "message": "Request successful."
-}
-```
-
-### HTTP Request
-
-`PUT /spot-sent-validate/:spot_sent_id`
-
-### Query Parameters
-
-Required | Parameter | Type | Default | Description
--------- | --------- | ---- | ------- | -----------
-false | final | integer | null | Final or not (send 0 or 1, or leave blank for null)
-false | status | string | null | Status id (from /status GET api)
-false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id and array of designer or editor like: [{"spot_id":1,"version_id":2,"worker":[1,2,3]},{"spot_id":2,"version_id":3,"workder":[4]}])  
-false | work_stage | JSON encoded string | null | Work stage id from /work-stage (GET) api (sent value like: [1,2,3])
-false | file | JSON encoded string | null | Files name and/or description (sent value like: [{"name":"file one","description":"some file desc"},{"name":"file two"}])
-
-
-
 ## Get versions list
 
 Retreive list of versions.

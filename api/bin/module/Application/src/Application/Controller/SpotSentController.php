@@ -766,33 +766,6 @@ class SpotSentController extends CustomAbstractActionController
         return $spotVersionData;
     }
 
-    private function validateData($requestId, $spotVersionData)
-    {
-        foreach ($spotVersionData as $svd) {
-            $checkData = array(
-                'projectId' => $svd['project_id'],
-                'campaignId' => $svd['campaign_id'],
-                'spotId' => $svd['spot_id'],
-                'versionId' => $svd['version_id'],
-                'spotResend' => $svd['spot_resend'],
-                'spotSentType' => $svd['spot_sent_type'],
-            );
-
-            $check = $this->_spotSentRepository->findOneBy($checkData);
-
-            if ($check && $requestId !== $check->getRequestId()) {
-                return array(
-                    "result" => false,
-                    "data" => $checkData,
-                );
-            }
-        }
-
-        return array(
-            "result" => true,
-        );
-    }
-
     public function spotSentSubmissionPostProcess($requestId)
     {
         $data = $this->getSingle($requestId);
