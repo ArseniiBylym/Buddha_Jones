@@ -115,7 +115,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
             text: 'Versions',
             size: 'large',
             color: 'black',
-            onLeft: false,
+            onLeft: true,
         };
     }
 
@@ -306,20 +306,24 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                     <Row className={s.campaignSpotVersions}>
                         {this.props.userCanViewNumberOfRevisionsAndVersions &&
                         spot.versions.length > 0 && (
-                            <Button
-                                onClick={this.handleVersionExpandOrCollapse}
-                                label={ProjectBoardSpot.getVersionNameButtonLabel()}
-                                icon={this.getVersionNameButtonIcon()}
-                            />
+                            <Col style={{marginTop: '10px'}}>
+                                <Button
+                                    onClick={this.handleVersionExpandOrCollapse}
+                                    label={ProjectBoardSpot.getVersionNameButtonLabel()}
+                                    icon={this.getVersionNameButtonIcon()}
+                                />
+                            </Col>
                         )}
                         {this.props.userCanViewNumberOfRevisionsAndVersions &&
                         spot.versions.length === 0 && 
                         this.isEditFormVisible && (
-                            <Button
-                                onClick={this.handleVersionExpandOrCollapse}
-                                label={ProjectBoardSpot.getVersionNameButtonLabel()}
-                                icon={this.getVersionNameButtonIcon()}
-                            />
+                            <Col style={{marginTop: '10px'}}>
+                                <Button
+                                    onClick={this.handleVersionExpandOrCollapse}
+                                    label={ProjectBoardSpot.getVersionNameButtonLabel()}
+                                    icon={this.getVersionNameButtonIcon()}
+                                />
+                            </Col>
                         )}
                     </Row>
 
