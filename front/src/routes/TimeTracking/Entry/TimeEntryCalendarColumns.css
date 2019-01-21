@@ -357,3 +357,19 @@
     }
   }
 }
+
+tbody.withoutHover{
+  & > tr{
+    &:hover {
+      & > td {
+        background: #e9e0d7 !important;
+      }
+    }
+    & > td{
+      background: #e9e0d7 !important;
+      transition: none !important;
+    }
+  }
+}
+
+
