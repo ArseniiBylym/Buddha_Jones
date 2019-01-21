@@ -9,6 +9,7 @@ import * as moment from 'moment';
 import { SpotsToGraphicsModal } from './SpotsToGraphicsModal/SpotsToGraphicsModal';
 import { SpotsToQCModal } from '../../SpotQC/SpotsToQC/SpotsToQCModal/SpotsToQCModal';
 import { Modal } from 'components/Modals';
+import * as classNames from 'classnames';
 
 const s = require('./SpotsToGraphicsGrid.css');
 
@@ -77,11 +78,13 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                     date: spot.spotSentDate && spot.spotSentDate.date || '',
                     runtime: spot.runtime,
                     spotLineStatus: spot.spotLineStatus,
+                    spotLineStatusId: spot.spotLineStatusId,
                     versionName: spot.versionName,
                     spotSentId: spot.spotSentId,
                     spotSentRequestId: spot.spotSentRequestId,
                     finishRequest: spot.finishRequest,
                     graphicsStatus: spot.graphicsStatus,
+                    qcApproved: spot.qcApproved,
                };
                spots.push(spotItem);
            });
@@ -167,6 +170,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                         </div>
                                     )}
                                     {projectCampaign.spots.map((spot, index) => {
+                                        // console.log(spot);
                                         let styleName = s.spotTable__row;
                                         if (this.props.routeType === 'edl') {
                                             styleName = s.spotTable__row__hidden;
@@ -191,7 +195,8 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                                 </div>
                                                 )  : null}
                                                 {this.props.routeType !== 'edl' ? (
-                                                    <div className={s.spotStatus}>
+                                                    // <div className={s.spotStatus}>
+                                                    <div className={classNames(s.spotStatus, this.isQCNotApproved(spot))}>
                                                         {this.props.routeType === 'graphics' ? spot.graphicsStatus : spot.spotLineStatus}
                                                     </div>
                                                 )  : null}
@@ -239,6 +244,13 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                 ))}
             </div>
         );
+    }
+
+    private isQCNotApproved = (spot) => {
+        if (spot.lineStatusId === 3 && spot.qcApproved === 0) {
+            return s.qcNotApproved;
+        }
+        return null;
     }
 
     private modalButtonHandler = async (value) => {
