@@ -14,10 +14,22 @@ interface Props {
         title: string;
         align?: 'left' | 'center' | 'right';
     }>;
+    headerNoBackground?: boolean;
 }
 
 @observer
 export class CardContentTable extends React.Component<Props, {}> {
+    static get defaultProps(): Props {
+        return {
+            className: undefined,
+            classNameForHeader: undefined,
+            classNameForBody: undefined,
+            gridTemplateColumns: undefined,
+            header: [],
+            headerNoBackground: false,
+        };
+    }
+
     @computed private get gridTemplateColumns(): string {
         if (this.props.gridTemplateColumns) {
             return this.props.gridTemplateColumns;
@@ -37,7 +49,13 @@ export class CardContentTable extends React.Component<Props, {}> {
                 style={{ gridTemplateColumns: this.gridTemplateColumns }}
             >
                 {this.props.header && this.props.header.length > 0 && (
-                    <div className={classNames(s.header, this.props.classNameForHeader)}>
+                    <div
+                        className={classNames(
+                            s.header,
+                            { [s.noBackground]: this.props.headerNoBackground },
+                            this.props.classNameForHeader
+                        )}
+                    >
                         {this.props.header.map((headColumn, index) => (
                             <div key={index} style={headColumn.align ? { textAlign: headColumn.align } : undefined}>
                                 <p>{headColumn.title}</p>

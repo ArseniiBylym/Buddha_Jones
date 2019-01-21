@@ -6,4 +6,5 @@ export * from './Col';
 export * from './Card';
 export * from './CardContentTable';
 export * from './CardContentTableRow';
+export * from './CardContentBlock';
 export * from './ClearFix';

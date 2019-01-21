@@ -1,23 +1,22 @@
-import { ProjectsActions } from 'actions';
-import * as classNames from 'classnames';
-import { LinkButton } from 'components/Button';
-import { Tag } from 'components/Content';
 import { DataFetchError } from 'components/Errors/DataFetchError';
 import { LoadingShade, LoadingSpinner } from 'components/Loaders';
-import { Card } from 'components/Section';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
+import { DateObjectFromApi } from 'types/api';
 import { SpotToBillFromApi, SpotToBillProducer } from 'types/spotsToBill';
 import { SpotProjectCampaignGroup } from './SpotsToBill';
+import { SpotsToBillCard } from './SpotsToBillCard';
 
 const s = require('./SpotsToBillGrid.css');
+
+export type SpotToBillSelectionToggle = (spotId: number, projectCampaignId: number) => void;
 
 interface SpotsToBillGridProps {
     loading: boolean;
     fetchError: boolean;
     retryFetch: () => void;
-    onSpotSelectionToggle: (spotId: number, projectCampaignId: number) => void;
+    onSpotSelectionToggle: SpotToBillSelectionToggle;
     selectedSpots: SpotProjectCampaignGroup[];
     spots: {
         list: SpotToBillFromApi[];
@@ -25,7 +24,16 @@ interface SpotsToBillGridProps {
     };
 }
 
-interface ProjectCampaignCard {
+interface ProjectCampaignCardSpotSent {
+    spotSentId: number;
+    date: DateObjectFromApi;
+    editorialName: string;
+    editorialId: number;
+    graphicsStatus: string;
+    graphicsId: number;
+}
+
+export interface ProjectCampaignCard {
     projectCampaignId: number;
     campaignName: string;
     campaignNote: string | null;
@@ -34,10 +42,12 @@ interface ProjectCampaignCard {
     studioId: number;
     studioName: string;
     producers: SpotToBillProducer[];
-    spots: {
+    spots: Array<{
         id: number;
         name: string;
-    }[];
+        isSelected: boolean;
+        spotsSent: ProjectCampaignCardSpotSent[];
+    }>;
 }
 
 @observer
@@ -72,6 +82,8 @@ export class SpotsToBillGrid extends React.Component<SpotsToBillGridProps, {}> {
             cards[index].spots.push({
                 id: spot.spotId,
                 name: spot.spotName,
+                isSelected: this.props.selectedSpots.findIndex(group => group.spotId === spot.spotId) !== -1,
+                spotsSent: [],
             });
 
             return cards;
@@ -96,88 +108,13 @@ export class SpotsToBillGrid extends React.Component<SpotsToBillGridProps, {}> {
         return (
             <div className={s.grid}>
                 {this.projectCampaignCards.map(projectCampaign => (
-                    <Card
-                        className={s.card}
-                        key={projectCampaign.projectCampaignId}
-                        isExpandable={false}
-                        noPadding={true}
-                    >
-                        <React.Fragment>
-                            <div className={s.content}>
-                                <div className={s.headline}>
-                                    <LinkButton
-                                        goToUrlOnClick={ProjectsActions.constructProjectUrl(
-                                            projectCampaign.studioId,
-                                            projectCampaign.studioName,
-                                            projectCampaign.projectId,
-                                            projectCampaign.projectName
-                                        )}
-                                        label={projectCampaign.projectName}
-                                    />
-
-                                    <h4>
-                                        {projectCampaign.campaignName +
-                                            (projectCampaign.campaignNote ? ' - ' + projectCampaign.campaignNote : '')}
-                                    </h4>
-                                </div>
-
-                                <div className={s.spots}>
-                                    <p>Select spots to bill:</p>
-
-                                    {projectCampaign.spots.map(spot => {
-                                        const isSelected: boolean =
-                                            this.props.selectedSpots.findIndex(group => group.spotId === spot.id) !==
-                                            -1;
-
-                                        return (
-                                            <Tag
-                                                key={spot.id}
-                                                className={classNames(s.tag, { [s.selected]: isSelected })}
-                                                titleClassName={s.tagTitle}
-                                                onTagClick={this.handleSpotSelectionToggle(
-                                                    spot.id,
-                                                    projectCampaign.projectCampaignId
-                                                )}
-                                                title={spot.name}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            {projectCampaign.producers && projectCampaign.producers.length > 0 && (
-                                <div className={s.producers}>
-                                    {projectCampaign.producers.map(producer => {
-                                        const fullName = [producer.firstName, producer.lastName]
-                                            .filter(p => p !== null)
-                                            .join(' ');
-
-                                        return (
-                                            <p key={producer.userId}>
-                                                <span>
-                                                    {(producer.creativeRoleName || producer.creativeRoleId) + ': '}
-                                                </span>
-                                                <strong>{fullName}</strong>
-                                            </p>
-                                        );
-                                    })}
-                                </div>
-                            )}
-
-                            <div className={s.summary}>
-                                <p>
-                                    <span>Studio </span>
-                                    <strong>{projectCampaign.studioName}</strong>
-                                </p>
-                            </div>
-                        </React.Fragment>
-                    </Card>
+                    <SpotsToBillCard
+                        key={projectCampaign.projectId + '-' + projectCampaign.projectCampaignId}
+                        onSpotSelectionToggle={this.props.onSpotSelectionToggle}
+                        projectCampaign={projectCampaign}
+                    />
                 ))}
             </div>
         );
     }
-
-    private handleSpotSelectionToggle = (spotId: number, projectCampaignId: number) => e => {
-        this.props.onSpotSelectionToggle(spotId, projectCampaignId);
-    };
 }
