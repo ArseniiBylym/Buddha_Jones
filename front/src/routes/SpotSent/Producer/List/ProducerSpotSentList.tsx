@@ -27,7 +27,7 @@ require('./ProducerSpotSentList.css');
 @inject('store')
 @observer
 class ProducerSpotSentList extends React.Component<any, {}> {
-    private DATA_REFRESH_RATE_IN_MS: number = 1000 * 60;
+    private DATA_REFRESH_RATE_IN_MS: number = 1000 * 60 * 10; // refresh data after each 10 minutes
 
     @observable private search: string = '';
 
@@ -106,6 +106,7 @@ class ProducerSpotSentList extends React.Component<any, {}> {
                         },
                     },
                 ]}
+                withoutCaching={true}
             >
                 {([spotsToGraphicsFromApi]) => (
                     <React.Fragment>
