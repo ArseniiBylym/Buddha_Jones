@@ -69,7 +69,7 @@ export class TimeEntryCalendarHeader extends React.Component<TimeEntryCalendarHe
         if (!this.props.store) {
             return null;
         }
-
+        
         const { viewDays, viewSingleDayOnly } = this.props.store.timeEntry;
 
         if (viewDays === null || viewDays.length <= 0) {
@@ -135,7 +135,7 @@ export class TimeEntryCalendarHeader extends React.Component<TimeEntryCalendarHe
                         />
                     )}
 
-                    {!viewSingleDayOnly && (
+                    {!viewSingleDayOnly && this.notCurrentWeek() && (
                         <Button
                             onClick={this.handleCurrentWeekSwitch()}
                             float="right"
@@ -167,6 +167,17 @@ export class TimeEntryCalendarHeader extends React.Component<TimeEntryCalendarHe
                 </Col>
             </Row>
         );
+    }
+
+    private notCurrentWeek = () => {
+        if (this.props.store && this.props.store.timeEntry.viewDays && this.props.store.timeEntry.viewDays.length > 0) {
+            const { timeEntry } = this.props.store;
+            const lastDate = timeEntry.viewDays[timeEntry.viewDays.length - 1].date; 
+            if ( new Date(lastDate).getTime() < new Date().getTime()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private handleCurrentWeekSwitch = () => e => {
