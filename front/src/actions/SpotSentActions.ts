@@ -477,6 +477,11 @@ export class SpotSentActionsClass {
     };
 
     @action
+    public toggleModalViaMethods = () => {
+        SpotSentStore.viaMethodsModalToggle = !SpotSentStore.viaMethodsModalToggle;
+    };
+
+    @action
     public resetFinishRequestForm = (): void => {
         SpotSentStore.spotSentDetails.full_lock = 0;
         SpotSentStore.spotSentDetails.notes = '';

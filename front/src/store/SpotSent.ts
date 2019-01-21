@@ -22,6 +22,7 @@ export class SpotSent {
     @observable public spotSentFinishingHouseLastFetchTimeStamp: number = 0;
     @observable public spotSentFinishingHouseOptions: FinishingHouseOptionsFromApi[] | null = null;
     @observable public spotSentFinishingHouseAreBeingFetched: boolean = false;
+    @observable public viaMethodsModalToggle: boolean = false;
 
     @observable public spotSentDetails: SpotSentValueForSubmit = {
         project_id: null,

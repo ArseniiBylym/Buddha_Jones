@@ -10,6 +10,7 @@ import { match } from 'react-router';
 import * as dateFormat from 'date-fns/format';
 import { observer, inject } from 'mobx-react';
 import { SpotSentValueForSubmit, SpotSentVersionForSubmit } from '../../../../types/spotSentForm';
+import { Modal } from 'components/Modals';
 
 // Styles
 const s = require('./ProducerSpotSentForm.css');
@@ -57,6 +58,21 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                     />
                 </div>
                 {this.getLinkField()} 
+                <Modal
+                    show={this.props.store!.spotSent.viaMethodsModalToggle}
+                    title="Please select Sent Via option(s) unless the Spot is Finishing"
+                    closeButton={false}
+                    type="alert"
+                    actions={[
+                        {
+                            onClick: () => { SpotSentActions.toggleModalViaMethods(); },
+                            closeOnClick: false,
+                            label: 'Ok',
+                            type: 'default',
+                        },
+                    ]}
+                />
+                <Modal  />
             </Section>
         );
     }
@@ -132,6 +148,17 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
     // }
 
     private handleSubmit = async () => {
+        const viaOtionsNotChecked = this.props.store!.spotSent.spotSentDetails.spot_version.find((item, i) => {
+            if (item.line_status_id === 2 && item.finish_request === 0 && item.sent_via_method.length === 0) {
+                return true;
+            }
+            return false;
+        });
+        if (viaOtionsNotChecked) {
+            SpotSentActions.toggleModalViaMethods();
+            return;
+        }
+
         try {
             let data: SpotSentValueForSubmit = this.props.store!.spotSent.spotSentDetails;
             (data.spot_version as string) = JSON.stringify((data.spot_version as SpotSentVersionForSubmit[]).map((spot: SpotSentVersionForSubmit) => {
