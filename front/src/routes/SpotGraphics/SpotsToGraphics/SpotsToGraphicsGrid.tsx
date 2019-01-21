@@ -172,7 +172,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                             styleName = s.spotTable__row__hidden;
                                         }
                                             return (
-                                                <div key={spot.spotId} onClick={this.handleSpotSelectionToggle(this.props.routeType, spot)} className={styleName}>
+                                                <div key={spot.spotSentId} onClick={this.handleSpotSelectionToggle(this.props.routeType, spot)} className={styleName}>
                                                 <div className={s.spotDate}>
                                                     {spot.date && moment(spot.date).format('DD/MM/YYYY')}
                                                 </div>
