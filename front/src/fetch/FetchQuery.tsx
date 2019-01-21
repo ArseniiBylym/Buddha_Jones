@@ -21,6 +21,7 @@ interface FetchQueryData<Q = {}> {
     queryObject?: Q | undefined;
 }
 
+/** To skip caching set `dataExpiresInMiliseconds` to `null` */
 interface FetchQueryProps<R, Q = {}> extends AppOnlyStoreState {
     /** Single or multiple queries to fetch data from */
     getQueries: FetchQueryData<Q>[];
@@ -36,8 +37,6 @@ interface FetchQueryProps<R, Q = {}> extends AppOnlyStoreState {
     retryAttemptsLimit?: number;
     /** Render props return */
     children(props: FetchQueryChildrenProps<R>[]): JSX.Element;
-    /** Is caching data needed */
-    withoutCaching?: boolean;
 }
 
 @inject('store')
@@ -153,8 +152,7 @@ export class FetchQuery<R, Q = {}> extends React.Component<FetchQueryProps<R, Q>
                 queryObject as object | undefined,
                 this.props.dataExpiresInMiliseconds,
                 this.props.retryIncrementallyAfterMiliseconds,
-                this.props.retryAttemptsLimit,
-                this.props.withoutCaching
+                this.props.retryAttemptsLimit
             );
 
             // Set next refresh timer
