@@ -4554,12 +4554,10 @@ Validate spot sent entry.
 > Sample request
 
 ```javascript
-axios.put('/spot-sent-validate/:spot_sent_id', {
-    final:1,
-    status:5,
-    spot_version:[{"spot_id":1,"version_id":2,"worker":[1,2,3]},{"spot_id":2,"version_id":3,"worker":[4]}],
-    work_stage:[2,3,4],
-    file:[{"name":"file one","description":"some file desc"},{"name":"file two"}]
+axios.post('/spot-sent-validate', {
+    project_campaign_id:156
+    spot_id:97
+    version_id:6
 });
 ```
 
@@ -4580,11 +4578,11 @@ axios.put('/spot-sent-validate/:spot_sent_id', {
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-false | final | integer | null | Final or not (send 0 or 1, or leave blank for null)
-false | status | string | null | Status id (from /status GET api)
-false | spot_version | JSON encoded string | null | Spot version information (send array of spot_id, version_id and array of designer or editor like: [{"spot_id":1,"version_id":2,"worker":[1,2,3]},{"spot_id":2,"version_id":3,"workder":[4]}])  
-false | work_stage | JSON encoded string | null | Work stage id from /work-stage (GET) api (sent value like: [1,2,3])
-false | file | JSON encoded string | null | Files name and/or description (sent value like: [{"name":"file one","description":"some file desc"},{"name":"file two"}])
+**true** | project_campaign_id | integer | null | project campaign id
+**true** | spot_id | int | null | spot id
+*true* | version_id | int | null | varsion id
+false | request_id | int | null | request id (if sent then that spot sent request will be ignored)
+false | spot_sent_type | type, send 0/1 for checking with type
 
 
 
