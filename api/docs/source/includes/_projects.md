@@ -4547,45 +4547,6 @@ Retrieve list of sent spot via method list.
 }
 ```
 
-## Validate Spot Sent 
-
-Validate spot sent entry.
-
-> Sample request
-
-```javascript
-axios.post('/spot-sent-validate', {
-    project_campaign_id:156
-    spot_id:97
-    version_id:6
-});
-```
-
-> 200: success response
-
-```json
-{
-  "status": 1,
-  "message": "Request successful."
-}
-```
-
-### HTTP Request
-
-`PUT /spot-sent-validate/:spot_sent_id`
-
-### Query Parameters
-
-Required | Parameter | Type | Default | Description
--------- | --------- | ---- | ------- | -----------
-**true** | project_campaign_id | integer | null | project campaign id
-**true** | spot_id | int | null | spot id
-*true* | version_id | int | null | varsion id
-false | request_id | int | null | request id (if sent then that spot sent request will be ignored)
-false | spot_sent_type | type, send 0/1 for checking with type
-
-
-
 ## Get versions list
 
 Retreive list of versions.
