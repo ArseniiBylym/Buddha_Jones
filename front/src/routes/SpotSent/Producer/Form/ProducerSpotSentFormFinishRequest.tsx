@@ -191,6 +191,11 @@ class ProducerSpotSentFormFinishRequest extends React.Component<ProducerSpotSent
                     <div className={s.finishRequestSection}>
                         <h3>Spec sheet</h3>
                         <input type="file" id="file" name="file" multiple={true} onChange={this.inputFilesHandler}/>
+                        {spotSentDetails.spec_sheet_file.length > 0 &&
+                            <div className={s.filesList}>
+                                {this.getSpecSheetFiles()}
+                            </div> 
+                        }
                     </div>
                     <div className={s.finishRequestSection}>
                         <h3>Spec Notes</h3>
@@ -226,6 +231,24 @@ class ProducerSpotSentFormFinishRequest extends React.Component<ProducerSpotSent
                 }
             </Section>
         );
+    }
+
+    private getSpecSheetFiles = () => {
+       const files = this.props.store!.spotSent.spotSentDetails.spec_sheet_file;
+       if (files.length > 0) {
+           return files.map((item, i) => {
+            return (
+                <div key={item}>
+                    <a href={`${item}`} target="_blank">
+                        <div className="iconPdf"/>
+                        <div className={s.fileName}>File {i + 1}</div>
+                    </a>
+                </div>
+            );
+           });
+       } else {
+           return null;
+       }
     }
 
     private getFlexDirrection = (value) => {

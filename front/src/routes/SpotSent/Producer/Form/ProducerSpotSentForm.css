@@ -119,3 +119,21 @@
 .withFlexRow{
     flex-flow: row nowrap;
 }
+.filesList {
+    padding: 10px 0;
+    & > div {
+        padding-bottom: 5px;
+        & > a {
+            text-decoration: none;
+            color: black;
+            display: flex;
+            flex-flow: row nowrap;
+
+        }
+    }
+}
+.fileName{
+    margin-left: 5px;
+    font-size: .95em;
+    color: #0b0c32
+}
