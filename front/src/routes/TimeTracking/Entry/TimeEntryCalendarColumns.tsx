@@ -82,7 +82,7 @@ export class TimeEntryCalendarColumns extends React.Component<TimeEntryCalendarC
                 </tr>
                 </thead>
 
-                <tbody>
+                <tbody className={s.withoutHover}>
                 <tr>
                     <td/>
                     {timeEntry.viewDays.map((day, dayIndex) => {
