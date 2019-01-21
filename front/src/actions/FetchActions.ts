@@ -76,11 +76,12 @@ export class FetchActionsClass {
         queryObject?: object,
         dataExpiresInMiliseconds: number | null | undefined = undefined,
         retryIncrementallyAfterMiliseconds: number = 0,
-        retryAttemptsLimit: number = 0
+        retryAttemptsLimit: number = 0,
+        withoutCaching: boolean = false,
     ): Promise<R> => {
         // Get cache key
         const cacheKey = this.constructCacheKey(apiEndpoint, queryObject);
-
+        
         try {
             // Check if old cache exists, if not initialize
             if (!has(FetchStore.cachedQueries, cacheKey)) {
@@ -93,11 +94,13 @@ export class FetchActionsClass {
 
             // Check if current cache is fresh enough to not fetch new data
             const now = Date.now();
-            if (FetchStore.cachedQueries[cacheKey].expiresAtTimeStamp > now) {
-                FetchStore.cachedQueries[cacheKey].status = FetchQueryStatus.Success;
-                FetchStore.cachedQueries[cacheKey].retriesCount = 0;
-
-                return toJS(FetchStore.cachedQueries[cacheKey].data) as R;
+            if (withoutCaching === false) {
+                if (FetchStore.cachedQueries[cacheKey].expiresAtTimeStamp > now) {
+                    FetchStore.cachedQueries[cacheKey].status = FetchQueryStatus.Success;
+                    FetchStore.cachedQueries[cacheKey].retriesCount = 0;
+                    
+                    return toJS(FetchStore.cachedQueries[cacheKey].data) as R;
+                }
             }
 
             // Get retries count

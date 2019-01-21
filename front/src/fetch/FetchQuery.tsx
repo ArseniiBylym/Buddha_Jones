@@ -36,6 +36,8 @@ interface FetchQueryProps<R, Q = {}> extends AppOnlyStoreState {
     retryAttemptsLimit?: number;
     /** Render props return */
     children(props: FetchQueryChildrenProps<R>[]): JSX.Element;
+    /** Is caching data needed */
+    withoutCaching?: boolean;
 }
 
 @inject('store')
@@ -151,7 +153,8 @@ export class FetchQuery<R, Q = {}> extends React.Component<FetchQueryProps<R, Q>
                 queryObject as object | undefined,
                 this.props.dataExpiresInMiliseconds,
                 this.props.retryIncrementallyAfterMiliseconds,
-                this.props.retryAttemptsLimit
+                this.props.retryAttemptsLimit,
+                this.props.withoutCaching
             );
 
             // Set next refresh timer
