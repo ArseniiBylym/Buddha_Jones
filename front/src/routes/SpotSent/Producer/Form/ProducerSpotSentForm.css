@@ -150,3 +150,32 @@
     background-color: transparent;
     cursor: not-allowed;
 }
+.mainSpotHeaderInfo {
+    padding: 20px 10px;
+}
+.mainSpotHeaderInfo__spotList{
+    display: flex;
+    flex-flow: row nowrap;
+    & > .mainSpotHeaderInfo__spotListLabel{
+        color: white;
+        margin-right: 10px;
+    }
+    & > .mainSpotHeaderInfo__spotListSpots{
+        font-size: 18px;
+        font-weight: 600;
+    }
+}
+.mainSpotHeaderInfo__campaign{
+    display: flex;
+    flex-flow: row nowrap;
+    & > .mainSpotHeaderInfo__campaignLabel{
+        color: white;
+        margin-right: 10px;
+    }
+}
+.spotCampaignInfo{
+    padding: 20px 10px;
+}
+.spotCampaignInfo__campaignName{
+    text-align: start;
+}
