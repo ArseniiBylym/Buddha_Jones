@@ -177,7 +177,7 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
             let data: SpotSentValueForSubmit = this.props.store!.spotSent.spotSentDetails;
             (data.spot_version as string) = JSON.stringify((data.spot_version as SpotSentVersionForSubmit[]).map((spot: SpotSentVersionForSubmit) => {
                 delete spot.campaign_name;
-                delete spot.spot_name;
+                // delete spot.spot_name;
                 delete spot.version_name;
                 spot.graphics_file = this.props.files;
                 if (this.getSpotLineStatusId() === 2) {

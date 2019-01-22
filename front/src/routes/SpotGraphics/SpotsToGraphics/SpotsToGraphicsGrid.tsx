@@ -141,7 +141,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
 
         return (
             <div className={s.grid}>
-                <SpotsToGraphicsModal forceUpdating={this.props.forceUpdating}/>
+                <SpotsToQCModal forceUpdating={this.props.forceUpdating} />
                 <SpotsToQCModal forceUpdating={this.props.forceUpdating} />
                 {this.projectCampaignCards.map((projectCampaign, i) => (
                     <Card
@@ -247,7 +247,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
     }
 
     private isQCNotApproved = (spot) => {
-        if (spot.lineStatusId === 3 && spot.qcApproved === 0) {
+        if (spot.spotLineStatusId === 3 && spot.qcApproved === 0) {
             return s.qcNotApproved;
         }
         return null;

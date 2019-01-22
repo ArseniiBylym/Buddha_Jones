@@ -19,6 +19,12 @@ export class SpotsToQCModal extends React.Component<any, any> {
         this.commentText = value;
     }
 
+    public componentDidMount = () => {
+        if (this.props.store.spotToGraphics.fetchedSpot.qcNote) {
+            this.commentTextHandler(this.props.store.spotToGraphics.fetchedSpot.qcNote);
+        }
+    }
+
     public render() {
         if (!this.props.store) {
             return null;
@@ -34,7 +40,7 @@ export class SpotsToQCModal extends React.Component<any, any> {
         return (
             <>
                 <Modal
-                    onClose={this.handleModalClose}
+                    onClose={this.closeModalHandler}
                     closeButtonLabel=""
                     size="content-wide"
                     show={spotToGraphics.isModalQCOpen}
@@ -56,7 +62,7 @@ export class SpotsToQCModal extends React.Component<any, any> {
                                         {spot.runtime && ` (${spot.runtime})`}
                                     </h3>
                                     <IconArrowLeftYellow marginLeftAuto={true} marginRight={10} width={12} height={9} />
-                                    <div className={s.header_backButton} onClick={this.handleModalClose}>Back to Spots to QC list</div>
+                                    <div className={s.header_backButton} onClick={this.closeModalHandler}>Back to Spots to QC list</div>
                                 </div>
                         </div>
                         <div className={s.content}>
@@ -130,6 +136,11 @@ export class SpotsToQCModal extends React.Component<any, any> {
             this.props.store.spotToGraphics.toggleSpotQCApproved();
         }
         this.props.store.spotToGraphics.toggleSpotQCApprovedToSend();
+    }
+
+    private closeModalHandler = () => {
+        this.props.forceUpdating();
+        this.handleModalClose();
     }
 
     @action

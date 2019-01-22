@@ -31,16 +31,16 @@ class SpotsPostTable extends React.Component<any, any> {
     }
 
     private getEditors = (editors) => {
-        if (editors.length > 3) {
-            editors = editors.slice(0, 3);
+        if (editors.length > 2) {
+            editors = editors.slice(0, 2);
             editors.push({name: '...'});
         }
         return editors.map(item => <div key={item.name}>{item.name}</div>);
     }
 
     private getCustomerContacts = (contacts) => {
-        if (contacts.length > 3) {
-            contacts = contacts.slice(0, 3);
+        if (contacts.length > 2) {
+            contacts = contacts.slice(0, 2);
             contacts.push({name: '...'});
         }
         return contacts.map(item => <div key={item.name}>{item.name}</div>);
