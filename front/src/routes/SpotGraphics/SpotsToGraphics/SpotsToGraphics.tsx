@@ -63,7 +63,7 @@ class SpotsToGraphics extends React.Component<SpotsToGraphicsProps, {}> {
         return permissionId;
     };
 
-    updateComponent = () => {
+    private updateComponent = () => {
         this.forceUpdate();
     };
 
