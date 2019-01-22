@@ -1,44 +1,51 @@
 .summary {
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-content: center;
-  align-items: center;
-  &>.actions {
+    margin-top: 20px;
     display: flex;
-    padding-right: 24px;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-content: center;
     align-items: center;
-  }
-  &>.hours {
-    display: flex;
-    justify-content: flex-end;
-    align-content: center;
-    align-items: center;
-  }
-  & p {
-    display: inline-block;
-    margin: 4px;
-    padding: 4px 8px;
-    background: #EEEAE7;
-    color: #5A4D3F;
-    font-size: 0.85em;
-    font-weight: 400;
-    & strong {
-      font-weight: 600;
+
+    & > .actions {
+        display: flex;
+        padding-right: 24px;
+        justify-content: flex-start;
+        align-content: center;
+        align-items: center;
     }
-    &.regular {
-      background: #46ad68;
-      color: #FFFFFF;
+
+    & > .hours {
+        display: flex;
+        justify-content: flex-end;
+        align-content: center;
+        align-items: center;
     }
-    &.overtime {
-      background: #d16403;
-      color: #ffffff;
+
+    & p {
+        display: inline-block;
+        margin: 4px;
+        padding: 4px 8px;
+        background: #eeeae7;
+        color: #5a4d3f;
+        font-size: 0.85em;
+        font-weight: 400;
+
+        & strong {
+            font-weight: 600;
+        }
+
+        &.regular {
+            background: #46ad68;
+            color: #ffffff;
+        }
+
+        &.overtime {
+            background: #d16403;
+            color: #ffffff;
+        }
+
+        &.doubletime {
+            background: #cc2525;
+            color: #ffffff;
+        }
     }
-    &.doubletime {
-      background: #CC2525;
-      color: #ffffff;
-    }
-  }
 }
