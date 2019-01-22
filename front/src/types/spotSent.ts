@@ -144,6 +144,7 @@ export interface SpotSentDetailsSpotDataFromApi {
     finishAccept?: 0 | 1;
     prodAccept?: 0 | 1;
     sentGraphicsViaMethod: string | null;
+    spotSentId: number;
 }
 
 export interface SpotSentAllSpotsSentSpotDataFromApi {

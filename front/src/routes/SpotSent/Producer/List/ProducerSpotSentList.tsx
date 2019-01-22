@@ -95,7 +95,7 @@ class ProducerSpotSentList extends React.Component<any, {}> {
             <>{this.getTableWithLoadingSpinner()}</>
         ) : this.props.store.spotSent.spotSentAllSpots && this.props.store.spotSent.spotSentAllSpots.length > 0 ? (
             <FetchQuery<SpotGraphicsApiResponse, SpotGraphicsApiQueryParams>
-                dataExpiresInMiliseconds={0}
+                dataExpiresInMiliseconds={null}
                 getQueries={[
                     {
                         apiEndpoint: APIPath.SPOTS_TO_GRAPHICS,

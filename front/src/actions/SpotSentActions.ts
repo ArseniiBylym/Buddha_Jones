@@ -147,6 +147,7 @@ export class SpotSentActionsClass {
                             graphics_sent_via_method: (spot.sentGraphicsViaMethod) ? spot.sentGraphicsViaMethod.split(',').map((method: string) => {
                                 return parseInt(method, 0);
                             }) : [],
+                            spot_sent_id: spot.spotSentId,
                         };
                     }),
                     finish_option: response.finishOption,
@@ -279,6 +280,20 @@ export class SpotSentActionsClass {
         }
     };
 
+    @action 
+    public deleteSpotSent = async (
+        id: any
+    ) => {
+        try {
+            const deletedSpotData = (await API.deleteData(
+                APIPath.SPOTS_TO_GRAPHICS + '/' + id,
+            )) as SpotSentFromApi;
+            return deletedSpotData;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     @action
     public handleDateChange = (date: Date | null) => {
         if (date !== null) {
@@ -330,7 +345,8 @@ export class SpotSentActionsClass {
     };
 
     @action
-    public handleSpotRemove = (currentSpotIndex: number) => {
+    public handleSpotRemove = (currentSpotIndex: number, deletingSpotId: any) => {
+        this.deleteSpotSent(deletingSpotId);
         SpotSentStore.spotSentDetails.spot_version = [
             ...(SpotSentStore.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).slice(0, currentSpotIndex),
             ...(SpotSentStore.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).slice(currentSpotIndex + 1)
@@ -341,6 +357,20 @@ export class SpotSentActionsClass {
     public handleCreateSpot = () => {
         (SpotSentStore.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).push(this.defaultSpotElement);
     };
+
+    @action
+    public isSpotExist = async (versionId: number, spotIndex: number) => {
+        try {
+            const newFinishingHouse = await API.postData(APIPath.SPOTS_VALIDATE, {
+                project_campaign_id: (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).project_campaign_id,
+                spot_id: (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_id,
+                version_id: versionId
+            });
+            return newFinishingHouse;
+        } catch (error) {
+            throw error;
+        }
+    }
 
     @action
     public handleSpotChange = (spotIndex: number, values, type?: ProjectPickerSections) => {
@@ -378,12 +408,18 @@ export class SpotSentActionsClass {
                     break;
                 case ProjectPickerSections.version:
                     if (values && values.version) {
-                        if (values.version.id) {
-                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = values.version.id;
-                        }
-                        if (values.version.name) {
-                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = values.version.name;
-                        }
+                        this.isSpotExist(values.version.id, spotIndex)
+                            .then(result => {
+                                if (values.version.id) {
+                                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = values.version.id;
+                                }
+                                if (values.version.name) {
+                                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = values.version.name;
+                                }
+                            })
+                            .catch(error => {
+                                this.spotVersionConfirmModalToggle();                     
+                            });
                     }
                     break;
                 case ProjectPickerSections.clear:
@@ -394,6 +430,11 @@ export class SpotSentActionsClass {
             }
         }
     };
+
+    @action
+    public spotVersionConfirmModalToggle = () => {
+        SpotSentStore.spotVersionModalToggle = !SpotSentStore.spotVersionModalToggle;
+    }
 
     @action
     public dropSpotVersion = (ind: number) => {

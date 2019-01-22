@@ -32,6 +32,7 @@ interface ProducerSpotSentFormState {
     isRemoveConfirmationModalActive: boolean;
     prevLocation: string;
     files: [{ file_name: string; file_description: string }] | [];
+    deletingSpotId: any;
 }
 
 // Types
@@ -49,6 +50,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             isRemoveConfirmationModalActive: false,
             prevLocation: '',
             files: [],
+            deletingSpotId: null,
         };
     }
 
@@ -172,10 +174,11 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         <Section title="Spots" noSeparator={true}>
                             {(spotSentDetails.spot_version as SpotSentVersionForSubmit[]).map(
                                 (spot: SpotSentVersionForSubmit, spotIndex: number) => {
+                                    // console.log(spot);
                                     return (
                                         <ProducerSpotSentFormSpotCard
                                             key={spotIndex}
-                                            onSpotRemove={this.onOpenRemoveConfirmationModalHandler}
+                                            onSpotRemove={this.onOpenRemoveConfirmationModalHandler(spot.spot_sent_id, spotIndex)}
                                             project={{
                                                 id: spotSentDetails.project_id as number,
                                                 name: spotSentDetails.project_name as string,
@@ -296,11 +299,13 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             isRemoveConfirmationModalActive: false,
         });
 
-    private onOpenRemoveConfirmationModalHandler = (spotIndex: number) =>
+    private onOpenRemoveConfirmationModalHandler = (spotSentId: any, spotIndex: number) => e => {
         this.setState({
             isRemoveConfirmationModalActive: true,
             currentSpotIndex: spotIndex,
+            deletingSpotId: spotSentId,
         });
+    }
 
     private handleProjectChange = (values: ProjectPickerValues | null) =>
         SpotSentActions.handleProjectChange(values, this.isEditMode);
@@ -310,9 +315,10 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     private handleSentToRemove = (index: number): void => SpotSentActions.handleSentToRemove(index);
 
     private handleSpotRemove = () => {
-        SpotSentActions.handleSpotRemove(this.state.currentSpotIndex);
+        SpotSentActions.handleSpotRemove(this.state.currentSpotIndex, this.state.deletingSpotId);
         this.setState({
             isRemoveConfirmationModalActive: false,
+            deletingSpotId: null,
         });
     };
 
