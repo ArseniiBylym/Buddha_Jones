@@ -19,6 +19,12 @@ export class SpotsToQCModal extends React.Component<any, any> {
         this.commentText = value;
     }
 
+    public componentDidMount = () => {
+        if (this.props.store.spotToGraphics.fetchedSpot.qcNote) {
+            this.commentTextHandler(this.props.store.spotToGraphics.fetchedSpot.qcNote);
+        }
+    }
+
     public render() {
         if (!this.props.store) {
             return null;
