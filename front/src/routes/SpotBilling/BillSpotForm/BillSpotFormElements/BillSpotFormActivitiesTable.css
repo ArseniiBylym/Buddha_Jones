@@ -97,6 +97,22 @@
     &.overtimeHoursRow {
         & > div {
             padding-top: 0 !important;
+
+            &.splitTimeEntryInBillCol {
+                & > p {
+                    color: #d16403;
+                }
+            }
+        }
+    }
+
+    &.doubletimeHoursRow {
+        & > div {
+            &.splitTimeEntryInBillCol {
+                & > p {
+                    color: #cc2525;
+                }
+            }
         }
     }
 }

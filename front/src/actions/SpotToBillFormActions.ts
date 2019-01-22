@@ -2,7 +2,7 @@ import { action } from 'mobx';
 import { FormattedInBillTimeEntry } from 'routes/SpotBilling/BillSpotForm';
 import { AddingActivityToBillStatus } from 'store';
 import { SpotToBillFormStore } from 'store/AllStores';
-import { SpotBillFormActivityTimeEntry, SpotBillFormData } from 'types/spotBilling';
+import { ActivityHours, SpotBillFormActivityTimeEntry, SpotBillFormData } from 'types/spotBilling';
 
 export class SpotToBillFormActionsClass {
     @action
@@ -46,15 +46,98 @@ export class SpotToBillFormActionsClass {
         }
     };
 
-    @action
-    public addTimeEntryToActivitiesSelection = (
-        timeEntry: FormattedInBillTimeEntry,
-        hours: {
-            regularHoursInMinutes?: number;
-            overtimeHoursInMinutes?: number;
-            doubletimeHoursInMinutes?: number;
+    private hoursOnlyPositive = (hours: ActivityHours): ActivityHours => ({
+        regularHoursInMinutes: hours.regularHoursInMinutes > 0 ? hours.regularHoursInMinutes : 0,
+        overtimeHoursInMinutes: hours.overtimeHoursInMinutes > 0 ? hours.overtimeHoursInMinutes : 0,
+        doubletimeHoursInMinutes: hours.doubletimeHoursInMinutes > 0 ? hours.doubletimeHoursInMinutes : 0,
+    });
+
+    private calculateAdjustedHours = (
+        activityTime: number,
+        values: ActivityHours,
+        lastChanged: 'regular' | 'overtime' | 'doubletime'
+    ): ActivityHours => {
+        let remainingTime = activityTime;
+        let hours: ActivityHours = values;
+
+        if (lastChanged === 'doubletime') {
+            remainingTime -= values.doubletimeHoursInMinutes;
+        } else if (lastChanged === 'overtime') {
+            remainingTime -= values.overtimeHoursInMinutes;
+        } else {
+            remainingTime -= values.regularHoursInMinutes;
         }
-    ) => {
+
+        if (remainingTime <= 0) {
+            hours.regularHoursInMinutes = 0;
+            hours.overtimeHoursInMinutes = 0;
+            hours.doubletimeHoursInMinutes = 0;
+            if (lastChanged === 'doubletime') {
+                hours.doubletimeHoursInMinutes = activityTime;
+            } else if (lastChanged === 'overtime') {
+                hours.overtimeHoursInMinutes = activityTime;
+            } else {
+                hours.regularHoursInMinutes = activityTime;
+            }
+
+            return this.hoursOnlyPositive(hours);
+        }
+
+        if (lastChanged === 'doubletime') {
+            remainingTime -= values.overtimeHoursInMinutes;
+            if (remainingTime <= 0) {
+                hours.overtimeHoursInMinutes = activityTime - hours.doubletimeHoursInMinutes;
+                hours.regularHoursInMinutes = 0;
+                return this.hoursOnlyPositive(hours);
+            }
+
+            remainingTime -= values.regularHoursInMinutes;
+            if (remainingTime <= 0) {
+                hours.regularHoursInMinutes =
+                    activityTime - hours.doubletimeHoursInMinutes - hours.overtimeHoursInMinutes;
+                return this.hoursOnlyPositive(hours);
+            }
+
+            return this.hoursOnlyPositive(hours);
+        } else if (lastChanged === 'overtime') {
+            remainingTime -= values.doubletimeHoursInMinutes;
+            if (remainingTime <= 0) {
+                hours.doubletimeHoursInMinutes = activityTime - hours.overtimeHoursInMinutes;
+                hours.regularHoursInMinutes = 0;
+                return this.hoursOnlyPositive(hours);
+            }
+
+            remainingTime -= values.regularHoursInMinutes;
+            if (remainingTime <= 0) {
+                hours.regularHoursInMinutes =
+                    activityTime - hours.overtimeHoursInMinutes - hours.doubletimeHoursInMinutes;
+                return this.hoursOnlyPositive(hours);
+            }
+
+            return this.hoursOnlyPositive(hours);
+        } else if (lastChanged === 'regular') {
+            remainingTime -= values.doubletimeHoursInMinutes;
+            if (remainingTime <= 0) {
+                hours.doubletimeHoursInMinutes = activityTime - hours.regularHoursInMinutes;
+                hours.overtimeHoursInMinutes = 0;
+                return this.hoursOnlyPositive(hours);
+            }
+
+            remainingTime -= values.overtimeHoursInMinutes;
+            if (remainingTime <= 0) {
+                hours.overtimeHoursInMinutes =
+                    activityTime - hours.regularHoursInMinutes - hours.doubletimeHoursInMinutes;
+                return this.hoursOnlyPositive(hours);
+            }
+
+            return this.hoursOnlyPositive(hours);
+        }
+
+        return this.hoursOnlyPositive(hours);
+    };
+
+    @action
+    public addTimeEntryToActivitiesSelection = (timeEntry: FormattedInBillTimeEntry, hours: Partial<ActivityHours>) => {
         let object: SpotBillFormActivityTimeEntry = {
             timeEntryId: timeEntry.timeEntryId,
             activityId: timeEntry.activityId,
@@ -73,19 +156,36 @@ export class SpotToBillFormActionsClass {
 
         const index = SpotToBillFormStore.selectedActivitiesIds.indexOf(timeEntry.timeEntryId);
         if (index !== -1) {
-            object.regularHours =
+            const time = this.calculateAdjustedHours(
+                timeEntry.durationInMinutes,
+                {
+                    regularHoursInMinutes:
+                        typeof hours.regularHoursInMinutes === 'number'
+                            ? hours.regularHoursInMinutes
+                            : SpotToBillFormStore.selectedActivities[index].regularHours,
+                    overtimeHoursInMinutes:
+                        typeof hours.overtimeHoursInMinutes === 'number'
+                            ? hours.overtimeHoursInMinutes
+                            : SpotToBillFormStore.selectedActivities[index].overtimeHours,
+                    doubletimeHoursInMinutes:
+                        typeof hours.doubletimeHoursInMinutes === 'number'
+                            ? hours.doubletimeHoursInMinutes
+                            : SpotToBillFormStore.selectedActivities[index].doubletimeHours,
+                },
                 typeof hours.regularHoursInMinutes === 'number'
-                    ? hours.regularHoursInMinutes
-                    : SpotToBillFormStore.selectedActivities[index].regularHours;
-            object.overtimeHours =
-                typeof hours.overtimeHoursInMinutes === 'number'
-                    ? hours.overtimeHoursInMinutes
-                    : SpotToBillFormStore.selectedActivities[index].overtimeHours;
-            object.doubletimeHours =
-                typeof hours.doubletimeHoursInMinutes === 'number'
-                    ? hours.doubletimeHoursInMinutes
-                    : SpotToBillFormStore.selectedActivities[index].doubletimeHours;
-            object.hoursAreSplit = object.overtimeHours > 0 || object.doubletimeHours > 0;
+                    ? 'regular'
+                    : typeof hours.overtimeHoursInMinutes === 'number'
+                    ? 'overtime'
+                    : 'doubletime'
+            );
+
+            object.regularHours = time.regularHoursInMinutes;
+            object.overtimeHours = time.overtimeHoursInMinutes;
+            object.doubletimeHours = time.doubletimeHoursInMinutes;
+            object.hoursAreSplit =
+                object.overtimeHours > 0 ||
+                object.doubletimeHours > 0 ||
+                SpotToBillFormStore.selectedActivities[index].hoursAreSplit;
 
             SpotToBillFormStore.selectedActivities[index] = object;
         } else {

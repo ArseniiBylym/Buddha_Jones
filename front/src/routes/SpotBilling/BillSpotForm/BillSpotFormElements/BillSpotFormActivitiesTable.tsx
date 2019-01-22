@@ -159,14 +159,7 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                     {entry.isSelectedToBill && (
                                         <DurationCounter
                                             onChange={this.handleSelectedEntryHours(entry, 'regular')}
-                                            valueLessThan={{
-                                                value: entry.durationInMinutes,
-                                                color: 'alert',
-                                            }}
-                                            valueMoreThan={{
-                                                value: entry.durationInMinutes,
-                                                color: 'success',
-                                            }}
+                                            maxValue={entry.durationInMinutes}
                                             value={entry.regularHoursInMinutes}
                                         />
                                     )}
@@ -197,6 +190,7 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                         <DurationCounter
                                             onChange={this.handleSelectedEntryHours(entry, 'overtime')}
                                             value={entry.overtimeHoursInMinutes}
+                                            maxValue={entry.durationInMinutes}
                                         />
                                     </div>
                                 </CardContentTableRow>
@@ -213,6 +207,7 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                         <DurationCounter
                                             onChange={this.handleSelectedEntryHours(entry, 'doubletime')}
                                             value={entry.doubletimeHoursInMinutes}
+                                            maxValue={entry.durationInMinutes}
                                         />
                                     </div>
                                 </CardContentTableRow>
