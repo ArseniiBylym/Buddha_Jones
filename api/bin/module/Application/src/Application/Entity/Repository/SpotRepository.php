@@ -1119,19 +1119,35 @@ class SpotRepository extends EntityRepository
         }
 
         if (!empty($filter['project_id'])) {
-            $dqlFilter[] = " ss.projectId = :project_id ";
+            $dqlFilter[] = " ss.projectId IN (:project_id) ";
+
+            if (!is_array($filter['project_id'])) {
+                $filter['project_id'] = (array) $filter['project_id'];
+            }
         }
 
         if (!empty($filter['campaign_id'])) {
-            $dqlFilter[] = " ss.campaignId = :campaign_id ";
+            $dqlFilter[] = " ss.campaignId IN (:campaign_id) ";
+
+            if (!is_array($filter['campaign_id'])) {
+                $filter['campaign_id'] = (array) $filter['campaign_id'];
+            }
         }
 
         if (!empty($filter['project_campaign_id'])) {
-            $dqlFilter[] = " ss.projectCampaignId = :project_campaign_id ";
+            $dqlFilter[] = " ss.projectCampaignId IN (:project_campaign_id) ";
+
+            if (!is_array($filter['project_campaign_id'])) {
+                $filter['project_campaign_id'] = (array) $filter['project_campaign_id'];
+            }
         }
 
         if (!empty($filter['spot_id'])) {
-            $dqlFilter[] = " ss.spotId = :spot_id ";
+            $dqlFilter[] = " ss.spotId IN (:spot_id) ";
+
+            if (!is_array($filter['spot_id'])) {
+                $filter['spot_id'] = (array) $filter['spot_id'];
+            }
         }
 
         if (!empty($filter['version_id'])) {
@@ -1203,23 +1219,23 @@ class SpotRepository extends EntityRepository
         }
 
         if (!empty($filter['project_id'])) {
-            $query->setParameter("project_id", $filter['project_id']);
+            $query->setParameter("project_id", $filter['project_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
         }
 
         if (!empty($filter['campaign_id'])) {
-            $query->setParameter("campaign_id", $filter['campaign_id']);
+            $query->setParameter("campaign_id", $filter['campaign_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
         }
 
         if (!empty($filter['project_campaign_id'])) {
-            $query->setParameter("project_campaign_id", $filter['project_campaign_id']);
+            $query->setParameter("project_campaign_id", $filter['project_campaign_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
         }
 
         if (!empty($filter['spot_id'])) {
-            $query->setParameter("spot_id", $filter['spot_id']);
+            $query->setParameter("spot_id", $filter['spot_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
         }
 
         if (!empty($filter['version_id'])) {
-            $query->setParameter("version_id", $filter['version_id']);
+            $query->setParameter("version_id", $filter['version_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
         }
 
         if (!empty($filter['start_date'])) {
