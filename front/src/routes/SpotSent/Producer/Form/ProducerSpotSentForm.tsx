@@ -291,11 +291,14 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     private getSpotsNamesJSXElements = () => {
         if (this.props.store) {
             const { spotSentDetails } = this.props.store.spotSent;
-            if (spotSentDetails.spot_version!.length > 0) {
+            if (spotSentDetails && spotSentDetails.spot_version &&  spotSentDetails.spot_version.length > 0) {
+                let spotsArray: any = spotSentDetails.spot_version;
+                if (typeof(spotsArray) === 'string') {
+                    spotsArray = JSON.parse(spotsArray);
+                }
                 return (
                     <div className={s.mainSpotHeaderInfo__spotListSpots}>
-                        {(spotSentDetails.spot_version as SpotSentVersionForSubmit[]).map((item, i) => {
-                            // return (<span key={item.spot_sent_id}>{`${item.spot_name}`}</span>);
+                        {spotsArray.map((item, i) => {
                             if (i > 1) {
                                 return;
                             }
@@ -311,7 +314,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     private getSpotsCampaignJSXElements = () => {
         if (this.props.store) {
             const { spotSentDetails } = this.props.store.spotSent;
-            if (spotSentDetails.spot_version!.length > 0) {
+            if (spotSentDetails && spotSentDetails.spot_version &&  spotSentDetails.spot_version.length > 0) {
                 return (
                     <div className={s.mainSpotHeaderInfo__campaignNames}> 
                         {(spotSentDetails.spot_version as SpotSentVersionForSubmit[])[0].campaign_name}
