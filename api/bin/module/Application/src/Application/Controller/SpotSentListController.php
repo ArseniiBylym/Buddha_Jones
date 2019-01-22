@@ -90,6 +90,8 @@ class SpotSentListController extends CustomAbstractActionController
         $graphicsFiles = $this->_commonRepo->filterPostData($data, 'graphics_file', 'array', null);
         $isPdf = $this->_commonRepo->filterPostData($data, 'is_pdf', 'int', null);
         $qcApproved = (isset($data['qc_approved'])) ? (int) $data['qc_approved'] : null;
+        $prodAccept = (isset($data['prod_accept'])) ? (int) $data['prod_accept'] : null;
+        $finishAccept = (isset($data['finish_accept'])) ? (int) $data['finish_accept'] : null;
         $qcNote = $this->_commonRepo->filterPostData($data, 'qc_note', 'string', null);
         $qcLink = $this->_commonRepo->filterPostData($data, 'qc_link', 'string', null);
 
@@ -140,6 +142,14 @@ class SpotSentListController extends CustomAbstractActionController
             }
             if ($qcLink !== null) {
                 $spotSent->setQcLink($qcLink);
+            }
+
+            if ($finishAccept !== null) {
+                $spotSent->setFinishAccept($finishAccept);
+            }
+
+            if ($prodAccept !== null) {
+                $spotSent->setProdAccept($prodAccept);
             }
 
             $this->_em->persist($spotSent);
