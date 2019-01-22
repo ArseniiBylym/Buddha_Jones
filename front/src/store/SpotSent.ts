@@ -24,6 +24,7 @@ export class SpotSent {
     @observable public spotSentFinishingHouseAreBeingFetched: boolean = false;
     @observable public viaMethodsModalToggle: boolean = false;
     @observable public spotVersionModalToggle: boolean = false;
+    @observable public existedSpot: {name: string, id: number | null} = {name: '', id: null};
 
     @observable public spotSentDetails: SpotSentValueForSubmit = {
         project_id: null,

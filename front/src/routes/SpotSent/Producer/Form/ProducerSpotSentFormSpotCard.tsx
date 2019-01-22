@@ -282,7 +282,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
             />
             <Modal
                 show={this.props.store!.spotSent.spotVersionModalToggle}
-                title={`Spot version already exists.`}
+                title={`Spot version ${this.props.store!.spotSent.existedSpot.name} already exists.`}
                 text={`Please select Resent OR Finish.`}
                 closeButton={false}
                 type="alert"
@@ -315,10 +315,12 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
         switch (action) {
             case 'resent': 
                 this.handleSpotResendToggle(true);
+                SpotSentActions.setSpotSentVersion(this.props.spotIndex);
                 SpotSentActions.spotVersionConfirmModalToggle();
                 break;
             case 'finish':
                 this.handleFinishingRequestToggle(true);
+                SpotSentActions.setSpotSentVersion(this.props.spotIndex);
                 SpotSentActions.spotVersionConfirmModalToggle();
                 break;
             default: 
