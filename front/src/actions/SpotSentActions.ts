@@ -418,6 +418,10 @@ export class SpotSentActionsClass {
                                 }
                             })
                             .catch(error => {
+                                SpotSentStore.existedSpot = {
+                                    name: values.version.name,
+                                    id: values.version.id,
+                                };
                                 this.spotVersionConfirmModalToggle();                     
                             });
                     }
@@ -434,6 +438,12 @@ export class SpotSentActionsClass {
     @action
     public spotVersionConfirmModalToggle = () => {
         SpotSentStore.spotVersionModalToggle = !SpotSentStore.spotVersionModalToggle;
+    }
+
+    @action
+    public setSpotSentVersion = (spotIndex) => {
+        (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = SpotSentStore.existedSpot.id;
+        (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = SpotSentStore.existedSpot.name;
     }
 
     @action
