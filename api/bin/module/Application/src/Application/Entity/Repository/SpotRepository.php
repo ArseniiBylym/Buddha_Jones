@@ -1,10 +1,8 @@
 <?php
 namespace Application\Entity\Repository;
 
-use Application\Entity\RediSpotSentViaMethod;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManager;
-use Zend\Config\Config;
+use Doctrine\ORM\EntityRepository;
 
 // before called Table now Repository Table Data Gateway
 // In Bug Entity add  @Entity(repositoryClass="BugRepository")
@@ -38,13 +36,13 @@ class SpotRepository extends EntityRepository
                     a.internalDeadline,
                     a.clientDeadline,
                     a.billingType,
-                    a.billingNote, 
-                    ptc.projectId, 
+                    a.billingNote,
+                    ptc.projectId,
                     ptc.campaignId,
                     a.trtId,
                     trt.runtime
-                FROM \Application\Entity\RediSpot a 
-                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc 
+                FROM \Application\Entity\RediSpot a
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
                     WITH a.projectCampaignId=ptc.id
                 LEFT JOIN \Application\Entity\RediTrt trt
                     WITH trt.id = a.trtId";
@@ -52,15 +50,15 @@ class SpotRepository extends EntityRepository
         $dqlFilter = [];
 
         if (!empty($filter['project_id'])) {
-            $dqlFilter[] = "ptc.projectId= " . (int)$filter['project_id'];
+            $dqlFilter[] = "ptc.projectId= " . (int) $filter['project_id'];
         }
 
         if (!empty($filter['campaign_id'])) {
-            $dqlFilter[] = "ptc.campaignId= " . (int)$filter['campaign_id'];
+            $dqlFilter[] = "ptc.campaignId= " . (int) $filter['campaign_id'];
         }
 
         if (!empty($filter['project_campaign_id'])) {
-            $dqlFilter[] = "a.projectCampaignId= " . (int)$filter['project_campaign_id'];
+            $dqlFilter[] = "a.projectCampaignId= " . (int) $filter['project_campaign_id'];
         }
 
         if (!empty($filter['search'])) {
@@ -79,7 +77,7 @@ class SpotRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         foreach ($result as &$row) {
-            $row['id'] = (int)$row['id'];
+            $row['id'] = (int) $row['id'];
         }
 
         return $result;
@@ -87,24 +85,23 @@ class SpotRepository extends EntityRepository
 
     public function searchCount($filter)
     {
-        $dql = "SELECT COUNT(a.id) AS total_count 
-                FROM \Application\Entity\RediSpot a 
-                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc 
+        $dql = "SELECT COUNT(a.id) AS total_count
+                FROM \Application\Entity\RediSpot a
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
                     WITH a.projectCampaignId=ptc.id ";
-
 
         $dqlFilter = [];
 
         if (!empty($filter['project_id'])) {
-            $dqlFilter[] = "ptc.projectId= " . (int)$filter['project_id'];
+            $dqlFilter[] = "ptc.projectId= " . (int) $filter['project_id'];
         }
 
         if (!empty($filter['campaign_id'])) {
-            $dqlFilter[] = "ptc.campaignId= " . (int)$filter['campaign_id'];
+            $dqlFilter[] = "ptc.campaignId= " . (int) $filter['campaign_id'];
         }
 
         if (!empty($filter['project_campaign_id'])) {
-            $dqlFilter[] = "a.projectCampaignId= " . (int)$filter['project_campaign_id'];
+            $dqlFilter[] = "a.projectCampaignId= " . (int) $filter['project_campaign_id'];
         }
 
         if (!empty($filter['search'])) {
@@ -120,7 +117,7 @@ class SpotRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         $result = $query->getArrayResult();
 
-        return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
+        return (isset($result[0]['total_count']) ? (int) $result[0]['total_count'] : 0);
     }
 
     public function getById($spotId)
@@ -140,7 +137,7 @@ class SpotRepository extends EntityRepository
                 a.billingNote,
                 a.trtId,
                 trt.runtime
-                FROM \Application\Entity\RediSpot a 
+                FROM \Application\Entity\RediSpot a
                 LEFT JOIN \Application\Entity\RediTrt trt
                     WITH trt.id = a.trtId
                 WHERE a.id=:spot_id";
@@ -221,14 +218,14 @@ class SpotRepository extends EntityRepository
 
         $columnString = implode(',', $columns);
 
-        $offset = (!empty($filter['offset'])) ? (int)$filter['offset'] : 0;
-        $length = (!empty($filter['length'])) ? (int)$filter['length'] : 10;
+        $offset = (!empty($filter['offset'])) ? (int) $filter['offset'] : 0;
+        $length = (!empty($filter['length'])) ? (int) $filter['length'] : 10;
 
-        $dql = "SELECT 
+        $dql = "SELECT
                 " . $columnString . ",
                 uc.firstName AS createdByFirstName, uc.lastName AS createdByLastName,
                 uu.firstName AS updatedByFirstName, uu.lastName AS updatedByLastName,
-                CASE 
+                CASE
                     WHEN sc.updatedAt IS NOT NULL THEN sc.updatedAt
                     ELSE sc.createdAt
                 END  AS sortBy
@@ -313,17 +310,17 @@ class SpotRepository extends EntityRepository
 
             unset($row['sortBy']);
 
-            $row['requestId'] = (int)$row['requestId'];
-            $row['projectId'] = (int)$row['projectId'];
-            $row['statusId'] = (int)$row['statusId'];
+            $row['requestId'] = (int) $row['requestId'];
+            $row['projectId'] = (int) $row['projectId'];
+            $row['statusId'] = (int) $row['statusId'];
             $row['createdByUser'] = trim($row['createdByFirstName'] . ' ' . $row['createdByLastName']);
             $row['updatedByUser'] = trim($row['updatedByFirstName'] . ' ' . $row['updatedByLastName']);
-            $row['spotSentType'] = (int)$row['spotSentType'];
+            $row['spotSentType'] = (int) $row['spotSentType'];
 
             $row['statusName'] = (!empty($row['statusId'])
                 && !empty($allStatusArray[$row['statusId']]['name']))
-                ? $allStatusArray[$row['statusId']]['name']
-                : null;
+            ? $allStatusArray[$row['statusId']]['name']
+            : null;
 
             if (empty($row['updatedAt'])) {
                 $row['updatedAt'] = $row['createdAt'];
@@ -341,8 +338,8 @@ class SpotRepository extends EntityRepository
             foreach ($row['spotData'] as &$spotDataRow) {
                 $spotDataRow['lineStatusName'] = (!empty($spotDataRow['lineStatusId'])
                     && !empty($allStatusArray[$spotDataRow['lineStatusId']]['name']))
-                    ? $allStatusArray[$spotDataRow['lineStatusId']]['name']
-                    : null;
+                ? $allStatusArray[$spotDataRow['lineStatusId']]['name']
+                : null;
                 $spotDataRow['graphicsFile'] = $this->getSpotSendFiles($spotDataRow['spotSentId']);
 
                 // unset($spotDataRow['spotSentId']);
@@ -454,7 +451,7 @@ class SpotRepository extends EntityRepository
 
     public function searchSpotSentCount($filter = array())
     {
-        $dql = "SELECT COUNT(DISTINCT sc.requestId) AS total_count 
+        $dql = "SELECT COUNT(DISTINCT sc.requestId) AS total_count
                 FROM \Application\Entity\RediSpotSent sc ";
 
         $dqlFilter = [];
@@ -491,14 +488,14 @@ class SpotRepository extends EntityRepository
 
         $result = $query->getArrayResult();
 
-        return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
+        return (isset($result[0]['total_count']) ? (int) $result[0]['total_count'] : 0);
     }
 
     public function validateWorkStageForSpotSent($workStage)
     {
         if (count($workStage)) {
             $dql = "SELECT DISTINCT COALESCE(ws.parentId, 0) as distinctParentId
-                FROM \Application\Entity\RediWorkStage ws 
+                FROM \Application\Entity\RediWorkStage ws
                 WHERE ws.id IN (:work_stage_ids)";
 
             $query = $this->getEntityManager()->createQuery($dql);
@@ -516,7 +513,7 @@ class SpotRepository extends EntityRepository
 
     public function getSpotVersionDataByRequestId($requestId)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                     sc.id AS spotSentId,
                     sc.requestId,
                     sc.campaignId,
@@ -559,14 +556,14 @@ class SpotRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         $result = array_map(function ($row) {
-            $row['spotSentId'] = (int)$row['spotSentId'];
-            $row['requestId'] = (int)$row['requestId'];
-            $row['campaignId'] = (int)$row['campaignId'];
-            $row['projectCampaignId'] = (int)$row['projectCampaignId'];
-            $row['spotId'] = (int)$row['spotId'];
-            $row['versionId'] = (int)$row['versionId'];
-            $row['spotVersionId'] = (int)$row['spotVersionId'];
-            $row['lineStatusId'] = (int)$row['lineStatusId'];
+            $row['spotSentId'] = (int) $row['spotSentId'];
+            $row['requestId'] = (int) $row['requestId'];
+            $row['campaignId'] = (int) $row['campaignId'];
+            $row['projectCampaignId'] = (int) $row['projectCampaignId'];
+            $row['spotId'] = (int) $row['spotId'];
+            $row['versionId'] = (int) $row['versionId'];
+            $row['spotVersionId'] = (int) $row['spotVersionId'];
+            $row['lineStatusId'] = (int) $row['lineStatusId'];
 
             return $row;
         }, $result);
@@ -608,13 +605,13 @@ class SpotRepository extends EntityRepository
         } else {
             $extraSelect = "";
         }
-        $dql = "SELECT 
+        $dql = "SELECT
                   sv.id AS spotVersionId,
                   sv.spotId, s.spotName,
                   sv.versionId, v.versionName,
                   p.id as projectId,
                   c.id as campaignId, c.campaignName" . $extraSelect . "
-                FROM \Application\Entity\RediSpotSentToSpotVersion sstsv 
+                FROM \Application\Entity\RediSpotSentToSpotVersion sstsv
                 INNER JOIN \Application\Entity\RediSpotVersion sv
                   WITH sv.id = sstsv.spotVersionId
                 INNER JOIN \Application\Entity\RediSpotSent ss
@@ -627,7 +624,7 @@ class SpotRepository extends EntityRepository
                   WITH p.id=ptc.projectId
                 LEFT JOIN \Application\Entity\RediCampaign c
                   WITH c.id=ptc.campaignId
-                LEFT JOIN \Application\Entity\RediVersion v 
+                LEFT JOIN \Application\Entity\RediVersion v
                    WITH v.id=sv.versionId
                 WHERE sstsv.spotSentId=:spot_sent_id";
 
@@ -638,9 +635,9 @@ class SpotRepository extends EntityRepository
 
         if ($returnWorker) {
             foreach ($result as &$row) {
-                $dql1 = "SELECT 
+                $dql1 = "SELECT
                   u.id, u.username, u.email, u.firstName, u.lastName, ut.typeName
-                FROM \Application\Entity\RediSpotSentToSpotVersionToEditorDesigner sed 
+                FROM \Application\Entity\RediSpotSentToSpotVersionToEditorDesigner sed
                 INNER JOIN \Application\Entity\RediUser u
                   WITH sed.editorDesignerId=u.id
                 INNER JOIN \Application\Entity\RediUserType ut
@@ -651,7 +648,6 @@ class SpotRepository extends EntityRepository
                 $query1->setParameter("spot_sent_spot_version_id", $row['id']);
 
                 $result1 = $query1->getArrayResult();
-
 
                 foreach ($result1 as $row1) {
                     $row['worker'][strtolower($row1['typeName'])][] = $row1;
@@ -670,7 +666,7 @@ class SpotRepository extends EntityRepository
 
     public function getSpotSentCustomerContact($spotSentId)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   cc
                 FROM \Application\Entity\RediSpotSentToCustomerContact sstcc
                 INNER JOIN \Application\Entity\RediCustomerContact cc
@@ -687,7 +683,7 @@ class SpotRepository extends EntityRepository
 
     public function getSpotSentWorkStage($spotSentId)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   ws.id, ws.workStage,
                   wsp.id AS parentId, wsp.workStage AS parentWorkStage
                 FROM \Application\Entity\RediSpotSentToWorkStage ssws
@@ -707,7 +703,7 @@ class SpotRepository extends EntityRepository
 
     public function getSpotSendFiles($spotSentId)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   s.spotSentId, s.fileName, s.fileDescription, s.resend, s.creativeUserId
                 FROM \Application\Entity\RediSpotSentFile s
                 WHERE s.spotSentId=:spot_sent_id";
@@ -725,8 +721,8 @@ class SpotRepository extends EntityRepository
         $dql1 = "DELETE
                 FROM \Application\Entity\RediSpotSentFile s
                 WHERE s.spotSentId IN (
-                  SELECT 
-                    ss.id 
+                  SELECT
+                    ss.id
                   FROM \Application\Entity\RediSpotSent ss
                   WHERE ss.requestId=:request_id
                 )";
@@ -741,11 +737,11 @@ class SpotRepository extends EntityRepository
     {
         $dql1 = "DELETE
                 FROM \Application\Entity\RediSpotSentToSpotVersionToEditorDesigner s
-                WHERE s.spotSentSpotVersionId 
+                WHERE s.spotSentSpotVersionId
                 IN (
-                  SELECT 
-                    sv.id 
-                  FROM \Application\Entity\RediSpotSentToSpotVersion sv 
+                  SELECT
+                    sv.id
+                  FROM \Application\Entity\RediSpotSentToSpotVersion sv
                   WHERE sv.spotSentId=:spot_sent_id
                 )";
 
@@ -755,7 +751,7 @@ class SpotRepository extends EntityRepository
         $query1->execute();
 
         $dql2 = "DELETE
-                FROM \Application\Entity\RediSpotSentToSpotVersion sv 
+                FROM \Application\Entity\RediSpotSentToSpotVersion sv
                 WHERE sv.spotSentId=:spot_sent_id";
 
         $query2 = $this->getEntityManager()->createQuery($dql2);
@@ -763,12 +759,11 @@ class SpotRepository extends EntityRepository
 
         $query2->execute();
 
-
     }
 
     public function fullSearch($filter = [], $offset = 0, $length = 10)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                     cu.cardname AS customerName,
                     cu.cardcode,
                     ptc.customerId,
@@ -798,7 +793,7 @@ class SpotRepository extends EntityRepository
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " GROUP BY p.id, s.id 
+        $dql .= " GROUP BY p.id, s.id
                 ORDER BY s.spotName ASC, p.projectName ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -812,11 +807,11 @@ class SpotRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         foreach ($result as &$row) {
-            $row['campaignId'] = $row['campaignId'] ? (int)$row['campaignId'] : null;
-            $row['spotId'] = $row['spotId'] ? (int)$row['spotId'] : null;
+            $row['campaignId'] = $row['campaignId'] ? (int) $row['campaignId'] : null;
+            $row['spotId'] = $row['spotId'] ? (int) $row['spotId'] : null;
 
-            $versionDql = "SELECT 
-                            v.versionName 
+            $versionDql = "SELECT
+                            v.versionName
                             FROM \Application\Entity\RediSpotVersion stv
                             INNER JOIN \Application\Entity\RediVersion v
                                 WITH v.id=stv.versionId
@@ -832,7 +827,7 @@ class SpotRepository extends EntityRepository
 
     public function fullSearchCount($filter = [])
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                     COUNT(DISTINCT s) AS total_count
                 FROM \Application\Entity\RediSpot s
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
@@ -862,12 +857,12 @@ class SpotRepository extends EntityRepository
 
         $result = $query->getArrayResult();
 
-        return (isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
+        return (isset($result[0]['total_count']) ? (int) $result[0]['total_count'] : 0);
     }
 
     public function getSpotSentOption($key = null, $asIdHash = false)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   sso.value
                 FROM \Application\Entity\RediSpotSentOption sso
                   WHERE sso.key = :key";
@@ -912,7 +907,7 @@ class SpotRepository extends EntityRepository
 
     public function getAllFinishingHouse()
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   fh
                 FROM \Application\Entity\RediFinishingHouse fh";
 
@@ -924,8 +919,8 @@ class SpotRepository extends EntityRepository
 
     public function getSpotVersionEditor($spotVersionId)
     {
-        $dql = "SELECT 
-                  u.id, 
+        $dql = "SELECT
+                  u.id,
                   u.firstName, u.lastName,
                   u.username,
                   u.initials
@@ -941,7 +936,7 @@ class SpotRepository extends EntityRepository
         foreach ($result as &$row) {
             $row['name'] = trim($row['firstName'] . ' ' . $row['lastName']);
 
-            $row['id'] = (int)$row['id'];
+            $row['id'] = (int) $row['id'];
 
             unset($row['firstName']);
             unset($row['lastName']);
@@ -952,8 +947,8 @@ class SpotRepository extends EntityRepository
 
     public function getSpotVersionEditorBySpotAndVersion($spotId, $versionId)
     {
-        $dql = "SELECT 
-                  u.id, 
+        $dql = "SELECT
+                  u.id,
                   u.firstName, u.lastName,
                   u.username,
                   u.initials
@@ -961,7 +956,7 @@ class SpotRepository extends EntityRepository
                     INNER JOIN \Application\Entity\RediUser u
                         WITH u.id = sve.userId
                     INNER JOIN \Application\Entity\RediSpotVersion sv
-                        WITH sv.id = sve.spotVersionId                  
+                        WITH sv.id = sve.spotVersionId
                   WHERE sv.spotId = :spot_id
                   AND sv.versionId = :version_id";
 
@@ -973,7 +968,7 @@ class SpotRepository extends EntityRepository
         foreach ($result as &$row) {
             $row['name'] = trim($row['firstName'] . ' ' . $row['lastName']);
 
-            $row['id'] = (int)$row['id'];
+            $row['id'] = (int) $row['id'];
 
             unset($row['firstName']);
             unset($row['lastName']);
@@ -986,7 +981,7 @@ class SpotRepository extends EntityRepository
     {
         $key = 'MAX_SPOT_SENT_REQUEST_ID';
 
-        $dql = "SELECT 
+        $dql = "SELECT
                   s.settingValue
                 FROM \Application\Entity\RediSetting s
                 WHERE s.settingKey=:key";
@@ -996,11 +991,11 @@ class SpotRepository extends EntityRepository
         $query->setMaxResults(1);
         $result = $query->getArrayResult();
 
-        $maxRequestId = ((!empty($result[0]['settingValue'])) ? (int)$result[0]['settingValue'] : 0) + 1;
+        $maxRequestId = ((!empty($result[0]['settingValue'])) ? (int) $result[0]['settingValue'] : 0) + 1;
 
         // update request_id in setting table
-        $updateQuery = "UPDATE redi_setting 
-                        SET 
+        $updateQuery = "UPDATE redi_setting
+                        SET
                             setting_value = :max_request_id
                         WHERE
                             setting_key = :key";
@@ -1051,6 +1046,8 @@ class SpotRepository extends EntityRepository
                         ss.customerContact,
                         ss.spotSentDate,
                         ss.qcApproved,
+                        ss.prodAccept,
+                        ss.finishAccept,
                         ss.qcNote,
                         ss.qcLink,
                         ss.createdAt,
@@ -1059,16 +1056,16 @@ class SpotRepository extends EntityRepository
             $columns = "COUNT(DISTINCT ss.id) AS total_count";
         }
 
-        $dql = "SELECT 
+        $dql = "SELECT
                     " . $columns . "
                 FROM \Application\Entity\RediSpotSent ss
-                LEFT JOIN \Application\Entity\RediProject p 
+                LEFT JOIN \Application\Entity\RediProject p
                     WITH p.id = ss.projectId
-                LEFT JOIN \Application\Entity\RediCampaign c 
+                LEFT JOIN \Application\Entity\RediCampaign c
                     WITH c.id = ss.campaignId
-                LEFT JOIN \Application\Entity\RediSpot s 
+                LEFT JOIN \Application\Entity\RediSpot s
                     WITH s.id = ss.spotId
-                LEFT JOIN \Application\Entity\RediVersion v 
+                LEFT JOIN \Application\Entity\RediVersion v
                     WITH v.id = ss.versionId
                 LEFT JOIN \Application\Entity\RediStudio std
                     WITH p.studioId = std.id
@@ -1101,7 +1098,7 @@ class SpotRepository extends EntityRepository
             $dqlFilter[] = " (ss.lineStatusId IN (:line_status_id)) ";
 
             if (!is_array($filter['line_status_id'])) {
-                $filter['line_status_id'] = (array)$filter['line_status_id'];
+                $filter['line_status_id'] = (array) $filter['line_status_id'];
             }
         }
 
@@ -1109,7 +1106,7 @@ class SpotRepository extends EntityRepository
             $dqlFilter[] = " (ss.graphicsStatusId IN (:graphics_status_id)) ";
 
             if (!is_array($filter['graphics_status_id'])) {
-                $filter['graphics_status_id'] = (array)$filter['graphics_status_id'];
+                $filter['graphics_status_id'] = (array) $filter['graphics_status_id'];
             }
         }
 
@@ -1122,19 +1119,35 @@ class SpotRepository extends EntityRepository
         }
 
         if (!empty($filter['project_id'])) {
-            $dqlFilter[] = " ss.projectId = :project_id ";
+            $dqlFilter[] = " ss.projectId IN (:project_id) ";
+
+            if (!is_array($filter['project_id'])) {
+                $filter['project_id'] = (array) $filter['project_id'];
+            }
         }
 
         if (!empty($filter['campaign_id'])) {
-            $dqlFilter[] = " ss.campaignId = :campaign_id ";
+            $dqlFilter[] = " ss.campaignId IN (:campaign_id) ";
+
+            if (!is_array($filter['campaign_id'])) {
+                $filter['campaign_id'] = (array) $filter['campaign_id'];
+            }
         }
 
         if (!empty($filter['project_campaign_id'])) {
-            $dqlFilter[] = " ss.projectCampaignId = :project_campaign_id ";
+            $dqlFilter[] = " ss.projectCampaignId IN (:project_campaign_id) ";
+
+            if (!is_array($filter['project_campaign_id'])) {
+                $filter['project_campaign_id'] = (array) $filter['project_campaign_id'];
+            }
         }
 
         if (!empty($filter['spot_id'])) {
-            $dqlFilter[] = " ss.spotId = :spot_id ";
+            $dqlFilter[] = " ss.spotId IN (:spot_id) ";
+
+            if (!is_array($filter['spot_id'])) {
+                $filter['spot_id'] = (array) $filter['spot_id'];
+            }
         }
 
         if (!empty($filter['version_id'])) {
@@ -1165,7 +1178,7 @@ class SpotRepository extends EntityRepository
 
         if (empty($filter['get_count'])) {
             if (!empty($filter['return_flat_result'])) {
-                $dql .= " GROUP BY ss.id 
+                $dql .= " GROUP BY ss.id
                     ORDER BY ss.id ASC";
             } else {
                 $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId, ss.lineStatusId
@@ -1206,23 +1219,23 @@ class SpotRepository extends EntityRepository
         }
 
         if (!empty($filter['project_id'])) {
-            $query->setParameter("project_id", $filter['project_id']);
+            $query->setParameter("project_id", $filter['project_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
         }
 
         if (!empty($filter['campaign_id'])) {
-            $query->setParameter("campaign_id", $filter['campaign_id']);
+            $query->setParameter("campaign_id", $filter['campaign_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
         }
 
         if (!empty($filter['project_campaign_id'])) {
-            $query->setParameter("project_campaign_id", $filter['project_campaign_id']);
+            $query->setParameter("project_campaign_id", $filter['project_campaign_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
         }
 
         if (!empty($filter['spot_id'])) {
-            $query->setParameter("spot_id", $filter['spot_id']);
+            $query->setParameter("spot_id", $filter['spot_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
         }
 
         if (!empty($filter['version_id'])) {
-            $query->setParameter("version_id", $filter['version_id']);
+            $query->setParameter("version_id", $filter['version_id'], \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
         }
 
         if (!empty($filter['start_date'])) {
@@ -1236,7 +1249,7 @@ class SpotRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         if (!empty($filter['get_count'])) {
-            return (!empty($result[0]['total_count'])) ? (int)$result[0]['total_count'] : 0;
+            return (!empty($result[0]['total_count'])) ? (int) $result[0]['total_count'] : 0;
         }
 
         $statusOptions = $this->getSpotSentOption('status', true);
@@ -1350,9 +1363,9 @@ class SpotRepository extends EntityRepository
         foreach ($result as $row) {
             if (empty($response[$row['projectId']])) {
                 $response[$row['projectId']] = array(
-                    'projectId' => (int)$row['projectId'],
+                    'projectId' => (int) $row['projectId'],
                     'projectName' => $row['projectName'],
-                    'studioId' => (int)$row['studioId'],
+                    'studioId' => (int) $row['studioId'],
                     'studioName' => $row['studioName'],
                     'campaign' => array(),
                 );
@@ -1360,10 +1373,10 @@ class SpotRepository extends EntityRepository
 
             if (empty($response[$row['projectId']]['campaign'][$row['campaignId']])) {
                 $response[$row['projectId']]['campaign'][$row['campaignId']] = array(
-                    'campaignId' => (int)$row['campaignId'],
+                    'campaignId' => (int) $row['campaignId'],
                     'campaignName' => $row['campaignName'],
-                    'projectCampaignId' => (int)$row['projectCampaignId'],
-                    'customerId' => (int)$row['customerId'],
+                    'projectCampaignId' => (int) $row['projectCampaignId'],
+                    'customerId' => (int) $row['customerId'],
                     'customerName' => $row['customerName'],
                     'spot' => array(),
                 );
@@ -1375,10 +1388,10 @@ class SpotRepository extends EntityRepository
 
             if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId'] . '_' . $row['versionId']])) {
                 $spotRes = array(
-                    'spotId' => (int)$row['spotId'],
+                    'spotId' => (int) $row['spotId'],
                     'spotName' => $row['spotName'],
-                    'spotSentId' => (int)$row['spotSentId'],
-                    'spotSentRequestId' => (int)$row['spotSentRequestId'],
+                    'spotSentId' => (int) $row['spotSentId'],
+                    'spotSentRequestId' => (int) $row['spotSentRequestId'],
                     'spotLineStatusId' => $row['spotLineStatusId'],
                     'spotLineStatus' => $row['spotLineStatus'],
                     'graphicsStatusId' => $row['graphicsStatusId'],
@@ -1388,7 +1401,7 @@ class SpotRepository extends EntityRepository
                     'runtime' => $row['runtime'],
                     'versionId' => $row['versionId'],
                     'versionName' => $row['versionName'],
-                    'finishRequest' => (int)$row['finishRequest'],
+                    'finishRequest' => (int) $row['finishRequest'],
                     'finishOption' => $row['finishOption'],
                     'finishingHouse' => $row['finishingHouse'],
                     'producers' => $row['producers'],

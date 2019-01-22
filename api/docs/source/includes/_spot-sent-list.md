@@ -487,6 +487,8 @@ false | graphics_file | JSON encoded array | null | list of files (like: [{"file
 false | qc_approved | int | null | send 0/1
 false | qc_note | string | null | send note
 false | qc_link | string | null | send qc link
+false | prod_accept | int | null | prod accept. Send 0/1
+false | finish_accept | int | null | finish accept. Send 0/1
 
 
 

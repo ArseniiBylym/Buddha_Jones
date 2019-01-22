@@ -2,23 +2,18 @@
 
 namespace Application\Controller;
 
-use Application\Entity\RediProjectHistory;
-use Application\Entity\RediSpot;
 use Zend\View\Model\JsonModel;
-use League\Csv\Reader;
-
-use Application\Entity\RediCcStatement;
-use Application\Entity\RediCcStatementLine;
 
 class SpotBillingController extends CustomAbstractActionController
 {
-    public function getList() {
+    public function getList()
+    {
         $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
-        $filter['studio_id'] = (int)$this->getRequest()->getQuery('studio_id', 0);
-        $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
-        $length = (int)trim($this->getRequest()->getQuery('length', 10));
+        $filter['studio_id'] = (int) $this->getRequest()->getQuery('studio_id', 0);
+        $offset = (int) trim($this->getRequest()->getQuery('offset', 0));
+        $length = (int) trim($this->getRequest()->getQuery('length', 10));
 
-        if($this->_usersRepo->getSpotBillingAccess($this->_user_type_id)) {
+        if ($this->_usersRepo->getSpotBillingAccess($this->_user_type_id)) {
             $data = $this->_billingRepo->getBillingListFromSpotBilling($filter, $offset, $length);
             $totalCount = $this->_billingRepo->getBillingListFromSpotBillingCount($filter);
 
@@ -39,9 +34,9 @@ class SpotBillingController extends CustomAbstractActionController
                 'data' => $data,
             );
         } else {
-            $response = array (
+            $response = array(
                 'status' => 0,
-                'message' => 'Permission denied.'
+                'message' => 'Permission denied.',
             );
         }
 
@@ -68,7 +63,6 @@ class SpotBillingController extends CustomAbstractActionController
                 // get non billable campaign time
                 $spotInfo['nonBillableCamapignActivity'] = $this->_timeEntryRepo->getNonBillableTimeEntryOfCampaign($projectCampaign->getCampaignId());
 
-
                 // list of time entries
                 $spotInfo['timeEntry'] = array();
                 $timeEntry = $this->_timeEntryRepo->getTimeEntryForBillingBySpotId($spotId);
@@ -80,19 +74,19 @@ class SpotBillingController extends CustomAbstractActionController
                 $response = array(
                     'status' => 1,
                     'message' => 'Request successful',
-                    'data' => $spotInfo
+                    'data' => $spotInfo,
                 );
             } else {
                 $response = array(
                     'status' => 0,
-                    'message' => 'Spot not found.'
+                    'message' => 'Spot not found.',
                 );
             }
 
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Permission denied.'
+                'message' => 'Permission denied.',
             );
         }
 
@@ -108,10 +102,11 @@ class SpotBillingController extends CustomAbstractActionController
         $data = $this->_spotRepo->getById($spotId);
 
         if ($data) {
+            $data['spotSent'] = $this->_billingRepo->getSpotSentDataBySpot($spotId);
             $projectCampaign = $this->_projectToCampaignRepository->find($data['projectCampaignId']);
 
             if (isset($data['id'])) {
-                $data['id'] = (int)$data['id'];
+                $data['id'] = (int) $data['id'];
             }
 
             if ($projectCampaign) {
@@ -131,7 +126,7 @@ class SpotBillingController extends CustomAbstractActionController
 
                     $studio = $this->_studioRepository->find($project->getStudioId());
 
-                    if($studio) {
+                    if ($studio) {
                         $data['studioName'] = $studio->getStudioName();
                     }
                 }
