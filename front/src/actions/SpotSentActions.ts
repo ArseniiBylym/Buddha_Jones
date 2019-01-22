@@ -147,6 +147,7 @@ export class SpotSentActionsClass {
                             graphics_sent_via_method: (spot.sentGraphicsViaMethod) ? spot.sentGraphicsViaMethod.split(',').map((method: string) => {
                                 return parseInt(method, 0);
                             }) : [],
+                            spot_sent_id: spot.spotSentId,
                         };
                     }),
                     finish_option: response.finishOption,
