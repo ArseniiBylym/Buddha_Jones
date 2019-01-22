@@ -359,6 +359,20 @@ export class SpotSentActionsClass {
     };
 
     @action
+    public isSpotExist = async (versionId: number, spotIndex: number) => {
+        try {
+            const newFinishingHouse = await API.postData(APIPath.SPOTS_VALIDATE, {
+                project_campaign_id: (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).project_campaign_id,
+                spot_id: (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_id,
+                version_id: versionId
+            });
+            return newFinishingHouse;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    @action
     public handleSpotChange = (spotIndex: number, values, type?: ProjectPickerSections) => {
         if (type) {
             switch (type) {
@@ -394,12 +408,18 @@ export class SpotSentActionsClass {
                     break;
                 case ProjectPickerSections.version:
                     if (values && values.version) {
-                        if (values.version.id) {
-                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = values.version.id;
-                        }
-                        if (values.version.name) {
-                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = values.version.name;
-                        }
+                        this.isSpotExist(values.version.id, spotIndex)
+                            .then(result => {
+                                if (values.version.id) {
+                                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = values.version.id;
+                                }
+                                if (values.version.name) {
+                                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = values.version.name;
+                                }
+                            })
+                            .catch(error => {
+                                this.spotVersionConfirmModalToggle();                     
+                            });
                     }
                     break;
                 case ProjectPickerSections.clear:
@@ -410,6 +430,11 @@ export class SpotSentActionsClass {
             }
         }
     };
+
+    @action
+    public spotVersionConfirmModalToggle = () => {
+        SpotSentStore.spotVersionModalToggle = !SpotSentStore.spotVersionModalToggle;
+    }
 
     @action
     public dropSpotVersion = (ind: number) => {

@@ -56,4 +56,5 @@ export enum APIPath {
     PROJECT_CAMPAIGN_CUSTOMER_CONTACT       = '/project-campaign-customer-contact',
     SPOT_SENT_FOR_GRAPHICS_USER             = '/spot-sent-list',
     SPOTS_POST                              = '/spot-sent-all',
+    SPOTS_VALIDATE                          = '/spot-sent-validate'
 }
