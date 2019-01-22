@@ -141,7 +141,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
 
         return (
             <div className={s.grid}>
-                <SpotsToQCModal forceUpdating={this.props.forceUpdating} />
+                <SpotsToGraphicsModal forceUpdating={this.props.forceUpdating} />
                 <SpotsToQCModal forceUpdating={this.props.forceUpdating} />
                 {this.projectCampaignCards.map((projectCampaign, i) => (
                     <Card
