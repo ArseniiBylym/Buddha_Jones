@@ -280,6 +280,20 @@ export class SpotSentActionsClass {
         }
     };
 
+    @action 
+    public deleteSpotSent = async (
+        id: any
+    ) => {
+        try {
+            const deletedSpotData = (await API.deleteData(
+                APIPath.SPOTS_TO_GRAPHICS + '/' + id,
+            )) as SpotSentFromApi;
+            return deletedSpotData;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     @action
     public handleDateChange = (date: Date | null) => {
         if (date !== null) {
@@ -331,7 +345,8 @@ export class SpotSentActionsClass {
     };
 
     @action
-    public handleSpotRemove = (currentSpotIndex: number) => {
+    public handleSpotRemove = (currentSpotIndex: number, deletingSpotId: any) => {
+        this.deleteSpotSent(deletingSpotId);
         SpotSentStore.spotSentDetails.spot_version = [
             ...(SpotSentStore.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).slice(0, currentSpotIndex),
             ...(SpotSentStore.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).slice(currentSpotIndex + 1)
