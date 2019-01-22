@@ -300,7 +300,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         });
 
     private onOpenRemoveConfirmationModalHandler = (spotSentId: any, spotIndex: number) => e => {
-        console.log(spotSentId);
         this.setState({
             isRemoveConfirmationModalActive: true,
             currentSpotIndex: spotIndex,
