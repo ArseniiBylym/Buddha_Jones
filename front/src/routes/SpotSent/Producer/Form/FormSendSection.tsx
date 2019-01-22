@@ -51,11 +51,14 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                         labelOnLeft={true}
                         type={'no-icon'}
                     />} */}
-                    <ButtonSend
-                        onClick={this.handleSubmit}
-                        label={this.saveButtonText}
-                        iconColor="orange"
-                    />
+                    <div className={s.buttonSendContainer}>
+                        {this.getSpotLineStatusId() === 5 && !this.state.isGraphicsCompleted && <div className={s.buttonsSentShutter}/>}
+                        <ButtonSend
+                            onClick={this.handleSubmit}
+                            label={this.saveButtonText}
+                            iconColor="orange"
+                        />
+                    </div>
                 </div>
                 {this.getLinkField()} 
                 <Modal
@@ -107,6 +110,17 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                         type={'no-icon'}
                     />
                 );
+            
+        } else if (this.getSpotLineStatusId() === 5) {
+            return (
+                <CheckmarkSquare
+                    onClick={this.completedToggleHandler}
+                    checked={this.state.isGraphicsCompleted}
+                    label="Ready for Bill"
+                    labelOnLeft={true}
+                    type={'no-icon'}
+                />
+            );
         } else {
             return (
                 <CheckmarkSquare
@@ -178,6 +192,12 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                     } else {
                         spot.line_status_id = 3;
                     }
+                } else if (this.getSpotLineStatusId() === 5) {
+                    if (this.state.isGraphicsCompleted) {
+                        spot.line_status_id = 6;
+                    } else {
+                        spot.line_status_id = 5;
+                    }
                 } else if (this.props.prevLocation && this.props.prevLocation === 'graphics') {
                     if (this.state.isGraphicsCompleted) {
                         spot.line_status_id = 4;
@@ -221,6 +241,8 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
     private get saveButtonText(): string {
         if (this.getSpotLineStatusId() === 2 || this.getSpotLineStatusId() === 3) {
             return 'Save';
+        } else if (this.getSpotLineStatusId() === 5) {
+            return 'Complete';
         } else if (this.state.isGraphicsCompleted) {
             return 'Save';
         } else {
