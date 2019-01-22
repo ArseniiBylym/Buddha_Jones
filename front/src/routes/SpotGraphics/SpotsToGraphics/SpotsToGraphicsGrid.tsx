@@ -247,7 +247,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
     }
 
     private isQCNotApproved = (spot) => {
-        if (spot.lineStatusId === 3 && spot.qcApproved === 0) {
+        if (spot.spotLineStatusId === 3 && spot.qcApproved === 0) {
             return s.qcNotApproved;
         }
         return null;
