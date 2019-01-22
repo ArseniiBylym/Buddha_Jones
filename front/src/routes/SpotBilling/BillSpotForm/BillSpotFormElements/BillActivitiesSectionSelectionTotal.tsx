@@ -1,6 +1,4 @@
-import * as classNames from 'classnames';
 import { DateHandler } from 'helpers/DateHandler';
-import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 
@@ -13,6 +11,7 @@ export interface BillTimeEntriesSelectionTotals {
     selectedAdjustedMinutes: number;
     // Total minutes that have never been billed
     totalMinutes?: number;
+    // Highlight total minutes with contrast color when they are unbilledj
     areTotalMinutesUnbilled?: boolean;
 }
 
@@ -20,10 +19,6 @@ interface BillActivitiesSectionSelectionTotalProps extends BillTimeEntriesSelect
 
 @observer
 export class BillActivitiesSectionSelectionTotal extends React.Component<BillActivitiesSectionSelectionTotalProps, {}> {
-    @computed private get isPositive(): boolean {
-        return this.props.selectedAdjustedMinutes >= this.props.selectedBaseMinutes;
-    }
-
     public render() {
         return (
             <div className={s.selection}>
@@ -36,19 +31,7 @@ export class BillActivitiesSectionSelectionTotal extends React.Component<BillAct
 
                 <p>
                     <span>Selected: </span>
-                    <strong>{DateHandler.convertTotalMinutesToHM(this.props.selectedBaseMinutes)}</strong>
-                </p>
-
-                <p className={classNames({ [s.positive]: this.isPositive, [s.negative]: this.isPositive === false })}>
-                    <strong>
-                        {(this.isPositive ? '+' : '-') +
-                            ' ' +
-                            DateHandler.convertTotalMinutesToHM(
-                                this.isPositive
-                                    ? this.props.selectedAdjustedMinutes - this.props.selectedBaseMinutes
-                                    : this.props.selectedBaseMinutes - this.props.selectedAdjustedMinutes
-                            )}
-                    </strong>
+                    <strong>{DateHandler.convertTotalMinutesToHM(this.props.selectedAdjustedMinutes)}</strong>
                 </p>
             </div>
         );
