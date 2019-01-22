@@ -115,4 +115,16 @@
             }
         }
     }
+
+    &.hasDate {
+        & > div {
+            &.splitTimeEntryVisualLineCol {
+                grid-column: 2 / span 4;
+            }
+
+            &.splitTimeEntryInBillCol {
+                grid-column: 6 / span 2;
+            }
+        }
+    }
 }
