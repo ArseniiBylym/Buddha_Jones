@@ -22,6 +22,7 @@ export interface ProjectDataApiResponse {
     };
     projectName?: string;
     projectCode?: string;
+    confidential: number;
 }
 
 export interface RawProjectApiResponse extends RawApiResponse {
@@ -61,4 +62,5 @@ export interface Project {
     lastUpdatedByUserImage: string | null;
     studioId: number;
     studioName: string;
+    confidential: number;
 }
