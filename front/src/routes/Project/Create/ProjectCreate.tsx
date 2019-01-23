@@ -4,7 +4,7 @@ import * as classNames from 'classnames';
 import { ClientsFilter } from 'components/Buddha';
 import { ButtonBack, ButtonSend } from 'components/Button';
 import { DatePicker } from 'components/Calendar';
-import { Input, TextArea } from 'components/Form';
+import { Input, TextArea, Checkmark } from 'components/Form';
 import { Col, Row, Section } from 'components/Section';
 import * as dateFormat from 'date-fns/format';
 import { action, observable } from 'mobx';
@@ -27,6 +27,7 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
     @observable private notes: string = '';
     @observable private isUploading: boolean = false;
     @observable private uploadRetries: number = 0;
+    @observable private confidential: boolean = false;
 
     public componentDidMount() {
         this.loadPageHeader();
@@ -36,6 +37,19 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
         return (
             <div>
                 <Section noSeparator={true}>
+                    <Row className={s.row}>
+                        <Col className={s.size8Col} size={8}>
+                            <div className={s.confContainer}>
+                                <Checkmark 
+                                    checked={this.confidential}    
+                                    label="CONFIDENTIAL"
+                                    labelOnLeft={false}
+                                    onClick={this.confidentialHandler}
+                                    type="no-icon"
+                                />
+                            </div>
+                        </Col>
+                    </Row>
                     <Row className={s.row}>
                         <Col className={s.size8Col} size={8}>
                             <Input
@@ -130,6 +144,11 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
     };
 
     @action
+    private confidentialHandler = e => {
+        this.confidential = !this.confidential;
+    }
+
+    @action
     private loadPageHeader = () => {
         HeaderActions.replaceMainHeaderContent({
             title: 'Define new project',
@@ -173,6 +192,7 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
             studioName: this.studio !== null ? this.studio.name : null,
             releaseDate: this.releaseDate !== null ? dateFormat(this.releaseDate, 'YYYY-MM-DD') : null,
             notes: this.notes.trim(),
+            confidential: this.confidential === true ? 1 : 0,
         };
 
         if (projectData.name.length === 0 && projectData.codeName.length === 0) {

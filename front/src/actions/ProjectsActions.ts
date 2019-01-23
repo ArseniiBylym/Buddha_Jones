@@ -25,6 +25,7 @@ export class ProjectsActionsClass {
     public createProject = async (project: ProjectCreateData): Promise<number> => {
         try {
             const response = (await API.postData(APIPath.PROJECT, {
+                confidential: project.confidential,
                 name: project.name.trim(),
                 project_code: project.codeName.trim(),
                 studio_id: project.studioId !== null ? project.studioId : '',
@@ -116,6 +117,7 @@ export class ProjectsActionsClass {
                 lastUpdatedByUserId: project.lastUpdateUser.userId,
                 lastUpdatedByUserName: project.lastUpdateUser.name,
                 lastUpdatedByUserImage: project.lastUpdateUser.image,
+                confidential: project.confidential
             }));
 
             ProjectsStore.countTotal = response.data.total_count;
