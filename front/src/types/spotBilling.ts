@@ -61,6 +61,7 @@ export interface BillTimeEntry {
     spotName: string | null;
     versionId: number | null;
     versionName: string | null;
+    versionSequence: number | null;
     activityId: number;
     activityName: string;
     activityDescription: string | null;

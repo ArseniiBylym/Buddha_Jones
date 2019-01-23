@@ -16,7 +16,7 @@ interface Props extends AppOnlyStoreState {
 @observer
 export class BillSpotFormProjectCampaignActivities extends React.Component<Props, {}> {
     @computed private get entriesFormatted(): FormattedInBillTimeEntry[] {
-        const timeEntries = this.props.timeEntries.reduce((entries: FormattedInBillTimeEntry[], entry) => {
+        return this.props.timeEntries.reduce((entries: FormattedInBillTimeEntry[], entry) => {
             // Calculate start and end time
             const startDate = DateHandler.parseDateStringAsDateObject(entry.startDate);
             const startTimeInMinutes = DateHandler.getTotalMinutesFromDateTime(startDate);
@@ -63,14 +63,6 @@ export class BillSpotFormProjectCampaignActivities extends React.Component<Props
             // Return
             return entries;
         }, []);
-
-        return timeEntries.sort((entryA, entryB) => {
-            if (DateHandler.checkIfDateIsOlderThanOtherDate(entryA.startDate, entryB.startDate)) {
-                return 1;
-            } else {
-                return -1;
-            }
-        });
     }
 
     public render() {

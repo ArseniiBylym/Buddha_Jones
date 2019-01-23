@@ -4,9 +4,8 @@ import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
-import { BillTimeEntry, SpotBillFormSpot, SpotBillFormSummary } from 'types/spotBilling';
+import { BillTimeEntry, SpotBillFormSummary } from 'types/spotBilling';
 import { BillSpotFormProjectHistory, BillSpotFormSpotsGrid, BillSpotPreview } from '../BillSpotFormElements';
-import { BillSpotFormActivities } from './BillSpotFormActivities';
 
 interface Props extends AppOnlyStoreState {
     billData: SpotBillFormSummary;
@@ -15,11 +14,6 @@ interface Props extends AppOnlyStoreState {
 @inject('store')
 @observer
 export class DraftBillSpotForm extends React.Component<Props, {}> {
-    @computed
-    private get isAnyActivitySelected(): boolean {
-        return this.props.store!.spotToBillForm.selectedActivitiesIds.length > 0;
-    }
-
     @computed
     private get filteredUnbilledProjectTimeEntries(): BillTimeEntry[] {
         return this.props.billData.unbilledProjectTimeEntries.filter(
@@ -32,21 +26,6 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
         return this.props.billData.unbilledProjectCampaignTimeEntries.filter(
             timeEntry => SpotToBillFormActions.checkIfTimeEntryIsInBill(timeEntry.timeEntryId) === false
         );
-    }
-
-    @computed
-    private get filteredSpots(): SpotBillFormSpot[] {
-        return this.props.billData.spots.filter(spot => {
-            spot.timeEntries = spot.timeEntries.filter(
-                timeEntry => SpotToBillFormActions.checkIfTimeEntryIsInBill(timeEntry.timeEntryId) === false
-            );
-
-            if (spot.timeEntries.length > 0) {
-                return true;
-            }
-
-            return false;
-        });
     }
 
     constructor(props: Props) {
@@ -64,7 +43,6 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
 
     public render() {
         const { billData } = this.props;
-        const { addingActivityToBillStatus } = this.props.store!.spotToBillForm;
 
         return (
             <React.Fragment>
@@ -78,11 +56,6 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
                     projectCampaignName={billData.projectCampaignName}
                     projectCampaignId={billData.projectCampaignId}
                     editable={true}
-                />
-
-                <BillSpotFormActivities
-                    spots={this.filteredSpots}
-                    marginBottom={this.isAnyActivitySelected || addingActivityToBillStatus !== 'none' ? 64 : 24}
                 />
 
                 <BillSpotFormBottomBar isBillSaving={false} spots={billData.spots} />
