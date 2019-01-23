@@ -295,6 +295,14 @@ export class SpotToBillFormActionsClass {
         SpotToBillFormStore.showBillPreview = typeof show !== 'undefined' ? show : !SpotToBillFormStore.showBillPreview;
     };
 
+    public checkIfSpotIsInBill = (spotId: number): boolean => {
+        if (SpotToBillFormStore.spotsAddedToBill.some(spot => spot === spotId)) {
+            return true;
+        }
+
+        return false;
+    };
+
     public checkIfTimeEntryIsInBill = (timeEntryId: number): boolean => {
         if (
             SpotToBillFormStore.firstStage.some(firstStageSpot =>

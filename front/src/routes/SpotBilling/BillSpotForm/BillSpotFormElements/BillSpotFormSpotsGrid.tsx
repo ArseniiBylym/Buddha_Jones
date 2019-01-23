@@ -13,6 +13,7 @@ import {
     BillSpotFormProjectCampaignActivities,
     BillActivitiesSectionSelectionTotal,
     BillTimeEntriesSelectionTotals,
+    BillSpotFormSpotsToAdd,
 } from '.';
 
 const s = require('./BillSpotFormSpotsGrid.css');
@@ -30,8 +31,6 @@ interface Props extends AppOnlyStoreState {
 @inject('store')
 @observer
 export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
-    @observable private areSpotsInEditMode: boolean = false;
-
     @computed private get unbilledProjectTimeEntriesTotalMinutes(): number {
         return this.calculateTotalMinutesOfTimeEntries(this.props.unbilledProjectTimeEntries);
     }
@@ -119,19 +118,18 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
         };
     }
 
+    @computed private get remainingSpotsToBill(): SpotBillFormSpot[] {
+        const spotsAddedToBill: number[] =
+            this.props.store && this.props.store.spotToBillForm.spotsAddedToBill
+                ? this.props.store.spotToBillForm.spotsAddedToBill
+                : [];
+
+        return this.props.spots.filter(spot => spotsAddedToBill.findIndex(spotId => spotId === spot.spotId) === -1);
+    }
+
     @computed
     private get filteredSpots(): SpotBillFormSpot[] {
-        return this.props.spots.filter(spot => {
-            spot.timeEntries = spot.timeEntries.filter(
-                timeEntry => SpotToBillFormActions.checkIfTimeEntryIsInBill(timeEntry.timeEntryId) === false
-            );
-
-            if (spot.timeEntries.length > 0) {
-                return true;
-            }
-
-            return false;
-        });
+        return this.props.spots.filter(spot => SpotToBillFormActions.checkIfSpotIsInBill(spot.spotId));
     }
 
     public render() {
@@ -241,33 +239,57 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                     </Card>
                 </Section>
 
+                {this.filteredSpots.length <= 0 && (
+                    <Section title="Spots to be billed">
+                        <Card
+                            isExpandable={false}
+                            classNameForContentAboveTitleBar={s.spotsGrid}
+                            contentAboveTitleBar={
+                                <Paragraph type="dim" className={s.noSpots}>
+                                    No spots added to the bill.
+                                </Paragraph>
+                            }
+                        />
+                    </Section>
+                )}
+
                 {this.filteredSpots.map((spot, spotIndex) => (
                     <Section key={spot.spotId} title={spotIndex === 0 ? 'Spots to be billed' : undefined}>
                         <Card
                             isExpandable={true}
+                            noPadding={true}
                             title="View unbilled spot activities"
-                            titleWhenExpanded="Hide spot activities"
+                            titleWhenExpanded="Hide unbilled spot activities"
                             classNameForContentAboveTitleBar={s.spotsGrid}
                             contentAboveTitleBar={
-                                this.props.store!.spotToBillForm.spotsAddedToBill.length > 0 ? (
-                                    <BillSpotFormSpotsGridTable
-                                        spots={this.props.spots}
-                                        areSpotsInEditMode={this.areSpotsInEditMode}
-                                        campaignName={this.props.campaignName}
-                                        projectCampaignName={this.props.projectCampaignName}
-                                    />
-                                ) : (
-                                    <Paragraph type="dim" className={s.noSpots}>
-                                        No spots added to the bill. Edit spots to add at least single spot.
-                                    </Paragraph>
-                                )
+                                <BillSpotFormSpotsGridTable
+                                    spot={spot}
+                                    isInEditMode={false}
+                                    campaignName={this.props.campaignName}
+                                    projectCampaignName={this.props.projectCampaignName}
+                                />
                             }
-                            noPadding={true}
                         >
                             <BillSpotFormActivities spot={spot} />
                         </Card>
                     </Section>
                 ))}
+
+                <Section
+                    key="add-spot"
+                    title="Add other spot from campaign to the bill"
+                    headerElements={[
+                        {
+                            key: 'dropdown',
+                            element: (
+                                <BillSpotFormSpotsToAdd
+                                    projectCampaignId={this.props.projectCampaignId}
+                                    remainingSpotsToBill={this.remainingSpotsToBill}
+                                />
+                            ),
+                        },
+                    ]}
+                />
             </React.Fragment>
         );
     }
