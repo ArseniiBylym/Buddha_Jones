@@ -212,6 +212,10 @@ export class SpotToBillFormActionsClass {
         }
     };
 
+    @action public changeSelectedRateCard = (rateCardId: number) => {
+        SpotToBillFormStore.selectedRateCardId = rateCardId;
+    };
+
     @action private changeAddingActivityToBillStatus = (status: AddingActivityToBillStatus) => {
         SpotToBillFormStore.addingActivityToBillStatus = status;
     };

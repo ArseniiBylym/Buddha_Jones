@@ -37,11 +37,27 @@
         }
     }
 
-    & .studio {
-        font-size: 0.9rem;
+    & > .right {
+        padding-left: 24px;
+        display: block;
+        text-align: right;
 
-        & em {
-            font-style: normal;
+        & .studio {
+            font-size: 0.9rem;
+
+            & em {
+                font-style: normal;
+            }
+        }
+
+        & .studioRateCard {
+            display: flex;
+            justify-content: flex-end;
+            text-align: right;
+
+            & > p {
+                margin-top: 4px;
+            }
         }
     }
 }

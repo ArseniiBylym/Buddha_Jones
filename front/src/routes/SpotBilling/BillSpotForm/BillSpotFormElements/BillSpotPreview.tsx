@@ -140,7 +140,7 @@ export class BillSpotPreview extends React.Component<Props, {}> {
 
     public render() {
         const { billId, projectName, campaignName, projectCampaignName, studioId, studioName, editable } = this.props;
-        const { showBillPreview, activities, selectedRateCard } = this.props.store!.spotToBillForm;
+        const { showBillPreview, activities, selectedRateCardId: selectedRateCard } = this.props.store!.spotToBillForm;
 
         return (
             <Modal

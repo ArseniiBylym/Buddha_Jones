@@ -1,9 +1,12 @@
 import { BillSpotPreviewRowEdit } from '.';
+import { SpotToBillFormActions } from 'actions';
 import { ButtonDelete, ButtonSend } from 'components/Button';
 import { Paragraph } from 'components/Content';
+import { DropdownContainer, OptionsList } from 'components/Form';
 import { BottomBar } from 'components/Layout';
 import { MoneyHandler } from 'helpers/MoneyHandler';
 import { StringHandler } from 'helpers/StringHandler';
+import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
@@ -35,8 +38,29 @@ interface Props extends AppOnlyStoreState {
 @inject('store')
 @observer
 export class BillSpotPreviewContent extends React.Component<Props, {}> {
+    private studioRateCardsDropdown: DropdownContainer | null = null;
+
+    @computed
+    private get selectedStudioRateCard(): StudioRateCardTypeFromApi | null {
+        if (!this.props.store!.spotToBillForm.selectedRateCardId) {
+            return null;
+        }
+
+        const rateCard = this.props.studioRateCards.find(
+            r => r.ratecardId === this.props.store!.spotToBillForm.selectedRateCardId
+        );
+
+        return rateCard || null;
+    }
+
+    public componentDidMount() {
+        if (!this.selectedStudioRateCard && this.props.studioRateCards.length > 0) {
+            SpotToBillFormActions.changeSelectedRateCard(this.props.studioRateCards[0].ratecardId);
+        }
+    }
+
     public render() {
-        const { activities } = this.props.store!.spotToBillForm;
+        const { activities, selectedRateCardId } = this.props.store!.spotToBillForm;
 
         return (
             <React.Fragment>
@@ -64,10 +88,38 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                         </Paragraph>
                     </div>
 
-                    <Paragraph className={s.studio}>
-                        <em>for </em>
-                        <strong>{this.props.studioName}</strong>
-                    </Paragraph>
+                    <div className={s.right}>
+                        <Paragraph className={s.studio}>
+                            <em>for </em>
+                            <strong>{this.props.studioName}</strong>
+                        </Paragraph>
+
+                        <div className={s.studioRateCard}>
+                            {(this.props.studioRateCards.length > 0 && (
+                                <DropdownContainer
+                                    ref={this.referenceStudioRateCardsDropdown}
+                                    label="Rate card:"
+                                    value={
+                                        this.selectedStudioRateCard
+                                            ? this.selectedStudioRateCard.ratecardName
+                                            : undefined
+                                    }
+                                >
+                                    <OptionsList
+                                        onChange={this.handleRateCardChange}
+                                        options={this.props.studioRateCards.map(rate => ({
+                                            value: rate.ratecardId,
+                                            label: rate.ratecardName,
+                                        }))}
+                                    />
+                                </DropdownContainer>
+                            )) || (
+                                <Paragraph type="dim" size="small">
+                                    Studio has no rate cards defined
+                                </Paragraph>
+                            )}
+                        </div>
+                    </div>
                 </div>
 
                 <div className={s.content}>
@@ -157,6 +209,16 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
             </React.Fragment>
         );
     }
+
+    private referenceStudioRateCardsDropdown = (ref: DropdownContainer) => (this.studioRateCardsDropdown = ref);
+
+    private handleRateCardChange = (option: { value: number; label: string }) => {
+        SpotToBillFormActions.changeSelectedRateCard(option.value);
+
+        if (this.studioRateCardsDropdown) {
+            this.studioRateCardsDropdown.closeDropdown();
+        }
+    };
 
     private handleDeleteBill = (e: React.MouseEvent<HTMLButtonElement>) => {
         // TODO
