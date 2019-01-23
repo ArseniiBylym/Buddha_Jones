@@ -487,6 +487,8 @@ false | graphics_file | JSON encoded array | null | list of files (like: [{"file
 false | qc_approved | int | null | send 0/1
 false | qc_note | string | null | send note
 false | qc_link | string | null | send qc link
+false | prod_accept | int | null | prod accept. Send 0/1
+false | finish_accept | int | null | finish accept. Send 0/1
 
 
 
@@ -729,3 +731,37 @@ false | campaign_id | int | null | campaign id
 false | project_campaign_id | int | null | project camapign id
 false | spot_id | int | null | spot id
 false | version_id | int | null | version id
+
+
+
+
+## Delete spot sent row from list
+
+Delete a spot sent row from spot sent request .
+
+
+> Sample request
+
+```javascript
+axios.delete('/spot-sent-list/20');
+```
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Spot sent deleted successfully."
+}
+```
+
+### HTTP Request
+
+`DELETE /spot-sent-list/[:spot_sent_id]`
+
+
+### Query Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+**true**  | spot_sent_id | int | 0 | spot sent id 

@@ -185,6 +185,9 @@ class SpotSentController extends CustomAbstractActionController
         $specSheetFile = $this->_commonRepo->filterPostData($data, 'spec_sheet_file', 'json', null);
 
         $spotSentType = $this->_commonRepo->filterPostData($data, 'spot_sent_type', 'int', $this->_commonRepo->filterPostData($existingData, 'spotSentType', 'int', 1), 1);
+        $qcApproved = $this->_commonRepo->filterPostData($data, 'qc_approved', 'boolean', null, true);
+        $qcNote = $this->_commonRepo->filterPostData($data, 'qc_note', 'string', null, true);
+        $qcLink = $this->_commonRepo->filterPostData($data, 'qc_link', 'string', null, true);
 
         // array to commaseparated string
         // $sentViaMethod = $this->arrayToCommaSeparated($sentViaMethod);
@@ -449,14 +452,20 @@ class SpotSentController extends CustomAbstractActionController
 
                 if ($svd['qc_approved'] !== null) {
                     $spotSent->setQcApproved($svd['qc_approved']);
+                } else if ($qcApproved !== null) {
+                    $spotSent->setQcApproved($qcApproved);
                 }
 
                 if ($svd['qc_note'] !== null) {
                     $spotSent->setQcNote($svd['qc_note']);
+                } else if ($qcNote !== null) {
+                    $spotSent->setQcNote($qcNote);
                 }
 
                 if ($svd['qc_link'] !== null) {
                     $spotSent->setQcLink($svd['qc_link']);
+                } else if ($qcLink !== null) {
+                    $spotSent->setQcLink($qcLink);
                 }
 
                 if ($isUpdate) {
@@ -764,33 +773,6 @@ class SpotSentController extends CustomAbstractActionController
         }
 
         return $spotVersionData;
-    }
-
-    private function validateData($requestId, $spotVersionData)
-    {
-        foreach ($spotVersionData as $svd) {
-            $checkData = array(
-                'projectId' => $svd['project_id'],
-                'campaignId' => $svd['campaign_id'],
-                'spotId' => $svd['spot_id'],
-                'versionId' => $svd['version_id'],
-                'spotResend' => $svd['spot_resend'],
-                'spotSentType' => $svd['spot_sent_type'],
-            );
-
-            $check = $this->_spotSentRepository->findOneBy($checkData);
-
-            if ($check && $requestId !== $check->getRequestId()) {
-                return array(
-                    "result" => false,
-                    "data" => $checkData,
-                );
-            }
-        }
-
-        return array(
-            "result" => true,
-        );
     }
 
     public function spotSentSubmissionPostProcess($requestId)

@@ -280,8 +280,53 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                     },
                 ]}
             />
+            <Modal
+                show={this.props.store!.spotSent.spotVersionModalToggle}
+                title={`Spot version ${this.props.store!.spotSent.existedSpot.name} already exists.`}
+                text={`Please select Resent OR Finish.`}
+                closeButton={false}
+                type="alert"
+                actions={[
+                    {
+                        onClick: () => { this.versionModalHandler('resent'); },
+                        closeOnClick: false,
+                        label: 'Resent',
+                        type: 'default',
+                    },
+                    {
+                        onClick: () => { this.versionModalHandler('finish'); },
+                        closeOnClick: false,
+                        label: 'Finish',
+                        type: 'default',
+                    },
+                    {
+                        onClick: () => { this.versionModalHandler(); },
+                        closeOnClick: false,
+                        label: 'Cancel',
+                        type: 'alert',
+                    },
+                ]}
+            />
             </>
         );
+    }
+
+    private versionModalHandler = (action: string = '') => {
+        switch (action) {
+            case 'resent': 
+                this.handleSpotResendToggle(true);
+                SpotSentActions.setSpotSentVersion(this.props.spotIndex);
+                SpotSentActions.spotVersionConfirmModalToggle();
+                break;
+            case 'finish':
+                this.handleFinishingRequestToggle(true);
+                SpotSentActions.setSpotSentVersion(this.props.spotIndex);
+                SpotSentActions.spotVersionConfirmModalToggle();
+                break;
+            default: 
+                SpotSentActions.spotVersionConfirmModalToggle();
+                break;
+        }
     }
 
     private modalButtonHandler = (isConfirm) => {

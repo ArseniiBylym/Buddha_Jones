@@ -49,10 +49,10 @@ export class NotificationsCenter extends React.Component<AppOnlyStoreState, {}> 
                                 <IconClose width={12} height={12}/>
                             ),
                     }}
-                    tooltip={{
-                        text: !this.showHistory ? 'Notifications' : 'Close',
-                        on: 'left',
-                    }}
+                    // tooltip={{
+                    //     text: !this.showHistory ? 'Notifications' : 'Close',
+                    //     on: 'left',
+                    // }}
                 />
 
                 <div className={s.notificationsLive}>

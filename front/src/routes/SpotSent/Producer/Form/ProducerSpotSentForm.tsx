@@ -32,6 +32,7 @@ interface ProducerSpotSentFormState {
     isRemoveConfirmationModalActive: boolean;
     prevLocation: string;
     files: [{ file_name: string; file_description: string }] | [];
+    deletingSpotId: any;
 }
 
 // Types
@@ -49,6 +50,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             isRemoveConfirmationModalActive: false,
             prevLocation: '',
             files: [],
+            deletingSpotId: null,
         };
     }
 
@@ -91,6 +93,12 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         prevLock = prevLock && prevLock[prevLock.length - 1];
         return prevLock;
     };
+
+    public componentDidUpdate = () => {
+            if (this.props.store!.spotSent.spotSentDetails.spot_version && this.isEditMode) {
+                this.updateHeader();
+        }
+    }
 
     public componentDidMount() {
         // get prev location
@@ -172,10 +180,11 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         <Section title="Spots" noSeparator={true}>
                             {(spotSentDetails.spot_version as SpotSentVersionForSubmit[]).map(
                                 (spot: SpotSentVersionForSubmit, spotIndex: number) => {
+                                    // console.log(spot);
                                     return (
                                         <ProducerSpotSentFormSpotCard
                                             key={spotIndex}
-                                            onSpotRemove={this.onOpenRemoveConfirmationModalHandler}
+                                            onSpotRemove={this.onOpenRemoveConfirmationModalHandler(spot.spot_sent_id, spotIndex)}
                                             project={{
                                                 id: spotSentDetails.project_id as number,
                                                 name: spotSentDetails.project_name as string,
@@ -279,6 +288,45 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         );
     }
 
+    private getSpotsNamesJSXElements = () => {
+        if (this.props.store) {
+            const { spotSentDetails } = this.props.store.spotSent;
+            if (spotSentDetails && spotSentDetails.spot_version &&  spotSentDetails.spot_version.length > 0) {
+                let spotsArray: any = spotSentDetails.spot_version;
+                if (typeof(spotsArray) === 'string') {
+                    spotsArray = JSON.parse(spotsArray);
+                }
+                return (
+                    <div className={s.mainSpotHeaderInfo__spotListSpots}>
+                        {spotsArray.map((item, i) => {
+                            if (i > 1) {
+                                return;
+                            }
+                            return item.spot_name;
+                        }).join(', ')}
+                    </div>
+                );
+            }
+        } 
+        return null;
+    }
+
+    private getSpotsCampaignJSXElements = () => {
+        if (this.props.store) {
+            const { spotSentDetails } = this.props.store.spotSent;
+            if (spotSentDetails && spotSentDetails.spot_version &&  spotSentDetails.spot_version.length > 0) {
+                return (
+                    <div className={s.mainSpotHeaderInfo__campaignNames}> 
+                        {(spotSentDetails.spot_version as SpotSentVersionForSubmit[])[0].campaign_name}
+                        <span> - </span>
+                        {spotSentDetails.project_name}
+                    </div>
+                );
+            }
+        } 
+        return null;
+    }
+    
     private getLoadingSpinner = (): JSX.Element => <LoadingSpinner className={s.loadingSpinner} size={64} />;
 
     private handleBackButtonClick = () => {
@@ -296,11 +344,13 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             isRemoveConfirmationModalActive: false,
         });
 
-    private onOpenRemoveConfirmationModalHandler = (spotIndex: number) =>
+    private onOpenRemoveConfirmationModalHandler = (spotSentId: any, spotIndex: number) => e => {
         this.setState({
             isRemoveConfirmationModalActive: true,
             currentSpotIndex: spotIndex,
+            deletingSpotId: spotSentId,
         });
+    }
 
     private handleProjectChange = (values: ProjectPickerValues | null) =>
         SpotSentActions.handleProjectChange(values, this.isEditMode);
@@ -310,13 +360,42 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     private handleSentToRemove = (index: number): void => SpotSentActions.handleSentToRemove(index);
 
     private handleSpotRemove = () => {
-        SpotSentActions.handleSpotRemove(this.state.currentSpotIndex);
+        SpotSentActions.handleSpotRemove(this.state.currentSpotIndex, this.state.deletingSpotId);
         this.setState({
             isRemoveConfirmationModalActive: false,
+            deletingSpotId: null,
         });
     };
 
     private handleCreateSpot = () => SpotSentActions.handleCreateSpot();
+
+    private updateHeader = () => {
+        HeaderActions.replaceMainHeaderContent({
+            elementsOnLeft: [
+                <div key="mainSpotHeaderInfo" style={{marginRight: 'auto'}} className={s.mainSpotHeaderInfo}>
+                    <div className={s.mainSpotHeaderInfo__spotList}>
+                        <div className={s.mainSpotHeaderInfo__spotListLabel}>Spots:</div>
+                        {this.getSpotsNamesJSXElements()}
+                    </div>
+                    <div className={s.mainSpotHeaderInfo__campaign}>
+                        <div className={s.mainSpotHeaderInfo__campaignLabel}>Campaign:</div>
+                        {this.getSpotsCampaignJSXElements()}
+                    </div>
+                </div>,
+            ],
+            elements: [
+                <div key="spotCampaignInfo" className={s.spotCampaignInfo}>
+                    <div className={s.spotCampaignInfo__campaignName}>{this.props.store!.spotSent.spotSentDetails.project_name}</div>
+                    {this.props.store!.spotSent.spotSentDetails.studio_note && <div className={s.spotCampaignInfo__campaignName}>for {this.props.store!.spotSent.spotSentDetails.studio_note}</div>}
+                </div>,
+                <ButtonBack
+                    key="button-back-to-list"
+                    onClick={this.handleBackButtonClick}
+                    label="Back to spots sent list"
+                />,
+            ],
+        });
+    }
 
     private setHeaderAndInitialData = async (): Promise<boolean> => {
         try {

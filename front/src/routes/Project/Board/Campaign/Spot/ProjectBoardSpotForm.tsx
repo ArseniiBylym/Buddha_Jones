@@ -131,9 +131,14 @@ export class ProjectBoardSpotForm extends React.Component<Props & AppOnlyStoreSt
                 innerRef={this.referenceFormContainer}
                 className={styles.newSpotFields}
                 removeMargins={true}
+                justifyContent="space-between"
+                doWrap={true}
+                removeGutter={false}
+                style={{width: '100%'}}
             >
-                <Col removeGutter={this.props.removeGutter}>
-                    {this.props.showTopSeparator && <hr/>}
+                {this.props.showTopSeparator && <hr/>}
+                <Col size={4} removeGutter={this.props.removeGutter} style={{marginRight: '25px'}}>
+                    {/* {this.props.showTopSeparator && <hr/>} */}
 
                     {(typeof this.props.spotId === 'undefined' || this.props.spotId === null) && (
                         <p>Creating new spot:</p>
@@ -204,6 +209,11 @@ export class ProjectBoardSpotForm extends React.Component<Props & AppOnlyStoreSt
                             </Col>
                         </Row>
                     )}
+                </Col>
+
+                <Col size={4} removeGutter={this.props.removeGutter} style={{marginLeft: '25px'}}>
+
+                    {/* {this.props.showTopSeparator && <hr/>} */}
 
                     {(this.props.userCanEditRevisionsAndVersions || this.props.userCanEditGraphicsRevisions) && (
                         <div className={styles.revisionsContainer}>
@@ -313,7 +323,7 @@ export class ProjectBoardSpotForm extends React.Component<Props & AppOnlyStoreSt
 
                     <Row className={styles.summary}>
                         <Col>
-                            <Button
+                            {/* <Button
                                 className={styles.cancelSpotFormButton}
                                 onClick={this.handleSpotFormCancel}
                                 label={{
@@ -321,7 +331,7 @@ export class ProjectBoardSpotForm extends React.Component<Props & AppOnlyStoreSt
                                     color: 'orange',
                                     size: 'small',
                                 }}
-                            />
+                            /> */}
                         </Col>
                         <Col>
                             <Button
