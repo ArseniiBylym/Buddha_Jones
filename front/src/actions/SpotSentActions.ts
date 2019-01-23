@@ -657,6 +657,23 @@ export class SpotSentActionsClass {
 
     }
 
+    @action
+    public changeSpotAccept = async(index: number | undefined, type: string, value: number) => {
+        try {
+            const data: any = {};
+            if (type === 'finish') {
+                data.finish_accept = value;
+            }
+            if (type === 'production') {
+                data.prod_accept = value;
+            }
+            const deletedSpotData = (await API.putData(APIPath.SPOTS_TO_GRAPHICS + '/' + index, data)) as SpotSentFromApi;
+            return deletedSpotData;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     private get defaultSpotElement(): SpotSentVersionForSubmit {
         return {
             campaign_id: null,

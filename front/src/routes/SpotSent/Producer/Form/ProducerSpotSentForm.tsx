@@ -180,7 +180,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         <Section title="Spots" noSeparator={true}>
                             {(spotSentDetails.spot_version as SpotSentVersionForSubmit[]).map(
                                 (spot: SpotSentVersionForSubmit, spotIndex: number) => {
-                                    // console.log(spot);
                                     return (
                                         <ProducerSpotSentFormSpotCard
                                             key={spotIndex}
@@ -223,11 +222,13 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                                     ? (spot.graphics_sent_via_method as number[])
                                                     : [],
                                                 finishAccept: (spot.finish_accept === 1) ? true : false,
+                                                spotSentId: spot.spot_sent_id
                                             }}
                                             spotIndex={spotIndex}
                                             forUserId={this.props.store!.user.data!.id}
                                             withGraphicsSection={this.state.prevLocation === 'graphics' ? true : false}
                                             updateFileList={this.updateFileList}
+                                            paramId={this.props.match!.params['id']}
                                         />
                                     );
                                 }

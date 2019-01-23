@@ -13,6 +13,7 @@ export interface SpotSentSpot {
     line_status_id: number | null;
     sentGraphicsViaMethod: number[];
     finishAccept?: boolean;
+    spotSentId?: number;
 }
 
 export interface SentViaOption {

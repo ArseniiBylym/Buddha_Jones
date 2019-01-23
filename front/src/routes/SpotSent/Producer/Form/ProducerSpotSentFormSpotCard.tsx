@@ -44,6 +44,7 @@ interface ProducerSpotSentFormSpotCardProps {
     withGraphicsSection?: boolean;
     updateFileList: any;
     finishAccept?: boolean;
+    paramId?: any;
 }
 
 interface ProducerSpotSentFormSpotCardState {
@@ -314,31 +315,45 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
     private versionModalHandler = (action: string = '') => {
         switch (action) {
             case 'resent': 
-                this.handleSpotResendToggle(true);
+            this.handleSpotResendToggle(true);
                 SpotSentActions.setSpotSentVersion(this.props.spotIndex);
                 SpotSentActions.spotVersionConfirmModalToggle();
                 break;
-            case 'finish':
+                case 'finish':
                 this.handleFinishingRequestToggle(true);
                 SpotSentActions.setSpotSentVersion(this.props.spotIndex);
                 SpotSentActions.spotVersionConfirmModalToggle();
                 break;
-            default: 
+                default: 
                 SpotSentActions.spotVersionConfirmModalToggle();
                 break;
-        }
-    }
-
-    private modalButtonHandler = (isConfirm) => {
-        this.setState({
-            finishModal: false,
-        });
-        if (isConfirm) {
-            if ( this.props.spot.version && this.state.modalCallback === 'finish') {
-                this.props.spot.version.finishAccept ? this.handleFinishAccept(false) : this.handleFinishAccept(true);
-            } else if ( this.props.spot.version && this.state.modalCallback === 'production') {
-                this.props.spot.version.prodAccept ? this.handleProdAccept(false) : this.handleProdAccept(true);
             }
+        }
+        
+        private modalButtonHandler = (isConfirm) => {
+            this.setState({
+                finishModal: false,
+            });
+            if (isConfirm) {
+                if ( this.props.spot.version && this.state.modalCallback === 'finish') {
+                    this.props.spot.version.finishAccept ? this.handleFinishAccept(false) : this.handleFinishAccept(true);
+                    SpotSentActions.changeSpotAccept(this.props.spot.spotSentId, 'finish', 1)
+                    .then(response => {
+                        SpotSentActions.fetchSpotSentDetails(this.props.paramId, true);
+                    })
+                    .catch(error => {
+                        throw error;
+                    });
+                } else if ( this.props.spot.version && this.state.modalCallback === 'production') {
+                    this.props.spot.version.prodAccept ? this.handleProdAccept(false) : this.handleProdAccept(true);
+                    SpotSentActions.changeSpotAccept(this.props.spot.spotSentId, 'production', 1)
+                        .then(response => {
+                            SpotSentActions.fetchSpotSentDetails(this.props.paramId, true);
+                        })
+                        .catch(error => {
+                            throw error;
+                        });
+                }
         } else {
             return;
         }
