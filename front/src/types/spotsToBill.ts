@@ -35,6 +35,9 @@ export interface SpotToBillFromApi {
     projectName: string;
     studioId: number;
     studioName: string;
+    customerId: number | null;
+    customerName: string | null;
+    customerTitle: string | null;
     campaignId: number;
     campaignName: string;
     projectCampaignId: number;

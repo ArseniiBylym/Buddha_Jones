@@ -31,6 +31,9 @@ export interface ProjectCampaignCard {
     projectName: string;
     studioId: number;
     studioName: string;
+    customerId: number | null;
+    customerName: string | null;
+    customerTitle: string | null;
     producers: SpotToBillProducer[];
     spots: Array<{
         id: number;
@@ -63,6 +66,9 @@ export class SpotsToBillGrid extends React.Component<SpotsToBillGridProps, {}> {
                     projectName: spot.projectName,
                     studioId: spot.studioId,
                     studioName: spot.studioName,
+                    customerId: spot.customerId,
+                    customerName: spot.customerName,
+                    customerTitle: spot.customerTitle,
                     producers: spot.producers,
                     spots: [],
                 });

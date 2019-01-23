@@ -538,6 +538,9 @@ class BillingRepository extends EntityRepository
                     p.projectName,
                     st.id AS studioId,
                     st.studioName,
+                    cc.customerId,
+                    cc.name AS customerName,
+                    cc.title AS customerTitle,
                     ss.campaignId,
                     c.campaignName,
                     ss.projectCampaignId,
@@ -552,6 +555,8 @@ class BillingRepository extends EntityRepository
                 FROM \Application\Entity\RediSpotSent ss
                 LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
                     WITH ptc.id = ss.projectCampaignId
+                LEFT JOIN \Application\Entity\RediCustomerContact cc
+                    WITH ptc.customerId = cc.id
                 LEFT JOIN \Application\Entity\RediProject p
                     WITH p.id = ss.projectId
                 LEFT JOIN \Application\Entity\RediStudio st
@@ -607,6 +612,7 @@ class BillingRepository extends EntityRepository
 
         $result = array_map(function ($res) use ($spotSentData) {
             if (!empty($res['updatedAt'])) {
+                $res['customerId'] = (int)$res['customerId'];
                 $res['updatedAt'] = new \DateTime($res['updatedAt']);
                 $res['spotSent'] = array_values(array_filter($spotSentData, function ($spotSentRow) use ($res) {
                     return $spotSentRow['spotId'] == $res['spotId'];

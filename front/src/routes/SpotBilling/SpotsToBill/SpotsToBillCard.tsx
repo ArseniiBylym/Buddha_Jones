@@ -25,8 +25,17 @@ export class SpotsToBillCard extends React.Component<Props, {}> {
                 <React.Fragment>
                     <div className={s.summary}>
                         <p>
-                            <span>Studio </span>
+                            <span>Studio: </span>
                             <strong>{projectCampaign.studioName}</strong>
+                        </p>
+
+                        <p>
+                            {(projectCampaign.customerName && projectCampaign.customerTitle && (
+                                <span>{projectCampaign.customerTitle + ': '}</span>
+                            )) ||
+                                (projectCampaign.customerName && <span>Customer: </span>)}
+
+                            {projectCampaign.customerName && <strong>{projectCampaign.customerName}</strong>}
                         </p>
                     </div>
 
