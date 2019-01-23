@@ -111,11 +111,13 @@ export class SpotsToBillCard extends React.Component<Props, {}> {
                                                                 : ''}
                                                         </Paragraph>
                                                     </div>
+
                                                     <div className={s.spotSentCol}>
                                                         <Paragraph type="default" size="small" align="left">
                                                             {spotSent.spotLineStatus || ''}
                                                         </Paragraph>
                                                     </div>
+
                                                     <div className={s.spotSentCol}>
                                                         <Paragraph type="default" size="small" align="left">
                                                             {spotSent.graphicsStatus || ''}
