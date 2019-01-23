@@ -1,4 +1,5 @@
 import { DateObjectFromApi } from './api';
+import { SpotBillingType } from './projectDetailsEnums';
 
 export interface ActivityHours {
     regularHoursInMinutes: number;
@@ -84,6 +85,8 @@ export interface SpotBillFormSpot {
     firstRevisionCost: number | null;
     firstRevisionIsBilled: boolean;
     graphicsIncluded: boolean;
+    billingType: SpotBillingType | null;
+    billingNote: string | null;
     timeEntries: BillTimeEntry[];
 }
 

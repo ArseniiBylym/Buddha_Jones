@@ -2,6 +2,7 @@ import { SpotToBillFormActions } from 'actions';
 import { ButtonDelete } from 'components/Button';
 import { Paragraph } from 'components/Content';
 import { MoneyHandler } from 'helpers/MoneyHandler';
+import { SpotHandler } from 'helpers/SpotHandler';
 import { StringHandler } from 'helpers/StringHandler';
 import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
@@ -76,6 +77,16 @@ export class BillSpotFormSpotsGridTable extends React.Component<Props, {}> {
                                         labelColor="orange"
                                     />
                                 )}
+                        </div>
+
+                        <div className={s.titles}>
+                            <h3>{SpotHandler.getSpotBillingTypeName(spot.billingType)}</h3>
+
+                            <h4>Spot billing</h4>
+
+                            <Paragraph type="brown" size="small">
+                                {spot.billingNote ? 'Note: ' + spot.billingNote : 'No billing note'}
+                            </Paragraph>
                         </div>
                     </React.Fragment>
                 ))}

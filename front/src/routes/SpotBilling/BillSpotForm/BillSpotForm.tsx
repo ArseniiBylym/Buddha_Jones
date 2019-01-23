@@ -7,6 +7,7 @@ import { observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppState } from 'store/AllStores';
+import { SpotBillingType } from 'types/projectDetailsEnums';
 import { SpotBillFormSummary } from 'types/spotBilling';
 import { ApprovedBillSpotForm } from './ApprovedBillSpotForm';
 import { BackToSpotsToBillListButton, BillIdDoesNotExist } from './BillSpotFormElements';
@@ -523,6 +524,8 @@ export default class BillSpotForm extends React.Component<Props, {}> {
                                 graphicsIncluded: false,
                                 firstRevisionCost: 45000,
                                 firstRevisionIsBilled: true,
+                                billingType: null,
+                                billingNote: null,
                                 timeEntries: [],
                             },
                             {
@@ -533,6 +536,8 @@ export default class BillSpotForm extends React.Component<Props, {}> {
                                 graphicsIncluded: false,
                                 firstRevisionCost: 12500,
                                 firstRevisionIsBilled: false,
+                                billingType: 'R' as SpotBillingType,
+                                billingNote: 'Spec revised, is billable',
                                 timeEntries: [
                                     {
                                         timeEntryId: 34,
