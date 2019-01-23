@@ -47,12 +47,16 @@ export class LoadingShade extends React.Component<LoadingShadeProps, {}> {
     public render() {
         return (
             <Row
-                className={classNames(s.shade, this.props.className, {
-                    [s.visible]: this.visible,
-                    [s.alignLeft]: !this.props.contentCentered,
-                    [s.alignTop]: this.props.contentCentered && this.props.contentCenteredToTop,
-                    [s.static]: this.props.isStatic,
-                })}
+                className={classNames(
+                    s.shade,
+                    {
+                        [s.visible]: this.visible,
+                        [s.alignLeft]: !this.props.contentCentered,
+                        [s.alignTop]: this.props.contentCentered && this.props.contentCenteredToTop,
+                        [s.static]: this.props.isStatic,
+                    },
+                    this.props.className
+                )}
                 style={{
                     background: this.props.background || undefined,
                     border: this.props.border || undefined,

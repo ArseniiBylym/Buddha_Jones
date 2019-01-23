@@ -4,3 +4,7 @@
         padding-right: 64px;
     }
 }
+
+.loader {
+    padding-top: 36px !important;
+}

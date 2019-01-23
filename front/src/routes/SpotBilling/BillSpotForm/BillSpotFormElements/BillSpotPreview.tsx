@@ -174,7 +174,13 @@ export class BillSpotPreview extends React.Component<Props, {}> {
                     {([studioRateCards]) => {
                         if (studioRateCards.loading && studioRateCards.response === null) {
                             return (
-                                <LoadingShade contentCentered={true} contentCenteredToTop={true} isStatic={true}>
+                                <LoadingShade
+                                    className={s.loader}
+                                    contentCentered={true}
+                                    contentCenteredToTop={true}
+                                    isStatic={true}
+                                    background="transparent"
+                                >
                                     <LoadingSpinner />
                                 </LoadingShade>
                             );
