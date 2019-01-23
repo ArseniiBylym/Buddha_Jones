@@ -39,20 +39,12 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
         if (!this.props.store) {
             return null;
         }
-        // const { spotSentDetails } = this.props.store.spotSent;
+
         return (
             <Section>
                 <div className={s.summary}>
                     {this.getCheckmark()}
-                    {/* {this.getSpotLineStatusId() !== 2 && <Checkmark
-                        onClick={this.completedToggleHandler}
-                        checked={this.state.isGraphicsCompleted}
-                        label={this.props.prevLocation && this.props.prevLocation === 'graphics' ? 'Completed' : 'Ready to be sent'}
-                        labelOnLeft={true}
-                        type={'no-icon'}
-                    />} */}
                     <div className={s.buttonSendContainer}>
-                        {this.getSpotLineStatusId() === 5 && !this.state.isGraphicsCompleted && <div className={s.buttonsSentShutter}/>}
                         <ButtonSend
                             onClick={this.handleSubmit}
                             label={this.saveButtonText}
@@ -147,19 +139,9 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                 if (this.props.store.spotSent.spotSentDetails.spot_version[0]) {
                     lineStatus = this.props.store.spotSent.spotSentDetails.spot_version[0].line_status_id;
                 }
-                // this.props.store.spotSent.spotSentDetails.spot_version.forEach(item => {
-                //     lineStatus = item.line_status_id;
-                // });
                 return lineStatus;
         }
     }
-
-    // private checkmarkClickHander = () => {
-    //     if (this.props.store && this.props.store.spotSent) {
-    //         const value = this.props.store.spotSent.spotSentDetails.status === 2 ? false : true;
-    //         SpotSentActions.handleFinalToggle(value);
-    //     }
-    // }
 
     private handleSubmit = async () => {
         const viaOtionsNotChecked = this.props.store!.spotSent.spotSentDetails.spot_version.find((item, i) => {
@@ -239,9 +221,9 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
     }
 
     private get saveButtonText(): string {
-        if (this.getSpotLineStatusId() === 2 || this.getSpotLineStatusId() === 3) {
+        if (this.getSpotLineStatusId() === 2 || this.getSpotLineStatusId() === 3 || (this.getSpotLineStatusId() === 5 && !this.state.isGraphicsCompleted)) {
             return 'Save';
-        } else if (this.getSpotLineStatusId() === 5) {
+        } else if (this.getSpotLineStatusId() === 5 && this.state.isGraphicsCompleted) {
             return 'Complete';
         } else if (this.state.isGraphicsCompleted) {
             return 'Save';
