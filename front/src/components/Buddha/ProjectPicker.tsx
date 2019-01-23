@@ -75,6 +75,7 @@ interface Props {
     index?: number;
     additionalElements?: any;
     isSubmoduleVisible?: boolean;
+    line_status_name?: string | null;
 }
 
 declare type ComponentProps = Props & AppOnlyStoreState;
@@ -484,7 +485,10 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
                         ))}
                     </Row> : 
                     <div className="secontHeaderSpotContainer">
-                        <div className="controls">{this.props.additionalElements}</div>
+                        <div className="controls__wrapper">
+                            {this.props.line_status_name && <div className={this.lineStatusStyle(this.props.line_status_name)}>{this.props.line_status_name}</div>}
+                            <div className="controls">{this.props.additionalElements}</div>
+                        </div>
                         <div className="clearSectionAndSubtile">
                             <div className="notificationContainer">Spot and version have to be selected</div>
                             <Button
@@ -551,6 +555,15 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
                 />
             </Section>
         );
+    }
+
+    private lineStatusStyle = (name: string) => {
+        if (name === 'QC Approved') {
+            return 'controls__projectStatus__Green';
+        } else {
+            return 'controls__projectStatus';
+        }
+
     }
 
     public clearSelectedValues = () => {

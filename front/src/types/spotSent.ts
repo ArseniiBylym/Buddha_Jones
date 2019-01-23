@@ -11,6 +11,7 @@ export interface SpotSentSpot {
     isFinishingRequest: boolean;
     sentViaMethod: number[];
     line_status_id: number | null;
+    line_status_name?: string | null;
     sentGraphicsViaMethod: number[];
     finishAccept?: boolean;
     spotSentId?: number;

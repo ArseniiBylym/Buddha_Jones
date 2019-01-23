@@ -218,6 +218,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                                     ? (spot.sent_via_method as number[])
                                                     : [],
                                                 line_status_id: spot.line_status_id,
+                                                line_status_name: spot.line_status_name ? spot.line_status_name : null,
                                                 sentGraphicsViaMethod: spot.graphics_sent_via_method
                                                     ? (spot.graphics_sent_via_method as number[])
                                                     : [],
@@ -299,18 +300,16 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     // spotsArray = JSON.parse(spotsArray);
                 }
                 let spotsArrayCopy = spotsArray.slice();
-                if (spotsArrayCopy.length > 2) {
-                    spotsArrayCopy = spotsArrayCopy.slice(0, 2);
+                if (spotsArrayCopy.length > 3) {
+                    spotsArrayCopy = spotsArrayCopy.slice(0, 3);
+                    spotsArrayCopy.push({spot_name: '...'});
                 }
-                if (spotsArrayCopy.length > 1 &&  spotsArrayCopy[0].spot_name === spotsArrayCopy[1].spot_name) {
-                    spotsArrayCopy = spotsArrayCopy.slice(0, 1);
-                }
+                // if (spotsArrayCopy.length > 1 &&  spotsArrayCopy[0].spot_name === spotsArrayCopy[1].spot_name) {
+                //     spotsArrayCopy = spotsArrayCopy.slice(0, 1);
+                // }
                 return (
                     <div className={s.mainSpotHeaderInfo__spotListSpots}>
                         {spotsArrayCopy.map((item, i) => {
-                            if (i > 1) {
-                                return;
-                            }
                             return item.spot_name;
                         }).join(', ')}
                     </div>
@@ -324,9 +323,22 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         if (this.props.store) {
             const { spotSentDetails } = this.props.store.spotSent;
             if (spotSentDetails && spotSentDetails.spot_version &&  spotSentDetails.spot_version.length > 0) {
+                let campaignArray: any = spotSentDetails.spot_version;
+                if (typeof(campaignArray) === 'string') {
+                    return null;
+                    // campaignArray = JSON.parse(campaignArray);
+                }
+                let campaignArrayCopy = campaignArray.slice();
+                if (campaignArrayCopy.length > 3) {
+                    campaignArrayCopy = campaignArrayCopy.slice(0, 3);
+                    campaignArrayCopy.push({campaign_name: '...'});
+                }
                 return (
                     <div className={s.mainSpotHeaderInfo__campaignNames}> 
-                        {(spotSentDetails.spot_version as SpotSentVersionForSubmit[])[0].campaign_name}
+                        {campaignArrayCopy.map((item, i) => {
+                            return item.campaign_name;
+                        }).join(', ')}
+                        {/* {(spotSentDetails.spot_version as SpotSentVersionForSubmit[])[0].campaign_name} */}
                         <span> - </span>
                         {spotSentDetails.project_name}
                     </div>

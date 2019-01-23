@@ -17,6 +17,7 @@ export interface SpotSentVersionForSubmit {
     spot_resend: 0 | 1;
     finish_request: 0 | 1;
     line_status_id: number | null;
+    line_status_name?: string | null;
     sent_via_method: number[] | null;
     finish_accept?: 0 | 1;
     prod_accept?: 0 | 1;
