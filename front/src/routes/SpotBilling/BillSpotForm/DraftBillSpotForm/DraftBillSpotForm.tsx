@@ -75,6 +75,7 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
                     campaignName={billData.campaignName}
                     projectCampaignName={billData.projectCampaignName}
                     projectCampaignId={billData.projectCampaignId}
+                    studioId={billData.studioId}
                     studioName={billData.studioName}
                     editable={true}
                 />

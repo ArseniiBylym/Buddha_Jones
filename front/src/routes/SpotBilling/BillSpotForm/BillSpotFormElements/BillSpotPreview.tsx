@@ -1,16 +1,15 @@
 import { SpotToBillFormActions } from 'actions';
-import { ButtonDelete, ButtonSend } from 'components/Button';
-import { Paragraph } from 'components/Content';
-import { BottomBar } from 'components/Layout';
+import { DataFetchError } from 'components/Errors/DataFetchError';
+import { LoadingShade, LoadingSpinner } from 'components/Loaders';
 import { Modal } from 'components/Modals';
-import { MoneyHandler } from 'helpers/MoneyHandler';
-import { StringHandler } from 'helpers/StringHandler';
+import { APIPath, FetchQuery } from 'fetch';
 import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { BillTimeEntry, SpotBillFormSpot, SpotBillRowRevision } from 'types/spotBilling';
-import { BillSpotPreviewRowEdit } from './BillSpotPreviewRowEdit';
+import { StudioRateCardApiQuery, StudioRateCardFromApi } from 'types/studioRateCard';
+import { BillSpotPreviewContent, FirstStageRow } from './BillSpotPreviewContent';
 
 const s = require('./BillSpotPreview.css');
 
@@ -24,6 +23,7 @@ interface Props extends AppOnlyStoreState {
     campaignName: string;
     projectCampaignName: string | null;
     projectCampaignId: number;
+    studioId: number;
     studioName: string;
 }
 
@@ -35,12 +35,7 @@ export class BillSpotPreview extends React.Component<Props, {}> {
     }
 
     @computed
-    private get firstStageRows(): Array<{
-        spotId: number;
-        spotName: string;
-        revisions: SpotBillRowRevision[];
-        amount: number;
-    }> {
+    private get firstStageRows(): FirstStageRow[] {
         return this.props.store!.spotToBillForm.firstStage.map(firstStage => {
             let spotName = '';
             let amount = 0;
@@ -144,8 +139,8 @@ export class BillSpotPreview extends React.Component<Props, {}> {
     }
 
     public render() {
-        const { billId, projectName, campaignName, projectCampaignName, studioName, editable } = this.props;
-        const { showBillPreview, activities } = this.props.store!.spotToBillForm;
+        const { billId, projectName, campaignName, projectCampaignName, studioId, studioName, editable } = this.props;
+        const { showBillPreview, activities, selectedRateCard } = this.props.store!.spotToBillForm;
 
         return (
             <Modal
@@ -159,130 +154,62 @@ export class BillSpotPreview extends React.Component<Props, {}> {
                 topBarTitle={'Preview of bill #' + billId}
                 classNameForTopBar={s.topBar}
             >
-                <div className={s.summary}>
-                    <div className={s.left}>
-                        {this.spotsInBill.length > 0 && (
-                            <Paragraph className={s.spots}>
-                                <span>{this.spotsInBill.length > 1 ? 'Spots: ' : 'Spot: '}</span>
-                                {this.spotsInBill.map(spot => (
-                                    <strong key={spot.spotId}>{spot.spotName}</strong>
-                                ))}
-                            </Paragraph>
-                        )}
-
-                        <Paragraph className={s.campaign}>
-                            <span>Campaign: </span>
-                            <strong>
-                                {StringHandler.constructProjectCampaignName(campaignName, projectCampaignName)}
-                            </strong>
-                            <span> — </span>
-                            <strong>{projectName}</strong>
-                        </Paragraph>
-                    </div>
-
-                    <Paragraph className={s.studio}>
-                        <em>for </em>
-                        <strong>{studioName}</strong>
-                    </Paragraph>
-                </div>
-
-                <div className={s.content}>
-                    <div className={s.grid}>
-                        <div className={s.gridHeader}>
-                            <Paragraph type="dim" size="small" align="left">
-                                ID
-                            </Paragraph>
-                            <Paragraph type="dim" size="small" align="left">
-                                Activity
-                            </Paragraph>
-                            <Paragraph type="dim" size="small" align="left">
-                                Spot
-                            </Paragraph>
-                            <Paragraph type="dim" size="small" align="left">
-                                Revisions
-                            </Paragraph>
-                            <Paragraph type="dim" size="small" align="left">
-                                Rate
-                            </Paragraph>
-                            <Paragraph type="dim" size="small" align="right">
-                                Amount
-                            </Paragraph>
-                        </div>
-
-                        {this.firstStageRows.map((firstStageRow, firstStageRowIndex) => (
-                            <BillSpotPreviewRowEdit
-                                key={firstStageRowIndex}
-                                className={s.gridRow}
-                                id={firstStageRowIndex + 1}
-                                name={'First stage cost'}
-                                note={null}
-                                spots={firstStageRow.spotName}
-                                revisions={firstStageRow.revisions.map(rev => rev.versionName).join(', ')}
-                                billingRate={null}
-                                amount={firstStageRow.amount}
-                                editable={true}
-                            />
-                        ))}
-
-                        {activities.map((activity, activityIndex) => {
-                            const activityNumberingId = activityIndex + this.firstStageRows.length + 1;
-
+                <FetchQuery<StudioRateCardFromApi, StudioRateCardApiQuery>
+                    skipFetching={studioId ? false : true}
+                    dataExpiresInMiliseconds={60000}
+                    getQueries={[
+                        {
+                            apiEndpoint: APIPath.STUDIO_RATE_CARD,
+                            queryObject: {
+                                studio_id: studioId || 0,
+                                ...(selectedRateCard
+                                    ? {
+                                          ratecard_id: selectedRateCard,
+                                      }
+                                    : {}),
+                            },
+                        },
+                    ]}
+                >
+                    {([studioRateCards]) => {
+                        if (studioRateCards.loading && studioRateCards.response === null) {
                             return (
-                                <BillSpotPreviewRowEdit
-                                    key={activityNumberingId}
-                                    className={s.gridRow}
-                                    id={activityNumberingId}
-                                    name={activity.name}
-                                    note={activity.note}
-                                    spots={activity.spot}
-                                    revisions={activity.version}
-                                    billingRate={{
-                                        id: 1,
-                                        name: 'A',
-                                    }}
-                                    amount={1000}
-                                    editable={true}
+                                <LoadingShade contentCentered={true} contentCenteredToTop={true} isStatic={true}>
+                                    <LoadingSpinner />
+                                </LoadingShade>
+                            );
+                        }
+
+                        if (studioRateCards.fetchError || studioRateCards.response === null) {
+                            return (
+                                <DataFetchError
+                                    errorLabel="Could not fetch studio rate card"
+                                    onRefetch={studioRateCards.retry}
                                 />
                             );
-                        })}
-                    </div>
+                        }
 
-                    <div className={s.totals}>
-                        <Paragraph>{'Total: ' + MoneyHandler.formatAsDollars(this.billTotal)}</Paragraph>
-                    </div>
-                </div>
-
-                <BottomBar show={editable ? true : false} isWholeWidth={true}>
-                    <div className={s.actions}>
-                        <ButtonDelete
-                            onClick={this.handleDeleteBill}
-                            label="Delete this bill and reopen all its activities for billing"
-                            labelColor="orange"
-                            labelIsBold={true}
-                            labelOnLeft={false}
-                        />
-
-                        <ButtonSend
-                            onClick={this.handleSubmitBill}
-                            label="Submit bill for review"
-                            labelColor="green"
-                            iconColor="green"
-                        />
-                    </div>
-                </BottomBar>
+                        return (
+                            <BillSpotPreviewContent
+                                projectName={projectName}
+                                campaignName={campaignName}
+                                projectCampaignName={projectCampaignName}
+                                studioName={studioName}
+                                billTotal={this.billTotal}
+                                spotsInBill={this.spotsInBill}
+                                firstStageRows={this.firstStageRows}
+                                editable={editable}
+                                studioRateCards={studioRateCards.response.data.ratecardType}
+                                selectedRateCard={studioRateCards.response.data.studioRateCard}
+                            />
+                        );
+                    }}
+                </FetchQuery>
             </Modal>
         );
     }
 
     private closeBillPreview = () => {
         SpotToBillFormActions.toggleBillPreview(false);
-    };
-
-    private handleDeleteBill = (e: React.MouseEvent<HTMLButtonElement>) => {
-        // TODO
-    };
-
-    private handleSubmitBill = (e: React.MouseEvent<HTMLButtonElement>) => {
-        // TODO
     };
 }

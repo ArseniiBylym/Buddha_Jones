@@ -13,6 +13,8 @@ export class SpotToBillForm {
     @observable public addingActivityToBillStatus: AddingActivityToBillStatus = 'none';
     @observable public showBillPreview: boolean = false;
 
+    @observable public selectedRateCard: number | null = null;
+
     @observable public selectedActivities: SpotBillFormActivityTimeEntry[] = [];
     @computed public get selectedActivitiesIds(): number[] {
         return this.selectedActivities.map(a => a.timeEntryId);
