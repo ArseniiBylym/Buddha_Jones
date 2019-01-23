@@ -3,6 +3,7 @@ import { LinkButton } from 'components/Button';
 import { Paragraph } from 'components/Content';
 import { Checkbox } from 'components/Form';
 import { Card, CardContentBlock, CardContentTable } from 'components/Section';
+import { DateHandler } from 'helpers/DateHandler';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ProjectCampaignCard, SpotToBillSelectionToggle } from './SpotsToBillGrid';
@@ -71,42 +72,60 @@ export class SpotsToBillCard extends React.Component<Props, {}> {
                             titleFontWeight={400}
                             noBorderOnBottom={true}
                         >
-                            {projectCampaign.spots.map(spot => (
-                                <CardContentBlock
-                                    key={spot.id}
-                                    title={spot.name}
-                                    noBorderOnBottom={true}
-                                    titleElements={
-                                        <Checkbox
-                                            onChange={this.handleSpotSelectionToggle(
-                                                spot.id,
-                                                projectCampaign.projectCampaignId
-                                            )}
-                                            checked={spot.isSelected}
-                                            label={spot.isSelected ? 'In bill' : 'Add to bill'}
-                                            labelOnLeft={true}
-                                        />
-                                    }
-                                >
-                                    <CardContentTable
-                                        header={[
-                                            { title: 'Date spot sent', align: 'left' },
-                                            { title: 'Editorial', align: 'left' },
-                                            { title: 'Graphics', align: 'left' },
-                                        ]}
+                            {projectCampaign.spots
+                                .filter(spot => spot.spotsSent && spot.spotsSent.length > 0)
+                                .map(spot => (
+                                    <CardContentBlock
+                                        key={spot.id}
+                                        title={spot.name}
+                                        noBorderOnBottom={true}
+                                        titleElements={
+                                            <Checkbox
+                                                onChange={this.handleSpotSelectionToggle(
+                                                    spot.id,
+                                                    projectCampaign.projectCampaignId
+                                                )}
+                                                checked={spot.isSelected}
+                                                label={spot.isSelected ? 'In bill' : 'Add to bill'}
+                                                labelOnLeft={true}
+                                            />
+                                        }
                                     >
-                                        <div className={s.spotSentCol}>
-                                            <Paragraph>2019-01-21</Paragraph>
-                                        </div>
-                                        <div className={s.spotSentCol}>
-                                            <Paragraph>Billed (ver. 1)</Paragraph>
-                                        </div>
-                                        <div className={s.spotSentCol}>
-                                            <Paragraph>Pending (descriptions)</Paragraph>
-                                        </div>
-                                    </CardContentTable>
-                                </CardContentBlock>
-                            ))}
+                                        <CardContentTable
+                                            header={[
+                                                { title: 'Date spot sent', align: 'left' },
+                                                { title: 'Editorial', align: 'left' },
+                                                { title: 'Graphics', align: 'left' },
+                                            ]}
+                                        >
+                                            {spot.spotsSent.map(spotSent => (
+                                                <div className={s.spotSentRow} key={spotSent.spotSentId}>
+                                                    <div className={s.spotSentCol}>
+                                                        <Paragraph type="default" size="small">
+                                                            {spotSent.spotSentDate
+                                                                ? DateHandler.printDateObjectAsString(
+                                                                      DateHandler.parseDateStringAsDateObject(
+                                                                          spotSent.spotSentDate
+                                                                      )
+                                                                  )
+                                                                : ''}
+                                                        </Paragraph>
+                                                    </div>
+                                                    <div className={s.spotSentCol}>
+                                                        <Paragraph type="default" size="small" align="left">
+                                                            {spotSent.spotLineStatus || ''}
+                                                        </Paragraph>
+                                                    </div>
+                                                    <div className={s.spotSentCol}>
+                                                        <Paragraph type="default" size="small" align="left">
+                                                            {spotSent.graphicsStatus || ''}
+                                                        </Paragraph>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </CardContentTable>
+                                    </CardContentBlock>
+                                ))}
                         </CardContentBlock>
                     </div>
                 </React.Fragment>

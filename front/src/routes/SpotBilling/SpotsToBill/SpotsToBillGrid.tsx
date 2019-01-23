@@ -3,8 +3,7 @@ import { LoadingShade, LoadingSpinner } from 'components/Loaders';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { DateObjectFromApi } from 'types/api';
-import { SpotToBillFromApi, SpotToBillProducer } from 'types/spotsToBill';
+import { SpotToBillFromApi, SpotToBillProducer, SpotToBillSentFromApi } from 'types/spotsToBill';
 import { SpotProjectCampaignGroup } from './SpotsToBill';
 import { SpotsToBillCard } from './SpotsToBillCard';
 
@@ -24,15 +23,6 @@ interface SpotsToBillGridProps {
     };
 }
 
-interface ProjectCampaignCardSpotSent {
-    spotSentId: number;
-    date: DateObjectFromApi;
-    editorialName: string;
-    editorialId: number;
-    graphicsStatus: string;
-    graphicsId: number;
-}
-
 export interface ProjectCampaignCard {
     projectCampaignId: number;
     campaignName: string;
@@ -46,7 +36,7 @@ export interface ProjectCampaignCard {
         id: number;
         name: string;
         isSelected: boolean;
-        spotsSent: ProjectCampaignCardSpotSent[];
+        spotsSent: SpotToBillSentFromApi[];
     }>;
 }
 
@@ -83,7 +73,7 @@ export class SpotsToBillGrid extends React.Component<SpotsToBillGridProps, {}> {
                 id: spot.spotId,
                 name: spot.spotName,
                 isSelected: this.props.selectedSpots.findIndex(group => group.spotId === spot.spotId) !== -1,
-                spotsSent: [],
+                spotsSent: spot.spotSent || [],
             });
 
             return cards;
