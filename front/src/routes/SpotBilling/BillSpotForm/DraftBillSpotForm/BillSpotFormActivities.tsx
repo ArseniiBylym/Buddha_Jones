@@ -200,16 +200,32 @@ export class BillSpotFormActivities extends React.Component<Props, {}> {
         }, []);
     }
 
+    @computed
+    private get sortedFilteredTimeEntries(): BillTimeEntry[] {
+        return this.sortedTimeEntries.filter(
+            timeEntry =>
+                !this.props.store!.spotToBillForm.activities.some(activity =>
+                    activity.timeEntries.some(t => t.timeEntryId === timeEntry.timeEntryId)
+                )
+        );
+    }
+
     public render() {
         return (
             <React.Fragment>
-                {this.sortedTimeEntries.length <= 0 && (
-                    <DataSetEmpty label="There are no unpaid activities in selected spots" />
+                {this.sortedFilteredTimeEntries.length <= 0 && (
+                    <DataSetEmpty
+                        label={
+                            this.sortedTimeEntries.length > 0
+                                ? 'There are no more unpaid activites in this spot'
+                                : 'There are no unpaid activities in this spot'
+                        }
+                    />
                 )}
 
                 {this.sortedTimeEntries.length > 0 && (
                     <BillSpotFormProjectCampaignActivities
-                        timeEntries={this.sortedTimeEntries}
+                        timeEntries={this.sortedFilteredTimeEntries}
                         options={{ showVersions: true, showDate: true }}
                     />
                 )}
