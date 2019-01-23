@@ -304,9 +304,19 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     spotsArrayCopy = spotsArrayCopy.slice(0, 3);
                     spotsArrayCopy.push({spot_name: '...'});
                 }
-                // if (spotsArrayCopy.length > 1 &&  spotsArrayCopy[0].spot_name === spotsArrayCopy[1].spot_name) {
-                //     spotsArrayCopy = spotsArrayCopy.slice(0, 1);
-                // }
+                let index: number | null = null;
+                let currentName: string = '';
+
+                spotsArrayCopy.forEach((elem, i) => {
+                    if (elem.spot_name === currentName) {
+                        index = i;
+                    }
+                    currentName = elem.spot_name;
+                });
+                if (index) {
+                    spotsArrayCopy.splice(index, 1);
+                }
+                
                 return (
                     <div className={s.mainSpotHeaderInfo__spotListSpots}>
                         {spotsArrayCopy.map((item, i) => {
@@ -333,13 +343,24 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                     campaignArrayCopy = campaignArrayCopy.slice(0, 3);
                     campaignArrayCopy.push({campaign_name: '...'});
                 }
+                let index: number | null = null;
+                let currentName: string = '';
+
+                campaignArrayCopy.forEach((elem, i) => {
+                    if (elem.spot_name === currentName) {
+                        index = i;
+                    }
+                    currentName = elem.spot_name;
+                });
+                if (index) {
+                    campaignArrayCopy.splice(index, 1);
+                }
                 return (
                     <div className={s.mainSpotHeaderInfo__campaignNames}> 
                         {campaignArrayCopy.map((item, i) => {
                             return item.campaign_name;
                         }).join(', ')}
-                        {/* {(spotSentDetails.spot_version as SpotSentVersionForSubmit[])[0].campaign_name} */}
-                        <span> - </span>
+                        <span>{` - `}</span>
                         {spotSentDetails.project_name}
                     </div>
                 );
