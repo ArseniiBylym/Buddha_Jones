@@ -137,8 +137,14 @@ export class BillSpotPreview extends React.Component<Props, {}> {
         return totals;
     }
 
+    @computed private get spotsInBill(): SpotBillFormSpot[] {
+        return this.props.spots.filter(spot =>
+            this.props.store!.spotToBillForm.spotsAddedToBill.some(id => id === spot.spotId)
+        );
+    }
+
     public render() {
-        const { billId, spots, projectName, campaignName, projectCampaignName, studioName, editable } = this.props;
+        const { billId, projectName, campaignName, projectCampaignName, studioName, editable } = this.props;
         const { showBillPreview, activities } = this.props.store!.spotToBillForm;
 
         return (
@@ -155,10 +161,10 @@ export class BillSpotPreview extends React.Component<Props, {}> {
             >
                 <div className={s.summary}>
                     <div className={s.left}>
-                        {spots.length > 0 && (
+                        {this.spotsInBill.length > 0 && (
                             <Paragraph className={s.spots}>
-                                <span>{spots.length > 1 ? 'Spots: ' : 'Spot: '}</span>
-                                {spots.map(spot => (
+                                <span>{this.spotsInBill.length > 1 ? 'Spots: ' : 'Spot: '}</span>
+                                {this.spotsInBill.map(spot => (
                                     <strong key={spot.spotId}>{spot.spotName}</strong>
                                 ))}
                             </Paragraph>
