@@ -295,11 +295,19 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             if (spotSentDetails && spotSentDetails.spot_version &&  spotSentDetails.spot_version.length > 0) {
                 let spotsArray: any = spotSentDetails.spot_version;
                 if (typeof(spotsArray) === 'string') {
-                    spotsArray = JSON.parse(spotsArray);
+                    return null;
+                    // spotsArray = JSON.parse(spotsArray);
+                }
+                let spotsArrayCopy = spotsArray.slice();
+                if (spotsArrayCopy.length > 2) {
+                    spotsArrayCopy = spotsArrayCopy.slice(0, 2);
+                }
+                if (spotsArrayCopy.length > 1 &&  spotsArrayCopy[0].spot_name === spotsArrayCopy[1].spot_name) {
+                    spotsArrayCopy = spotsArrayCopy.slice(0, 1);
                 }
                 return (
                     <div className={s.mainSpotHeaderInfo__spotListSpots}>
-                        {spotsArray.map((item, i) => {
+                        {spotsArrayCopy.map((item, i) => {
                             if (i > 1) {
                                 return;
                             }
@@ -387,7 +395,11 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             elements: [
                 <div key="spotCampaignInfo" className={s.spotCampaignInfo}>
                     <div className={s.spotCampaignInfo__campaignName}>{this.props.store!.spotSent.spotSentDetails.project_name}</div>
-                    {this.props.store!.spotSent.spotSentDetails.studio_note && <div className={s.spotCampaignInfo__campaignName}>for {this.props.store!.spotSent.spotSentDetails.studio_note}</div>}
+                    {/* {this.props.store!.spotSent.spotSentDetails.studio_note && 
+                        <div className={s.spotCampaignInfo__campaignName}>
+                            for {this.props.store!.spotSent.spotSentDetails.studio_note}
+                        </div>
+                    } */}
                 </div>,
                 <ButtonBack
                     key="button-back-to-list"
