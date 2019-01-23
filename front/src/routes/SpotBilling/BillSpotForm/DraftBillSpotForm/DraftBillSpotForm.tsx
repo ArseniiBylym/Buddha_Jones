@@ -5,7 +5,12 @@ import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { BillTimeEntry, SpotBillFormSummary } from 'types/spotBilling';
-import { BillSpotFormProjectHistory, BillSpotFormSpotsGrid, BillSpotPreview } from '../BillSpotFormElements';
+import {
+    BillSpotFormProjectHistory,
+    BillSpotFormSpotsGrid,
+    BillSpotPreview,
+    BackToSpotsToBillListButton,
+} from '../BillSpotFormElements';
 
 interface Props extends AppOnlyStoreState {
     billData: SpotBillFormSummary;
@@ -37,6 +42,7 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
             HeaderActions.replaceMainHeaderContent({
                 title: this.props.billData.projectName,
                 subTitle: this.props.billData.studioName,
+                elements: [<BackToSpotsToBillListButton key="back-to-spots-to-bill" />],
             });
         }
     }
