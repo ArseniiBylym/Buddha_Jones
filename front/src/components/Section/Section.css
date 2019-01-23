@@ -70,12 +70,28 @@
       align-items: flex-end;
       width: 100%;
 
-      & > :global(.controls) {
+      & > :global(.controls__wrapper) {
+
         display: flex;
-        & > :global(label){
-          margin-right: 10px
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+
+        & > :global(.controls__projectStatus) {
+          color: black;
+        }
+        & > :global(.controls__projectStatus__Green) {
+          color: green;
+        }
+        & > :global(.controls) {
+          display: flex;
+          & > :global(label){
+            margin-right: 10px
+          }
         }
       }
+      
       & > :global(.clearSectionAndSubtile) {
         align-self: stretch;
         display: flex;

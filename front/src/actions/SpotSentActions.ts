@@ -139,6 +139,7 @@ export class SpotSentActionsClass {
                             spot_resend: spot.spotResend,
                             finish_request: spot.finishRequest,
                             line_status_id: spot.lineStatusId,
+                            line_status_name: spot.lineStatusName,
                             finish_accept: spot.finishAccept,
                             prod_accept: spot.prodAccept,
                             sent_via_method: (spot.sentViaMethod) ? spot.sentViaMethod.split(',').map((method: string) => {

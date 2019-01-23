@@ -157,6 +157,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                     title={'#' + (this.props.spotIndex + 1)}
                     index={this.props.spotIndex + 1}
                     additionalElements={ this.props.withGraphicsSection ? this.getCardHeadersForGraphics() : this.getCardHeaders()}
+                    line_status_name={this.props.spot.line_status_name}
                 />
 
                 {this.props.withGraphicsSection && <>{this.getFilesWorkOnSection()}</>}
