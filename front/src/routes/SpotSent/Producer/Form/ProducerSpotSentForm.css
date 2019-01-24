@@ -152,6 +152,11 @@
 }
 .mainSpotHeaderInfo {
     padding: 20px 10px;
+    transform: translateX(-150px);
+}
+.mainSpotHeaderInfo__number{
+    font-size: 40px;
+    color: rgb(255,218,71);
 }
 .mainSpotHeaderInfo__spotList{
     display: flex;

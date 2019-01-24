@@ -239,7 +239,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 <Paragraph type="dim">No spots have been added.</Paragraph>
                             )}
 
-                            {this.addSpotAllowed() && (
+                            {this.addSpotAllowed() && this.isAnySpotWithLineStatusId3() && (
                                 <div className={s.spotsSummary}>
                                     <ButtonAdd onClick={this.handleCreateSpot} label="Add spot" labelOnLeft={true} />
                                 </div>
@@ -414,6 +414,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     private updateHeader = () => {
         HeaderActions.replaceMainHeaderContent({
             elementsOnLeft: [
+                <div key="mainSpotHeaderNumber" className={s.mainSpotHeaderInfo__number}>{this.props.match!.params['id']}</div>,
                 <div key="mainSpotHeaderInfo" style={{marginRight: 'auto'}} className={s.mainSpotHeaderInfo}>
                     <div className={s.mainSpotHeaderInfo__spotList}>
                         <div className={s.mainSpotHeaderInfo__spotListLabel}>Spots:</div>
@@ -513,6 +514,21 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
         return true;
     };
+
+    private isAnySpotWithLineStatusId3 = () => {
+        if (typeof(this.props.store!.spotSent.spotSentDetails.spot_version) === 'string') {
+            return true;
+        } 
+        let spots = this.props.store!.spotSent.spotSentDetails.spot_version;
+        if (spots && spots.length > 0) {
+            const isContains: any = (this.props.store!.spotSent.spotSentDetails.spot_version as any).some((item, i) => {
+                return item.line_status_id === 3;
+            });
+
+            return !isContains;
+        }
+        return true;
+    }
 }
 
 export default ProducerSpotSentForm;
