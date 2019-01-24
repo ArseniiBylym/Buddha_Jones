@@ -123,7 +123,6 @@ export class SpotsPostFilter extends React.Component<any, {}> {
                         : []),
                     { 
                         key: 'filter-buttons',
-                        minWidth: 500,
                         element: (
                             this.getFilterButtons()
                         ),
@@ -149,6 +148,7 @@ export class SpotsPostFilter extends React.Component<any, {}> {
     private getFilterButtons = () => {
         return (
             <div className={s.filterButtonWrapper}>
+                <div className={s.filterButtonLabel}>Filter spots by: </div>
                 <div onClick={this.filterHandlerAction('production')} className={this.getFilterButtonStyle('production')}>Production</div>
                 <div onClick={this.filterHandlerAction('finishing')} className={this.getFilterButtonStyle('finishing')}>Finishing</div>
             </div>

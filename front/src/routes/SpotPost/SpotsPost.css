@@ -23,6 +23,11 @@
   align-items: center;
   justify-content: flex-start;
 }
+.filterButtonLabel{
+  color: #5A4D3F;
+  font-size: 18px;
+  margin-right: 10px
+}
 .filterButton{
   padding: 5px 10px;
   background-color: #c3ae99;
