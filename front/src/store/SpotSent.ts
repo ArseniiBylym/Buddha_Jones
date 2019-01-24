@@ -23,6 +23,7 @@ export class SpotSent {
     @observable public spotSentFinishingHouseOptions: FinishingHouseOptionsFromApi[] | null = null;
     @observable public spotSentFinishingHouseAreBeingFetched: boolean = false;
     @observable public viaMethodsModalToggle: boolean = false;
+    @observable public viaMethodsModalToggleMessage: string = '';
     @observable public spotVersionModalToggle: boolean = false;
     @observable public existedSpot: {name: string, id: number | null} = {name: '', id: null};
 

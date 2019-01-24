@@ -241,7 +241,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                                         />
                                     )}
                                 {this.props.spot.version && this.props.spot.version.prodAccept !== undefined && 
-                                (this.props.spot.line_status_id === 2 || 
+                                (this.props.spot.line_status_id === 2 && !this.props.spot.version.prodAccept || 
                                 this.props.spot.line_status_id === 3 && !this.props.spot.version.prodAccept ||
                                 this.props.spot.line_status_id === 4 && !this.props.spot.version.prodAccept) && 
                                 (this.props.spot.sentViaMethod && this.props.spot.sentViaMethod.length > 0) &&
@@ -255,7 +255,8 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                                         labelOnLeft={true}
                                     />
                                 )}
-                                {(this.props.spot.line_status_id === 3 || this.props.spot.line_status_id === 4) && this.isAcceptButtonVisible() && 
+                                {/* {(this.props.spot.line_status_id === 3 || this.props.spot.line_status_id === 4) && this.isAcceptButtonVisible() &&  */}
+                                {this.isAcceptButtonVisible() && 
                                     <div className={s.acceptedLabels}>
                                         {this.props.spot.version && this.props.spot.version.finishAccept && <span>Finish accepted</span>}
                                         {this.props.spot.version && this.props.spot.version.prodAccept && <span>Production accepted</span>}

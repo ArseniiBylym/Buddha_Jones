@@ -529,7 +529,12 @@ export class SpotSentActionsClass {
     };
 
     @action
-    public toggleModalViaMethods = () => {
+    public toggleModalViaMethods = (message?: string) => {
+        if (message) {
+            SpotSentStore.viaMethodsModalToggleMessage = message;
+        } else {
+            SpotSentStore.viaMethodsModalToggleMessage = '';
+        }
         SpotSentStore.viaMethodsModalToggle = !SpotSentStore.viaMethodsModalToggle;
     };
 

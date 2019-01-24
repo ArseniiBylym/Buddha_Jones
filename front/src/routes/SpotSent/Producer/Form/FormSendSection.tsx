@@ -55,7 +55,7 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                 {this.getLinkField()} 
                 <Modal
                     show={this.props.store!.spotSent.viaMethodsModalToggle}
-                    title="Please select Sent Via option(s) unless the Spot is Finishing"
+                    title={this.props.store!.spotSent.viaMethodsModalToggleMessage}
                     closeButton={false}
                     type="alert"
                     actions={[
@@ -88,11 +88,17 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
         SpotSentActions.inputLinkHandler(e.target.value);
     }
 
+    private getCheckboxLabel = () => {
+        const isReadyForQc = this.props.store.spotSent.spotSentDetails.spot_version.every((item, i) => {
+            return item.line_status_id === 3 && item.prod_accept === 1;
+        });
+        return isReadyForQc;
+    }
+
     private getCheckmark = () => {
         if (this.getSpotLineStatusId() === 2) {
             return null;
-        } else if (this.getSpotLineStatusId() === 3 && 
-            this.props.prodAccept && this.props.prodAccept.prod_accept === 1) {
+        } else if (this.getCheckboxLabel()) {
                 return (
                     <CheckmarkSquare
                         onClick={this.completedToggleHandler}
@@ -151,7 +157,18 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
             return false;
         });
         if (viaOtionsNotChecked) {
-            SpotSentActions.toggleModalViaMethods();
+            SpotSentActions.toggleModalViaMethods('Please select Sent Via option(s) unless the Spot is Finishing');
+            return;
+        }
+
+        const editorsNotSelected = this.props.store!.spotSent.spotSentDetails.spot_version.find((item, i) => {
+            if (item.line_status_id === 1 && this.state.isGraphicsCompleted === true && item.editors.length === 0) {
+                return true;
+            }
+            return false;
+        });
+        if (editorsNotSelected) {
+            SpotSentActions.toggleModalViaMethods('Please select at least one editor for each spot');
             return;
         }
 
