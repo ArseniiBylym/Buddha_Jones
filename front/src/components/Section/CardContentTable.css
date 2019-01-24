@@ -30,6 +30,12 @@
             color: inherit;
         }
     }
+
+    &.noBackground {
+        & > div {
+            background: transparent;
+        }
+    }
 }
 
 .body {

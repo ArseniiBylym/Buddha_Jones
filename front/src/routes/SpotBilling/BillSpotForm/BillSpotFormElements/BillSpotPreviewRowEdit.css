@@ -1,6 +1,14 @@
+.row {
+    & > div {
+        display: flex;
+        align-content: center;
+        align-items: center;
+    }
+}
+
 .rateAndEditCol {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-content: center;
     align-items: center;
 }

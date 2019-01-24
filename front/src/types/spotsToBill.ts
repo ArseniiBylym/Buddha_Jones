@@ -17,11 +17,27 @@ export interface SpotToBillProducer {
     creativeRoleName: string;
 }
 
+export interface SpotToBillSentFromApi {
+    spotId: number;
+    versionId: number | null;
+    versionName: string | null;
+    spotSentId: number;
+    spotSentRequestId: number;
+    spotLineStatusId: number;
+    spotLineStatus: string;
+    graphicsStatusId: number | null;
+    graphicsStatus: string | null;
+    spotSentDate: DateObjectFromApi | null;
+}
+
 export interface SpotToBillFromApi {
     projectId: number;
     projectName: string;
     studioId: number;
     studioName: string;
+    customerId: number | null;
+    customerName: string | null;
+    customerTitle: string | null;
     campaignId: number;
     campaignName: string;
     projectCampaignId: number;
@@ -33,6 +49,7 @@ export interface SpotToBillFromApi {
     firstRevisionIsBilled: boolean;
     graphicsIncluded: boolean;
     producers: SpotToBillProducer[];
+    spotSent: SpotToBillSentFromApi[];
     updatedAt: DateObjectFromApi;
 }
 

@@ -5,7 +5,7 @@
     align-items: stretch;
 
     & > div {
-        flex: 1 0 50%;
+        flex: 1 0 33%;
         padding: 24px;
         box-sizing: border-box;
         border-left: 1px solid #e2dbd5;
@@ -37,20 +37,14 @@
 
 .spotsGrid {
     display: grid;
-    grid-template: auto / 1fr 1fr;
+    grid-template: auto / 1fr 1fr 1fr;
 
     & > div {
         padding: 24px;
         box-sizing: border-box;
         border-left: 1px solid #e2dbd5;
-        border-top: 1px solid #e2dbd5;
 
-        &:nth-child(1),
-        &:nth-child(2) {
-            border-top: none;
-        }
-
-        &:nth-child(2n + 1) {
+        &:first-child {
             border-left: none;
         }
     }
