@@ -145,7 +145,7 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
 
     private handleSubmit = async () => {
         const viaOtionsNotChecked = this.props.store!.spotSent.spotSentDetails.spot_version.find((item, i) => {
-            if (item.line_status_id === 2 && item.finish_request === 0 && item.sent_via_method.length === 0) {
+            if (item.line_status_id === 1 && item.finish_request === 0 && item.sent_via_method.length === 0) {
                 return true;
             }
             return false;
