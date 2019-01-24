@@ -65,6 +65,33 @@ export class SpotsPostFilter extends React.Component<any, {}> {
                     }
                 });
             } 
+
+            list.sort((a: any, b: any): any => {
+                if (+a.spotSentRequestId > +b.spotSentRequestId) {
+                    return 1; 
+                }
+                if (+a.spotSentRequestId < +b.spotSentRequestId) {
+                    return -1;
+                }
+                if (+a.spotSentRequestId === +b.spotSentRequestId) {
+                     if (a.spotName > b.spotName) {
+                         return 1;
+                     }
+                     if (a.spotName < b.spotName) {
+                         return -1;
+                     }
+                     if (a.spotName === b.spotName) {
+                         if (a.versionName > b.versionName) {
+                             return 1;
+                         }
+                         if (a.versionName < b.versionName) {
+                             return -1;
+                         } else {
+                             return 0;
+                         }
+                     }
+                }
+            });
             
             return list;
         } else {

@@ -11,6 +11,7 @@ class SpotsPostTable extends React.Component<any, any> {
             <div className={s.tableContainer}>
                 <Table
                     header={[
+                        { title: '№', align: 'left' },
                         { title: 'Date', align: 'left' },
                         { title: 'Project', align: 'left' },
                         { title: 'Campaign', align: 'left'},
@@ -53,6 +54,7 @@ class SpotsPostTable extends React.Component<any, any> {
     private getTable = () => {
         return this.props.config.map(spot => (
                 <TableRow className="spotPost__finishRequest" key={spot.spotSentId} onClick={this.spotClickHandler(spot.spotSentRequestId)}>
+                    <TableCell colSpan={1} align="left">{spot.spotSentRequestId}</TableCell>
                     <TableCell colSpan={1} align="left">{spot.spotSentDate && moment(spot.spotSentDate.date).format('DD/MM/YYYY')}</TableCell>
                     <TableCell colSpan={1} align="left">{spot.projectName}</TableCell>
                     <TableCell colSpan={1} align="left">{spot.campaignName}</TableCell>
