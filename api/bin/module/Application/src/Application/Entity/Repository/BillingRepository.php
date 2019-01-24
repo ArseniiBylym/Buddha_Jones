@@ -452,8 +452,8 @@ class BillingRepository extends EntityRepository
                 FROM
                   \Application\Entity\RediBilling b
                 WHERE
-                    b.userId = :user_id
-                    AND b.spotId = :spot_id
+                    b.createdBy = :user_id
+                    AND b.projectCampaignId = :project_campaign_id
                     AND (b.status IS NULL OR b.status = 1)";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -525,7 +525,7 @@ class BillingRepository extends EntityRepository
 
             $lineQuery = $this->getEntityManager()->createQuery($lineDql);
             $lineQuery->setParameter('bill_id', $billId);
-            $bill['billing_line'] = $lineQuery->getArrayResult();
+            $bill['billingLine'] = $lineQuery->getArrayResult();
         }
 
         return $bill;

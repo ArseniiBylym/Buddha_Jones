@@ -225,11 +225,17 @@ class SpotRepository extends EntityRepository
                 " . $columnString . ",
                 uc.firstName AS createdByFirstName, uc.lastName AS createdByLastName,
                 uu.firstName AS updatedByFirstName, uu.lastName AS updatedByLastName,
+                cu.id AS customerId,
+                cu.customerName,
                 CASE
                     WHEN sc.updatedAt IS NOT NULL THEN sc.updatedAt
                     ELSE sc.createdAt
                 END  AS sortBy
                 FROM \Application\Entity\RediSpotSent sc
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
+                    WITH ptc.id = sc.projectCampaignId
+                LEFT JOIN \Application\Entity\RediCustomer cu
+                    WITH cu.id = ptc.customerId
                 LEFT JOIN \Application\Entity\RediUser uc
                     WITH uc.id = sc.createdBy
                 LEFT JOIN \Application\Entity\RediUser uu
@@ -1181,7 +1187,8 @@ class SpotRepository extends EntityRepository
                 $dql .= " GROUP BY ss.id
                     ORDER BY ss.id ASC";
             } else {
-                $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId, ss.lineStatusId
+                // $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId, ss.lineStatusId
+                $dql .= " GROUP BY ss.id
                     ORDER BY p.projectName ASC , c.campaignName ASC, s.spotName ASC, v.versionName ASC";
             }
         }
@@ -1386,7 +1393,7 @@ class SpotRepository extends EntityRepository
                 continue;
             }
 
-            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId'] . '_' . $row['versionId']])) {
+            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId'] . '_' . $row['versionId'] . '_' . $row['spotSentRequestId']])) {
                 $spotRes = array(
                     'spotId' => (int) $row['spotId'],
                     'spotName' => $row['spotName'],
@@ -1418,7 +1425,7 @@ class SpotRepository extends EntityRepository
                     $spotRes['graphicsFile'] = $row['graphicsFile'];
                 }
 
-                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId'] . '_' . $row['versionId']] = $spotRes;
+                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId'] . '_' . $row['versionId'] . '_' . $row['spotSentRequestId']] = $spotRes;
             }
         }
 
