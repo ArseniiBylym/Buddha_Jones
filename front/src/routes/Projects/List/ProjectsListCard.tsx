@@ -28,6 +28,7 @@ export class ProjectsListCard extends React.Component<ProjectsListCardProps, {}>
     public render() {
         return (
             <div className={s.project} onClickCapture={this.handleProjectClick}>
+                {this.props.project.confidential === 1 && <div className={s.lockIcon} />}
                 <Row className={s.title} removeMargins={true}>
                     <Col>
                         <LinkButton

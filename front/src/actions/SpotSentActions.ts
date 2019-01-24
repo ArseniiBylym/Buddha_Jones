@@ -139,6 +139,7 @@ export class SpotSentActionsClass {
                             spot_resend: spot.spotResend,
                             finish_request: spot.finishRequest,
                             line_status_id: spot.lineStatusId,
+                            line_status_name: spot.lineStatusName,
                             finish_accept: spot.finishAccept,
                             prod_accept: spot.prodAccept,
                             sent_via_method: (spot.sentViaMethod) ? spot.sentViaMethod.split(',').map((method: string) => {
@@ -408,6 +409,7 @@ export class SpotSentActionsClass {
                     break;
                 case ProjectPickerSections.version:
                     if (values && values.version) {
+
                         this.isSpotExist(values.version.id, spotIndex)
                             .then(result => {
                                 if (values.version.id) {
@@ -434,6 +436,15 @@ export class SpotSentActionsClass {
             }
         }
     };
+
+    @action 
+    public setSpotVersionAsync = async(value: any, index: number) => {
+        if (typeof(value) === 'number') {
+            (SpotSentStore.spotSentDetails.spot_version[index] as SpotSentVersionForSubmit).version_id = value;
+        } else if (typeof(value) === 'string') {
+            (SpotSentStore.spotSentDetails.spot_version[index] as SpotSentVersionForSubmit).version_name = value;
+        }
+    }
 
     @action
     public spotVersionConfirmModalToggle = () => {
@@ -528,7 +539,12 @@ export class SpotSentActionsClass {
     };
 
     @action
-    public toggleModalViaMethods = () => {
+    public toggleModalViaMethods = (message?: string) => {
+        if (message) {
+            SpotSentStore.viaMethodsModalToggleMessage = message;
+        } else {
+            SpotSentStore.viaMethodsModalToggleMessage = '';
+        }
         SpotSentStore.viaMethodsModalToggle = !SpotSentStore.viaMethodsModalToggle;
     };
 
@@ -657,12 +673,30 @@ export class SpotSentActionsClass {
 
     }
 
+    @action
+    public changeSpotAccept = async(index: number | undefined, type: string, value: number) => {
+        try {
+            const data: any = {};
+            if (type === 'finish') {
+                data.finish_accept = value;
+            }
+            if (type === 'production') {
+                data.prod_accept = value;
+            }
+            const deletedSpotData = (await API.putData(APIPath.SPOTS_TO_GRAPHICS + '/' + index, data)) as SpotSentFromApi;
+            return deletedSpotData;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     private get defaultSpotElement(): SpotSentVersionForSubmit {
         return {
             campaign_id: null,
             project_campaign_id: null,
             spot_id: null,
             version_id: null,
+            version_name: '',
             editors: [],
             spot_resend: 0,
             is_pdf: 0,

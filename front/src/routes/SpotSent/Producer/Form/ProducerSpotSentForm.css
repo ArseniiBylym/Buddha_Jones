@@ -152,6 +152,11 @@
 }
 .mainSpotHeaderInfo {
     padding: 20px 10px;
+    transform: translateX(-150px);
+}
+.mainSpotHeaderInfo__number{
+    font-size: 40px;
+    color: rgb(255,218,71);
 }
 .mainSpotHeaderInfo__spotList{
     display: flex;
@@ -161,9 +166,13 @@
         margin-right: 10px;
     }
     & > .mainSpotHeaderInfo__spotListSpots{
-        font-size: 18px;
+        font-size: 14px;
         font-weight: 600;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
     }
+    
 }
 .mainSpotHeaderInfo__campaign{
     display: flex;
@@ -171,6 +180,13 @@
     & > .mainSpotHeaderInfo__campaignLabel{
         color: white;
         margin-right: 10px;
+    }
+    & > .mainSpotHeaderInfo__campaignNames{
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
     }
 }
 .spotCampaignInfo{

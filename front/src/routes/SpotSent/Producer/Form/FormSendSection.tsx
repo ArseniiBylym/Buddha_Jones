@@ -39,20 +39,12 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
         if (!this.props.store) {
             return null;
         }
-        // const { spotSentDetails } = this.props.store.spotSent;
+
         return (
             <Section>
                 <div className={s.summary}>
                     {this.getCheckmark()}
-                    {/* {this.getSpotLineStatusId() !== 2 && <Checkmark
-                        onClick={this.completedToggleHandler}
-                        checked={this.state.isGraphicsCompleted}
-                        label={this.props.prevLocation && this.props.prevLocation === 'graphics' ? 'Completed' : 'Ready to be sent'}
-                        labelOnLeft={true}
-                        type={'no-icon'}
-                    />} */}
                     <div className={s.buttonSendContainer}>
-                        {this.getSpotLineStatusId() === 5 && !this.state.isGraphicsCompleted && <div className={s.buttonsSentShutter}/>}
                         <ButtonSend
                             onClick={this.handleSubmit}
                             label={this.saveButtonText}
@@ -63,7 +55,7 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                 {this.getLinkField()} 
                 <Modal
                     show={this.props.store!.spotSent.viaMethodsModalToggle}
-                    title="Please select Sent Via option(s) unless the Spot is Finishing"
+                    title={this.props.store!.spotSent.viaMethodsModalToggleMessage}
                     closeButton={false}
                     type="alert"
                     actions={[
@@ -96,11 +88,20 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
         SpotSentActions.inputLinkHandler(e.target.value);
     }
 
+    private getCheckboxLabel = () => {
+        if (typeof(this.props.store.spotSent.spotSentDetails.spot_version) === 'string') {
+            return false;
+        }
+        const isReadyForQc = this.props.store.spotSent.spotSentDetails.spot_version.every((item, i) => {
+            return item.line_status_id === 3 && item.prod_accept === 1;
+        });
+        return isReadyForQc;
+    }
+
     private getCheckmark = () => {
         if (this.getSpotLineStatusId() === 2) {
             return null;
-        } else if (this.getSpotLineStatusId() === 3 && 
-            this.props.prodAccept && this.props.prodAccept.prod_accept === 1) {
+        } else if (this.getCheckboxLabel()) {
                 return (
                     <CheckmarkSquare
                         onClick={this.completedToggleHandler}
@@ -147,29 +148,30 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                 if (this.props.store.spotSent.spotSentDetails.spot_version[0]) {
                     lineStatus = this.props.store.spotSent.spotSentDetails.spot_version[0].line_status_id;
                 }
-                // this.props.store.spotSent.spotSentDetails.spot_version.forEach(item => {
-                //     lineStatus = item.line_status_id;
-                // });
                 return lineStatus;
         }
     }
 
-    // private checkmarkClickHander = () => {
-    //     if (this.props.store && this.props.store.spotSent) {
-    //         const value = this.props.store.spotSent.spotSentDetails.status === 2 ? false : true;
-    //         SpotSentActions.handleFinalToggle(value);
-    //     }
-    // }
-
     private handleSubmit = async () => {
         const viaOtionsNotChecked = this.props.store!.spotSent.spotSentDetails.spot_version.find((item, i) => {
-            if (item.line_status_id === 2 && item.finish_request === 0 && item.sent_via_method.length === 0) {
+            if (item.line_status_id === 1 && item.finish_request === 0 && item.sent_via_method.length === 0) {
                 return true;
             }
             return false;
         });
         if (viaOtionsNotChecked) {
-            SpotSentActions.toggleModalViaMethods();
+            SpotSentActions.toggleModalViaMethods('Please select Sent Via option(s) unless the Spot is Finishing');
+            return;
+        }
+
+        const editorsNotSelected = this.props.store!.spotSent.spotSentDetails.spot_version.find((item, i) => {
+            if (item.line_status_id === 1 && this.state.isGraphicsCompleted === true && item.editors.length === 0) {
+                return true;
+            }
+            return false;
+        });
+        if (editorsNotSelected) {
+            SpotSentActions.toggleModalViaMethods('Please select at least one editor for each spot');
             return;
         }
 
@@ -239,9 +241,9 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
     }
 
     private get saveButtonText(): string {
-        if (this.getSpotLineStatusId() === 2 || this.getSpotLineStatusId() === 3) {
+        if (this.getSpotLineStatusId() === 2 || this.getSpotLineStatusId() === 3 || this.getSpotLineStatusId() === 4 || (this.getSpotLineStatusId() === 5 && !this.state.isGraphicsCompleted)) {
             return 'Save';
-        } else if (this.getSpotLineStatusId() === 5) {
+        } else if (this.getSpotLineStatusId() === 5 && this.state.isGraphicsCompleted) {
             return 'Complete';
         } else if (this.state.isGraphicsCompleted) {
             return 'Save';

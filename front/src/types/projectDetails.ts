@@ -11,6 +11,7 @@ export interface ProjectCreateData {
     studioId: number | null;
     studioName: string | null;
     notes: string;
+    confidential: number;
 }
 
 export interface ProjectDetails {

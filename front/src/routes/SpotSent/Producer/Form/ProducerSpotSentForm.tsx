@@ -180,7 +180,6 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                         <Section title="Spots" noSeparator={true}>
                             {(spotSentDetails.spot_version as SpotSentVersionForSubmit[]).map(
                                 (spot: SpotSentVersionForSubmit, spotIndex: number) => {
-                                    // console.log(spot);
                                     return (
                                         <ProducerSpotSentFormSpotCard
                                             key={spotIndex}
@@ -219,15 +218,18 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                                     ? (spot.sent_via_method as number[])
                                                     : [],
                                                 line_status_id: spot.line_status_id,
+                                                line_status_name: spot.line_status_name ? spot.line_status_name : null,
                                                 sentGraphicsViaMethod: spot.graphics_sent_via_method
                                                     ? (spot.graphics_sent_via_method as number[])
                                                     : [],
                                                 finishAccept: (spot.finish_accept === 1) ? true : false,
+                                                spotSentId: spot.spot_sent_id
                                             }}
                                             spotIndex={spotIndex}
                                             forUserId={this.props.store!.user.data!.id}
                                             withGraphicsSection={this.state.prevLocation === 'graphics' ? true : false}
                                             updateFileList={this.updateFileList}
+                                            paramId={this.props.match!.params['id']}
                                         />
                                     );
                                 }
@@ -237,7 +239,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 <Paragraph type="dim">No spots have been added.</Paragraph>
                             )}
 
-                            {this.addSpotAllowed() && (
+                            {this.addSpotAllowed() && this.isAnySpotWithLineStatusId3() && (
                                 <div className={s.spotsSummary}>
                                     <ButtonAdd onClick={this.handleCreateSpot} label="Add spot" labelOnLeft={true} />
                                 </div>
@@ -294,14 +296,30 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             if (spotSentDetails && spotSentDetails.spot_version &&  spotSentDetails.spot_version.length > 0) {
                 let spotsArray: any = spotSentDetails.spot_version;
                 if (typeof(spotsArray) === 'string') {
-                    spotsArray = JSON.parse(spotsArray);
+                    return null;
+                    // spotsArray = JSON.parse(spotsArray);
                 }
+                let spotsArrayCopy = spotsArray.slice();
+                if (spotsArrayCopy.length > 3) {
+                    spotsArrayCopy = spotsArrayCopy.slice(0, 3);
+                    spotsArrayCopy.push({spot_name: '...'});
+                }
+                let index: number | null = null;
+                let currentName: string = '';
+
+                spotsArrayCopy.forEach((elem, i) => {
+                    if (elem.spot_name === currentName) {
+                        index = i;
+                    }
+                    currentName = elem.spot_name;
+                });
+                if (index) {
+                    spotsArrayCopy.splice(index, 1);
+                }
+                
                 return (
                     <div className={s.mainSpotHeaderInfo__spotListSpots}>
-                        {spotsArray.map((item, i) => {
-                            if (i > 1) {
-                                return;
-                            }
+                        {spotsArrayCopy.map((item, i) => {
                             return item.spot_name;
                         }).join(', ')}
                     </div>
@@ -315,10 +333,34 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         if (this.props.store) {
             const { spotSentDetails } = this.props.store.spotSent;
             if (spotSentDetails && spotSentDetails.spot_version &&  spotSentDetails.spot_version.length > 0) {
+                let campaignArray: any = spotSentDetails.spot_version;
+                if (typeof(campaignArray) === 'string') {
+                    return null;
+                    // campaignArray = JSON.parse(campaignArray);
+                }
+                let campaignArrayCopy = campaignArray.slice();
+                if (campaignArrayCopy.length > 3) {
+                    campaignArrayCopy = campaignArrayCopy.slice(0, 3);
+                    campaignArrayCopy.push({campaign_name: '...'});
+                }
+                let index: number | null = null;
+                let currentName: string = '';
+
+                campaignArrayCopy.forEach((elem, i) => {
+                    if (elem.spot_name === currentName) {
+                        index = i;
+                    }
+                    currentName = elem.spot_name;
+                });
+                if (index) {
+                    campaignArrayCopy.splice(index, 1);
+                }
                 return (
                     <div className={s.mainSpotHeaderInfo__campaignNames}> 
-                        {(spotSentDetails.spot_version as SpotSentVersionForSubmit[])[0].campaign_name}
-                        <span> - </span>
+                        {campaignArrayCopy.map((item, i) => {
+                            return item.campaign_name;
+                        }).join(', ')}
+                        <span>{` - `}</span>
                         {spotSentDetails.project_name}
                     </div>
                 );
@@ -372,6 +414,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     private updateHeader = () => {
         HeaderActions.replaceMainHeaderContent({
             elementsOnLeft: [
+                <div key="mainSpotHeaderNumber" className={s.mainSpotHeaderInfo__number}>{this.props.match!.params['id']}</div>,
                 <div key="mainSpotHeaderInfo" style={{marginRight: 'auto'}} className={s.mainSpotHeaderInfo}>
                     <div className={s.mainSpotHeaderInfo__spotList}>
                         <div className={s.mainSpotHeaderInfo__spotListLabel}>Spots:</div>
@@ -386,7 +429,11 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             elements: [
                 <div key="spotCampaignInfo" className={s.spotCampaignInfo}>
                     <div className={s.spotCampaignInfo__campaignName}>{this.props.store!.spotSent.spotSentDetails.project_name}</div>
-                    {this.props.store!.spotSent.spotSentDetails.studio_note && <div className={s.spotCampaignInfo__campaignName}>for {this.props.store!.spotSent.spotSentDetails.studio_note}</div>}
+                    {/* {this.props.store!.spotSent.spotSentDetails.studio_note && 
+                        <div className={s.spotCampaignInfo__campaignName}>
+                            for {this.props.store!.spotSent.spotSentDetails.studio_note}
+                        </div>
+                    } */}
                 </div>,
                 <ButtonBack
                     key="button-back-to-list"
@@ -467,6 +514,21 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
         }
         return true;
     };
+
+    private isAnySpotWithLineStatusId3 = () => {
+        if (typeof(this.props.store!.spotSent.spotSentDetails.spot_version) === 'string') {
+            return true;
+        } 
+        let spots = this.props.store!.spotSent.spotSentDetails.spot_version;
+        if (spots && spots.length > 0) {
+            const isContains: any = (this.props.store!.spotSent.spotSentDetails.spot_version as any).some((item, i) => {
+                return item.line_status_id === 3;
+            });
+
+            return !isContains;
+        }
+        return true;
+    }
 }
 
 export default ProducerSpotSentForm;

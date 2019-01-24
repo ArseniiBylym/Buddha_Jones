@@ -123,6 +123,7 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
                             {this.getFilesWorkOnSection()}
                         </div>
                     </div>
+                    <a style={{display: 'none'}} href="/portal/spots-to-graphics" id="reloadLinkGraphics">Link</a>
                 </Modal>
             </>
         );
@@ -191,7 +192,10 @@ export class SpotsToGraphicsModal extends React.Component<any, any> {
     private sendFilesHandler =  async (toEDL) => {
         await this.props.store.spotToGraphics.sendFiles(this.withGraphicsStatus, this.completedCheckboxStatus, toEDL);
         if (this.props.forceUpdating) {
-            this.props.forceUpdating();
+            const elem = document.getElementById('reloadLinkGraphics');
+            if (elem) {
+                elem.click();
+            }
         }
     }
 
