@@ -238,7 +238,7 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
     }
 
     private get saveButtonText(): string {
-        if (this.getSpotLineStatusId() === 2 || this.getSpotLineStatusId() === 3 || (this.getSpotLineStatusId() === 5 && !this.state.isGraphicsCompleted)) {
+        if (this.getSpotLineStatusId() === 2 || this.getSpotLineStatusId() === 3 || this.getSpotLineStatusId() === 4 || (this.getSpotLineStatusId() === 5 && !this.state.isGraphicsCompleted)) {
             return 'Save';
         } else if (this.getSpotLineStatusId() === 5 && this.state.isGraphicsCompleted) {
             return 'Complete';
