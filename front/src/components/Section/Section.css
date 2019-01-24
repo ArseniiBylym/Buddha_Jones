@@ -86,6 +86,7 @@
         }
         & > :global(.controls) {
           display: flex;
+          margin-left: auto;
           & > :global(label){
             margin-right: 10px
           }
