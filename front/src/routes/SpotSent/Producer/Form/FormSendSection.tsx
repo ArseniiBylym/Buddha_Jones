@@ -55,7 +55,7 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                 {this.getLinkField()} 
                 <Modal
                     show={this.props.store!.spotSent.viaMethodsModalToggle}
-                    title="Please select Sent Via option(s) unless the Spot is Finishing"
+                    title={this.props.store!.spotSent.viaMethodsModalToggleMessage}
                     closeButton={false}
                     type="alert"
                     actions={[
@@ -151,7 +151,18 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
             return false;
         });
         if (viaOtionsNotChecked) {
-            SpotSentActions.toggleModalViaMethods();
+            SpotSentActions.toggleModalViaMethods('Please select Sent Via option(s) unless the Spot is Finishing');
+            return;
+        }
+
+        const editorsNotSelected = this.props.store!.spotSent.spotSentDetails.spot_version.find((item, i) => {
+            if (item.line_status_id === 1 && this.state.isGraphicsCompleted === true && item.editors.length === 0) {
+                return true;
+            }
+            return false;
+        });
+        if (editorsNotSelected) {
+            SpotSentActions.toggleModalViaMethods('Please select at least one editor for each spot');
             return;
         }
 
