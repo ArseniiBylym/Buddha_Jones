@@ -2,7 +2,7 @@ import { SpotToBillFormActions } from 'actions';
 import * as classNames from 'classnames';
 import { ButtonEdit, ButtonSave } from 'components/Button';
 import { Paragraph } from 'components/Content';
-import { DropdownContainer, OptionsList } from 'components/Form';
+import { DropdownContainer, Input, OptionsList } from 'components/Form';
 import { MoneyHandler } from 'helpers/MoneyHandler';
 import { computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
@@ -36,6 +36,12 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
     private rateDropdown: DropdownContainer | null = null;
 
     @observable private isInEditMode: boolean = false;
+    @observable private note: string = '';
+
+    @computed
+    private get nameOrNote(): string {
+        return this.props.note ? this.props.note : this.props.name;
+    }
 
     @computed
     private get selectedFlatRate(): StudioRateCardEntryFromApi | null {
@@ -80,7 +86,9 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
                 </div>
 
                 <div>
-                    <Paragraph>{this.props.note ? this.props.note : this.props.name}</Paragraph>
+                    {(this.isInEditMode && (
+                        <Input onChange={this.handleNoteChange} value={this.note} label="Name" />
+                    )) || <Paragraph>{this.nameOrNote}</Paragraph>}
                 </div>
 
                 <div>
@@ -173,11 +181,19 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
     private referenceRateDropdown = (ref: DropdownContainer) => (this.rateDropdown = ref);
 
     private handleEnteringEditModeOfRow = (e: React.MouseEvent<HTMLButtonElement>) => {
+        this.note = this.nameOrNote;
         this.isInEditMode = true;
     };
 
     private handleSavingRowChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
+        SpotToBillFormActions.changeActivityNote(this.props.index, this.note);
+
+        this.note = '';
         this.isInEditMode = false;
+    };
+
+    private handleNoteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.note = e.target.value;
     };
 
     private handleRateChange = (option: { value: string; label: string }) => {

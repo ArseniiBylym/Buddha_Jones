@@ -334,7 +334,8 @@ export class SpotToBillFormActionsClass {
     @action
     public changeActivityNote = (index: number, note: string | null) => {
         if (SpotToBillFormStore.activities[index]) {
-            SpotToBillFormStore.activities[index].note = note;
+            SpotToBillFormStore.activities[index].note =
+                note !== null && SpotToBillFormStore.activities[index].name === note ? null : note;
         }
     };
 
