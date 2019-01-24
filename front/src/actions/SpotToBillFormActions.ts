@@ -9,6 +9,7 @@ import {
     SpotBillFormActivityTimeEntry,
     SpotBillFormData,
     SpotBillFormActivityGroup,
+    SpotBillDiscount,
 } from 'types/spotBilling';
 
 export class SpotToBillFormActionsClass {
@@ -336,6 +337,17 @@ export class SpotToBillFormActionsClass {
         if (SpotToBillFormStore.activities[index]) {
             SpotToBillFormStore.activities[index].note =
                 note !== null && SpotToBillFormStore.activities[index].name === note ? null : note;
+        }
+    };
+
+    @action
+    public changeBillDiscount = (discount: Partial<SpotBillDiscount>) => {
+        if (typeof discount.isFixed !== 'undefined') {
+            SpotToBillFormStore.discount.isFixed = discount.isFixed;
+        }
+
+        if (typeof discount.value !== 'undefined') {
+            SpotToBillFormStore.discount.value = discount.value;
         }
     };
 

@@ -85,14 +85,35 @@
 .totals {
     padding-top: 24px;
     margin-top: 24px;
-    display: block;
-    text-align: right;
+    display: flex;
+    justify-content: space-between;
     border-top: 1px solid #d1cdca;
+
+    & > div {
+        &:last-child {
+            padding-left: 16px;
+            text-align: right;
+        }
+    }
 
     & p {
         font-size: 1rem;
-        text-align: right;
     }
+}
+
+.discountForm {
+    display: flex;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: center;
+
+    & > div {
+        padding-right: 24px;
+    }
+}
+
+.subTotals {
+    margin-top: 12px;
 }
 
 .actions {

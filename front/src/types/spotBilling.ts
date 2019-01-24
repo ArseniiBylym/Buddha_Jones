@@ -130,3 +130,8 @@ export interface SpotBillRowRevision {
     versionId: number;
     versionName: string;
 }
+
+export interface SpotBillDiscount {
+    isFixed: boolean;
+    value: number;
+}
