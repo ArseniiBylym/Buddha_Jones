@@ -88,11 +88,17 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
         SpotSentActions.inputLinkHandler(e.target.value);
     }
 
+    private getCheckboxLabel = () => {
+        const isReadyForQc = this.props.store.spotSent.spotSentDetails.spot_version.every((item, i) => {
+            return item.line_status_id === 3 && item.prod_accept === 1;
+        });
+        return isReadyForQc;
+    }
+
     private getCheckmark = () => {
         if (this.getSpotLineStatusId() === 2) {
             return null;
-        } else if (this.getSpotLineStatusId() === 3 && 
-            this.props.prodAccept && this.props.prodAccept.prod_accept === 1) {
+        } else if (this.getCheckboxLabel()) {
                 return (
                     <CheckmarkSquare
                         onClick={this.completedToggleHandler}
