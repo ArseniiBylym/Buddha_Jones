@@ -1,11 +1,14 @@
 import { InputSearch } from 'components/Form';
 import { LoadingIndicator } from 'components/Loaders';
 import { Section } from 'components/Section';
-import { computed } from 'mobx';
+import { observable, action, computed } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import SpotsPostTable from './SpotsPostTable';
 import * as moment from 'moment';
+// import './SpotsPost.css';
+
+const s = require('./SpotsPost.css');
 
 export interface SpotToGraphicsProducerOption {
     id: number;
@@ -26,6 +29,8 @@ export interface SpotToGraphicsProducerOption {
 @observer
 export class SpotsPostFilter extends React.Component<any, {}> {
 
+    @observable filterActive: {production: boolean, finishing: boolean} = {production: false, finishing: false}; 
+
     @computed
     private get spots(): any {
 
@@ -36,6 +41,18 @@ export class SpotsPostFilter extends React.Component<any, {}> {
             list = this.props.spots.data.filter(() => {
                 return true;
             });
+
+            if (this.filterActive.production && !this.filterActive.finishing) {
+                list = list.filter((item, i) => {
+                    return !item.finishRequest;
+                });
+            }
+
+            if (this.filterActive.finishing && !this.filterActive.production) {
+                list = list.filter((item, i) => {
+                    return item.finishRequest;
+                });
+            }
             
             if (query)  {
                 list = list.filter((item, i) => {
@@ -48,6 +65,33 @@ export class SpotsPostFilter extends React.Component<any, {}> {
                     }
                 });
             } 
+
+            list.sort((a: any, b: any): any => {
+                if (+a.spotSentRequestId > +b.spotSentRequestId) {
+                    return 1; 
+                }
+                if (+a.spotSentRequestId < +b.spotSentRequestId) {
+                    return -1;
+                }
+                if (+a.spotSentRequestId === +b.spotSentRequestId) {
+                     if (a.spotName > b.spotName) {
+                         return 1;
+                     }
+                     if (a.spotName < b.spotName) {
+                         return -1;
+                     }
+                     if (a.spotName === b.spotName) {
+                         if (a.versionName > b.versionName) {
+                             return 1;
+                         }
+                         if (a.versionName < b.versionName) {
+                             return -1;
+                         } else {
+                             return 0;
+                         }
+                     }
+                }
+            });
             
             return list;
         } else {
@@ -77,6 +121,12 @@ export class SpotsPostFilter extends React.Component<any, {}> {
                               },
                           ]
                         : []),
+                    { 
+                        key: 'filter-buttons',
+                        element: (
+                            this.getFilterButtons()
+                        ),
+                    },
                     {
                         key: 'filter-by-query',
                         element: (
@@ -93,6 +143,25 @@ export class SpotsPostFilter extends React.Component<any, {}> {
               < SpotsPostTable config={this.spots}/>
             </Section>
         );
+    }
+
+    private getFilterButtons = () => {
+        return (
+            <div className={s.filterButtonWrapper}>
+                <div className={s.filterButtonLabel}>Filter spots by: </div>
+                <div onClick={this.filterHandlerAction('production')} className={this.getFilterButtonStyle('production')}>Production</div>
+                <div onClick={this.filterHandlerAction('finishing')} className={this.getFilterButtonStyle('finishing')}>Finishing</div>
+            </div>
+        );
+    }
+
+    @action
+    private filterHandlerAction = (name: string) => e => {
+            this.filterActive[name] = this.filterActive[name] ? false : true; 
+    }
+
+    private getFilterButtonStyle = (name: string): string => {
+        return this.filterActive[name] ? s.filterButton__active : s.filterButton;
     }
 
     private handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
