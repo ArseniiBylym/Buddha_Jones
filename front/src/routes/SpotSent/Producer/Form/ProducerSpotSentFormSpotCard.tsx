@@ -243,7 +243,9 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                                 {this.props.spot.version && this.props.spot.version.prodAccept !== undefined && 
                                 (this.props.spot.line_status_id === 2 || 
                                 this.props.spot.line_status_id === 3 && !this.props.spot.version.prodAccept ||
-                                this.props.spot.line_status_id === 4 && !this.props.spot.version.prodAccept) && (
+                                this.props.spot.line_status_id === 4 && !this.props.spot.version.prodAccept) && 
+                                (this.props.spot.sentViaMethod && this.props.spot.sentViaMethod.length > 0) &&
+                                (
                                     <CheckmarkSquare
                                         key={'prod-accept'}
                                         onClick={this.props.spot.version.prodAccept ? this.handleProdAccept : this.showModal('production')}
