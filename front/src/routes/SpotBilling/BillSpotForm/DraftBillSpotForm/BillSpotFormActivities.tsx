@@ -37,6 +37,7 @@ interface Props extends AppOnlyStoreState {
 @inject('store')
 @observer
 export class BillSpotFormActivities extends React.Component<Props, {}> {
+    /** Compute all time entries grouped by version, user, activity type, date, time */
     @computed
     private get versions(): ActivityByVersion[] {
         return this.props.spot.timeEntries.reduce((versions: ActivityByVersion[], timeEntry) => {
@@ -108,6 +109,7 @@ export class BillSpotFormActivities extends React.Component<Props, {}> {
         }, []);
     }
 
+    /** Sort all time entries grouped by versions, users, activities types, dates, time */
     @computed
     private get sortedVersions(): ActivityByVersion[] {
         const sortedVersions = this.versions.sort((versionA, versionB) => {
@@ -185,6 +187,7 @@ export class BillSpotFormActivities extends React.Component<Props, {}> {
         });
     }
 
+    /** Compute flat list of time entries based on sorted versions tree */
     @computed
     private get sortedTimeEntries(): BillTimeEntry[] {
         return this.sortedVersions.reduce((timeEntries: BillTimeEntry[], version) => {
@@ -200,12 +203,16 @@ export class BillSpotFormActivities extends React.Component<Props, {}> {
         }, []);
     }
 
+    /** Compute final time entries list with time entries in bill removed */
     @computed
     private get sortedFilteredTimeEntries(): BillTimeEntry[] {
         return this.sortedTimeEntries.filter(
             timeEntry =>
                 !this.props.store!.spotToBillForm.activities.some(activity =>
                     activity.timeEntries.some(t => t.timeEntryId === timeEntry.timeEntryId)
+                ) &&
+                !this.props.store!.spotToBillForm.firstStage.some(first =>
+                    first.timeEntriesIds.some(id => id === timeEntry.timeEntryId)
                 )
         );
     }
