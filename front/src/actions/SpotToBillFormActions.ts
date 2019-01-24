@@ -2,7 +2,14 @@ import { action } from 'mobx';
 import { FormattedInBillTimeEntry } from 'routes/SpotBilling/BillSpotForm';
 import { AddingActivityToBillStatus } from 'store';
 import { SpotToBillFormStore } from 'store/AllStores';
-import { ActivityHours, SpotBillFormActivityTimeEntry, SpotBillFormData } from 'types/spotBilling';
+import { SpotBillActivityRateType } from 'types/spotBillingEnums';
+import { StudioRateCardEntryFromApi } from 'types/studioRateCard';
+import {
+    ActivityHours,
+    SpotBillFormActivityTimeEntry,
+    SpotBillFormData,
+    SpotBillFormActivityGroup,
+} from 'types/spotBilling';
 
 export class SpotToBillFormActionsClass {
     @action
@@ -233,6 +240,7 @@ export class SpotToBillFormActionsClass {
         } else {
             SpotToBillFormStore.firstStage.push({
                 spotId: spotId,
+                note: null,
                 timeEntriesIds: timeEntriesIds,
             });
         }
@@ -264,14 +272,17 @@ export class SpotToBillFormActionsClass {
         timeEntries.forEach(timeEntry => {
             if (includedActivityIds.indexOf(timeEntry.activityId) === -1) {
                 activityName += (activityName.length > 0 ? ', ' : '') + timeEntry.activityName;
+                includedActivityIds.push(timeEntry.activityId);
             }
 
             if (timeEntry.spotId !== null && includedSpotIds.indexOf(timeEntry.spotId) === -1) {
                 spotName += (spotName.length > 0 ? ', ' : '') + timeEntry.spotName;
+                includedSpotIds.push(timeEntry.spotId);
             }
 
             if (timeEntry.versionId !== null && includedVersionIds.indexOf(timeEntry.versionId) === -1) {
                 versionName += (versionName.length > 0 ? ', ' : '') + timeEntry.versionName;
+                includedVersionIds.push(timeEntry.versionId);
             }
         });
 
@@ -280,6 +291,8 @@ export class SpotToBillFormActionsClass {
             note: null,
             spot: spotName,
             version: versionName,
+            rateType: SpotBillActivityRateType.Hourly,
+            rateFlatId: null,
             timeEntries: timeEntries,
         });
 
@@ -297,6 +310,32 @@ export class SpotToBillFormActionsClass {
     @action
     public toggleBillPreview = (show?: boolean) => {
         SpotToBillFormStore.showBillPreview = typeof show !== 'undefined' ? show : !SpotToBillFormStore.showBillPreview;
+    };
+
+    @action
+    public changeActivitiesRateType = (
+        activityIndex: number,
+        rateType: SpotBillActivityRateType,
+        rateFlatId: number | null = null
+    ) => {
+        if (SpotToBillFormStore.activities[activityIndex]) {
+            SpotToBillFormStore.activities[activityIndex].rateType = rateType;
+            SpotToBillFormStore.activities[activityIndex].rateFlatId = rateFlatId;
+        }
+    };
+
+    @action
+    public changeFirstStageActivityNote = (index: number, note: string | null) => {
+        if (SpotToBillFormStore.firstStage[index]) {
+            SpotToBillFormStore.firstStage[index].note = note;
+        }
+    };
+
+    @action
+    public changeActivityNote = (index: number, note: string | null) => {
+        if (SpotToBillFormStore.activities[index]) {
+            SpotToBillFormStore.activities[index].note = note;
+        }
     };
 
     public checkIfSpotIsInBill = (spotId: number): boolean => {
@@ -325,5 +364,29 @@ export class SpotToBillFormActionsClass {
         }
 
         return false;
+    };
+
+    public calculateHourlyActivityTotals = (
+        activity: SpotBillFormActivityGroup,
+        selectedRateCard: StudioRateCardEntryFromApi[] = []
+    ): number => {
+        let total = 0;
+
+        // For hourly
+        if (activity.rateType === SpotBillActivityRateType.Hourly) {
+            total += activity.timeEntries.reduce((hourlyTotal: number, timeEntry) => {
+                const rateCard = selectedRateCard.find(card => card.activityId === timeEntry.activityId);
+                if (rateCard && rateCard.rate) {
+                    hourlyTotal +=
+                        ((rateCard.rate * timeEntry.regularHours) / 60) * 1 +
+                        ((rateCard.rate * timeEntry.overtimeHours) / 60) * 1.5 +
+                        ((rateCard.rate * timeEntry.doubletimeHours) / 60) * 2.0;
+                }
+
+                return hourlyTotal;
+            }, 0);
+        }
+
+        return total;
     };
 }

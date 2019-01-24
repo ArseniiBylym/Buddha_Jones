@@ -120,18 +120,6 @@ export class BillSpotPreview extends React.Component<Props, {}> {
         });
     }
 
-    @computed private get billTotal(): number {
-        let totals: number = this.firstStageRows.reduce((total: number, firstStageRow) => {
-            total += firstStageRow.amount;
-            return total;
-        }, 0);
-
-        // TODO: Implement bill rate per activity
-        totals += this.props.store!.spotToBillForm.activities.length * 1000;
-
-        return totals;
-    }
-
     @computed private get spotsInBill(): SpotBillFormSpot[] {
         return this.props.spots.filter(spot =>
             this.props.store!.spotToBillForm.spotsAddedToBill.some(id => id === spot.spotId)
@@ -201,7 +189,6 @@ export class BillSpotPreview extends React.Component<Props, {}> {
                                 campaignName={campaignName}
                                 projectCampaignName={projectCampaignName}
                                 studioName={studioName}
-                                billTotal={this.billTotal}
                                 spotsInBill={this.spotsInBill}
                                 firstStageRows={this.firstStageRows}
                                 editable={editable}

@@ -1,5 +1,6 @@
 import { DateObjectFromApi } from './api';
 import { SpotBillingType } from './projectDetailsEnums';
+import { SpotBillActivityRateType } from './spotBillingEnums';
 
 export interface ActivityHours {
     regularHoursInMinutes: number;
@@ -18,6 +19,7 @@ export interface ActivityInBillWithBaseTime extends ActivityInBill {
 
 export interface SpotBillFormFirstStage {
     spotId: number;
+    note: string | null;
     timeEntriesIds: number[];
 }
 
@@ -40,6 +42,8 @@ export interface SpotBillFormActivityGroup {
     note: string | null;
     spot: string;
     version: string;
+    rateType: SpotBillActivityRateType;
+    rateFlatId: number | null;
     timeEntries: SpotBillFormActivityTimeEntry[];
 }
 
