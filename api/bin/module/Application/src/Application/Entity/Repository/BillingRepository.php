@@ -494,6 +494,15 @@ class BillingRepository extends EntityRepository
 
     public function deleteExistingBillingLine($billId)
     {
+        $teResetDql = "DELETE
+                FROM \Application\Entity\RediBillingTimeEntry bte
+                WHERE bte.billLineId IN (SELECT bl.id FROM \Application\Entity\RediBillingLine bl
+                WHERE bl.billId = :bill_id)";
+
+        $teResetQuery = $this->getEntityManager()->createQuery($teResetDql);
+        $teResetQuery->setParameter('bill_id', $billId);
+        $teResetQuery->execute();
+
         $resetDql = "DELETE
                     FROM \Application\Entity\RediBillingLine bl
                     WHERE bl.billId = :bill_id";
@@ -526,6 +535,26 @@ class BillingRepository extends EntityRepository
             $lineQuery = $this->getEntityManager()->createQuery($lineDql);
             $lineQuery->setParameter('bill_id', $billId);
             $bill['billingLine'] = $lineQuery->getArrayResult();
+
+            $lineTimeDql = "SELECT
+                        bt
+                    FROM \Application\Entity\RediBillingTimeEntry bt
+                    WHERE bt.billLineId IN (SELECT
+                        bl
+                        FROM \Application\Entity\RediBillingLine bl
+                        WHERE bl.billId = :bill_id)";
+
+            $lineTimeQuery = $this->getEntityManager()->createQuery($lineTimeDql);
+            $lineTimeQuery->setParameter('bill_id', $billId);
+            $billingTimeEntry = $lineTimeQuery->getArrayResult();
+
+            $bill['billingLine'] = array_map(function ($bLine) use ($billingTimeEntry) {
+                $bLine['timeEntry'] = array_filter($billingTimeEntry, function ($bTimeEntry) use ($bLine) {
+                    return $bTimeEntry['billLineId'] == $bLine['id'];
+                });
+
+                return $bLine;
+            }, $bill['billingLine']);
         }
 
         return $bill;

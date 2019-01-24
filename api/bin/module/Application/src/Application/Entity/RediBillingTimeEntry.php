@@ -45,6 +45,13 @@ class RediBillingTimeEntry
     /**
      * @var string
      *
+     * @ORM\Column(name="non_billable_hours", type="decimal", precision=19, scale=2, nullable=true)
+     */
+    private $nonBillableHours;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="lost_hours", type="decimal", precision=19, scale=2, nullable=true)
      */
     private $lostHours;
@@ -149,6 +156,29 @@ class RediBillingTimeEntry
     public function getTimeEntryHours()
     {
         return $this->timeEntryHours;
+    }
+
+    /**
+     * Set nonBillableHours
+     *
+     * @param string $nonBillableHours
+     * @return RediBillingTimeEntry
+     */
+    public function setNonBillableHours($nonBillableHours)
+    {
+        $this->nonBillableHours = $nonBillableHours;
+
+        return $this;
+    }
+
+    /**
+     * Get nonBillableHours
+     *
+     * @return string 
+     */
+    public function getNonBillableHours()
+    {
+        return $this->nonBillableHours;
     }
 
     /**

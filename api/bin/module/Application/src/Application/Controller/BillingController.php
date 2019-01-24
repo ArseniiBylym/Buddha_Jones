@@ -4,6 +4,7 @@ namespace Application\Controller;
 
 use Application\Entity\RediBilling;
 use Application\Entity\RediBillingLine;
+use Application\Entity\RediBillingTimeEntry;
 use Zend\View\Model\JsonModel;
 
 class BillingController extends CustomAbstractActionController
@@ -103,6 +104,9 @@ class BillingController extends CustomAbstractActionController
     {
         // $timeEntryIds = $this->_commonRepo->filterPostData($data, 'time_entry_id', 'json', null);
         $status = $this->_commonRepo->filterPostData($data, 'status', 'int', null);
+        $ratecardId = $this->_commonRepo->filterPostData($data, 'ratecard_id', 'int', null);
+        $ratecardTemplateId = $this->_commonRepo->filterPostData($data, 'ratecard_template_id', 'int', null);
+        $status = $this->_commonRepo->filterPostData($data, 'status', 'int', null);
         $billingLines = $this->_commonRepo->filterPostData($data, 'billing_line', 'json', null);
 
         $bill = $this->_billingRepository->find($billId);
@@ -113,21 +117,18 @@ class BillingController extends CustomAbstractActionController
                 $bill->setStatus($status);
             }
 
+            if ($ratecardId) {
+                $bill->setRatecardId($ratecardId);
+            }
+
+            if ($ratecardTemplateId) {
+                $bill->setRatecardTemplateId($ratecardTemplateId);
+            }
+
             $this->_em->persist($bill);
             $this->_em->flush();
 
-            // if ($timeEntryIds) {
-            //     $timeEntryIds = array_filter(array_map('intval', $timeEntryIds));
-
-            //     if ($timeEntryIds) {
-            //         $this->_billingRepo->updateBillIdOfTimeEntry($billId, $timeEntryIds, true);
-            //     }
-            // }
-
             if ($billingLines) {
-                // $billingLines = $this->filterLines($billingLines);
-
-                // if ($billingLines) {
                 $this->_billingRepo->deleteExistingBillingLine($billId);
 
                 foreach ($billingLines as $line) {
@@ -140,7 +141,7 @@ class BillingController extends CustomAbstractActionController
                     $totalDisc = $this->_commonRepo->filterPostData($line, 'total_disc', 'float', null);
                     $totalBefDisc = $this->_commonRepo->filterPostData($line, 'total_bef_disc', 'float', null);
                     $netAmount = $this->_commonRepo->filterPostData($line, 'net_amount', 'float', null);
-                    $timeEntryIds = $this->_commonRepo->filterPostData($line, 'time_entry_id', 'array', null);
+                    $billingTimeEntry = $this->_commonRepo->filterPostData($line, 'time_entry', 'array', null);
 
                     $bLine = new RediBillingLine();
                     $bLine->setBillId($billId);
@@ -159,11 +160,37 @@ class BillingController extends CustomAbstractActionController
 
                     $lineId = $bLine->getId();
 
-                    if ($lineId && $line['time_entry_id']) {
+                    if ($lineId && $billingTimeEntry) {
+                        foreach ($billingTimeEntry as $timeEntry) {
+                            $timeEntryId = $this->_commonRepo->filterPostData($timeEntry, 'time_entry_id', 'int', null);
+                            $timeEntryHours = $this->_commonRepo->filterPostData($timeEntry, 'time_entry_hours', 'float', null);
+                            $lostHours = $this->_commonRepo->filterPostData($timeEntry, 'lost_hours', 'float', null);
+                            $nonBillableHours = $this->_commonRepo->filterPostData($timeEntry, 'non_billable_hours', 'float', null);
+                            $rt = $this->_commonRepo->filterPostData($timeEntry, 'rt', 'float', null);
+                            $ot = $this->_commonRepo->filterPostData($timeEntry, 'ot', 'float', null);
+                            $dt = $this->_commonRepo->filterPostData($timeEntry, 'dt', 'float', null);
+
+                            if ($timeEntryId) {
+                                $billingTimeEntry = new RediBillingTimeEntry();
+
+                                $billingTimeEntry->setBillLineId($lineId);
+                                $billingTimeEntry->setTimeEntryId($timeEntryId);
+                                $billingTimeEntry->setTimeEntryHours($timeEntryHours);
+                                $billingTimeEntry->setNonBillableHours($nonBillableHours);
+                                $billingTimeEntry->setTimeEntryHours($timeEntryHours);
+                                $billingTimeEntry->setLostHours($lostHours);
+                                $billingTimeEntry->setRt($rt);
+                                $billingTimeEntry->setOt($ot);
+                                $billingTimeEntry->setDt($dt);
+
+                                $this->_em->persist($billingTimeEntry);
+                            }
+                        }
+
+                        $this->_em->flush();
 
                     }
                 }
-                // }
             }
 
             $response = array(
