@@ -239,6 +239,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                     },
                                 ]}
                             />}
+                             <a style={{display: 'none'}} href="/portal/spots-to-edl" id="reloadLinkEdl">Link</a>
                         </React.Fragment>
                     </Card>
                 ))}
@@ -258,7 +259,10 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
             this.modalConfirmToggle();
             await this.props.store.spotToGraphics.changeEDLApi(this.selectedSpot.spotSentId, this.selectedSpot.index);
             if (this.props.forceUpdating) {
-                this.props.forceUpdating();
+                const elem = document.getElementById('reloadLinkEdl');
+                if (elem) {
+                    elem.click();
+                }
             }
         } else {
             this.modalConfirmToggle();
