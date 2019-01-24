@@ -414,6 +414,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
     private updateHeader = () => {
         HeaderActions.replaceMainHeaderContent({
             elementsOnLeft: [
+                <div key="mainSpotHeaderNumber" className={s.mainSpotHeaderInfo__number}>{this.props.match!.params['id']}</div>,
                 <div key="mainSpotHeaderInfo" style={{marginRight: 'auto'}} className={s.mainSpotHeaderInfo}>
                     <div className={s.mainSpotHeaderInfo__spotList}>
                         <div className={s.mainSpotHeaderInfo__spotListLabel}>Spots:</div>
