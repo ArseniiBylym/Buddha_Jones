@@ -7,8 +7,6 @@ import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { SpotBillFormSpot } from 'types/spotBilling';
 
-const s = require('./BillSpotFormSpotsToAdd.css');
-
 interface BillSpotFormSpotsToAddProps extends AppOnlyStoreState {
     projectCampaignId: number;
     remainingSpotsToBill: SpotBillFormSpot[];
