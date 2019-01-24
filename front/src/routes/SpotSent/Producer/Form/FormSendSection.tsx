@@ -89,6 +89,9 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
     }
 
     private getCheckboxLabel = () => {
+        if (typeof(this.props.store.spotSent.spotSentDetails.spot_version) === 'string') {
+            return false;
+        }
         const isReadyForQc = this.props.store.spotSent.spotSentDetails.spot_version.every((item, i) => {
             return item.line_status_id === 3 && item.prod_accept === 1;
         });
