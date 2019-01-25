@@ -45,7 +45,7 @@ export class UserNotificationsCenter extends React.Component<AppOnlyStoreState, 
                 <Button
                     className={notifications.visibleMenu === 'hamburgerMenu' ? s.toggleHidden : s.toggle }
                     onClick={() => this.handleNotificationsHistoryToggle()}
-                    label={this.notificationsLength ? {text: this.notificationsLength, size: 'small', color: 'blue'} : null}
+                    // label={this.notificationsLength ? {text: this.notificationsLength, size: 'small', color: 'blue'} : null}
                     icon={{
                         size: 'large',
                         background: 'white',
@@ -57,6 +57,7 @@ export class UserNotificationsCenter extends React.Component<AppOnlyStoreState, 
                             ),
                     }}
                 />
+                {this.notificationsLength && !this.showHistory && notifications.visibleMenu !== 'hamburgerMenu' && <div className={s.notificationCounter}>{this.notificationsLength}</div>}
 
                 <div className={s.notificationsLive}>
                     {notifications &&
