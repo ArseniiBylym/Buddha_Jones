@@ -48,3 +48,10 @@
   top: 12px;
   right: 12px;
 }
+.toggleHidden{
+  position: absolute;
+  z-index: 3;
+  top: 70px;
+  right: 12px;
+  display: none;
+}

@@ -6,6 +6,7 @@ import {
     NotificationMinimalContent,
     NotificationContentType,
 } from '../types/notifications';
+import { API, APIPath } from 'fetch';
 
 export class NotificationsActionsClass {
     @action
@@ -55,4 +56,15 @@ export class NotificationsActionsClass {
             ];
         }
     };
+
+    @action 
+    public openSidebarHandler(type: string | null) {
+        NotificationsStore.visibleMenu = type;
+    }
+
+    @action
+    public getUserNotifications = async() => {
+        const response = (await API.getData(APIPath.NOTIFICATIONS));
+        NotificationsStore.userNotifications = response;
+    }
 }

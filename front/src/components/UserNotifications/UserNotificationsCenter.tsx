@@ -3,22 +3,27 @@ import * as classNames from 'classnames';
 import { observer, inject } from 'mobx-react';
 import { observable, action } from 'mobx';
 import { Button } from '../Button';
-import { Notification } from '.';
+import { UserNotification } from '.';
 import { AppOnlyStoreState } from '../../store/AllStores';
 
 // Styles
-const s = require('./NotificationsCenter.css');
-import { IconHamburgerMenu, IconClose } from '../Icons';
+const s = require('./UserNotificationsCenter.css');
+import { IconBellMenu, IconClose } from '../Icons';
 import { NotificationContent } from '../../types/notifications';
 import { NotificationsActions } from 'actions';
+import { setTimeout } from 'timers';
 
 // Component
 @inject('store')
 @observer
-export class NotificationsCenter extends React.Component<AppOnlyStoreState, {}> {
+export class UserNotificationsCenter extends React.Component<AppOnlyStoreState, {}> {
     private exists: boolean = true;
 
     @observable private showHistory: boolean = false;
+
+    componentDidMount = () => {
+        NotificationsActions.getUserNotifications();
+    }
 
     public componentWillUnmount() {
         this.exists = false;
@@ -38,22 +43,19 @@ export class NotificationsCenter extends React.Component<AppOnlyStoreState, {}> 
                 })}
             >
                 <Button
-                    className={notifications.visibleMenu === 'bellMenu' ? s.toggleHidden : s.toggle }
+                    className={notifications.visibleMenu === 'hamburgerMenu' ? s.toggleHidden : s.toggle }
                     onClick={() => this.handleNotificationsHistoryToggle()}
+                    label={this.notificationsLength ? {text: this.notificationsLength, size: 'small', color: 'blue'} : null}
                     icon={{
                         size: 'large',
                         background: 'white',
                         element:
                             !this.showHistory ? (
-                                <IconHamburgerMenu width={14} height={12}/>
+                                <IconBellMenu width={25} height={25}/>
                             ) : (
                                 <IconClose width={12} height={12}/>
                             ),
                     }}
-                    // tooltip={{
-                    //     text: !this.showHistory ? 'Notifications' : 'Close',
-                    //     on: 'left',
-                    // }}
                 />
 
                 <div className={s.notificationsLive}>
@@ -71,7 +73,7 @@ export class NotificationsCenter extends React.Component<AppOnlyStoreState, {}> 
 
                     {notifications !== null &&
                     notifications.allNotifications.length <= 0 && (
-                        <Notification
+                        <UserNotification
                             id={0}
                             title="You have no recent notifications"
                             showDate={false}
@@ -87,9 +89,18 @@ export class NotificationsCenter extends React.Component<AppOnlyStoreState, {}> 
         );
     }
 
+    private get notificationsLength() {
+        const notifications = this.props.store!.notifications.userNotifications!;
+        if (notifications && notifications.length > 0) {
+            return notifications.length;
+        } else {
+            return null;
+        }
+    }
+
     private renderNotification = (notification: NotificationContent) => {
         return (
-            <Notification
+            <UserNotification
                 key={notification.id}
                 id={notification.id}
                 title={notification.title}
@@ -151,7 +162,7 @@ export class NotificationsCenter extends React.Component<AppOnlyStoreState, {}> 
         if (!this.showHistory) {
             NotificationsActions.openSidebarHandler(null);
         } else {
-            NotificationsActions.openSidebarHandler('hamburgerMenu');
+            NotificationsActions.openSidebarHandler('bellMenu');
         }
     };
 }
