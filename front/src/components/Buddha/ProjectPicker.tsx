@@ -489,7 +489,7 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
                         <div className="controls__wrapper">
                             {this.props.line_status_name && 
                                 <div className="lineStatusWrapper">
-                                    <div className="lineStatusLabel">Version:</div>
+                                    <div className="lineStatusLabel">Status:</div>
                                     <div className={this.lineStatusStyle(this.props.line_status_name)}>{this.props.line_status_name}</div>
                                 </div>
                             }
