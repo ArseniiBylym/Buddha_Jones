@@ -152,7 +152,7 @@
 }
 .mainSpotHeaderInfo {
     padding: 20px 10px;
-    transform: translateX(-150px);
+    transform: translateX(-115px);
 }
 .mainSpotHeaderInfo__number{
     font-size: 40px;
