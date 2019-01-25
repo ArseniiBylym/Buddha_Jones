@@ -45,6 +45,7 @@ interface ProducerSpotSentFormSpotCardProps {
     updateFileList: any;
     finishAccept?: boolean;
     paramId?: any;
+    customerName?: string;
 }
 
 interface ProducerSpotSentFormSpotCardState {
@@ -131,6 +132,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
     private editorDropdown: DropdownContainer | null = null;
 
     public render() {
+        // console.log(this.props.spot);
         return (
             <>
             <Card
@@ -158,6 +160,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                     index={this.props.spotIndex + 1}
                     additionalElements={ this.props.withGraphicsSection ? this.getCardHeadersForGraphics() : this.getCardHeaders()}
                     line_status_name={this.props.spot.line_status_name}
+                    customer_name={this.props.customerName}
                 />
 
                 {this.props.withGraphicsSection && <>{this.getFilesWorkOnSection()}</>}

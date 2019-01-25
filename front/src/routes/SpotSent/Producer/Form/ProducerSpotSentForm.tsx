@@ -223,13 +223,15 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                                     ? (spot.graphics_sent_via_method as number[])
                                                     : [],
                                                 finishAccept: (spot.finish_accept === 1) ? true : false,
-                                                spotSentId: spot.spot_sent_id
+                                                spotSentId: spot.spot_sent_id,
+                                                
                                             }}
                                             spotIndex={spotIndex}
                                             forUserId={this.props.store!.user.data!.id}
                                             withGraphicsSection={this.state.prevLocation === 'graphics' ? true : false}
                                             updateFileList={this.updateFileList}
                                             paramId={this.props.match!.params['id']}
+                                            customerName={spotSentDetails.customer_name}
                                         />
                                     );
                                 }

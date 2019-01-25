@@ -59,6 +59,7 @@ export interface SpotSentValueForSubmit {
     graphics_finish?: 0 | 1;
     gfx_finish?: 0 | 1;
     customer_contact?: ClientContact[] | string;
+    customer_name: any;
     graphics_note: string | null;
     music_note: string | null;
     final_narr: string | null;
