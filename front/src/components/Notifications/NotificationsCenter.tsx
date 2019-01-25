@@ -10,6 +10,7 @@ import { AppOnlyStoreState } from '../../store/AllStores';
 const s = require('./NotificationsCenter.css');
 import { IconHamburgerMenu, IconClose } from '../Icons';
 import { NotificationContent } from '../../types/notifications';
+import { NotificationsActions } from 'actions';
 
 // Component
 @inject('store')
@@ -37,7 +38,7 @@ export class NotificationsCenter extends React.Component<AppOnlyStoreState, {}> 
                 })}
             >
                 <Button
-                    className={s.toggle}
+                    className={notifications.visibleMenu === 'bellMenu' ? s.toggleHidden : s.toggle }
                     onClick={() => this.handleNotificationsHistoryToggle()}
                     icon={{
                         size: 'large',
@@ -146,6 +147,11 @@ export class NotificationsCenter extends React.Component<AppOnlyStoreState, {}> 
         // Toggle hidden status of notifications history
         if (this.exists) {
             this.showHistory = !this.showHistory;
+        }
+        if (!this.showHistory) {
+            NotificationsActions.openSidebarHandler(null);
+        } else {
+            NotificationsActions.openSidebarHandler('hamburgerMenu');
         }
     };
 }
