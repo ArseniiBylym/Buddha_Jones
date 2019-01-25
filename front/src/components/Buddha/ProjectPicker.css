@@ -141,3 +141,26 @@ button:global(.button).pickerSectionButton {
   align-content: center;
   align-items: center;
 }
+.lineStatusWrapper,
+.customerNameWrapper{
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  font-size: .95em;
+}
+.lineStatusLabel,
+.customerNameLabel{
+  font-weight: 700;
+  color: rgb(126, 117, 109);
+  font-size: .95em;
+  margin-right: 5px;
+}
+
+.customerNameValue{
+  font-size: .95em;
+  color: Sienna;
+}
+.customerNameWrapper{
+  margin-left: 20px;
+}
+

@@ -178,6 +178,7 @@ export class SpotSentActionsClass {
                     graphics_finish: response.graphicsFinish,
                     gfx_finish: response.gfxFinish,
                     customer_contact: response.customerContact,
+                    customer_name: response.customerName,
                     graphics_note: response.graphicsNote,
                     music_note: response.musicNote,
                     final_narr: response.finalNarr,

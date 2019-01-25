@@ -61,6 +61,7 @@ export class SpotSent {
         graphics_finish: 0,
         gfx_finish: 0,
         customer_contact: [],
+        customer_name: '',
         graphics_note: '',
         music_note: '',
         final_narr: '',

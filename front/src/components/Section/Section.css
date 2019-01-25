@@ -60,7 +60,6 @@
 
 :global(.sectionInner .Spot_project_picker) {
 
-  /* background-color: pink; */
   & > :global(.sectionInner) {
     display: flex;
     flex-flow: column nowrap;
@@ -78,12 +77,29 @@
         justify-content: space-between;
         width: 100%;
 
-        & > :global(.controls__projectStatus) {
-          color: black;
+        & > :global(.lineStatusWrapper) {
+          display: flex;
+          flex-flow: row nowrap;
+          align-items: center;
+          font-size: .95em;
+
+          & > :global(.lineStatusLabel) {
+            font-weight: 700;
+            color: rgb(126, 117, 109);
+            font-size: .95em;
+            margin-right: 5px;
+          }
+
+          & > :global(.controls__projectStatus) {
+            color: Sienna;
+            font-size: .95em;
+          }
+          & > :global(.controls__projectStatus__Green) {
+            color: green;
+            font-size: .95em;
+          }
         }
-        & > :global(.controls__projectStatus__Green) {
-          color: green;
-        }
+       
         & > :global(.controls) {
           display: flex;
           margin-left: auto;
