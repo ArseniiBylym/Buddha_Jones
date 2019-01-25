@@ -1,18 +1,6 @@
-.notificationsCenter {
-    position: fixed;
-    z-index: 10000;
-    right: 0;
-    top: 0;
-  }
-  
-  .notificationsLive {
-    position: absolute;
-    z-index: 1;
-    right: 0;
-    top: 0;
-  }
   
   .notificationsHistory {
+    padding-top: 150px;
     overflow: hidden;
     position: fixed;
     width: 344px;
@@ -22,11 +10,16 @@
     z-index: 2;
     background: color(#5a4d3f alpha(0.5));
     background: linear-gradient(to bottom, color(#5a4d3f alpha(0.4)), color(#5a4d3f alpha(0.8)));
-    transition: 400ms width 0ms cubic-bezier(1, 0, 0, 1);
+    transition: 400ms all 0ms cubic-bezier(1, 0, 0, 1);
+  }
+  .notificationsHistory__container{
+    padding-left: 20px;
+    padding-right: 20px;
   }
   
   .hideHistory .notificationsHistory {
-    width: 0px;
+    /* width: 0px; */
+    transform: translateX(344px);
   }
   
   .notificationsLive > div {

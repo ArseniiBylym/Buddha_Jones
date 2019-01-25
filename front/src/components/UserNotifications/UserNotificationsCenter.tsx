@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as classNames from 'classnames';
 import { observer, inject } from 'mobx-react';
-import { observable, action } from 'mobx';
+import { observable } from 'mobx';
 import { Button } from '../Button';
 import { UserNotification } from '.';
 import { AppOnlyStoreState } from '../../store/AllStores';
@@ -9,9 +9,7 @@ import { AppOnlyStoreState } from '../../store/AllStores';
 // Styles
 const s = require('./UserNotificationsCenter.css');
 import { IconBellMenu, IconClose } from '../Icons';
-import { NotificationContent } from '../../types/notifications';
 import { NotificationsActions } from 'actions';
-import { setTimeout } from 'timers';
 
 // Component
 @inject('store')
@@ -45,7 +43,6 @@ export class UserNotificationsCenter extends React.Component<AppOnlyStoreState, 
                 <Button
                     className={notifications.visibleMenu === 'hamburgerMenu' ? s.toggleHidden : s.toggle }
                     onClick={() => this.handleNotificationsHistoryToggle()}
-                    // label={this.notificationsLength ? {text: this.notificationsLength, size: 'small', color: 'blue'} : null}
                     icon={{
                         size: 'large',
                         background: 'white',
@@ -59,21 +56,21 @@ export class UserNotificationsCenter extends React.Component<AppOnlyStoreState, 
                 />
                 {this.notificationsLength && !this.showHistory && notifications.visibleMenu !== 'hamburgerMenu' && <div className={s.notificationCounter}>{this.notificationsLength}</div>}
 
-                <div className={s.notificationsLive}>
+                {/* <div className={s.notificationsLive}>
                     {notifications &&
                     notifications.liveNotifications
                         .filter(notification => notification !== null && typeof notification.title !== 'undefined')
                         .map(notification => this.renderNotification(notification))}
-                </div>
+                </div> */}
 
                 <div className={s.notificationsHistory}>
-                    {notifications &&
-                    notifications.allNotifications
-                        .filter(notification => notification !== null && typeof notification.title !== 'undefined')
-                        .map(notification => this.renderNotification(notification))}
-
-                    {notifications !== null &&
-                    notifications.allNotifications.length <= 0 && (
+                    <div className={s.notificationsHistory__container}>
+                        {notifications && notifications.userNotifications && notifications.userNotifications.length > 0 &&
+                            notifications.userNotifications!.map(notification => this.renderNotification(notification))
+                        }
+                    </div>
+                    {/* {notifications !== null &&
+                    notifications.userNotifications.length <= 0 && (
                         <UserNotification
                             id={0}
                             title="You have no recent notifications"
@@ -84,7 +81,7 @@ export class UserNotificationsCenter extends React.Component<AppOnlyStoreState, 
                                 dismissAutomaticallyAfterXSeconds: null,
                             }}
                         />
-                    )}
+                    )} */}
                 </div>
             </div>
         );
@@ -99,60 +96,20 @@ export class UserNotificationsCenter extends React.Component<AppOnlyStoreState, 
         }
     }
 
-    private renderNotification = (notification: NotificationContent) => {
+    private renderNotification = (notification: any) => {
         return (
             <UserNotification
                 key={notification.id}
                 id={notification.id}
-                title={notification.title}
-                description={
-                    typeof notification.description !== 'undefined' && notification.description
-                        ? notification.description
-                        : undefined
-                }
                 type={notification.type}
-                date={notification.date}
-                dismissable={
-                    typeof notification.dismissable !== 'undefined' && notification.dismissable
-                        ? {
-                            allow: notification.dismissable,
-                            onDismiss: this.handleNotificationDismiss(notification.id),
-                            dismissAutomaticallyAfterXSeconds:
-                                typeof notification.dismissAutomaticallyAfterXSeconds !== 'undefined' &&
-                                notification.dismissAutomaticallyAfterXSeconds
-                                    ? notification.dismissAutomaticallyAfterXSeconds
-                                    : null,
-                        }
-                        : undefined
-                }
+                date={notification.createdAt}
+                isConfirm={notification.confirm}
+                link={notification.link}
+                messageTypeid={notification.messageTypeid}
+                note={notification.note}
+                message={notification.message}
             />
         );
-    };
-
-    @action
-    private handleNotificationDismiss = (id: number) => () => {
-        setTimeout(() => {
-            if (!this.props.store) {
-                return;
-            }
-
-            const { notifications } = this.props.store;
-
-            const liveNotificationIdMatch = notifications.liveNotificationsIds.indexOf(id);
-
-            if (liveNotificationIdMatch !== -1) {
-                const notification = notifications.liveNotifications[liveNotificationIdMatch];
-
-                if (typeof notification.dismissToHistory !== 'undefined' && notification.dismissToHistory) {
-                    notifications.allNotifications.push(notification);
-                }
-
-                notifications.liveNotifications = [
-                    ...notifications.liveNotifications.slice(0, liveNotificationIdMatch),
-                    ...notifications.liveNotifications.slice(liveNotificationIdMatch + 1),
-                ];
-            }
-        }, 400);
     };
 
     private handleNotificationsHistoryToggle = () => {

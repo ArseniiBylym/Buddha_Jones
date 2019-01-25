@@ -64,7 +64,28 @@ export class NotificationsActionsClass {
 
     @action
     public getUserNotifications = async() => {
-        const response = (await API.getData(APIPath.NOTIFICATIONS));
+        const response = (await API.getData(APIPath.NOTIFICATIONS + '?confirm=0'));
         NotificationsStore.userNotifications = response;
+    }
+
+    @action
+    public dismissNotification = (id: string) => {
+        NotificationsStore.userNotifications = NotificationsStore.userNotifications.filter(item => {
+            return item.id !== id;
+        });
+    }
+    @action
+    public completeNotification = (id: string) => {
+        NotificationsStore.userNotifications = NotificationsStore.userNotifications.filter(item => {
+            return item.id !== id;
+        });
+        this.confirmNotification(Number(id));
+    }
+    @action
+    public confirmNotification = async(id: number) => {
+        await API.putData(APIPath.NOTIFICATIONS + '/' + id, {
+            notification_id: id,
+            confirm: 1,
+        });
     }
 }
