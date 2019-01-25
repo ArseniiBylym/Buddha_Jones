@@ -1056,6 +1056,9 @@ class SpotRepository extends EntityRepository
                         ss.finishAccept,
                         ss.qcNote,
                         ss.qcLink,
+                        ss.createdBy,
+                        uCreatedBy.firstName AS createdByFirstName,
+                        uCreatedBy.lastName AS createdByLastName,
                         ss.createdAt,
                         ss.updatedAt";
         } else {
@@ -1085,6 +1088,8 @@ class SpotRepository extends EntityRepository
                     WITH ss.finishingHouse = fh.id
                 LEFT JOIN \Application\Entity\RediProjectToCampaignUser ptcu
                     WITH ptcu.projectCampaignId = ss.projectCampaignId
+                LEFT JOIN \Application\Entity\RediUser uCreatedBy
+                    WITH uCreatedBy.id = ss.createdBy
                 WHERE ss.billId IS NULL
                     AND ss.projectId IS NOT NULL
                     AND ss.campaignId IS NOT NULL
@@ -1355,6 +1360,10 @@ class SpotRepository extends EntityRepository
                 $ssRow['graphicsFile'] = $this->getSpotSendFiles($ssRow['spotSentId']);
             }
 
+            $ssRow['createdByName'] = trim($ssRow['createdByFirstName'] . " " . $ssRow['createdByLastName']);
+
+            unset($ssRow['createdByFirstName']);
+            unset($ssRow['createdByLastName']);
             unset($ssRow['editor']);
             unset($ssRow['customerContact']);
 
