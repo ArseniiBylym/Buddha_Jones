@@ -1198,3 +1198,35 @@ false | request_id | int | null | request id (if sent then that spot sent reques
 false | spot_sent_type | type, send 0/1 for checking with type
 
 
+
+
+## Get spot sent file
+
+get spot sent file list
+
+> Sample request
+
+```javascript
+axios.get('/spot-sent-file');
+```
+
+> 200: success response
+
+```json
+{
+  "status": 1,
+  "message": "Request successful."
+}
+```
+
+### HTTP Request
+
+`GET /spot-sent-file`
+
+### Query Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+false | offset | integer | null | offset
+false | length | integer | null | length
+false | spot_id | integer | null | spot id

@@ -707,6 +707,60 @@ class SpotRepository extends EntityRepository
         return $result;
     }
 
+    public function searchSpotSendFiles($filter = array())
+    {
+        if (!empty($filter['get_count'])) {
+            $columns = array(
+                "COUNT(DISTINCT ssf.id) AS total_count",
+            );
+        } else {
+            $columns = array(
+                "ssf.id",
+                "ssf.spotSentId",
+                "ssf.fileName",
+                "ssf.fileDescription",
+                "ssf.resend",
+                "ssf.creativeUserId",
+            );
+        }
+
+        $dql = "SELECT
+                  " . implode(',', $columns) . "
+                FROM \Application\Entity\RediSpotSentFile ssf
+                LEFT JOIN \Application\Entity\RediSpotSent ss
+                    WITH ss.id = ssf.spotSentId ";
+
+        $dqlFilter = [];
+
+        if (!empty($filter['spot_id'])) {
+            $dqlFilter[] = "ss.spotId = :spot_id";
+        }
+
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
+        }
+
+        if (empty($filter['get_count'])) {
+            $dql .= " GROUP BY ssf.id";
+        }
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setFirstResult($filter['offset']);
+        $query->setMaxResults($filter['length']);
+
+        if (!empty($filter['spot_id'])) {
+            $query->setParameter("spot_id", $filter['spot_id']);
+        }
+
+        $result = $query->getArrayResult();
+
+        if (!empty($filter['get_count'])) {
+            $result = (isset($result[0]['total_count']) ? (int) $result[0]['total_count'] : 0);
+        }
+
+        return $result;
+    }
+
     public function getSpotSendFiles($spotSentId)
     {
         $dql = "SELECT
