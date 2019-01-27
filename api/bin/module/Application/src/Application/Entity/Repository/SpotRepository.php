@@ -225,8 +225,6 @@ class SpotRepository extends EntityRepository
                 " . $columnString . ",
                 uc.firstName AS createdByFirstName, uc.lastName AS createdByLastName,
                 uu.firstName AS updatedByFirstName, uu.lastName AS updatedByLastName,
-                cu.id AS customerId,
-                cu.customerName,
                 CASE
                     WHEN sc.updatedAt IS NOT NULL THEN sc.updatedAt
                     ELSE sc.createdAt
@@ -544,7 +542,9 @@ class SpotRepository extends EntityRepository
                     sc.isPdf,
                     sc.qcApproved,
                     sc.qcNote,
-                    sc.qcLink
+                    sc.qcLink,
+                    ptc.customerId,
+                    cu.cardname AS customerName
                 FROM \Application\Entity\RediSpotSent sc
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id = sc.campaignId
@@ -554,6 +554,10 @@ class SpotRepository extends EntityRepository
                     WITH v.id = sc.versionId
                 LEFT JOIN \Application\Entity\RediTrt trt
                     WITH s.trtId = trt.id
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
+                    WITH ptc.id = sc.projectCampaignId
+                LEFT JOIN \Application\Entity\RediCustomer cu
+                    WITH cu.id = ptc.customerId
                 WHERE sc.requestId = :request_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
