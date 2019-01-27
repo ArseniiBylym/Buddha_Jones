@@ -230,6 +230,10 @@ class SpotRepository extends EntityRepository
                     ELSE sc.createdAt
                 END  AS sortBy
                 FROM \Application\Entity\RediSpotSent sc
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
+                    WITH ptc.id = sc.projectCampaignId
+                LEFT JOIN \Application\Entity\RediCustomer cu
+                    WITH cu.id = ptc.customerId
                 LEFT JOIN \Application\Entity\RediUser uc
                     WITH uc.id = sc.createdBy
                 LEFT JOIN \Application\Entity\RediUser uu
@@ -538,7 +542,9 @@ class SpotRepository extends EntityRepository
                     sc.isPdf,
                     sc.qcApproved,
                     sc.qcNote,
-                    sc.qcLink
+                    sc.qcLink,
+                    ptc.customerId,
+                    cu.cardname AS customerName
                 FROM \Application\Entity\RediSpotSent sc
                 LEFT JOIN \Application\Entity\RediCampaign ca
                     WITH ca.id = sc.campaignId
@@ -548,6 +554,10 @@ class SpotRepository extends EntityRepository
                     WITH v.id = sc.versionId
                 LEFT JOIN \Application\Entity\RediTrt trt
                     WITH s.trtId = trt.id
+                LEFT JOIN \Application\Entity\RediProjectToCampaign ptc
+                    WITH ptc.id = sc.projectCampaignId
+                LEFT JOIN \Application\Entity\RediCustomer cu
+                    WITH cu.id = ptc.customerId
                 WHERE sc.requestId = :request_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -697,6 +707,60 @@ class SpotRepository extends EntityRepository
         $query->setParameter("spot_sent_id", $spotSentId);
 
         $result = $query->getArrayResult();
+
+        return $result;
+    }
+
+    public function searchSpotSendFiles($filter = array())
+    {
+        if (!empty($filter['get_count'])) {
+            $columns = array(
+                "COUNT(DISTINCT ssf.id) AS total_count",
+            );
+        } else {
+            $columns = array(
+                "ssf.id",
+                "ssf.spotSentId",
+                "ssf.fileName",
+                "ssf.fileDescription",
+                "ssf.resend",
+                "ssf.creativeUserId",
+            );
+        }
+
+        $dql = "SELECT
+                  " . implode(',', $columns) . "
+                FROM \Application\Entity\RediSpotSentFile ssf
+                LEFT JOIN \Application\Entity\RediSpotSent ss
+                    WITH ss.id = ssf.spotSentId ";
+
+        $dqlFilter = [];
+
+        if (!empty($filter['spot_id'])) {
+            $dqlFilter[] = "ss.spotId = :spot_id";
+        }
+
+        if (count($dqlFilter)) {
+            $dql .= " WHERE " . implode(" AND ", $dqlFilter);
+        }
+
+        if (empty($filter['get_count'])) {
+            $dql .= " GROUP BY ssf.id";
+        }
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setFirstResult($filter['offset']);
+        $query->setMaxResults($filter['length']);
+
+        if (!empty($filter['spot_id'])) {
+            $query->setParameter("spot_id", $filter['spot_id']);
+        }
+
+        $result = $query->getArrayResult();
+
+        if (!empty($filter['get_count'])) {
+            $result = (isset($result[0]['total_count']) ? (int) $result[0]['total_count'] : 0);
+        }
 
         return $result;
     }
@@ -1050,6 +1114,9 @@ class SpotRepository extends EntityRepository
                         ss.finishAccept,
                         ss.qcNote,
                         ss.qcLink,
+                        ss.createdBy,
+                        uCreatedBy.firstName AS createdByFirstName,
+                        uCreatedBy.lastName AS createdByLastName,
                         ss.createdAt,
                         ss.updatedAt";
         } else {
@@ -1079,6 +1146,8 @@ class SpotRepository extends EntityRepository
                     WITH ss.finishingHouse = fh.id
                 LEFT JOIN \Application\Entity\RediProjectToCampaignUser ptcu
                     WITH ptcu.projectCampaignId = ss.projectCampaignId
+                LEFT JOIN \Application\Entity\RediUser uCreatedBy
+                    WITH uCreatedBy.id = ss.createdBy
                 WHERE ss.billId IS NULL
                     AND ss.projectId IS NOT NULL
                     AND ss.campaignId IS NOT NULL
@@ -1181,7 +1250,8 @@ class SpotRepository extends EntityRepository
                 $dql .= " GROUP BY ss.id
                     ORDER BY ss.id ASC";
             } else {
-                $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId, ss.lineStatusId
+                // $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId , ss.versionId, ss.lineStatusId
+                $dql .= " GROUP BY ss.id
                     ORDER BY p.projectName ASC , c.campaignName ASC, s.spotName ASC, v.versionName ASC";
             }
         }
@@ -1348,6 +1418,10 @@ class SpotRepository extends EntityRepository
                 $ssRow['graphicsFile'] = $this->getSpotSendFiles($ssRow['spotSentId']);
             }
 
+            $ssRow['createdByName'] = trim($ssRow['createdByFirstName'] . " " . $ssRow['createdByLastName']);
+
+            unset($ssRow['createdByFirstName']);
+            unset($ssRow['createdByLastName']);
             unset($ssRow['editor']);
             unset($ssRow['customerContact']);
 
@@ -1386,7 +1460,7 @@ class SpotRepository extends EntityRepository
                 continue;
             }
 
-            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId'] . '_' . $row['versionId']])) {
+            if (empty($response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId'] . '_' . $row['versionId'] . '_' . $row['spotSentRequestId']])) {
                 $spotRes = array(
                     'spotId' => (int) $row['spotId'],
                     'spotName' => $row['spotName'],
@@ -1418,7 +1492,7 @@ class SpotRepository extends EntityRepository
                     $spotRes['graphicsFile'] = $row['graphicsFile'];
                 }
 
-                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId'] . '_' . $row['versionId']] = $spotRes;
+                $response[$row['projectId']]['campaign'][$row['campaignId']]['spot'][$row['spotId'] . '_' . $row['versionId'] . '_' . $row['spotSentRequestId']] = $spotRes;
             }
         }
 

@@ -51,9 +51,22 @@ class SpotSentValidateController extends CustomAbstractActionController
         $check = $this->_spotSentRepository->findOneBy($checkData);
 
         if ($check && (!$filter['request_id'] || $filter['request_id'] !== $check->getRequestId())) {
+
+            $editors = array();
+            $editorIds = $check->getEditor();
+            if (!empty($editorIds)) {
+                $editorIds = explode(',', $editorIds);
+
+                if (count($editorIds)) {
+                    $editorIds = array_map('trim', $editorIds);
+                    $editors = $this->_usersRepo->getUsersById($editorIds);
+                }
+            }
+
             $existingData = array(
                 'requestId' => $check->getRequestId(),
                 'spotSentId' => $check->getId(),
+                'editors' => $editors,
                 'createdAt' => $check->getCreatedAt(),
                 'createdBy' => $this->_usersRepo->getUser($check->getCreatedBy()),
             );

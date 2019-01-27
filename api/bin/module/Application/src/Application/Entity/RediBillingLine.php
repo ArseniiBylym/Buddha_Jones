@@ -15,11 +15,11 @@ class RediBillingLine
     /**
      * @var integer
      *
-     * @ORM\Column(name="line_id", type="bigint", nullable=false)
+     * @ORM\Column(name="id", type="bigint", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $lineId;
+    private $id;
 
     /**
      * @var integer
@@ -29,32 +29,18 @@ class RediBillingLine
     private $billId;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="spot_id", type="bigint", nullable=true)
+     * @ORM\Column(name="line_type", type="string", length=2, nullable=true)
      */
-    private $spotId;
+    private $lineType;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="text", nullable=true)
+     * @ORM\Column(name="line_desc", type="text", nullable=true)
      */
-    private $description;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="rate_type", type="string", length=1, nullable=true)
-     */
-    private $rateType;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="hours", type="string", length=45, nullable=true)
-     */
-    private $hours;
+    private $lineDesc;
 
     /**
      * @var string
@@ -66,34 +52,55 @@ class RediBillingLine
     /**
      * @var string
      *
-     * @ORM\Column(name="total_before_discount", type="decimal", precision=19, scale=2, nullable=true)
+     * @ORM\Column(name="hours", type="decimal", precision=19, scale=2, nullable=true)
      */
-    private $totalBeforeDiscount;
+    private $hours;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="discount", type="decimal", precision=19, scale=2, nullable=true)
+     * @ORM\Column(name="disc_perc", type="decimal", precision=19, scale=2, nullable=true)
      */
-    private $discount;
+    private $discPerc;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="total", type="decimal", precision=19, scale=2, nullable=true)
+     * @ORM\Column(name="disc_amt", type="decimal", precision=19, scale=2, nullable=true)
      */
-    private $total;
+    private $discAmt;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="total_disc", type="decimal", precision=19, scale=2, nullable=true)
+     */
+    private $totalDisc;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="total_bef_disc", type="decimal", precision=19, scale=2, nullable=true)
+     */
+    private $totalBefDisc;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="net_amount", type="decimal", precision=19, scale=2, nullable=true)
+     */
+    private $netAmount;
 
 
 
     /**
-     * Get lineId
+     * Get id
      *
      * @return integer 
      */
-    public function getLineId()
+    public function getId()
     {
-        return $this->lineId;
+        return $this->id;
     }
 
     /**
@@ -120,95 +127,49 @@ class RediBillingLine
     }
 
     /**
-     * Set spotId
+     * Set lineType
      *
-     * @param integer $spotId
+     * @param string $lineType
      * @return RediBillingLine
      */
-    public function setSpotId($spotId)
+    public function setLineType($lineType)
     {
-        $this->spotId = $spotId;
+        $this->lineType = $lineType;
 
         return $this;
     }
 
     /**
-     * Get spotId
-     *
-     * @return integer 
-     */
-    public function getSpotId()
-    {
-        return $this->spotId;
-    }
-
-    /**
-     * Set description
-     *
-     * @param string $description
-     * @return RediBillingLine
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get description
+     * Get lineType
      *
      * @return string 
      */
-    public function getDescription()
+    public function getLineType()
     {
-        return $this->description;
+        return $this->lineType;
     }
 
     /**
-     * Set rateType
+     * Set lineDesc
      *
-     * @param string $rateType
+     * @param string $lineDesc
      * @return RediBillingLine
      */
-    public function setRateType($rateType)
+    public function setLineDesc($lineDesc)
     {
-        $this->rateType = $rateType;
+        $this->lineDesc = $lineDesc;
 
         return $this;
     }
 
     /**
-     * Get rateType
+     * Get lineDesc
      *
      * @return string 
      */
-    public function getRateType()
+    public function getLineDesc()
     {
-        return $this->rateType;
-    }
-
-    /**
-     * Set hours
-     *
-     * @param string $hours
-     * @return RediBillingLine
-     */
-    public function setHours($hours)
-    {
-        $this->hours = $hours;
-
-        return $this;
-    }
-
-    /**
-     * Get hours
-     *
-     * @return string 
-     */
-    public function getHours()
-    {
-        return $this->hours;
+        return $this->lineDesc;
     }
 
     /**
@@ -235,71 +196,140 @@ class RediBillingLine
     }
 
     /**
-     * Set totalBeforeDiscount
+     * Set hours
      *
-     * @param string $totalBeforeDiscount
+     * @param string $hours
      * @return RediBillingLine
      */
-    public function setTotalBeforeDiscount($totalBeforeDiscount)
+    public function setHours($hours)
     {
-        $this->totalBeforeDiscount = $totalBeforeDiscount;
+        $this->hours = $hours;
 
         return $this;
     }
 
     /**
-     * Get totalBeforeDiscount
+     * Get hours
      *
      * @return string 
      */
-    public function getTotalBeforeDiscount()
+    public function getHours()
     {
-        return $this->totalBeforeDiscount;
+        return $this->hours;
     }
 
     /**
-     * Set discount
+     * Set discPerc
      *
-     * @param string $discount
+     * @param string $discPerc
      * @return RediBillingLine
      */
-    public function setDiscount($discount)
+    public function setDiscPerc($discPerc)
     {
-        $this->discount = $discount;
+        $this->discPerc = $discPerc;
 
         return $this;
     }
 
     /**
-     * Get discount
+     * Get discPerc
      *
      * @return string 
      */
-    public function getDiscount()
+    public function getDiscPerc()
     {
-        return $this->discount;
+        return $this->discPerc;
     }
 
     /**
-     * Set total
+     * Set discAmt
      *
-     * @param string $total
+     * @param string $discAmt
      * @return RediBillingLine
      */
-    public function setTotal($total)
+    public function setDiscAmt($discAmt)
     {
-        $this->total = $total;
+        $this->discAmt = $discAmt;
 
         return $this;
     }
 
     /**
-     * Get total
+     * Get discAmt
      *
      * @return string 
      */
-    public function getTotal()
+    public function getDiscAmt()
     {
-        return $this->total;
+        return $this->discAmt;
+    }
+
+    /**
+     * Set totalDisc
+     *
+     * @param string $totalDisc
+     * @return RediBillingLine
+     */
+    public function setTotalDisc($totalDisc)
+    {
+        $this->totalDisc = $totalDisc;
+
+        return $this;
+    }
+
+    /**
+     * Get totalDisc
+     *
+     * @return string 
+     */
+    public function getTotalDisc()
+    {
+        return $this->totalDisc;
+    }
+
+    /**
+     * Set totalBefDisc
+     *
+     * @param string $totalBefDisc
+     * @return RediBillingLine
+     */
+    public function setTotalBefDisc($totalBefDisc)
+    {
+        $this->totalBefDisc = $totalBefDisc;
+
+        return $this;
+    }
+
+    /**
+     * Get totalBefDisc
+     *
+     * @return string 
+     */
+    public function getTotalBefDisc()
+    {
+        return $this->totalBefDisc;
+    }
+
+    /**
+     * Set netAmount
+     *
+     * @param string $netAmount
+     * @return RediBillingLine
+     */
+    public function setNetAmount($netAmount)
+    {
+        $this->netAmount = $netAmount;
+
+        return $this;
+    }
+
+    /**
+     * Get netAmount
+     *
+     * @return string 
+     */
+    public function getNetAmount()
+    {
+        return $this->netAmount;
     }
 }

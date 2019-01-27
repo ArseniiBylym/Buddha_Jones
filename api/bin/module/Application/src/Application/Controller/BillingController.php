@@ -3,33 +3,24 @@
 namespace Application\Controller;
 
 use Application\Entity\RediBilling;
-use Application\Entity\RediBillingActivity;
-use Application\Entity\RediBillingApproval;
-use Application\Entity\RediBillingEstimate;
-use Application\Entity\RediEstimate;
-use Application\Entity\RediEstimateToWorker;
-use Application\Entity\RediTimeEntry;
-use Zend\View\Model\JsonModel;
-use League\Csv\Reader;
-
-use Application\Entity\RediCcStatement;
-use Application\Entity\RediCcStatementLine;
 use Application\Entity\RediBillingLine;
+use Application\Entity\RediBillingTimeEntry;
+use Zend\View\Model\JsonModel;
 
 class BillingController extends CustomAbstractActionController
 {
     public function getList()
     {
-        $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
-        $length = (int)trim($this->getRequest()->getQuery('length', 10));
+        $offset = (int) trim($this->getRequest()->getQuery('offset', 0));
+        $length = (int) trim($this->getRequest()->getQuery('length', 10));
 
         $filter['sort'] = trim($this->getRequest()->getQuery('sort', ''));
         $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
-        $filter['project_id'] = (int)trim($this->getRequest()->getQuery('project_id', 0));
-        $filter['campaign_id'] = (int)trim($this->getRequest()->getQuery('campaign_id', 0));
-        $filter['status_id'] = (int)trim($this->getRequest()->getQuery('status_id', 0));
-        $filter['customer_id'] = (int)trim($this->getRequest()->getQuery('customer_id', 0));
-        $filter['approver_id'] = (int)trim($this->getRequest()->getQuery('approver_id', 0));
+        $filter['project_id'] = (int) trim($this->getRequest()->getQuery('project_id', 0));
+        $filter['campaign_id'] = (int) trim($this->getRequest()->getQuery('campaign_id', 0));
+        $filter['status_id'] = (int) trim($this->getRequest()->getQuery('status_id', 0));
+        $filter['customer_id'] = (int) trim($this->getRequest()->getQuery('customer_id', 0));
+        $filter['approver_id'] = (int) trim($this->getRequest()->getQuery('approver_id', 0));
         $filter['approver_status'] = $this->getRequest()->getQuery('approver_status', null);
 
         $data = $this->_billingRepo->search($offset, $length, $filter);
@@ -40,9 +31,8 @@ class BillingController extends CustomAbstractActionController
             'message' => 'Request successful',
             'total_count' => $totalCount,
             'object_count' => count($data),
-            'data' => $data
+            'data' => $data,
         );
-
 
         return new JsonModel($response);
     }
@@ -54,18 +44,18 @@ class BillingController extends CustomAbstractActionController
         $response = array(
             'status' => 1,
             'message' => 'Request successful',
-            'data' => $data
+            'data' => $data,
         );
 
         return new JsonModel($response);
     }
 
-    function create($data)
+    public function create($data)
     {
-        $projectCampaignId = (int)trim(isset($data['project_campaign_id']) ? $data['project_campaign_id'] : 0);
+        $projectCampaignId = (int) trim(isset($data['project_campaign_id']) ? $data['project_campaign_id'] : 0);
 
         // project campaign
-        $projectCampaign = $this->_projectCampaignRepository->find($projectCampaignId);
+        $projectCampaign = $this->_projectToCampaignRepository->find($projectCampaignId);
 
         if ($projectCampaign) {
             $billId = $this->_billingRepo->getUnusedBillingId($this->_user_id, $projectCampaignId);
@@ -74,13 +64,13 @@ class BillingController extends CustomAbstractActionController
                 $now = new \DateTime('now');
 
                 // get customerId
-                $customerId = $projectCampaign->getCustomerId();
+                // $customerId = $projectCampaign->getCustomerId();
 
                 $billing = new RediBilling();
-                $billing->setUserId($this->_user_id);
                 $billing->setStatus(1); // set status to in bill
                 $billing->setProjectCampaignId($projectCampaignId);
-                $billing->setCustomerId($customerId);
+                // $billing->setCustomerId($customerId);
+                $billing->setCreatedBy($this->_user_id);
                 $billing->setCreatedAt($now);
 
                 $this->_em->persist($billing);
@@ -93,13 +83,13 @@ class BillingController extends CustomAbstractActionController
                 'status' => 1,
                 'message' => 'Request successful.',
                 'data' => array(
-                    'billId' => $id,
-                )
+                    'billId' => $billId,
+                ),
             );
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Please provide valid required data (spot_id).'
+                'message' => 'Please provide valid required data (project_campaign_id).',
             );
         }
 
@@ -110,55 +100,95 @@ class BillingController extends CustomAbstractActionController
         return new JsonModel($response);
     }
 
-    function update($billId, $data)
+    public function update($billId, $data)
     {
-        $timeEntryIds = $this->_commonRepo->filterPostData($data, 'time_entry_id', 'json', null);
+        // $timeEntryIds = $this->_commonRepo->filterPostData($data, 'time_entry_id', 'json', null);
+        $status = $this->_commonRepo->filterPostData($data, 'status', 'int', null);
+        $ratecardId = $this->_commonRepo->filterPostData($data, 'ratecard_id', 'int', null);
+        $ratecardTemplateId = $this->_commonRepo->filterPostData($data, 'ratecard_template_id', 'int', null);
         $status = $this->_commonRepo->filterPostData($data, 'status', 'int', null);
         $billingLines = $this->_commonRepo->filterPostData($data, 'billing_line', 'json', null);
 
         $bill = $this->_billingRepository->find($billId);
 
-        if ($bill && $bill->getUserId() === $this->_user_id) {
+        if ($bill && $bill->getCreatedBy() === $this->_user_id) {
             // set status if provided
             if ($status) {
                 $bill->setStatus($status);
-                $this->_em->persist($bill);
-                $this->_em->flush();
             }
 
-            if ($timeEntryIds) {
-                $timeEntryIds = array_filter(array_map('intval', $timeEntryIds));
-
-                if ($timeEntryIds) {
-                    $this->_billingRepo->updateBillIdOfTimeEntry($billId, $timeEntryIds, true);
-                }
+            if ($ratecardId) {
+                $bill->setRatecardId($ratecardId);
             }
+
+            if ($ratecardTemplateId) {
+                $bill->setRatecardTemplateId($ratecardTemplateId);
+            }
+
+            $this->_em->persist($bill);
+            $this->_em->flush();
 
             if ($billingLines) {
-                $billingLines = $this->filterLines($billingLines);
+                $this->_billingRepo->deleteExistingBillingLine($billId);
 
-                if ($billingLines) {
-                    $this->_billingRepo->deleteExistingBillingLine($billId);
+                foreach ($billingLines as $line) {
+                    $description = $this->_commonRepo->filterPostData($line, 'line_desc', 'string', null);
+                    $lineType = $this->_commonRepo->filterPostData($line, 'line_type', 'string', null);
+                    $hours = $this->_commonRepo->filterPostData($line, 'hours', 'float', null);
+                    $rate = $this->_commonRepo->filterPostData($line, 'rate', 'float', null);
+                    $discPercent = $this->_commonRepo->filterPostData($line, 'disc_perc', 'float', null);
+                    $discAmount = $this->_commonRepo->filterPostData($line, 'disc_amt', 'float', null);
+                    $totalDisc = $this->_commonRepo->filterPostData($line, 'total_disc', 'float', null);
+                    $totalBefDisc = $this->_commonRepo->filterPostData($line, 'total_bef_disc', 'float', null);
+                    $netAmount = $this->_commonRepo->filterPostData($line, 'net_amount', 'float', null);
+                    $billingTimeEntry = $this->_commonRepo->filterPostData($line, 'time_entry', 'array', null);
 
-                    foreach ($billingLines as $line) {
-                        $bLine = new RediBillingLine();
-                        $bLine->setBillId($billId);
-                        $bLine->setDescription($line['description']);
-                        $bLine->setRateType($line['rate_type']);
-                        $bLine->setHours($line['hours']);
-                        $bLine->setRate($line['rate']);
-                        $bLine->setTotalBeforeDiscount($line['total_before_discount']);
-                        $bLine->setDiscount($line['discount']);
-                        $bLine->setTotal($line['total']);
+                    $bLine = new RediBillingLine();
+                    $bLine->setBillId($billId);
+                    $bLine->setLineDesc($description);
+                    $bLine->setLineType($lineType);
+                    $bLine->setHours($hours);
+                    $bLine->setRate($rate);
+                    $bLine->setTotalBefDisc($totalBefDisc);
+                    $bLine->setDiscAmt($discAmount);
+                    $bLine->setDiscPerc($discPercent);
+                    $bLine->setTotalDisc($totalDisc);
+                    $bLine->setNetAmount($netAmount);
 
-                        $this->_em->persist($bLine);
+                    $this->_em->persist($bLine);
+                    $this->_em->flush();
+
+                    $lineId = $bLine->getId();
+
+                    if ($lineId && $billingTimeEntry) {
+                        foreach ($billingTimeEntry as $timeEntry) {
+                            $timeEntryId = $this->_commonRepo->filterPostData($timeEntry, 'time_entry_id', 'int', null);
+                            $timeEntryHours = $this->_commonRepo->filterPostData($timeEntry, 'time_entry_hours', 'float', null);
+                            $lostHours = $this->_commonRepo->filterPostData($timeEntry, 'lost_hours', 'float', null);
+                            $nonBillableHours = $this->_commonRepo->filterPostData($timeEntry, 'non_billable_hours', 'float', null);
+                            $rt = $this->_commonRepo->filterPostData($timeEntry, 'rt', 'float', null);
+                            $ot = $this->_commonRepo->filterPostData($timeEntry, 'ot', 'float', null);
+                            $dt = $this->_commonRepo->filterPostData($timeEntry, 'dt', 'float', null);
+
+                            if ($timeEntryId) {
+                                $billingTimeEntry = new RediBillingTimeEntry();
+
+                                $billingTimeEntry->setBillLineId($lineId);
+                                $billingTimeEntry->setTimeEntryId($timeEntryId);
+                                $billingTimeEntry->setTimeEntryHours($timeEntryHours);
+                                $billingTimeEntry->setNonBillableHours($nonBillableHours);
+                                $billingTimeEntry->setTimeEntryHours($timeEntryHours);
+                                $billingTimeEntry->setLostHours($lostHours);
+                                $billingTimeEntry->setRt($rt);
+                                $billingTimeEntry->setOt($ot);
+                                $billingTimeEntry->setDt($dt);
+
+                                $this->_em->persist($billingTimeEntry);
+                            }
+                        }
+
                         $this->_em->flush();
 
-                        $lineId = $bLine->getLineId();
-
-                        if ($lineId && $line['time_entry_id']) {
-
-                        }
                     }
                 }
             }
@@ -171,7 +201,7 @@ class BillingController extends CustomAbstractActionController
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Bill information not found for current user.'
+                'message' => 'Bill information not found for current user.',
             );
         }
 
