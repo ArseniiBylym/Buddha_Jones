@@ -103,6 +103,7 @@ export class SpotsToBillCard extends React.Component<Props, {}> {
                                         <CardContentTable
                                             header={[
                                                 { title: 'Date spot sent', align: 'left' },
+                                                { title: 'Version', align: 'left' },
                                                 { title: 'Editorial', align: 'left' },
                                                 { title: 'Graphics', align: 'left' },
                                             ]}
