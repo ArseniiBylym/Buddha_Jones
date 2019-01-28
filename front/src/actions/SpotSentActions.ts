@@ -683,6 +683,7 @@ export class SpotSentActionsClass {
             }
             if (type === 'production') {
                 data.prod_accept = value;
+                data.line_status_id = 3;
             }
             const deletedSpotData = (await API.putData(APIPath.SPOTS_TO_GRAPHICS + '/' + index, data)) as SpotSentFromApi;
             return deletedSpotData;

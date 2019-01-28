@@ -55,6 +55,7 @@ interface ProducerSpotSentFormSpotCardState {
     files: any;
     finishModal: boolean;
     modalCallback: string;
+    showSuccessfullMessage?: boolean; 
 }
 
 // Types
@@ -72,7 +73,9 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
         textareaEmpty: true,
         files: [],
         finishModal: false,
-        modalCallback: ''
+        modalCallback: '',
+        showSuccessfullMessage: false,
+        
     };
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -244,7 +247,8 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                                     this.props.spot.line_status_id === 4 && !this.props.spot.version.finishAccept) && (
                                         <CheckmarkSquare
                                             key={'finish-accept'}
-                                            onClick={this.props.spot.version.finishAccept ? this.handleFinishAccept : this.showModal('finish')}
+                                            // onClick={this.props.spot.version.finishAccept ? this.handleFinishAccept : this.showModal('finish')}
+                                            onClick={this.finishAcceptHandler}
                                             checked={this.props.spot.version.finishAccept}
                                             label={'Finish Accept'}
                                             type={'no-icon'}
@@ -259,7 +263,8 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                                 (
                                     <CheckmarkSquare
                                         key={'prod-accept'}
-                                        onClick={this.props.spot.version.prodAccept ? this.handleProdAccept : this.showModal('production')}
+                                        // onClick={this.props.spot.version.prodAccept ? this.handleProdAccept : this.showModal('production')}
+                                        onClick={this.prodAcceptHandler}
                                         checked={this.props.spot.version.prodAccept}
                                         label={'Production Accept'}
                                         type={'no-icon'}
@@ -267,6 +272,9 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                                     />
                                 )}
                                 {/* {(this.props.spot.line_status_id === 3 || this.props.spot.line_status_id === 4) && this.isAcceptButtonVisible() &&  */}
+                                <div className={this.state.showSuccessfullMessage ? s.successfullAcceptContainer : s.successfullAcceptContainer__hidden}>
+                                    {`${this.props.spot.spot!.name} ${this.props.spot.version!.name} Accepted`}
+                                </div>
                                 {this.isAcceptButtonVisible() && 
                                     <div className={s.acceptedLabels}>
                                         {this.props.spot.version && this.props.spot.version.finishAccept && <span>Finish accepted</span>}
@@ -276,7 +284,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                         </Section>
                     )}
             </Card>
-            <Modal
+            {/* <Modal
                 show={this.state.finishModal}
                 title={`Please confirm acceptance`}
                 closeButton={false}
@@ -295,11 +303,11 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                         type: 'alert',
                     },
                 ]}
-            />
+            /> */}
             <Modal
                 show={this.props.store!.spotSent.spotVersionModalToggle}
                 title={`Spot version ${this.props.store!.spotSent.existedSpot.name} already exists.`}
-                text={`Please select Resent OR Finish.`}
+                text={`Please select Resend OR Finish.`}
                 closeButton={false}
                 type="alert"
                 actions={[
@@ -327,6 +335,65 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
         );
     }
 
+    private showSuccessfullMessageHandler = () => {
+        this.setState({
+            showSuccessfullMessage: true
+        });
+
+        setTimeout(() => {
+            this.setState({
+                showSuccessfullMessage: false
+            });
+        }, 3000);
+    }
+
+    private finishAcceptHandler = () => {
+        if (this.props.spot.version!.finishAccept) {
+            SpotSentActions.changeSpotAccept(this.props.spot.spotSentId, 'finish', 0)
+            .then(response => {
+                    this.handleFinishAccept(false);
+                    SpotSentActions.fetchSpotSentDetails(this.props.paramId, true);
+                })
+                .catch(error => {
+                    throw error;
+                });
+
+        } else {
+            SpotSentActions.changeSpotAccept(this.props.spot.spotSentId, 'finish', 1)
+            .then(response => {
+                    this.handleFinishAccept(true);
+                    SpotSentActions.fetchSpotSentDetails(this.props.paramId, true);
+                    this.showSuccessfullMessageHandler();
+                })
+                .catch(error => {
+                    throw error;
+                });
+        }
+    }
+
+    private prodAcceptHandler = () => {
+        if (this.props.spot.version!.prodAccept) {
+            SpotSentActions.changeSpotAccept(this.props.spot.spotSentId, 'production', 0)
+                .then(response => {
+                    this.handleProdAccept(false);
+                    SpotSentActions.fetchSpotSentDetails(this.props.paramId, true);
+                })
+                .catch(error => {
+                    throw error;
+                });
+        } else {
+            SpotSentActions.changeSpotAccept(this.props.spot.spotSentId, 'production', 1)
+                .then(response => {
+                    this.handleProdAccept(true);
+                    SpotSentActions.fetchSpotSentDetails(this.props.paramId, true);
+                    this.showSuccessfullMessageHandler();
+                })
+                .catch(error => {
+                    throw error;
+                });
+        }
+    }
+
     private versionModalHandler = (action: string = '') => {
         switch (action) {
             case 'resent': 
@@ -345,41 +412,41 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
             }
         }
         
-        private modalButtonHandler = (isConfirm) => {
-            this.setState({
-                finishModal: false,
-            });
-            if (isConfirm) {
-                if ( this.props.spot.version && this.state.modalCallback === 'finish') {
-                    this.props.spot.version.finishAccept ? this.handleFinishAccept(false) : this.handleFinishAccept(true);
-                    SpotSentActions.changeSpotAccept(this.props.spot.spotSentId, 'finish', 1)
-                    .then(response => {
-                        SpotSentActions.fetchSpotSentDetails(this.props.paramId, true);
-                    })
-                    .catch(error => {
-                        throw error;
-                    });
-                } else if ( this.props.spot.version && this.state.modalCallback === 'production') {
-                    this.props.spot.version.prodAccept ? this.handleProdAccept(false) : this.handleProdAccept(true);
-                    SpotSentActions.changeSpotAccept(this.props.spot.spotSentId, 'production', 1)
-                        .then(response => {
-                            SpotSentActions.fetchSpotSentDetails(this.props.paramId, true);
-                        })
-                        .catch(error => {
-                            throw error;
-                        });
-                }
-        } else {
-            return;
-        }
-    }
+    //     private modalButtonHandler = (isConfirm) => {
+    //         this.setState({
+    //             finishModal: false,
+    //         });
+    //         if (isConfirm) {
+    //             if ( this.props.spot.version && this.state.modalCallback === 'finish') {
+    //                 this.props.spot.version.finishAccept ? this.handleFinishAccept(false) : this.handleFinishAccept(true);
+    //                 SpotSentActions.changeSpotAccept(this.props.spot.spotSentId, 'finish', 1)
+    //                 .then(response => {
+    //                     SpotSentActions.fetchSpotSentDetails(this.props.paramId, true);
+    //                 })
+    //                 .catch(error => {
+    //                     throw error;
+    //                 });
+    //             } else if ( this.props.spot.version && this.state.modalCallback === 'production') {
+    //                 this.props.spot.version.prodAccept ? this.handleProdAccept(false) : this.handleProdAccept(true);
+    //                 SpotSentActions.changeSpotAccept(this.props.spot.spotSentId, 'production', 1)
+    //                     .then(response => {
+    //                         SpotSentActions.fetchSpotSentDetails(this.props.paramId, true);
+    //                     })
+    //                     .catch(error => {
+    //                         throw error;
+    //                     });
+    //             }
+    //     } else {
+    //         return;
+    //     }
+    // }
 
-    private showModal = (callback) => e => {
-        this.setState({
-            finishModal: true,
-            modalCallback: callback,
-        });
-    }
+    // private showModal = (callback) => e => {
+    //     this.setState({
+    //         finishModal: true,
+    //         modalCallback: callback,
+    //     });
+    // }
 
     private isAcceptButtonVisible = () => {
         if (this.props.spot && this.props.spot.version) {

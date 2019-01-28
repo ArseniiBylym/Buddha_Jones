@@ -19,6 +19,7 @@ export interface OptionsListOptionProp {
     key?: string;
     value: OptionsListValuePropType;
     label: string;
+    typeName?: string;
 }
 
 // Props
