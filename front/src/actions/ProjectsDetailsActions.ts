@@ -646,6 +646,10 @@ export class ProjectDetailsActionsClass {
                         campaign.editorialTeam.push(preparedUser);
 
                         await API.postData(APIPath.PROJECT_CAMPAIGN_EDITOR, preparedPostData);
+                    } else if (userType === 'additional') {
+                        // campaign.editorialTeam.push(preparedUser);
+
+                        // await API.postData(APIPath.PROJECT_CAMPAIGN_EDITOR, preparedPostData);
                     } else if (userType === 'creative') {
                         campaign.creativeTeam.push({
                             ...preparedUser,

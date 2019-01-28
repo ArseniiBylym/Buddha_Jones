@@ -20,7 +20,7 @@ import AnimateHeight from 'react-animate-height';
 const s = require('./ProjectBoardCampaignPeople.css');
 
 // Types
-export type ProjectBoardCampaignPeopleType = 'creative' | 'billing' | 'editorial' | 'design';
+export type ProjectBoardCampaignPeopleType = 'creative' | 'billing' | 'editorial' | 'design' | 'additional' ;
 interface ProjectBoardCampaignCopyablePeople {
     projectCampaignId: number;
     campaignName: string;
@@ -112,7 +112,9 @@ export class ProjectBoardCampaignPeople extends React.Component<
                             ? campaign.designTeam
                             : this.props.type === 'editorial'
                                 ? campaign.editorialTeam
-                                : [];
+                                : this.props.type === 'additional'
+                                    ? campaign.editorialTeam
+                                    : [];
 
             if (campaignUsersOfCurrentType.length > 0) {
                 copyable.push({
@@ -151,7 +153,9 @@ export class ProjectBoardCampaignPeople extends React.Component<
                                 ? 'Editorial team'
                                 : this.props.type === 'design'
                                     ? 'Graphics team'
-                                    : ''
+                                    : this.props.type === 'additional'
+                                        ? 'Additional team members'
+                                        : ''
                 }
                 collapseButton={
                     this.props.withAnimation 
