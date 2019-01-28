@@ -1,5 +1,7 @@
 import { DataFetchError } from 'components/Errors/DataFetchError';
 import { LoadingShade, LoadingSpinner } from 'components/Loaders';
+import { DateHandler } from 'helpers/DateHandler';
+import { SortHandler } from 'helpers/SortHandler';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
@@ -79,7 +81,43 @@ export class SpotsToBillGrid extends React.Component<SpotsToBillGridProps, {}> {
                 id: spot.spotId,
                 name: spot.spotName,
                 isSelected: this.props.selectedSpots.findIndex(group => group.spotId === spot.spotId) !== -1,
-                spotsSent: spot.spotSent || [],
+                spotsSent:
+                    spot.spotSent && spot.spotSent.length > 0
+                        ? spot.spotSent.sort((spotSentA, spotSentB) => {
+                              const dateA = spotSentA.spotSentDate
+                                  ? DateHandler.parseDateStringAsDateObject(spotSentA.spotSentDate)
+                                  : null;
+                              const dateB = spotSentB.spotSentDate
+                                  ? DateHandler.parseDateStringAsDateObject(spotSentB.spotSentDate)
+                                  : null;
+
+                              const verA = spotSentA.versionId
+                                  ? { id: spotSentA.versionId, seq: spotSentA.versionSeq }
+                                  : null;
+                              const verB = spotSentB.versionId
+                                  ? { id: spotSentB.versionId, seq: spotSentB.versionSeq }
+                                  : null;
+
+                              if (dateA === null && dateB === null) {
+                                  return SortHandler.sortVersionsBySequenceOrId(verA, verB);
+                              }
+
+                              if (dateA !== null && dateB !== null) {
+                                  const datesAreSameDay = DateHandler.checkIfDatesAreSameDay(dateA, dateB);
+                                  return datesAreSameDay
+                                      ? SortHandler.sortVersionsBySequenceOrId(verA, verB)
+                                      : DateHandler.checkIfDateIsOlderThanOtherDate(dateA, dateB)
+                                      ? 1
+                                      : -1;
+                              }
+
+                              if (dateA === null || dateB === null) {
+                                  return dateA === null && dateB !== null ? 1 : dateB === null ? -1 : 0;
+                              }
+
+                              return 0;
+                          })
+                        : [],
             });
 
             return cards;
