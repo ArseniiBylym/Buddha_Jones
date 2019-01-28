@@ -102,6 +102,7 @@ export class PersonPickerByType extends React.Component<PersonPickerByTypePropsT
                             key: 'person-' + user.id,
                             value: user.id,
                             label: user.data.fullName || user.data.username,
+                            typeName: user.data.typeName,
                         });
                     }
 
