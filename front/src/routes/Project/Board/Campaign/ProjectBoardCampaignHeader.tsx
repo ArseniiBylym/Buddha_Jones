@@ -16,6 +16,7 @@ import { CustomerSelector } from '../CustomerSelector';
 import { ClientForStudio } from '../../../../types/clients';
 import { ClientsActions } from '../../../../actions';
 import { Checkmark } from '../../../../components/Form';
+import { Modal } from 'components/Modals';
 
 interface Props {
     innerRef?: (ref: HTMLDivElement) => void;
@@ -40,6 +41,12 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
     @observable private isCustomerFormShow: boolean = false;
     @observable private customerSelectorOptions: ClientForStudio[] = [];
     @observable private customerSelectorOptionsLoading: boolean = false;
+    @observable private modalConfirmOpen: boolean = false;
+
+    @action
+    private modalConfirmToggle = () => {
+        this.modalConfirmOpen = !this.modalConfirmOpen;
+    }
 
     @computed
     private get isHeaderFixed(): boolean {
@@ -52,96 +59,128 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
             userType = this.props.store.user.data.typeId;
         }
         return (
-            <Row
-                innerRef={this.referenceHeaderContainer}
-                removeMargins={true}
-                className={classNames(styles.campaignHeader, {
-                    [styles.campaignHeaderFixed]: this.isHeaderFixed,
-                })}
-                style={this.getMainRowStyle()}
-            >
-                <div className={styles.colWrapper}>
-                    <Row
-                        className={styles.campaignInfo}
-                        removeMargins={true}
-                        justifyContent="space-between"
-                        alignItems="center"
-                    >
-                        <Col className={styles.campaignName}>
-                            <Button
-                                onClick={this.handleCampaignExpandOrCollapse}
-                                label={this.getCampaignNameButtonLabel()}
-                                icon={this.getCampaignNameButtonIcon()}
-                            />
-
-                            {
-                                this.props.campaign.notes &&
-                                this.props.userCanViewNotes &&
-                                this.props.campaign.notes !== this.props.campaign.name &&
-                                (
-                                    <Paragraph type="dim">
-                                        {truncate(this.props.campaign.notes, { length: 64 })}
-                                    </Paragraph>
-                                )
-                            }
-                            {userType !== 24 && !this.approvedByBilling && <span className={styles.pendingLabel}>pending</span>}
-                        </Col>
-                        {userType === 24 &&
-                            <Col className={styles.campaignIsApproved}>
-                                <span style={{paddingRight: '10px'}}>Is approved:</span>
-                                <Checkmark
-                                    onClick={this.handleProjectBoardPermissionToggle}
-                                    checked={this.approvedByBilling}
-                                    type={'no-icon'}
-                                />
-                            </Col> 
-                        }
-                        <Col className={styles.campaignRemoveButtonContainer}>
-                            {
-                                !this.isEditMode &&
-                                this.getEditButtonWithClientName()
-                            }
-
-                            {
-                                (this.isEditMode && !this.isCustomerFormShow) &&
+            <>
+                <Row
+                    innerRef={this.referenceHeaderContainer}
+                    removeMargins={true}
+                    className={classNames(styles.campaignHeader, {
+                        [styles.campaignHeaderFixed]: this.isHeaderFixed,
+                    })}
+                    style={this.getMainRowStyle()}
+                >
+                    <div className={styles.colWrapper}>
+                        <Row
+                            className={styles.campaignInfo}
+                            removeMargins={true}
+                            justifyContent="space-between"
+                            alignItems="center"
+                        >
+                            <Col className={styles.campaignName}>
                                 <Button
-                                    className={styles.newCustomerButton}
-                                    onClick={this.onCustomerFormShowToggleHandler}
-                                    label={this.getAddNewCustomerButtonLabel()}
+                                    onClick={this.handleCampaignExpandOrCollapse}
+                                    label={this.getCampaignNameButtonLabel()}
+                                    icon={this.getCampaignNameButtonIcon()}
                                 />
-                            }
 
-                            {
-                                this.isEditMode &&
-                                <CustomerSelector
-                                    onChange={this.props.onClientChange}
-                                    options={this.customerSelectorOptions as Array<{ id: number; name: string }>}
-                                    optionsLoading={this.customerSelectorOptionsLoading}
-                                    value={this.props.campaign.clientSelected}
-                                    approvedByBilling={this.approvedByBilling}
-                                    projectCampaignId={this.props.campaign.projectCampaignId}
-                                    onToggleEditModeButton={this.onCustomerSelectorEditModeToggleHandler}
-                                    isCustomerFormShow={this.isCustomerFormShow}
-                                />
+                                {
+                                    this.props.campaign.notes &&
+                                    this.props.userCanViewNotes &&
+                                    this.props.campaign.notes !== this.props.campaign.name &&
+                                    (
+                                        <Paragraph type="dim">
+                                            {truncate(this.props.campaign.notes, { length: 64 })}
+                                        </Paragraph>
+                                    )
+                                }
+                                {userType !== 24 && !this.approvedByBilling && <span className={styles.pendingLabel}>pending</span>}
+                                {userType === 24 && !this.approvedByBilling && <span className={styles.pendingLabel}>pending</span>}
+                            </Col>
+                            {userType === 24 && !this.approvedByBilling && 
+                                <Col className={styles.campaignIsApproved}>
+                                    <span style={{paddingRight: '10px'}}>mark as Approved</span>
+                                    <Checkmark
+                                        onClick={this.modalConfirmToggle}
+                                        checked={this.approvedByBilling}
+                                        type={'no-icon'}
+                                    />
+                                </Col> 
                             }
-                        </Col>
-                    </Row>
+                            <Col className={styles.campaignRemoveButtonContainer}>
+                                {
+                                    !this.isEditMode &&
+                                    this.getEditButtonWithClientName()
+                                }
 
-                    {
-                        this.isCustomerFormShow &&
-                        <Row>
-                            <div className={styles.colWrapper}>
-                                <NewCustomerForm
-                                    onToggleEditMode={this.onCustomerFormShowToggleHandler}
-                                    studioId={this.props.store ? this.props.store.studios.currentStudioId : null}
-                                    mode={'newCustomer'}
-                                />
-                            </div>
+                                {
+                                    (this.isEditMode && !this.isCustomerFormShow) &&
+                                    <Button
+                                        className={styles.newCustomerButton}
+                                        onClick={this.onCustomerFormShowToggleHandler}
+                                        label={this.getAddNewCustomerButtonLabel()}
+                                    />
+                                }
+
+                                {
+                                    this.isEditMode &&
+                                    <CustomerSelector
+                                        onChange={this.props.onClientChange}
+                                        options={this.customerSelectorOptions as Array<{ id: number; name: string }>}
+                                        optionsLoading={this.customerSelectorOptionsLoading}
+                                        value={this.props.campaign.clientSelected}
+                                        approvedByBilling={this.approvedByBilling}
+                                        projectCampaignId={this.props.campaign.projectCampaignId}
+                                        onToggleEditModeButton={this.onCustomerSelectorEditModeToggleHandler}
+                                        isCustomerFormShow={this.isCustomerFormShow}
+                                    />
+                                }
+                            </Col>
                         </Row>
-                    }
-                </div>
-            </Row>
+
+                        {
+                            this.isCustomerFormShow &&
+                            <Row>
+                                <div className={styles.colWrapper}>
+                                    <NewCustomerForm
+                                        onToggleEditMode={this.onCustomerFormShowToggleHandler}
+                                        studioId={this.props.store ? this.props.store.studios.currentStudioId : null}
+                                        mode={'newCustomer'}
+                                    />
+                                </div>
+                            </Row>
+                        }
+                    </div>
+                </Row>
+                <Modal
+                    show={this.modalConfirmOpen}
+                    title={`Please confirm that you wish to Approve this Campaign`}
+                    closeButton={false}
+                    type="alert"
+                    actions={[
+                        {
+                            onClick: () => { this.modalButtonHandler(true); },
+                            closeOnClick: false,
+                            label: 'Approve',
+                            type: 'default',
+                        },
+                        {
+                            onClick: () => { this.modalButtonHandler(false); },
+                            closeOnClick: false,
+                            label: 'Cancel',
+                            type: 'alert',
+                        },
+                    ]}
+                />
+            </>
         );
+    }
+
+    private modalButtonHandler = (value) => {
+        if (value) {
+            this.modalConfirmToggle();
+            this.handleProjectBoardPermissionToggle();
+        } else {
+            this.modalConfirmToggle();
+        }
     }
 
     private getEditButtonWithClientName(): JSX.Element {
