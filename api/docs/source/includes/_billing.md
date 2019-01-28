@@ -221,11 +221,7 @@ Create a new billing.
 
 ```javascript
 axios.post('/billing', {
-    customer_id:2,
-    project_id:3,
-    campaign_id:4,
-    estimate:[2,3,4,5,8],
-    activity:[{"activity_id":9,"price":90.8,"hour":7}]
+    project_campaign_id:2
 });
 ```
 
@@ -236,7 +232,7 @@ axios.post('/billing', {
     "status": 1,
     "message": "Request successful.",
     "data": {
-        "billing_id": 18
+        "billId": 2
     }
 }
 ```
@@ -249,16 +245,150 @@ axios.post('/billing', {
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**true** | customer_id | int | null | Customer id
-**true** | project_id | int | null | Project id
-**true** | campaign_id | int | null | Campaign id
-false | spot_id | int | null | Spot id
-false | status_id | int | 1 | Status id
-false | estimate | JSON | null | Send JSON encoded string of estimate id (like [2,3,4,5,8])
-false | activity | JSON | null | Send JSON encoded string of activity data (like [{"activity_id":9,"price":90.8,"hour":7}])
+**true** | project_campaign_id | int | null | project campaign id
 
-** One of **estimate** or **activity** is required
 
+## Update Billing
+
+Create a new billing.
+
+> Sample request
+
+```javascript
+axios.put('/billing/2', {
+    billing_line: [
+  {
+    "line_desc": "Editing v1",
+    "line_type": "RT",
+    "hours": 9.3,
+    "rate": 50.5,
+    "disc_perc": 0,
+    "disc_amt": 100,
+    "total_disc": 100,
+    "total_bef_disc": 100,
+    "net_amount": 500,
+    "time_entry": [
+      {
+        "time_entry_id": 111,
+        "time_entry_hours": 9.4,
+        "non_billable_hours": 2.45,
+        "lost_hours": 2,
+        "rt": 2,
+        "ot": 3,
+        "dt": 2
+      },
+      {
+        "time_entry_id": 122,
+        "time_entry_hours": 9.4,
+        "lost_hours": 2,
+        "rt": 2,
+        "ot": 3,
+        "dt": 2
+      }
+    ]
+  },
+  {
+    "line_desc": "Editing v1",
+    "line_type": "OT",
+    "hours": 9.3,
+    "rate": 50.5,
+    "disc_perc": 0,
+    "disc_amt": 100,
+    "total_disc": 100,
+    "net_amount": 500,
+    "time_entry": [
+      {
+        "time_entry_id": 33,
+        "time_entry_hours": 9.4,
+        "lost_hours": 2,
+        "rt": 2,
+        "ot": 3,
+        "dt": 2
+      },
+      {
+        "time_entry_id": 22,
+        "time_entry_hours": 9.4,
+        "lost_hours": 2,
+        "rt": 2,
+        "ot": 3,
+        "dt": 2
+      }
+    ]
+  },
+  {
+    "line_desc": "Editing v3",
+    "line_type": "DT",
+    "hours": 9.3,
+    "rate": 50.5,
+    "disc_perc": 0,
+    "disc_amt": 100,
+    "total_disc": 100,
+    "net_amount": 500,
+    "time_entry": [
+      {
+        "time_entry_id": 55,
+        "time_entry_hours": 9.4,
+        "lost_hours": 2,
+        "rt": 2,
+        "ot": 3,
+        "dt": 2
+      }
+    ]
+  }
+]
+});
+```
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Request successful."
+}
+```
+
+### HTTP Request
+
+`POST /billing`
+
+### Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+**true** | billing_line | JSON | null | billing line array
+false | status | int | null | status id for billing
+false | ratecard_id | int | null | ratecard id
+false | ratecard_template_id | int | null | ratecard template id
+
+
+### Params for `billing_line`
+
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+**true** | hours | float | null | hours
+**true** | rate | float | null | rate
+**true** | disc_perc | float | null | discount percent
+**true** | disc_amt | float | null | discount amount 
+**true** | total_disc | float | null | total discount
+**true** | total_bef_disc | float | null | total before discount
+**true** | net_amount | float | null | net amount
+**true** | time_entry | JSON | null | time entry array
+
+
+### Params for `time_entry` for `billing_line`
+
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+**true** | time_entry_id | int | null | time entry id
+**true** | time_entry_hours | float | null | time entry hours
+**true** | non_billable_hours | float | null | not billable hours
+**true** | lost_hours | float | null | lost hours
+**true** | rt | float | null | regular time hours
+**true** | ot | float | null | over time hours
+**true** | dt | float | null | double time hours
 
 
 ## Get Billing Status list
@@ -294,34 +424,3 @@ Get all status list for billing
 
 
 
-
-## Approve Billing
-
-Approve billing
-
-> Sample request
-
-```javascript
-axios.put('/billing-approve/4', {
-    approved:1
-});
-```
-
-> 200: success response
-
-```json
-{
-    "status": 1,
-    "message": "Request successful."
-}
-```
-
-### HTTP Request
-
-`PUT /billing/[:bill_id]`
-
-### Query Parameters
-
-Required | Parameter | Type | Default | Description
--------- | --------- | ---- | ------- | -----------
-**true** | approved | int | null | Approved or not. Send 0 or 1 (if the user approves the billing data then send 1, send 0 otherwise)
