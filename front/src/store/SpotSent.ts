@@ -26,6 +26,7 @@ export class SpotSent {
     @observable public viaMethodsModalToggleMessage: string = '';
     @observable public spotVersionModalToggle: boolean = false;
     @observable public existedSpot: {name: string, id: number | null} = {name: '', id: null};
+    @observable public existedSpotEditors: {name: string, id: number | null, initials: string}[] = [];
 
     @observable public spotSentDetails: SpotSentValueForSubmit = {
         project_id: null,
