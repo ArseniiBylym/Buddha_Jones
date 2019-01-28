@@ -106,7 +106,6 @@ class BillingController extends CustomAbstractActionController
         $status = $this->_commonRepo->filterPostData($data, 'status', 'int', null);
         $ratecardId = $this->_commonRepo->filterPostData($data, 'ratecard_id', 'int', null);
         $ratecardTemplateId = $this->_commonRepo->filterPostData($data, 'ratecard_template_id', 'int', null);
-        $status = $this->_commonRepo->filterPostData($data, 'status', 'int', null);
         $billingLines = $this->_commonRepo->filterPostData($data, 'billing_line', 'json', null);
 
         $bill = $this->_billingRepository->find($billId);
