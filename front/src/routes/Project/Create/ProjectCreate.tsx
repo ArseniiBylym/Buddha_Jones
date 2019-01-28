@@ -42,7 +42,7 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
                             <div className={s.confContainer}>
                                 <Checkmark 
                                     checked={this.confidential}    
-                                    label="CONFIDENTIAL"
+                                    label="Restrict Access"
                                     labelOnLeft={false}
                                     onClick={this.confidentialHandler}
                                     type="no-icon"

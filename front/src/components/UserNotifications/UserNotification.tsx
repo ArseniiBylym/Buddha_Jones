@@ -48,7 +48,7 @@ export class UserNotification extends React.Component<any, {}> {
                 </div>
                 <div className={s.userNotification__actions}>
                     <div className={s.userNotification__acitons_complete} onClick={this.completeAction}>Complete</div>
-                    <div className={s.userNotification__acitons_dismiss} onClick={this.dismissAction}>Dismiss</div> 
+                    <div className={s.userNotification__acitons_dismiss} onClick={this.dismissAction}>Snooze</div> 
                 </div>
             </div>
         );

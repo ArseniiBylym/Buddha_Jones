@@ -33,6 +33,7 @@
 }
 
 .acceptButtonsContainer {
+    overflow: hidden;
     display: flex;
     flex-wrap: wrap;
     margin-top: -6px;
@@ -194,4 +195,27 @@
 }
 .spotCampaignInfo__campaignName{
     text-align: start;
+}
+.successfullAcceptContainer{
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    background-color: #c7e8c7;
+    border-radius: 5px;
+    color: #50a550;
+    opacity: 1;
+    transition: all .5s ease;
+    font-size: .95em;
+}
+.successfullAcceptContainer__hidden{
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    background-color: #c7e8c7;
+    border-radius: 5px;
+    color: #50a550;
+    transition: all .5s ease;
+    opacity: 0;
+    transform: translateY(30px);
+    font-size: .95em;
 }
