@@ -397,16 +397,21 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
     private versionModalHandler = (action: string = '') => {
         switch (action) {
             case 'resent': 
-            this.handleSpotResendToggle(true);
+                this.handleSpotResendToggle(true);
                 SpotSentActions.setSpotSentVersion(this.props.spotIndex);
                 SpotSentActions.spotVersionConfirmModalToggle();
+                if (this.props.store!.spotSent.existedSpotEditors.length > 0) {
+                    this.props.store!.spotSent.existedSpotEditors.forEach(item => {
+                        this.handleAddingUser({value: item.id, label: item.name});
+                    });
+                }
                 break;
-                case 'finish':
+            case 'finish':
                 this.handleFinishingRequestToggle(true);
                 SpotSentActions.setSpotSentVersion(this.props.spotIndex);
                 SpotSentActions.spotVersionConfirmModalToggle();
                 break;
-                default: 
+            default: 
                 SpotSentActions.spotVersionConfirmModalToggle();
                 break;
             }

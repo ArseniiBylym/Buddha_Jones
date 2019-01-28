@@ -425,7 +425,8 @@ export class SpotSentActionsClass {
                                     name: values.version.name,
                                     id: values.version.id,
                                 };
-                                this.spotVersionConfirmModalToggle();                     
+                                this.spotVersionConfirmModalToggle(); 
+                                SpotSentStore.existedSpotEditors = error.response.data.data.editors;
                             });
                     }
                     break;
