@@ -827,7 +827,7 @@ axios.post('/spot-sent', {
     audio_prep:1
     video_prep:1
     spec_note:some note
-    spec_sheet_file:["file 1.jpg","file2.jpg"]
+    spec_sheet_file:{"file one.jpg":"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWkCAYAA...","file two.jpg":"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWkCAYAA..."}
     tag_chart:
     delivery_to_client:2,3
     delivery_note:some note
@@ -871,7 +871,7 @@ false | music_cue_sheet | int | 0 | send 0/1
 false | audio_prep | int | 0 | send 0/1
 false | video_prep | int | 0 | send 0/1
 false | spec_note | string | null | Finishing house
-false | spec_sheet_file | JSON encoded list base64 of file | null | json encoded array of base64 encoded of file. like ["data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE.......","data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE......."]
+false | spec_sheet_file | JSON encoded list base64 of file | null | json encoded array of base64 encoded of file. like `{"file one.jpg":"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWkCAYAA...","file two.jpg":"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWkCAYAA..."}`
 false | tag_chart | string | null | Tag chart
 false | delivery_to_client | string| null | Sent delivery to client option, json encoded ids of parent and client, like "{"parent":1,"child":2}" 
 false | delivery_note | string | null | Delivery note
@@ -949,7 +949,7 @@ axios.put('/spot-sent/1', {
     audio_prep:1
     video_prep:1
     spec_note:some note
-    spec_sheet_file:["file 1.jpg","file2.jpg"]
+    spec_sheet_file:{"file one.jpg":"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWkCAYAA...","file two.jpg":"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWkCAYAA..."}
     tag_chart:
     delivery_to_client:2,3
     delivery_note:some note
@@ -993,7 +993,7 @@ false | music_cue_sheet | int | 0 | send 0/1
 false | audio_prep | int | 0 | send 0/1
 false | video_prep | int | 0 | send 0/1
 false | spec_note | string | null | Finishing house
-false | spec_sheet_file | JSON encoded list base64 of file | null | json encoded array of base64 encoded of file. like ["data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE.......","data:image/jpeg;base64,/9j/4AAQSkZJRgABAQE......."]
+false | spec_sheet_file | JSON encoded list base64 of file | null | json encoded array of base64 encoded of file. like `{"file one.jpg":"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWkCAYAA...","file two.jpg":"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAABYoAAAWkCAYAA..."}`
 false | tag_chart | string | null | Tag chart
 false | delivery_to_client | string| null | Sent delivery to client option, json encoded ids of parent and client, like "{"parent":1,"child":2}" 
 false | delivery_note | string | null | Delivery note
