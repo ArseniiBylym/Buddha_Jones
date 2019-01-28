@@ -111,26 +111,48 @@ export class SpotsToBillCard extends React.Component<Props, {}> {
                                             {spot.spotsSent.map(spotSent => (
                                                 <div className={s.spotSentRow} key={spotSent.spotSentId}>
                                                     <div className={s.spotSentCol}>
-                                                        <Paragraph type="default" size="small">
+                                                        <Paragraph
+                                                            type={spotSent.spotSentDate ? 'default' : 'dim'}
+                                                            size="small"
+                                                        >
                                                             {spotSent.spotSentDate
                                                                 ? DateHandler.printDateObjectAsString(
                                                                       DateHandler.parseDateStringAsDateObject(
                                                                           spotSent.spotSentDate
                                                                       )
                                                                   )
+                                                                : 'N/A'}
+                                                        </Paragraph>
+                                                    </div>
+
+                                                    <div>
+                                                        <Paragraph type="default" size="small" align="left">
+                                                            {spotSent.versionName || spotSent.versionId
+                                                                ? 'Ver. ' +
+                                                                  (spotSent.versionName
+                                                                      ? spotSent.versionName
+                                                                      : spotSent.versionId || '1')
                                                                 : ''}
                                                         </Paragraph>
                                                     </div>
 
                                                     <div className={s.spotSentCol}>
-                                                        <Paragraph type="default" size="small" align="left">
-                                                            {spotSent.spotLineStatus || ''}
+                                                        <Paragraph
+                                                            type={spotSent.spotLineStatus ? 'default' : 'dim'}
+                                                            size="small"
+                                                            align="left"
+                                                        >
+                                                            {spotSent.spotLineStatus || 'N/A'}
                                                         </Paragraph>
                                                     </div>
 
                                                     <div className={s.spotSentCol}>
-                                                        <Paragraph type="default" size="small" align="left">
-                                                            {spotSent.graphicsStatus || ''}
+                                                        <Paragraph
+                                                            type={spotSent.graphicsStatus ? 'default' : 'dim'}
+                                                            size="small"
+                                                            align="left"
+                                                        >
+                                                            {spotSent.graphicsStatus || 'N/A'}
                                                         </Paragraph>
                                                     </div>
                                                 </div>
