@@ -189,7 +189,7 @@ class ProducerSpotSentFormFinishRequest extends React.Component<ProducerSpotSent
                 {spotSentDetails.finish_option && (spotSentDetails.finish_option as SpotSentValueParentChildForSubmit).parent === 2 &&
                 <>
                     <div className={s.finishRequestSection}>
-                        <h3>Spec sheet</h3>
+                        <h3>Spec sheet and Tags</h3>
                         <input type="file" id="file" name="file" multiple={true} onChange={this.inputFilesHandler}/>
                         {spotSentDetails.spec_sheet_file && spotSentDetails.spec_sheet_file.length > 0 &&
                             <div className={s.filesList}>
