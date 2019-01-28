@@ -9,3 +9,4 @@ export * from './ButtonAdd';
 export * from './ButtonArrow';
 export * from './ButtonDelete';
 export * from './LinkButton';
+export * from './LabelWithConfirmRemoveButton';

@@ -29,6 +29,7 @@ import { SpotSentStore } from '../../../../store/AllStores';
 import { UserPermissionKey } from '../../../../types/projectPermissions';
 import { SpotSentOptionsChildrenFromApi } from '../../../../types/spotSent';
 import { Modal } from 'components/Modals';
+import { LabelWithConfirmRemoveButton } from 'components/Button';
 
 // Styles
 const s = require('./ProducerSpotSentForm.css');
@@ -202,12 +203,19 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                                     selected={true}
                                     editing={false}
                                 />
-                                <span
+                                <LabelWithConfirmRemoveButton 
+                                    onlyIcon={true}
+                                    contactName={''}
+                                    contactTitle={''}
+                                    action={this.onRemoveEditorHandler.bind(this, ind)}
+                                    icon={`&#x2716;`}
+                                />
+                                {/* <span
                                     onClick={this.onRemoveEditorHandler.bind(this, ind)}
                                     className={s.editorRemoveButton}
                                 >
                                     &#x2716;
-                                </span>
+                                </span> */}
                             </div>
                         ))}
                     </Section>
