@@ -220,7 +220,7 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                                 Spot
                             </Paragraph>
                             <Paragraph type="dim" size="small" align="left">
-                                Revisions
+                                Version
                             </Paragraph>
                             <Paragraph type="dim" size="small" align="left">
                                 Rate
