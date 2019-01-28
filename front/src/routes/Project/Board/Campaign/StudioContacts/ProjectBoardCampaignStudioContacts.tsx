@@ -9,6 +9,7 @@ import { Button, ButtonClose, ButtonEdit, ButtonLabel, ButtonSave } from '../../
 import { ProjectBoardCampaignStudioContactsForm } from './ProjectBoardCampaignStudioContactsForm';
 import { DropdownContainer, OptionsList, OptionsListValuePropType } from '../../../../../components/Form';
 import { ClientsActions, ProjectsDetailsActions } from '../../../../../actions';
+import { LabelWithConfirmRemoveButton } from 'components/Button';
 
 // Styles
 import * as styles from './ProjectBoardCampaignStudioContacts.scss';
@@ -200,19 +201,35 @@ export class ProjectBoardCampaignStudioContacts extends React.Component<ProjectB
                             }
 
                             {this.contactList.length > 0 && this.contactList.map((contact: ClientContact, ind: number) => (
-                                <li key={`studio-contact-${ind}`}>
-                                    <span className={styles.container}>
+                                <li key={`studio-contact-${ind}`} style={{display: 'flex', flexFlow: 'row nowrap'}}>
+                                    <LabelWithConfirmRemoveButton 
+                                        onlyIcon={false}
+                                        contactName={contact.name}
+                                        contactTitle={contact.title ? contact.title : 'No role assigned'}
+                                        action={this.onRemoveContactHandler.bind(this, ind)}
+                                        icon={`&#x2716;`}
+                                    />
+                                    {/* <span className={styles.container}>
                                         <p className={styles.name}>{contact.name}</p>
                                         <p className={styles.title}>
                                             <span>{(contact.title) ? contact.title : 'No role assigned'}</span>
                                             <span
-                                                onClick={this.onRemoveContactHandler.bind(this, ind)}
+                                                // onClick={this.onRemoveContactHandler.bind(this, ind)}
+                                                onClick={this.removeConfirmToggle}
                                                 className={styles.studioContactRemoveButton}
                                             >
                                                 &#x2716;
+                                                
                                             </span>
                                         </p>
-                                    </span>
+                                    </span> */}
+                                    {/* {this.removeConfirm && <div className={styles.removeConfirmContainer}>
+                                        <div className={styles.removeConfirmContainer__header}>Are you sure?</div>
+                                        <div className={styles.removeConfirmContainer__answers}>
+                                            <div onClick={this.removeConfirmAnswer(ind)} className={styles.removeConfirmContainer__yes}>Yes</div>
+                                            <div onClick={this.removeRejectAnswer} className={styles.removeConfirmContainer__no}>No</div>
+                                        </div>
+                                    </div>} */}
                                 </li>
                             ))}
 
