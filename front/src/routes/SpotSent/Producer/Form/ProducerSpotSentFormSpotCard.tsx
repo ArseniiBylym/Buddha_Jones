@@ -314,7 +314,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                     {
                         onClick: () => { this.versionModalHandler('resent'); },
                         closeOnClick: false,
-                        label: 'Resent',
+                        label: 'Resend',
                         type: 'default',
                     },
                     {
