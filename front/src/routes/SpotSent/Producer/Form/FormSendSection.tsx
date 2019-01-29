@@ -11,6 +11,7 @@ import * as dateFormat from 'date-fns/format';
 import { observer, inject } from 'mobx-react';
 import { SpotSentValueForSubmit, SpotSentVersionForSubmit } from '../../../../types/spotSentForm';
 import { Modal } from 'components/Modals';
+import FormDeadlineSection from './FormDeadlineSection';
 
 // Styles
 const s = require('./ProducerSpotSentForm.css');
@@ -52,6 +53,8 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                         />
                     </div>
                 </div>
+                {this.getSpotLineStatusId() === 5 && this.state.isGraphicsCompleted && <FormDeadlineSection />}
+                {/* <FormDeadlineSection /> */}
                 {this.getLinkField()} 
                 <Modal
                     show={this.props.store!.spotSent.viaMethodsModalToggle}
