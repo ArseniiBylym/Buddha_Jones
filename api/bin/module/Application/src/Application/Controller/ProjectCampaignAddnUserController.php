@@ -6,7 +6,7 @@ use Application\Entity\RediProjectHistory;
 use Application\Entity\RediProjectToCampaignAddn;
 use Zend\View\Model\JsonModel;
 
-class ProjectCampaignAddnController extends CustomAbstractActionController
+class ProjectCampaignAddnUserController extends CustomAbstractActionController
 {
     public function get($projectCampaignId)
     {

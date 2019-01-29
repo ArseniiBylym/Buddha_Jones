@@ -2,18 +2,9 @@
 
 namespace Application\Controller;
 
-use Application\Entity\RediProject;
 use Application\Entity\RediProjectHistory;
-use Application\Entity\RediProjectManager;
-use Application\Entity\RediProjectProducer;
-use Application\Entity\RediProjectToCampaign;
-use Application\Entity\RediProjectUser;
 use Exception;
 use Zend\View\Model\JsonModel;
-use League\Csv\Reader;
-
-use Application\Entity\RediCcStatement;
-use Application\Entity\RediCcStatementLine;
 
 class ProjectCampaignController extends CustomAbstractActionController
 {
@@ -35,15 +26,15 @@ class ProjectCampaignController extends CustomAbstractActionController
         $isBillingUser = $this->_usersRepo->isBillingUser($this->_user_id);
 
         if ($canViewCampaign) {
-            $filter['project_id'] = (int)$this->getRequest()->getQuery('project_id', 0);
-            $filter['campaign_id'] = (int)$this->getRequest()->getQuery('campaign_id', 0);
+            $filter['project_id'] = (int) $this->getRequest()->getQuery('project_id', 0);
+            $filter['campaign_id'] = (int) $this->getRequest()->getQuery('campaign_id', 0);
             $filter['request_writing_team'] = $this->getRequest()->getQuery('request_writing_team', null);
             $filter['request_music_team'] = $this->getRequest()->getQuery('request_music_team', null);
             $filter['customer_id'] = $this->getRequest()->getQuery('customer_id', null);
             $filter['approved_by_billing'] = $this->getRequest()->getQuery('approved_by_billing', 1);
-            $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
-            $length = (int)trim($this->getRequest()->getQuery('length', 10));
-            $getUser = (int)trim($this->getRequest()->getQuery('get_user', 0));
+            $offset = (int) trim($this->getRequest()->getQuery('offset', 0));
+            $length = (int) trim($this->getRequest()->getQuery('length', 10));
+            $getUser = (int) trim($this->getRequest()->getQuery('get_user', 0));
 
             if (!$isBillingUser) {
                 $filter['approved_by_billing'] = 1;
@@ -63,7 +54,6 @@ class ProjectCampaignController extends CustomAbstractActionController
 
             $data = $this->_projectCampaignRepo->search($filter, $offset, $length);
             $totalCount = $this->_projectCampaignRepo->searchCount($filter);
-
 
             foreach ($data as &$row) {
                 // set project name
@@ -85,6 +75,10 @@ class ProjectCampaignController extends CustomAbstractActionController
 
                     if ($canViewBilling) {
                         $row['billingUser'] = $this->_campaignRepo->getCampaignProjectPeople('billing', $row['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
+                    }
+
+                    if ($canViewCreativeTeam) {
+                        $row['addnUser'] = $this->_campaignRepo->getCampaignProjectPeople('addn', $row['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
                     }
 
                     if (!$canViewBudget) {
@@ -126,12 +120,12 @@ class ProjectCampaignController extends CustomAbstractActionController
                 'message' => 'Request successful',
                 'total_count' => $totalCount,
                 'object_count' => count($data),
-                'data' => $data
+                'data' => $data,
             );
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Permission denied.'
+                'message' => 'Permission denied.',
             );
         }
 
@@ -152,7 +146,6 @@ class ProjectCampaignController extends CustomAbstractActionController
 
         return new JsonModel($response);
     }
-
 
     public function create($data)
     {
@@ -175,11 +168,11 @@ class ProjectCampaignController extends CustomAbstractActionController
         $isBillingUser = $this->_usersRepo->isBillingUser($this->_user_id);
 
         if ($canEditCampaign) {
-            $projectCampaignId = (int)$projectCampaignId;
+            $projectCampaignId = (int) $projectCampaignId;
             $firstPointOfContact = (isset($data['first_point_of_contact_id']) ? trim($data['first_point_of_contact_id']) : 0);
-            $firstPointOfContact = (strtolower($firstPointOfContact) != 'null') ? (int)$firstPointOfContact : null;
-            $requestWritingTeam = ($canEditWrittingTeam && isset($data['request_writing_team'])) ? (int)trim($data['request_writing_team']) : null;
-            $requestMusicTeam = ($canEditMusicTeam && isset($data['request_music_team'])) ? (int)trim($data['request_music_team']) : null;
+            $firstPointOfContact = (strtolower($firstPointOfContact) != 'null') ? (int) $firstPointOfContact : null;
+            $requestWritingTeam = ($canEditWrittingTeam && isset($data['request_writing_team'])) ? (int) trim($data['request_writing_team']) : null;
+            $requestMusicTeam = ($canEditMusicTeam && isset($data['request_music_team'])) ? (int) trim($data['request_music_team']) : null;
             $writingTeamNote = ($canEditWrittingTeam && isset($data['writing_team_notes']) ? trim($data['writing_team_notes']) : null);
             $musicTeamNote = ($canEditMusicTeam && isset($data['music_team_notes']) ? trim($data['music_team_notes']) : null);
             $note = ($canEditwNote && isset($data['note']) ? trim($data['note']) : null);
@@ -191,11 +184,11 @@ class ProjectCampaignController extends CustomAbstractActionController
             $materialReceiveDate = ($canEditMaterialReceived && isset($data['material_receive_date'])) ? $data['material_receive_date'] : null;
             $customerId = isset($data['customer_id']) ? $data['customer_id'] : null;
             $approvedByBilling = ($isBillingUser && isset($data['approved_by_billing']) && strlen($data['approved_by_billing']) > 0)
-                ? (((int)$data['approved_by_billing']) ? 1 : 0)
-                : null;
+            ? (((int) $data['approved_by_billing']) ? 1 : 0)
+            : null;
             $channelId = ($isBillingUser && isset($data['channel_id']) && strlen($data['channel_id']) > 0)
-                ? (int)$data['channel_id']
-                : null;
+            ? (int) $data['channel_id']
+            : null;
 
             if ($projectCampaignId) {
                 $existingProjectToCampaign = $this->_projectToCampaignRepository->find($projectCampaignId);
@@ -332,7 +325,7 @@ class ProjectCampaignController extends CustomAbstractActionController
                     $this->_em->persist($existingProjectToCampaign);
                     $this->_em->flush();
 
-                    $id = (int)$existingProjectToCampaign->getId();
+                    $id = (int) $existingProjectToCampaign->getId();
                     $data = $this->getSingle($id);
 
                     $response = array(
@@ -343,19 +336,19 @@ class ProjectCampaignController extends CustomAbstractActionController
                 } else {
                     $response = array(
                         'status' => 0,
-                        'message' => 'Entry does not exist.'
+                        'message' => 'Entry does not exist.',
                     );
                 }
             } else {
                 $response = array(
                     'status' => 0,
-                    'message' => 'Please provide required data(project_campaign_id).'
+                    'message' => 'Please provide required data(project_campaign_id).',
                 );
             }
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Permission denied.'
+                'message' => 'Permission denied.',
             );
         }
 
@@ -380,27 +373,26 @@ class ProjectCampaignController extends CustomAbstractActionController
 
                     $response = array(
                         'status' => 1,
-                        'message' => "Request successful"
+                        'message' => "Request successful",
                     );
                 } else {
                     $response = array(
                         'status' => 0,
-                        'message' => 'Project campaign not found'
+                        'message' => 'Project campaign not found',
                     );
                 }
             } else {
                 $response = array(
                     'status' => 0,
-                    'message' => 'Please send project_campaign_id'
+                    'message' => 'Please send project_campaign_id',
                 );
             }
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Permission denied'
+                'message' => 'Permission denied',
             );
         }
-
 
         if ($response['status'] == 0) {
             $this->getResponse()->setStatusCode(400);
@@ -451,6 +443,10 @@ class ProjectCampaignController extends CustomAbstractActionController
                         $data['billingUser'] = $this->_campaignRepo->getCampaignProjectPeople('billing', $data['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
                     }
 
+                    if ($canViewCreativeTeam) {
+                        $data['addnUser'] = $this->_campaignRepo->getCampaignProjectPeople('addn', $data['id'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
+                    }
+
                     if (!$canViewBudget) {
                         unset($data['budget']);
                         unset($data['budgetNote']);
@@ -486,24 +482,24 @@ class ProjectCampaignController extends CustomAbstractActionController
                     $response = array(
                         'status' => 1,
                         'message' => "Request successful",
-                        'data' => $data
+                        'data' => $data,
                     );
                 } else {
                     $response = array(
                         'status' => 0,
-                        'message' => 'Project campaign not found'
+                        'message' => 'Project campaign not found',
                     );
                 }
             } else {
                 $response = array(
                     'status' => 0,
-                    'message' => 'Please send project id and campaign id'
+                    'message' => 'Please send project id and campaign id',
                 );
             }
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Permission denied.'
+                'message' => 'Permission denied.',
             );
         }
 
