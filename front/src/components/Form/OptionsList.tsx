@@ -280,14 +280,15 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
                     fixedHeightList: typeof this.props.height !== 'undefined' && this.props.height > 0,
                     optionsListWithSearch: typeof this.props.search !== 'undefined' && this.props.search !== null,
                 })}
-                style={{
+                style={!this.props.multiselect ? ({
                     height:
                         this.height > 0
                             ? this.height + 'px'
                             : typeof this.props.height !== 'undefined' && this.props.height > 0
                             ? this.props.height + 'px'
                             : undefined,
-                }}
+                }) : ({height: 'auto'})}
+                // style={{}}
             >
                 {this.props.multiselect && (
                     <div className="saveSelectionsButton" >
@@ -322,7 +323,7 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
                     </div>
                 )}
 
-                <div ref={this.referenceOptionsListResults} className="optionsListResults">
+                <div ref={this.referenceOptionsListResults} className={this.props.multiselect ? 'optionsListResults multiselect' : 'optionsListResults'}>
                     {(this.filteredOptions.length > 0 && (
                         <ul
                             className={classNames({
