@@ -1,3 +1,7 @@
+:global(.row).loader {
+    padding-top: 48px;
+}
+
 .grid {
     margin-top: 12px;
     display: block;

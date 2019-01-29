@@ -133,7 +133,7 @@ export class SpotsToBillGrid extends React.Component<SpotsToBillGridProps, {}> {
 
         if (loading && this.props.spots.count <= 0) {
             return (
-                <LoadingShade isStatic={true} contentCentered={true} background="transparent">
+                <LoadingShade className={s.loader} isStatic={true} contentCentered={true} background="transparent">
                     <LoadingSpinner />
                 </LoadingShade>
             );
