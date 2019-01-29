@@ -65,7 +65,15 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                           ]
                         : []),
                     { title: 'Activity' },
-                    { title: showDate ? 'Date and time' : 'Time', align: 'right' },
+                    ...(showDate
+                        ? [
+                              {
+                                  title: 'Date',
+                                  align: 'right' as 'right',
+                              },
+                          ]
+                        : []),
+                    { title: 'Time', align: 'right' },
                     { title: 'Hours', align: 'right' },
                     ...(showBillable ? [{ title: 'Billable', align: 'left' as 'left' }] : []),
                     { title: 'In bill', align: 'right' },
@@ -110,10 +118,16 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                 </Paragraph>
                             </div>
 
+                            {showDate && (
+                                <div className={s.dateCol} style={{ textAlign: 'right' }}>
+                                    <Paragraph type="brown" size="small" align="right">
+                                        <span>{DateHandler.printDateObjectAsString(entry.startDate)}</span>
+                                    </Paragraph>
+                                </div>
+                            )}
+
                             <div className={s.dateCol} style={{ textAlign: 'right' }}>
                                 <Paragraph type="brown" size="small" align="right">
-                                    {showDate && <span>{DateHandler.printDateObjectAsString(entry.startDate)}</span>}
-
                                     {DateHandler.printPeriodBetweenTwoDatesAsHoursString(
                                         entry.startDate,
                                         entry.endDate,
@@ -159,14 +173,7 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                     {entry.isSelectedToBill && (
                                         <DurationCounter
                                             onChange={this.handleSelectedEntryHours(entry, 'regular')}
-                                            valueLessThan={{
-                                                value: entry.durationInMinutes,
-                                                color: 'alert',
-                                            }}
-                                            valueMoreThan={{
-                                                value: entry.durationInMinutes,
-                                                color: 'success',
-                                            }}
+                                            maxValue={entry.durationInMinutes}
                                             value={entry.regularHoursInMinutes}
                                         />
                                     )}
@@ -186,7 +193,9 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                         {entry.hoursAreSplit && (
                             <React.Fragment>
                                 <CardContentTableRow
-                                    className={classNames(s.secondaryRows, s.overtimeHoursRow)}
+                                    className={classNames(s.secondaryRows, s.overtimeHoursRow, {
+                                        [s.hasDate]: showDate,
+                                    })}
                                     design="compact"
                                 >
                                     <div className={s.splitTimeEntryHoursEmptyCol} />
@@ -197,12 +206,15 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                         <DurationCounter
                                             onChange={this.handleSelectedEntryHours(entry, 'overtime')}
                                             value={entry.overtimeHoursInMinutes}
+                                            maxValue={entry.durationInMinutes}
                                         />
                                     </div>
                                 </CardContentTableRow>
 
                                 <CardContentTableRow
-                                    className={classNames(s.secondaryRows, s.doubletimeHoursRow)}
+                                    className={classNames(s.secondaryRows, s.doubletimeHoursRow, {
+                                        [s.hasDate]: showDate,
+                                    })}
                                     design="compact"
                                 >
                                     <div className={s.splitTimeEntryHoursEmptyCol} />
@@ -213,6 +225,7 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                         <DurationCounter
                                             onChange={this.handleSelectedEntryHours(entry, 'doubletime')}
                                             value={entry.doubletimeHoursInMinutes}
+                                            maxValue={entry.durationInMinutes}
                                         />
                                     </div>
                                 </CardContentTableRow>

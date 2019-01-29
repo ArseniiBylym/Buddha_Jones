@@ -81,11 +81,11 @@
             vertical-align: middle;
             content: "";
             top: -1px;
-            width: 4px;
-            height: 4px;
+            width: 8px;
+            height: 8px;
             margin-left: 6px;
             border-radius: 50%;
-            background: #FFFFFF;
+            background: #d8553c;
           }
 
           &.dayDate{
@@ -357,3 +357,19 @@
     }
   }
 }
+
+tbody.withoutHover{
+  & > tr{
+    &:hover {
+      & > td {
+        background: #e9e0d7 !important;
+      }
+    }
+    & > td{
+      background: #e9e0d7 !important;
+      transition: none !important;
+    }
+  }
+}
+
+

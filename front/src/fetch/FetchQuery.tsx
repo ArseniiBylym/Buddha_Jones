@@ -21,6 +21,7 @@ interface FetchQueryData<Q = {}> {
     queryObject?: Q | undefined;
 }
 
+/** To skip caching set `dataExpiresInMiliseconds` to `null` */
 interface FetchQueryProps<R, Q = {}> extends AppOnlyStoreState {
     /** Single or multiple queries to fetch data from */
     getQueries: FetchQueryData<Q>[];

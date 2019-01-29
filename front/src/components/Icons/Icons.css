@@ -111,7 +111,14 @@
 }
 
 :global .iconHamburgerMenu {
-    background: url('./../../assets/images/navigation/hamburger-menu.svg') 0 0 no-repeat;
+    background: url(./../../assets/images/navigation/hamburger-menu.svg) 0 0 no-repeat;
+    background-size: 18px 12px;
+    width: 18px;
+    height: 12px;
+}
+
+:global .iconBellMenu {
+    background: url(./../../assets/images/navigation/notification.svg) 0 0 no-repeat;
     background-size: 18px 12px;
     width: 18px;
     height: 12px;

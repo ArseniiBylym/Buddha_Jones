@@ -3,6 +3,8 @@ import { NotificationContent } from '../types/notifications';
 
 export class Notifications {
     @observable public allNotifications: NotificationContent[] = [];
+    @observable public visibleMenu: string | null = null;
+    @observable public userNotifications: any = [];
 
     @computed
     public get allNotificationsSortedByDate(): NotificationContent[] {

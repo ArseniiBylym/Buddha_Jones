@@ -10,6 +10,8 @@ import { match } from 'react-router';
 import * as dateFormat from 'date-fns/format';
 import { observer, inject } from 'mobx-react';
 import { SpotSentValueForSubmit, SpotSentVersionForSubmit } from '../../../../types/spotSentForm';
+import { Modal } from 'components/Modals';
+import FormDeadlineSection from './FormDeadlineSection';
 
 // Styles
 const s = require('./ProducerSpotSentForm.css');
@@ -21,6 +23,8 @@ const s = require('./ProducerSpotSentForm.css');
 // Props
 interface ProducerSpotSentFormState {
     isGraphicsCompleted: boolean;
+    date?: Date;
+    minutes?: number;
 }
 
 // Types
@@ -32,33 +36,60 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
 
     state = {
         isGraphicsCompleted: false,
+        date: new Date(),
+        minutes: 0,
     };
 
     public render() {
         if (!this.props.store) {
             return null;
         }
-        // const { spotSentDetails } = this.props.store.spotSent;
+
         return (
             <Section>
                 <div className={s.summary}>
                     {this.getCheckmark()}
-                    {/* {this.getSpotLineStatusId() !== 2 && <Checkmark
-                        onClick={this.completedToggleHandler}
-                        checked={this.state.isGraphicsCompleted}
-                        label={this.props.prevLocation && this.props.prevLocation === 'graphics' ? 'Completed' : 'Ready to be sent'}
-                        labelOnLeft={true}
-                        type={'no-icon'}
-                    />} */}
-                    <ButtonSend
-                        onClick={this.handleSubmit}
-                        label={this.saveButtonText}
-                        iconColor="orange"
-                    />
+                    <div className={s.buttonSendContainer}>
+                        <ButtonSend
+                            onClick={this.handleSubmit}
+                            label={this.saveButtonText}
+                            iconColor="orange"
+                        />
+                    </div>
                 </div>
+                {this.getSpotLineStatusId() === 5 && this.state.isGraphicsCompleted && 
+                    <FormDeadlineSection dateHandler={this.dateHandler} timeHandler={this.timeHandler}/>
+                }
+                {/* <FormDeadlineSection dateHandler={this.dateHandler} timeHandler={this.timeHandler}/> */}
                 {this.getLinkField()} 
+                <Modal
+                    show={this.props.store!.spotSent.viaMethodsModalToggle}
+                    title={this.props.store!.spotSent.viaMethodsModalToggleMessage}
+                    closeButton={false}
+                    type="alert"
+                    actions={[
+                        {
+                            onClick: () => { SpotSentActions.toggleModalViaMethods(); },
+                            closeOnClick: false,
+                            label: 'Ok',
+                            type: 'default',
+                        },
+                    ]}
+                />
+                <Modal  />
             </Section>
         );
+    }
+
+    private dateHandler = (date) => {
+        this.setState({
+            date: date,
+        });
+    }
+    private timeHandler = (time) => {
+        this.setState({
+            minutes: time,
+        });
     }
 
     private getLinkField = () => {
@@ -77,11 +108,20 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
         SpotSentActions.inputLinkHandler(e.target.value);
     }
 
+    private getCheckboxLabel = () => {
+        if (typeof(this.props.store.spotSent.spotSentDetails.spot_version) === 'string') {
+            return false;
+        }
+        const isReadyForQc = this.props.store.spotSent.spotSentDetails.spot_version.every((item, i) => {
+            return item.line_status_id === 3 && item.prod_accept === 1;
+        });
+        return isReadyForQc;
+    }
+
     private getCheckmark = () => {
         if (this.getSpotLineStatusId() === 2) {
             return null;
-        } else if (this.getSpotLineStatusId() === 3 && 
-            this.props.prodAccept && this.props.prodAccept.prod_accept === 1) {
+        } else if (this.getCheckboxLabel()) {
                 return (
                     <CheckmarkSquare
                         onClick={this.completedToggleHandler}
@@ -91,6 +131,17 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                         type={'no-icon'}
                     />
                 );
+            
+        } else if (this.getSpotLineStatusId() === 5) {
+            return (
+                <CheckmarkSquare
+                    onClick={this.completedToggleHandler}
+                    checked={this.state.isGraphicsCompleted}
+                    label="Ready for Bill"
+                    labelOnLeft={true}
+                    type={'no-icon'}
+                />
+            );
         } else {
             return (
                 <CheckmarkSquare
@@ -117,26 +168,47 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                 if (this.props.store.spotSent.spotSentDetails.spot_version[0]) {
                     lineStatus = this.props.store.spotSent.spotSentDetails.spot_version[0].line_status_id;
                 }
-                // this.props.store.spotSent.spotSentDetails.spot_version.forEach(item => {
-                //     lineStatus = item.line_status_id;
-                // });
                 return lineStatus;
         }
     }
 
-    // private checkmarkClickHander = () => {
-    //     if (this.props.store && this.props.store.spotSent) {
-    //         const value = this.props.store.spotSent.spotSentDetails.status === 2 ? false : true;
-    //         SpotSentActions.handleFinalToggle(value);
-    //     }
-    // }
+    private transformToDate = (date: Date = new Date(), min: number) => {
+        if (!min) {
+            min = new Date().getHours() * 60 + new Date().getMinutes();
+        }
+        let newDate = new Date(date);
+        newDate.setMinutes(min);
+        return newDate;
+    }
 
     private handleSubmit = async () => {
+        const viaOtionsNotChecked = this.props.store!.spotSent.spotSentDetails.spot_version.find((item, i) => {
+            if (item.line_status_id === 1 && item.finish_request === 0 && item.sent_via_method.length === 0) {
+                return true;
+            }
+            return false;
+        });
+        if (viaOtionsNotChecked) {
+            SpotSentActions.toggleModalViaMethods('Please select Sent Via option(s) unless the Spot is Finishing');
+            return;
+        }
+
+        const editorsNotSelected = this.props.store!.spotSent.spotSentDetails.spot_version.find((item, i) => {
+            if (item.line_status_id === 1 && this.state.isGraphicsCompleted === true && item.editors.length === 0) {
+                return true;
+            }
+            return false;
+        });
+        if (editorsNotSelected) {
+            SpotSentActions.toggleModalViaMethods('Please select at least one editor for each spot');
+            return;
+        }
+
         try {
             let data: SpotSentValueForSubmit = this.props.store!.spotSent.spotSentDetails;
             (data.spot_version as string) = JSON.stringify((data.spot_version as SpotSentVersionForSubmit[]).map((spot: SpotSentVersionForSubmit) => {
                 delete spot.campaign_name;
-                delete spot.spot_name;
+                // delete spot.spot_name;
                 delete spot.version_name;
                 spot.graphics_file = this.props.files;
                 if (this.getSpotLineStatusId() === 2) {
@@ -150,6 +222,12 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                         spot.line_status_id = 4;
                     } else {
                         spot.line_status_id = 3;
+                    }
+                } else if (this.getSpotLineStatusId() === 5) {
+                    if (this.state.isGraphicsCompleted) {
+                        spot.line_status_id = 6;
+                    } else {
+                        spot.line_status_id = 5;
                     }
                 } else if (this.props.prevLocation && this.props.prevLocation === 'graphics') {
                     if (this.state.isGraphicsCompleted) {
@@ -166,6 +244,7 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                 }
                 return spot;
             }));
+            (data.spot_sent_date as any) = this.transformToDate(this.state.date, this.state.minutes);
             (data.finish_option as string) = JSON.stringify(data.finish_option);
             (data.delivery_to_client as string) = JSON.stringify(data.delivery_to_client);
             (data.customer_contact as string) = JSON.stringify((data.customer_contact as ClientContact[]).map(contact => {
@@ -192,8 +271,10 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
     }
 
     private get saveButtonText(): string {
-        if (this.getSpotLineStatusId() === 2 || this.getSpotLineStatusId() === 3) {
+        if (this.getSpotLineStatusId() === 2 || this.getSpotLineStatusId() === 3 || this.getSpotLineStatusId() === 4 || (this.getSpotLineStatusId() === 5 && !this.state.isGraphicsCompleted)) {
             return 'Save';
+        } else if (this.getSpotLineStatusId() === 5 && this.state.isGraphicsCompleted) {
+            return 'Complete';
         } else if (this.state.isGraphicsCompleted) {
             return 'Save';
         } else {

@@ -22,6 +22,11 @@ export class SpotSent {
     @observable public spotSentFinishingHouseLastFetchTimeStamp: number = 0;
     @observable public spotSentFinishingHouseOptions: FinishingHouseOptionsFromApi[] | null = null;
     @observable public spotSentFinishingHouseAreBeingFetched: boolean = false;
+    @observable public viaMethodsModalToggle: boolean = false;
+    @observable public viaMethodsModalToggleMessage: string = '';
+    @observable public spotVersionModalToggle: boolean = false;
+    @observable public existedSpot: {name: string, id: number | null} = {name: '', id: null};
+    @observable public existedSpotEditors: {name: string, id: number | null, initials: string}[] = [];
 
     @observable public spotSentDetails: SpotSentValueForSubmit = {
         project_id: null,
@@ -57,6 +62,7 @@ export class SpotSent {
         graphics_finish: 0,
         gfx_finish: 0,
         customer_contact: [],
+        customer_name: '',
         graphics_note: '',
         music_note: '',
         final_narr: '',

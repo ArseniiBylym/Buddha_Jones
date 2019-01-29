@@ -17,12 +17,14 @@ export interface SpotSentVersionForSubmit {
     spot_resend: 0 | 1;
     finish_request: 0 | 1;
     line_status_id: number | null;
+    line_status_name?: string | null;
     sent_via_method: number[] | null;
     finish_accept?: 0 | 1;
     prod_accept?: 0 | 1;
     is_pdf?: 0 | 1;
     graphics_sent_via_method: number[] | null;
     graphics_file: [{file_name: string, file_description: string}];
+    spot_sent_id?: number;
 }
 
 export interface SpotSentValueForSubmit {
@@ -57,6 +59,7 @@ export interface SpotSentValueForSubmit {
     graphics_finish?: 0 | 1;
     gfx_finish?: 0 | 1;
     customer_contact?: ClientContact[] | string;
+    customer_name: any;
     graphics_note: string | null;
     music_note: string | null;
     final_narr: string | null;

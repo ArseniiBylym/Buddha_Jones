@@ -4,9 +4,11 @@ import { capitalize as _capitalize } from 'lodash';
 import { LoadingIndicator } from './../Loaders';
 import { Input } from '.';
 import { observer } from 'mobx-react';
-import { observable, computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { SearchHandler } from 'helpers/SearchHandler';
 import { OptionsListOption } from './OptionsListOption';
+import { ButtonSave } from 'components/Button';
+import OptionsListCategories from './OptionsListCategories';
 
 // Styles
 const s = require('./OptionsList.css');
@@ -19,6 +21,7 @@ export interface OptionsListOptionProp {
     key?: string;
     value: OptionsListValuePropType;
     label: string;
+    typeName?: string;
 }
 
 // Props
@@ -49,6 +52,7 @@ interface OptionsListProps {
         value: OptionsListValuePropType;
         label: string;
     } | null;
+    multiselect?: boolean;
 }
 
 // Component
@@ -73,6 +77,7 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
             highlightFirstOption: false,
             selectedIcon: null,
             directHint: null,
+            multiselect: false,
         };
     }
 
@@ -80,6 +85,21 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
 
     @observable private height: number = 0;
     @observable private search: string = '';
+    @observable private selectedList: any = [];
+    @observable private saveStatus: boolean = false;
+
+    @action
+    private addToSelectedList = (item) => {
+        this.selectedList.push(item);
+    }
+
+    @action
+    private removeFromSelectedList = (item) => {
+        const newList = this.selectedList.filter((elem: any, i) => {
+            return elem.key !== item.key;
+        });
+        this.selectedList = newList;
+    }
 
     @computed
     private get filteredOptions(): OptionsListOptionProp[] {
@@ -113,13 +133,80 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
             : [];
     }
 
+    @computed 
+    private get filteredOptionsWithHeaders() {
+        const options = this.filteredOptions;
+        let categories: any = {};
+        options.forEach((item: any, i) => {
+            if (!categories[item.typeName]) {
+                categories[item.typeName] = [];
+                categories[item.typeName].push(item);
+            } else {
+                categories[item.typeName].push(item);
+            }
+        });
+        let elements: any = [];
+        for (let key in categories) {
+            if (key) {
+                let newElem = {
+                    categoryName: key,
+                    options: categories[key],
+                };
+
+                elements.push(newElem);
+            }
+        }
+        return elements.map((elem, i) => {
+            return (
+                <OptionsListCategories 
+                    key={elem.categoryName} 
+                    config={elem} 
+                    categoryClick={this.categoryClickHanderl}
+                    optionClick={this.optionClickHandler}
+                    addOptions={this.addOptionsList}
+                />
+            );
+        });
+    }
+
+    private saveSelectionHandler = () => {
+        this.saveStatus = true;
+        window.document.body.click();
+    }
+
+    private addOptionsList = (list) => {
+        if (this.saveStatus) {
+            list.forEach(item => {
+                this.handleSelectionChangeMultiselect({value: item.value, label: item.label});
+            });
+        }
+    }
+
+    private categoryClickHanderl = (elems) => {
+        elems.forEach(item => {
+            this.addToSelectedList(item);
+        });
+    }
+
+    private optionClickHandler = (elem) => {
+        const existedElem = this.selectedList.find(item => {
+            return item.key === elem.key;
+        });
+        if (existedElem) {
+            this.removeFromSelectedList(elem);
+        } else {
+            this.addToSelectedList(elem);
+        }
+    }
+
     @computed
     private get combinedOptions(): OptionsListOptionProp[] {
         return [
             ...(typeof this.props.specialOptionsBefore !== 'undefined' && Array.isArray(this.props.specialOptionsBefore)
                 ? this.props.specialOptionsBefore
                 : []),
-            ...this.filteredOptions,
+            // ...this.filteredOptions,
+            ...(this.props.multiselect ? this.filteredOptionsWithHeaders : this.filteredOptions),
             ...(typeof this.props.specialOptionsAfter !== 'undefined' && Array.isArray(this.props.specialOptionsAfter)
                 ? this.props.specialOptionsAfter
                 : []),
@@ -193,18 +280,31 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
                     fixedHeightList: typeof this.props.height !== 'undefined' && this.props.height > 0,
                     optionsListWithSearch: typeof this.props.search !== 'undefined' && this.props.search !== null,
                 })}
-                style={{
+                style={!this.props.multiselect ? ({
                     height:
                         this.height > 0
                             ? this.height + 'px'
                             : typeof this.props.height !== 'undefined' && this.props.height > 0
                             ? this.props.height + 'px'
                             : undefined,
-                }}
+                }) : ({height: 'auto'})}
+                // style={{}}
             >
+                {this.props.multiselect && (
+                    <div className="saveSelectionsButton" >
+                        <ButtonSave 
+                            onClick={this.saveSelectionHandler}
+                            labelColor="gray" 
+                            isSaving={false}
+                            // float="right"
+                            label="Save Selection"
+                        />
+                    </div>
+                )}
+
                 {typeof this.props.search !== 'undefined' &&
                 this.props.search !== null && (
-                    <div className="optionsListSearch">
+                        <div className={this.props.multiselect ? 'optionsListSearch movedDown' : 'optionsListSearch'}>
                         <Input
                             ref={this.referenceSearchField}
                             onChange={this.handleOptionsSearch}
@@ -223,7 +323,7 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
                     </div>
                 )}
 
-                <div ref={this.referenceOptionsListResults} className="optionsListResults">
+                <div ref={this.referenceOptionsListResults} className={this.props.multiselect ? 'optionsListResults multiselect' : 'optionsListResults'}>
                     {(this.filteredOptions.length > 0 && (
                         <ul
                             className={classNames({
@@ -257,7 +357,11 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
                                 </li>
                             )}
 
-                            {this.combinedOptions.map(option => (
+                            {this.props.multiselect && <div className="combinedOptionsContainer">
+                                {this.combinedOptions}
+                            </div> }
+
+                            {!this.props.multiselect && this.combinedOptions.map(option => (
                                 <OptionsListOption
                                     key={
                                         typeof option.key !== 'undefined'
@@ -325,6 +429,11 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
     };
 
     private handleSelectionChange = (option: { value: OptionsListValuePropType; label: string }) => () => {
+        if (typeof option.value !== 'undefined' && typeof option.label !== 'undefined' && this.props.onChange) {
+            this.props.onChange({ value: option.value, label: option.label });
+        }
+    };
+    private handleSelectionChangeMultiselect = (option: { value: OptionsListValuePropType; label: string }) => {
         if (typeof option.value !== 'undefined' && typeof option.label !== 'undefined' && this.props.onChange) {
             this.props.onChange({ value: option.value, label: option.label });
         }

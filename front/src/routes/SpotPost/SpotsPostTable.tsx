@@ -11,6 +11,7 @@ class SpotsPostTable extends React.Component<any, any> {
             <div className={s.tableContainer}>
                 <Table
                     header={[
+                        { title: '№', align: 'left' },
                         { title: 'Date', align: 'left' },
                         { title: 'Project', align: 'left' },
                         { title: 'Campaign', align: 'left'},
@@ -31,16 +32,16 @@ class SpotsPostTable extends React.Component<any, any> {
     }
 
     private getEditors = (editors) => {
-        if (editors.length > 3) {
-            editors = editors.slice(0, 3);
+        if (editors.length > 2) {
+            editors = editors.slice(0, 2);
             editors.push({name: '...'});
         }
         return editors.map(item => <div key={item.name}>{item.name}</div>);
     }
 
     private getCustomerContacts = (contacts) => {
-        if (contacts.length > 3) {
-            contacts = contacts.slice(0, 3);
+        if (contacts.length > 2) {
+            contacts = contacts.slice(0, 2);
             contacts.push({name: '...'});
         }
         return contacts.map(item => <div key={item.name}>{item.name}</div>);
@@ -53,6 +54,7 @@ class SpotsPostTable extends React.Component<any, any> {
     private getTable = () => {
         return this.props.config.map(spot => (
                 <TableRow className="spotPost__finishRequest" key={spot.spotSentId} onClick={this.spotClickHandler(spot.spotSentRequestId)}>
+                    <TableCell colSpan={1} align="left">{spot.spotSentRequestId}</TableCell>
                     <TableCell colSpan={1} align="left">{spot.spotSentDate && moment(spot.spotSentDate.date).format('DD/MM/YYYY')}</TableCell>
                     <TableCell colSpan={1} align="left">{spot.projectName}</TableCell>
                     <TableCell colSpan={1} align="left">{spot.campaignName}</TableCell>

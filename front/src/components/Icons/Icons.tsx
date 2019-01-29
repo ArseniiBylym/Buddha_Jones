@@ -54,6 +54,9 @@ export const IconRemoveAttachment: React.SFC<IconProps> = observer(props => {
 export const IconHamburgerMenu: React.SFC<IconProps> = observer(props => {
     return <Icon {...props} iconName="iconHamburgerMenu" />;
 });
+export const IconBellMenu: React.SFC<IconProps> = observer(props => {
+    return <Icon {...props} iconName="iconBellMenu" />;
+});
 export const IconDropdownArrow: React.SFC<IconProps> = observer(props => {
     return <Icon {...props} iconName="iconDropdownArrow" />;
 });

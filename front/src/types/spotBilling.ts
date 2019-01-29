@@ -1,11 +1,16 @@
 import { DateObjectFromApi } from './api';
+import { SpotBillingType } from './projectDetailsEnums';
+import { SpotBillActivityRateType } from './spotBillingEnums';
 
-export interface ActivityInBill {
-    timeEntryId: number;
-    hoursAreSplit: boolean;
+export interface ActivityHours {
     regularHoursInMinutes: number;
     overtimeHoursInMinutes: number;
     doubletimeHoursInMinutes: number;
+}
+
+export interface ActivityInBill extends ActivityHours {
+    timeEntryId: number;
+    hoursAreSplit: boolean;
 }
 
 export interface ActivityInBillWithBaseTime extends ActivityInBill {
@@ -14,6 +19,7 @@ export interface ActivityInBillWithBaseTime extends ActivityInBill {
 
 export interface SpotBillFormFirstStage {
     spotId: number;
+    note: string | null;
     timeEntriesIds: number[];
 }
 
@@ -36,6 +42,8 @@ export interface SpotBillFormActivityGroup {
     note: string | null;
     spot: string;
     version: string;
+    rateType: SpotBillActivityRateType;
+    rateFlatId: number | null;
     timeEntries: SpotBillFormActivityTimeEntry[];
 }
 
@@ -58,6 +66,7 @@ export interface BillTimeEntry {
     spotName: string | null;
     versionId: number | null;
     versionName: string | null;
+    versionSequence: number | null;
     activityId: number;
     activityName: string;
     activityDescription: string | null;
@@ -80,6 +89,8 @@ export interface SpotBillFormSpot {
     firstRevisionCost: number | null;
     firstRevisionIsBilled: boolean;
     graphicsIncluded: boolean;
+    billingType: SpotBillingType | null;
+    billingNote: string | null;
     timeEntries: BillTimeEntry[];
 }
 
@@ -118,4 +129,9 @@ export interface SpotBillFormSummary {
 export interface SpotBillRowRevision {
     versionId: number;
     versionName: string;
+}
+
+export interface SpotBillDiscount {
+    isFixed: boolean;
+    value: number;
 }

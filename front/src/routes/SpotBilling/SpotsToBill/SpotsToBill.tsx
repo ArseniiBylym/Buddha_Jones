@@ -75,7 +75,15 @@ class SpotsToBillPage extends React.Component<SpotsToBillPageProps, {}> {
                         <BottomBar show={this.selectedSpots.length > 0}>
                             <div className={s.actions}>
                                 <p>Only spots from a single campaign can be selected</p>
-                                <ButtonAdd onClick={this.openNewBill} label="Bill selected spots" />
+                                <ButtonAdd
+                                    onClick={this.openNewBill}
+                                    label={
+                                        'Bill ' +
+                                        (this.selectedSpots.length > 1 ? this.selectedSpots.length + ' ' : '') +
+                                        'selected ' +
+                                        (this.selectedSpots.length > 1 ? 'spots' : 'spot')
+                                    }
+                                />
                             </div>
                         </BottomBar>
                     </React.Fragment>

@@ -1,6 +1,6 @@
 
 .tableContainer tbody tr {
-  font-size: 10px;
+  font-size: 14px;
   cursor: pointer;
   padding: 5px 0;
 
@@ -15,6 +15,39 @@
   border-radius: 3px;
   padding: 0 3px;
   margin-left: 5px;
+}
+
+.filterButtonWrapper{
+  display: flex; 
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-start;
+}
+.filterButtonLabel{
+  color: #5A4D3F;
+  font-size: 18px;
+  margin-right: 10px
+}
+.filterButton{
+  padding: 5px 10px;
+  background-color: #c3ae99;
+  border-radius: 3px;
+  color: black;
+  margin-left: 10px;
+  border: 2px solid #c3ae99;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.filterButton__active{
+  padding: 5px 10px;
+  background-color: #c3ae99;
+  border-radius: 3px;
+  color: black;
+  margin-left: 10px;
+  border: 2px solid sienna;
+  box-sizing: border-box;
+  cursor: pointer;
 }
   
   

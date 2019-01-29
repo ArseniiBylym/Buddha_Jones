@@ -6,6 +6,7 @@ import * as formatDate from 'date-fns/format';
 import * as getHoursFromDate from 'date-fns/get_hours';
 import * as getMinutesFromDate from 'date-fns/get_minutes';
 import * as isDateAfterAnotherDate from 'date-fns/is_after';
+import * as isDateTheSameDay from 'date-fns/is_same_day';
 import * as parseDate from 'date-fns/parse';
 import * as setHoursOnDate from 'date-fns/set_hours';
 import * as setMinutesOnDate from 'date-fns/set_minutes';
@@ -112,6 +113,10 @@ export class DateHandler {
 
     static checkIfDateIsOlderThanOtherDate = (date1: Date, date2: Date): boolean => {
         return isDateAfterAnotherDate(date1, date2);
+    };
+
+    static checkIfDatesAreSameDay = (date1: Date, date2: Date): boolean => {
+        return isDateTheSameDay(date1, date2);
     };
 
     static getHoursFromDateTime = (date: Date): number => {

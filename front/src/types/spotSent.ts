@@ -11,8 +11,10 @@ export interface SpotSentSpot {
     isFinishingRequest: boolean;
     sentViaMethod: number[];
     line_status_id: number | null;
+    line_status_name?: string | null;
     sentGraphicsViaMethod: number[];
     finishAccept?: boolean;
+    spotSentId?: number;
 }
 
 export interface SentViaOption {
@@ -144,6 +146,7 @@ export interface SpotSentDetailsSpotDataFromApi {
     finishAccept?: 0 | 1;
     prodAccept?: 0 | 1;
     sentGraphicsViaMethod: string | null;
+    spotSentId: number;
 }
 
 export interface SpotSentAllSpotsSentSpotDataFromApi {

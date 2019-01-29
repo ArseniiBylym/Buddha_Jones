@@ -9,6 +9,7 @@ import * as moment from 'moment';
 import { SpotsToGraphicsModal } from './SpotsToGraphicsModal/SpotsToGraphicsModal';
 import { SpotsToQCModal } from '../../SpotQC/SpotsToQC/SpotsToQCModal/SpotsToQCModal';
 import { Modal } from 'components/Modals';
+import * as classNames from 'classnames';
 
 const s = require('./SpotsToGraphicsGrid.css');
 
@@ -77,11 +78,13 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                     date: spot.spotSentDate && spot.spotSentDate.date || '',
                     runtime: spot.runtime,
                     spotLineStatus: spot.spotLineStatus,
+                    spotLineStatusId: spot.spotLineStatusId,
                     versionName: spot.versionName,
                     spotSentId: spot.spotSentId,
                     spotSentRequestId: spot.spotSentRequestId,
                     finishRequest: spot.finishRequest,
                     graphicsStatus: spot.graphicsStatus,
+                    qcApproved: spot.qcApproved,
                };
                spots.push(spotItem);
            });
@@ -138,7 +141,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
 
         return (
             <div className={s.grid}>
-                <SpotsToGraphicsModal forceUpdating={this.props.forceUpdating}/>
+                <SpotsToGraphicsModal forceUpdating={this.props.forceUpdating} />
                 <SpotsToQCModal forceUpdating={this.props.forceUpdating} />
                 {this.projectCampaignCards.map((projectCampaign, i) => (
                     <Card
@@ -167,12 +170,13 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                         </div>
                                     )}
                                     {projectCampaign.spots.map((spot, index) => {
+                                        // console.log(spot);
                                         let styleName = s.spotTable__row;
                                         if (this.props.routeType === 'edl') {
                                             styleName = s.spotTable__row__hidden;
                                         }
                                             return (
-                                                <div key={spot.spotId} onClick={this.handleSpotSelectionToggle(this.props.routeType, spot)} className={styleName}>
+                                                <div key={spot.spotSentId} onClick={this.handleSpotSelectionToggle(this.props.routeType, spot)} className={styleName}>
                                                 <div className={s.spotDate}>
                                                     {spot.date && moment(spot.date).format('DD/MM/YYYY')}
                                                 </div>
@@ -191,7 +195,8 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                                 </div>
                                                 )  : null}
                                                 {this.props.routeType !== 'edl' ? (
-                                                    <div className={s.spotStatus}>
+                                                    // <div className={s.spotStatus}>
+                                                    <div className={classNames(s.spotStatus, this.isQCNotApproved(spot))}>
                                                         {this.props.routeType === 'graphics' ? spot.graphicsStatus : spot.spotLineStatus}
                                                     </div>
                                                 )  : null}
@@ -234,6 +239,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                     },
                                 ]}
                             />}
+                             <a style={{display: 'none'}} href="/portal/spots-to-edl" id="reloadLinkEdl">Link</a>
                         </React.Fragment>
                     </Card>
                 ))}
@@ -241,12 +247,22 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
         );
     }
 
+    private isQCNotApproved = (spot) => {
+        if (spot.spotLineStatusId === 3 && spot.qcApproved === 0) {
+            return s.qcNotApproved;
+        }
+        return null;
+    }
+
     private modalButtonHandler = async (value) => {
         if (value) {
             this.modalConfirmToggle();
             await this.props.store.spotToGraphics.changeEDLApi(this.selectedSpot.spotSentId, this.selectedSpot.index);
             if (this.props.forceUpdating) {
-                this.props.forceUpdating();
+                const elem = document.getElementById('reloadLinkEdl');
+                if (elem) {
+                    elem.click();
+                }
             }
         } else {
             this.modalConfirmToggle();

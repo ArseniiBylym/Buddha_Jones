@@ -139,6 +139,7 @@ export class SpotSentActionsClass {
                             spot_resend: spot.spotResend,
                             finish_request: spot.finishRequest,
                             line_status_id: spot.lineStatusId,
+                            line_status_name: spot.lineStatusName,
                             finish_accept: spot.finishAccept,
                             prod_accept: spot.prodAccept,
                             sent_via_method: (spot.sentViaMethod) ? spot.sentViaMethod.split(',').map((method: string) => {
@@ -147,6 +148,7 @@ export class SpotSentActionsClass {
                             graphics_sent_via_method: (spot.sentGraphicsViaMethod) ? spot.sentGraphicsViaMethod.split(',').map((method: string) => {
                                 return parseInt(method, 0);
                             }) : [],
+                            spot_sent_id: spot.spotSentId,
                         };
                     }),
                     finish_option: response.finishOption,
@@ -176,6 +178,7 @@ export class SpotSentActionsClass {
                     graphics_finish: response.graphicsFinish,
                     gfx_finish: response.gfxFinish,
                     customer_contact: response.customerContact,
+                    customer_name: response.customerName,
                     graphics_note: response.graphicsNote,
                     music_note: response.musicNote,
                     final_narr: response.finalNarr,
@@ -279,6 +282,20 @@ export class SpotSentActionsClass {
         }
     };
 
+    @action 
+    public deleteSpotSent = async (
+        id: any
+    ) => {
+        try {
+            const deletedSpotData = (await API.deleteData(
+                APIPath.SPOTS_TO_GRAPHICS + '/' + id,
+            )) as SpotSentFromApi;
+            return deletedSpotData;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     @action
     public handleDateChange = (date: Date | null) => {
         if (date !== null) {
@@ -330,7 +347,8 @@ export class SpotSentActionsClass {
     };
 
     @action
-    public handleSpotRemove = (currentSpotIndex: number) => {
+    public handleSpotRemove = (currentSpotIndex: number, deletingSpotId: any) => {
+        this.deleteSpotSent(deletingSpotId);
         SpotSentStore.spotSentDetails.spot_version = [
             ...(SpotSentStore.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).slice(0, currentSpotIndex),
             ...(SpotSentStore.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).slice(currentSpotIndex + 1)
@@ -341,6 +359,20 @@ export class SpotSentActionsClass {
     public handleCreateSpot = () => {
         (SpotSentStore.spotSentDetails.spot_version as SpotSentVersionForSubmit[]).push(this.defaultSpotElement);
     };
+
+    @action
+    public isSpotExist = async (versionId: number, spotIndex: number) => {
+        try {
+            const newFinishingHouse = await API.postData(APIPath.SPOTS_VALIDATE, {
+                project_campaign_id: (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).project_campaign_id,
+                spot_id: (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).spot_id,
+                version_id: versionId
+            });
+            return newFinishingHouse;
+        } catch (error) {
+            throw error;
+        }
+    }
 
     @action
     public handleSpotChange = (spotIndex: number, values, type?: ProjectPickerSections) => {
@@ -378,12 +410,24 @@ export class SpotSentActionsClass {
                     break;
                 case ProjectPickerSections.version:
                     if (values && values.version) {
-                        if (values.version.id) {
-                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = values.version.id;
-                        }
-                        if (values.version.name) {
-                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = values.version.name;
-                        }
+
+                        this.isSpotExist(values.version.id, spotIndex)
+                            .then(result => {
+                                if (values.version.id) {
+                                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = values.version.id;
+                                }
+                                if (values.version.name) {
+                                    (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = values.version.name;
+                                }
+                            })
+                            .catch(error => {
+                                SpotSentStore.existedSpot = {
+                                    name: values.version.name,
+                                    id: values.version.id,
+                                };
+                                this.spotVersionConfirmModalToggle(); 
+                                SpotSentStore.existedSpotEditors = error.response.data.data.editors;
+                            });
                     }
                     break;
                 case ProjectPickerSections.clear:
@@ -394,6 +438,26 @@ export class SpotSentActionsClass {
             }
         }
     };
+
+    @action 
+    public setSpotVersionAsync = async(value: any, index: number) => {
+        if (typeof(value) === 'number') {
+            (SpotSentStore.spotSentDetails.spot_version[index] as SpotSentVersionForSubmit).version_id = value;
+        } else if (typeof(value) === 'string') {
+            (SpotSentStore.spotSentDetails.spot_version[index] as SpotSentVersionForSubmit).version_name = value;
+        }
+    }
+
+    @action
+    public spotVersionConfirmModalToggle = () => {
+        SpotSentStore.spotVersionModalToggle = !SpotSentStore.spotVersionModalToggle;
+    }
+
+    @action
+    public setSpotSentVersion = (spotIndex) => {
+        (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_id = SpotSentStore.existedSpot.id;
+        (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).version_name = SpotSentStore.existedSpot.name;
+    }
 
     @action
     public dropSpotVersion = (ind: number) => {
@@ -474,6 +538,16 @@ export class SpotSentActionsClass {
     @action
     public inputLinkHandler = (value: string | null) => {
         SpotSentStore.spotSentDetails.qc_link = value;
+    };
+
+    @action
+    public toggleModalViaMethods = (message?: string) => {
+        if (message) {
+            SpotSentStore.viaMethodsModalToggleMessage = message;
+        } else {
+            SpotSentStore.viaMethodsModalToggleMessage = '';
+        }
+        SpotSentStore.viaMethodsModalToggle = !SpotSentStore.viaMethodsModalToggle;
     };
 
     @action
@@ -601,12 +675,31 @@ export class SpotSentActionsClass {
 
     }
 
+    @action
+    public changeSpotAccept = async(index: number | undefined, type: string, value: number) => {
+        try {
+            const data: any = {};
+            if (type === 'finish') {
+                data.finish_accept = value;
+            }
+            if (type === 'production') {
+                data.prod_accept = value;
+                data.line_status_id = 3;
+            }
+            const deletedSpotData = (await API.putData(APIPath.SPOTS_TO_GRAPHICS + '/' + index, data)) as SpotSentFromApi;
+            return deletedSpotData;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     private get defaultSpotElement(): SpotSentVersionForSubmit {
         return {
             campaign_id: null,
             project_campaign_id: null,
             spot_id: null,
             version_id: null,
+            version_name: '',
             editors: [],
             spot_resend: 0,
             is_pdf: 0,

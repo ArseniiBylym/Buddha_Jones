@@ -1,0 +1,65 @@
+  
+  .notificationsHistory {
+    padding-top: 150px;
+    overflow: hidden;
+    position: fixed;
+    width: 344px;
+    height: 100%;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    background: color(#5a4d3f alpha(0.5));
+    background: linear-gradient(to bottom, color(#5a4d3f alpha(0.4)), color(#5a4d3f alpha(0.8)));
+    transition: 400ms all 0ms cubic-bezier(1, 0, 0, 1);
+  }
+  .notificationsHistory__container{
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .hideHistory .notificationsHistory {
+    /* width: 0px; */
+    transform: translateX(344px);
+  }
+  
+  .notificationsLive > div {
+    transform: scaleX(1) translateX(334px);
+  }
+  
+  .hideHistory .notificationsLive > div {
+    transform: scaleX(1) translateX(0px);
+  }
+  
+  .count {
+    position: absolute;
+    z-index: 4;
+  }
+  
+  .toggle {
+    position: absolute;
+    z-index: 3;
+    top: 70px;
+    right: 12px;
+  }
+  .toggleHidden{
+    position: absolute;
+    z-index: 3;
+    top: 70px;
+    right: 12px;
+    display: none;
+  }
+  .notificationCounter{
+    position: absolute;
+    z-index: 4;
+    top: 70px;
+    right: 45px;
+    font-size: .9em;
+    padding: 3px;
+    background-color: #006DF0;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    color: white;
+    display: flex;
+    justify-content: center;
+  }

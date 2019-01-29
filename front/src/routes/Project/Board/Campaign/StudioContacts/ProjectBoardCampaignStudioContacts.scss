@@ -108,6 +108,31 @@
       font-weight: bolder;
       cursor: pointer;
       margin-left: 5px;
+      position: relative;
     }
 
+}
+.removeConfirmContainer{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    color: rgb(126, 117, 109);
+    width: 100px;
+    background-color: #e9e0d7;
+    padding: 5px;
+    border-radius: 3px;
+    cursor: default;
+}
+.removeConfirmContainer__answers{
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-evenly;
+}
+.removeConfirmContainer__header{
+    margin: 0 auto;
+}
+.removeConfirmContainer__yes,
+.removeConfirmContainer__no {
+    padding: 5px;
+    cursor: pointer;
 }

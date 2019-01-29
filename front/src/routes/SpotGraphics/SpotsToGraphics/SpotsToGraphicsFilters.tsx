@@ -26,7 +26,7 @@ interface SpotsToGrapnicsFiltersProps {
     totalCountResponse: number;
     spotsResponse: any[];
     routeType?: string;
-    forceUpdating?: () => void;
+    forceUpdating?: () => any;
 }
 
 @observer

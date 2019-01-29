@@ -7,6 +7,7 @@ import { computed } from '../../../node_modules/mobx';
 import { AppState } from '../../store/AllStores';
 import { AuthorizeUser } from '../Authorization';
 import { NotificationsCenter } from '../Notifications';
+import { UserNotificationsCenter } from '../UserNotifications';
 
 // Styles
 const s = require('./Layout.css');
@@ -63,6 +64,7 @@ export class Layout extends React.Component<AppState, {}> {
                 {this.props.store.user.isLoggedIn && <Sidebar />}
 
                 {this.props.store.user.isLoggedIn && <NotificationsCenter />}
+                {this.props.store.user.isLoggedIn && <UserNotificationsCenter />}
             </AuthorizeUser>
         );
     }

@@ -27,8 +27,6 @@ require('./ProducerSpotSentList.css');
 @inject('store')
 @observer
 class ProducerSpotSentList extends React.Component<any, {}> {
-    private DATA_REFRESH_RATE_IN_MS: number = 1000 * 60;
-
     @observable private search: string = '';
 
     private get essentialDataIsLoading(): boolean {
@@ -97,7 +95,7 @@ class ProducerSpotSentList extends React.Component<any, {}> {
             <>{this.getTableWithLoadingSpinner()}</>
         ) : this.props.store.spotSent.spotSentAllSpots && this.props.store.spotSent.spotSentAllSpots.length > 0 ? (
             <FetchQuery<SpotGraphicsApiResponse, SpotGraphicsApiQueryParams>
-                dataExpiresInMiliseconds={this.DATA_REFRESH_RATE_IN_MS}
+                dataExpiresInMiliseconds={null}
                 getQueries={[
                     {
                         apiEndpoint: APIPath.SPOTS_TO_GRAPHICS,

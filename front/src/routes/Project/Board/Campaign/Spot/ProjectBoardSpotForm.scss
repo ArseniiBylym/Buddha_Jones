@@ -7,7 +7,8 @@
 }
 
 .revisionsContainer {
-    margin-top: 12px;
+    // margin-top: 12px;
+    margin: 10px 0;
     display: flex;
     justify-content: space-between;
     align-content: center;
@@ -15,7 +16,7 @@
 }
 
 .firstRevisionCostContainer {
-    margin-top: 12px;
+    // margin-top: 12px;
 }
 
 :global(.row).summary {

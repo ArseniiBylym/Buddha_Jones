@@ -12,13 +12,13 @@
     },
     "scripts": {
         "postinstall": "cd front && npm install",
-        "lint": "eslint actions components core routes test utils main.js",
+        "lint": "cd front && npm run lint",
+        "front-lint": "npm run lint",
         "build": "cd front && npm run build",
         "start": "npm run start-front-end",
         "start-front-end": "cd front && npm start",
         "start-node-api": "nodemon api/v2/src/",
-        "start-php-api": "cd api/bin/public && php -S 127.0.0.1:8000",
-        "front-lint": "cd front && npm run lint"
+        "start-php-api": "cd api/bin/public && php -S 127.0.0.1:8000"
     },
     "dependencies": {
         "@feathersjs/authentication": "^2.1.5",
@@ -90,5 +90,7 @@
         "parser": "babel-eslint",
         "extends": "airbnb"
     },
-    "pre-push": ["front-lint"]
+    "pre-push": [
+        "front-lint"
+    ]
 }

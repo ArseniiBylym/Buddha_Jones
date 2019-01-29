@@ -1,0 +1,124 @@
+.summary {
+    margin: 0 -36px;
+    padding: 24px 64px;
+    background: #e2dbd5;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+
+    & > .left {
+        & p {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #7e756d;
+
+            & strong {
+                font-weight: 600;
+                color: #0b0c32;
+            }
+
+            &.spots {
+                & strong:not(:last-child)::after {
+                    display: inline;
+                    content: ', ';
+                    font-weight: 400;
+                }
+            }
+
+            &.campaign {
+                margin-top: 6px;
+                font-size: 0.9rem;
+
+                &:first-child {
+                    margin-top: 0;
+                }
+            }
+        }
+    }
+
+    & > .right {
+        padding-left: 24px;
+        display: block;
+        text-align: right;
+
+        & .studio {
+            font-size: 0.9rem;
+
+            & em {
+                font-style: normal;
+            }
+        }
+
+        & .studioRateCard {
+            display: flex;
+            justify-content: flex-end;
+            text-align: right;
+
+            & > p {
+                margin-top: 4px;
+            }
+        }
+    }
+}
+
+.content {
+    margin: 0 30px;
+    padding-top: 24px;
+    padding-bottom: 64px;
+}
+
+.grid {
+    display: grid;
+    grid-template: auto / auto auto auto auto auto auto auto;
+    gap: 16px;
+}
+
+.gridHeader {
+    display: contents;
+}
+
+.gridRow {
+    display: contents;
+}
+
+.totals {
+    padding-top: 24px;
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #d1cdca;
+
+    & > div {
+        &:last-child {
+            padding-left: 16px;
+            text-align: right;
+        }
+    }
+
+    & p {
+        font-size: 1rem;
+    }
+}
+
+.discountForm {
+    display: flex;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: center;
+
+    & > div {
+        padding-right: 24px;
+    }
+}
+
+.subTotals {
+    margin-top: 12px;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+}
