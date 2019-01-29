@@ -23,6 +23,8 @@ const s = require('./ProducerSpotSentForm.css');
 // Props
 interface ProducerSpotSentFormState {
     isGraphicsCompleted: boolean;
+    date?: Date;
+    minutes?: number;
 }
 
 // Types
@@ -34,6 +36,8 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
 
     state = {
         isGraphicsCompleted: false,
+        date: new Date(),
+        minutes: 0,
     };
 
     public render() {
@@ -53,8 +57,10 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                         />
                     </div>
                 </div>
-                {this.getSpotLineStatusId() === 5 && this.state.isGraphicsCompleted && <FormDeadlineSection />}
-                {/* <FormDeadlineSection /> */}
+                {this.getSpotLineStatusId() === 5 && this.state.isGraphicsCompleted && 
+                    <FormDeadlineSection dateHandler={this.dateHandler} timeHandler={this.timeHandler}/>
+                }
+                {/* <FormDeadlineSection dateHandler={this.dateHandler} timeHandler={this.timeHandler}/> */}
                 {this.getLinkField()} 
                 <Modal
                     show={this.props.store!.spotSent.viaMethodsModalToggle}
@@ -73,6 +79,17 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                 <Modal  />
             </Section>
         );
+    }
+
+    private dateHandler = (date) => {
+        this.setState({
+            date: date,
+        });
+    }
+    private timeHandler = (time) => {
+        this.setState({
+            minutes: time,
+        });
     }
 
     private getLinkField = () => {
@@ -155,6 +172,15 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
         }
     }
 
+    private transformToDate = (date: Date = new Date(), min: number) => {
+        if (!min) {
+            min = new Date().getHours() * 60 + new Date().getMinutes();
+        }
+        let newDate = new Date(date);
+        newDate.setMinutes(min);
+        return newDate;
+    }
+
     private handleSubmit = async () => {
         const viaOtionsNotChecked = this.props.store!.spotSent.spotSentDetails.spot_version.find((item, i) => {
             if (item.line_status_id === 1 && item.finish_request === 0 && item.sent_via_method.length === 0) {
@@ -218,6 +244,7 @@ class FormSendSection extends React.PureComponent<any, ProducerSpotSentFormState
                 }
                 return spot;
             }));
+            (data.spot_sent_date as any) = this.transformToDate(this.state.date, this.state.minutes);
             (data.finish_option as string) = JSON.stringify(data.finish_option);
             (data.delivery_to_client as string) = JSON.stringify(data.delivery_to_client);
             (data.customer_contact as string) = JSON.stringify((data.customer_contact as ClientContact[]).map(contact => {

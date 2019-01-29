@@ -18,11 +18,13 @@ class FormDeadlineSection extends React.PureComponent<any, any> {
 
     @action
     private deadlineDateHandler = date => {
+        this.props.dateHandler(date);
         this.deadlineDate = date;
     }
 
     @action
     private deadlineTimeHandler = date => {
+        this.props.timeHandler(date);
         this.deadlineTime = date;
     }
 
