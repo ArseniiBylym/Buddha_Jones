@@ -56,11 +56,15 @@ export class CardContentBlock extends React.Component<Props, {}> {
             >
                 {this.props.title && (
                     <div
-                        className={classNames(s.header, {
-                            [s.center]: this.props.titleAlign === 'center',
-                            [s.right]: this.props.titleAlign === 'right',
-                            [s.backgroundLight]: this.props.titleBackground === 'light',
-                        })}
+                        className={classNames(
+                            s.header,
+                            {
+                                [s.center]: this.props.titleAlign === 'center',
+                                [s.right]: this.props.titleAlign === 'right',
+                                [s.backgroundLight]: this.props.titleBackground === 'light',
+                            },
+                            this.props.classNameForTitle
+                        )}
                     >
                         <ButtonExpand
                             className={classNames(s.title, {
@@ -73,7 +77,7 @@ export class CardContentBlock extends React.Component<Props, {}> {
                             title={this.props.title}
                         />
 
-                        <div>{this.props.titleElements}</div>
+                        <div className={s.titleElements}>{this.props.titleElements}</div>
                     </div>
                 )}
 
