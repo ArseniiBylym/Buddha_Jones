@@ -88,6 +88,7 @@ export class SpotsToBillCard extends React.Component<Props, {}> {
                                         key={spot.id}
                                         title={spot.name}
                                         noBorderOnBottom={true}
+                                        isExpandable={true}
                                         titleElements={
                                             <Checkbox
                                                 onChange={this.handleSpotSelectionToggle(

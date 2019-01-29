@@ -1,4 +1,8 @@
 .grid {
     margin-top: 12px;
     display: block;
+
+    & > div {
+        margin-top: 24px;
+    }
 }

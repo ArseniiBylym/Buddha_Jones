@@ -1,14 +1,14 @@
 import * as classNames from 'classnames';
+import { ButtonExpand, ButtonExpandTitles } from 'components/Button';
 import _truncate from 'lodash-es/truncate';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import AnimateHeight from 'react-animate-height';
-import { IconArrowTopBlue, IconDropdownArrow } from '../Icons';
 
 const s = require('./Card.css');
 
-interface CardProps {
+interface CardProps extends ButtonExpandTitles {
     innerRef?: (container: HTMLDivElement) => void;
     innerRefForHeader?: (header: HTMLDivElement) => void;
     className?: string;
@@ -18,12 +18,6 @@ interface CardProps {
     classNameForHeaderTitle?: string;
     classNameForHeaderContent?: string;
     classNameForContent?: string;
-    title?: string;
-    titleWhenExpanded?: string;
-    subTitle?: string;
-    subTitleWhenExpanded?: string;
-    truncuateSubTitleToCharacters?: number;
-    hideSubTitleWhenExpanded?: boolean;
     headerElements?: JSX.Element;
     contentAboveTitleBar?: JSX.Element;
     headerContent?: JSX.Element;
@@ -132,58 +126,22 @@ export class Card extends React.Component<CardProps, {}> {
                 )}
             >
                 <div className={s.left}>
-                    {(this.props.isExpandable && (
-                        <button
-                            onClick={this.handleTogglingExpansion}
-                            className={classNames(s.name, s.nameButton, this.props.classNameForHeaderTitle)}
-                        >
-                            <span className={classNames({ [s.expanded]: this.isExpanded })}>
-                                <IconArrowTopBlue className={s.arrowCollapse} width={10} height={16} />
-                                <IconDropdownArrow className={s.arrowExpand} width={12} height={8} />
-                            </span>
-
-                            {this.renderTitle()}
-                            {this.renderSubTitle()}
-                        </button>
-                    )) || (
-                        <p className={classNames(s.name, this.props.classNameForHeaderTitle)}>
-                            {this.renderTitle()}
-                            {this.renderSubTitle()}
-                        </p>
-                    )}
+                    <ButtonExpand
+                        className={this.props.classNameForHeaderTitle}
+                        onToggle={this.props.isExpandable ? this.handleTogglingExpansion : undefined}
+                        isExpanded={this.isExpanded}
+                        title={this.props.title}
+                        titleWhenExpanded={this.props.titleWhenExpanded}
+                        subTitle={this.props.subTitle}
+                        subTitleWhenExpanded={this.props.subTitleWhenExpanded}
+                        hideSubTitleWhenExpanded={this.props.hideSubTitleWhenExpanded}
+                        truncuateSubTitleToCharacters={this.props.truncuateSubTitleToCharacters}
+                    />
                 </div>
 
                 <div className={s.right}>{this.props.headerElements}</div>
             </div>
         );
-    }
-
-    private renderTitle() {
-        const text =
-            this.isExpanded && this.props.isExpandable && this.props.titleWhenExpanded
-                ? this.props.titleWhenExpanded
-                : this.props.title;
-
-        return text ? <strong>{text}</strong> : null;
-    }
-
-    private renderSubTitle() {
-        const text =
-            this.isExpanded && this.props.isExpandable && this.props.subTitleWhenExpanded
-                ? this.props.subTitleWhenExpanded
-                : this.props.subTitle;
-
-        return text ? (
-            <em
-                className={classNames({
-                    [s.invisible]: this.props.hideSubTitleWhenExpanded && this.isExpanded,
-                })}
-            >
-                {_truncate(text, {
-                    length: this.props.truncuateSubTitleToCharacters || 9999,
-                })}
-            </em>
-        ) : null;
     }
 
     private renderContent() {
@@ -222,20 +180,7 @@ export class Card extends React.Component<CardProps, {}> {
         }
     };
 
-    private handleTogglingExpansion = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        this.toggleExpansion();
-    };
-
-    public toggleExpansion = () => {
-        this.isExpanded = !this.isExpanded;
-    };
-
-    public expandCard = () => {
-        this.isExpanded = true;
-    };
-
-    public collapseCard = () => {
-        this.isExpanded = false;
+    private handleTogglingExpansion = (isExpanded: boolean) => {
+        this.isExpanded = isExpanded;
     };
 }
