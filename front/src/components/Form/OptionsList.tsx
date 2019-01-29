@@ -7,6 +7,8 @@ import { observer } from 'mobx-react';
 import { observable, computed } from 'mobx';
 import { SearchHandler } from 'helpers/SearchHandler';
 import { OptionsListOption } from './OptionsListOption';
+import { ButtonSave } from 'components/Button';
+import { OptionsListCategories } from './OptionsListCategories';
 
 // Styles
 const s = require('./OptionsList.css');
@@ -50,6 +52,7 @@ interface OptionsListProps {
         value: OptionsListValuePropType;
         label: string;
     } | null;
+    multiselect?: boolean;
 }
 
 // Component
@@ -74,6 +77,7 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
             highlightFirstOption: false,
             selectedIcon: null,
             directHint: null,
+            multiselect: false,
         };
     }
 
@@ -114,13 +118,45 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
             : [];
     }
 
+    @computed 
+    private get filteredOptionsWithHeaders() {
+        const options = this.filteredOptions;
+        let categories: any = {};
+        options.forEach((item: any, i) => {
+            if (!categories[item.typeName]) {
+                categories[item.typeName] = [];
+                categories[item.typeName].push(item);
+            } else {
+                categories[item.typeName].push(item);
+            }
+        });
+        // console.log(categories);
+        let elements: any = [];
+        for (let key in categories) {
+            if (key) {
+                elements.push({
+                    categoryName: key,
+                    options: categories[key],
+                    // categoryClick: () => (1),
+                    // optionClick: () => (2)
+                });
+        }
+        }
+        return elements.map((elem, i) => {
+            return (
+                <OptionsListCategories key={elem.categoryName} config={elem}/>
+            );
+        });
+    }
+
     @computed
     private get combinedOptions(): OptionsListOptionProp[] {
         return [
             ...(typeof this.props.specialOptionsBefore !== 'undefined' && Array.isArray(this.props.specialOptionsBefore)
                 ? this.props.specialOptionsBefore
                 : []),
-            ...this.filteredOptions,
+            // ...this.filteredOptions,
+            ...(this.props.multiselect ? this.filteredOptionsWithHeaders : this.filteredOptions),
             ...(typeof this.props.specialOptionsAfter !== 'undefined' && Array.isArray(this.props.specialOptionsAfter)
                 ? this.props.specialOptionsAfter
                 : []),
@@ -203,9 +239,20 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
                             : undefined,
                 }}
             >
+                {this.props.multiselect && (
+                    <div className="saveSelectionsButton">
+                        <ButtonSave 
+                            labelColor="gray" 
+                            isSaving={false}
+                            // float="right"
+                            label="Save Selection"
+                        />
+                    </div>
+                )}
+
                 {typeof this.props.search !== 'undefined' &&
                 this.props.search !== null && (
-                    <div className="optionsListSearch">
+                        <div className={this.props.multiselect ? 'optionsListSearch movedDown' : 'optionsListSearch'}>
                         <Input
                             ref={this.referenceSearchField}
                             onChange={this.handleOptionsSearch}
@@ -258,7 +305,11 @@ export class OptionsList extends React.Component<OptionsListProps, {}> {
                                 </li>
                             )}
 
-                            {this.combinedOptions.map(option => (
+                            {this.props.multiselect && <div className="combinedOptionsContainer">
+                                {this.combinedOptions}
+                            </div> }
+
+                            {!this.props.multiselect && this.combinedOptions.map(option => (
                                 <OptionsListOption
                                     key={
                                         typeof option.key !== 'undefined'
