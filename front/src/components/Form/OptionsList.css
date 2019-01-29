@@ -19,10 +19,21 @@
     background: color(#a59e97 alpha(0.3));
   }
 
+  & :global(.movedDown) {
+    /* top: 50px; */
+    position: relative
+    /* margin: 8px; */
+  }
+
   & :global(.optionsListResults) {
     position: relative;
     z-index: 1;
     border-top: 54px solid transparent;
+  }
+  & :global(.optionsListResults.multiselect) {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid transparent
   }
 }
 
@@ -32,11 +43,24 @@
       overflow: auto;
       height: calc(100% - 55px);
     }
+    & :global(.optionsListResults.multiselect) {
+      overflow: auto;
+      height: 200px;
+    }
   }
 }
 
 :global(.optionsListSearch) {
   margin: 8px;
+}
+
+
+:global(.saveSelectionsButton) {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+  margin: 8px;
+  padding: 10px;
 }
 
 :global(.optionsListResults) {
@@ -147,4 +171,44 @@
     padding-top: 10px;
     padding-bottom: 10px;
   }
+}
+
+:global(.combinedOptionsContainer){
+  overflow: auto;
+    height: calc(100% - 55px);
+    position: relative;
+    z-index: 1;
+    /* border-top: 54px solid transparent; */
+}
+:global(.optionsListCategories__label){
+  padding: 5px;
+  display: flex;
+}
+:global(.optionsListCategories__item){
+  display: flex;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  position: relative;
+}
+:global(.optionsListCategories__elem){
+  color: #0768d8;
+    font-size: 0.9em;
+    font-weight: 400;
+    cursor: pointer;
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    border: none;
+    padding: 8px 24px;
+    text-align: inherit;
+    /* background: #e1ddd8; */
+}
+:global(.optionsListCategories__checkmark) {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  left: -8px;
+  top: 10px;
+  background: url("../../assets/images/form/tick-blue.svg") center no-repeat;
 }

@@ -195,6 +195,8 @@ export class PersonPickerByType extends React.Component<PersonPickerByTypePropsT
                     options={this.allUsersByTypeOptionsList}
                     loadingOptions={this.isLoading}
                     selectedIcon={<IconCheckmarkGreen width={15} height={15} />}
+                    // multiselect={false}
+                    multiselect={true}
                 />
             </DropdownContainer>
         );
