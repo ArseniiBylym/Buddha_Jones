@@ -56,32 +56,12 @@ export class UserNotificationsCenter extends React.Component<AppOnlyStoreState, 
                 />
                 {this.notificationsLength && !this.showHistory && notifications.visibleMenu !== 'hamburgerMenu' && <div className={s.notificationCounter}>{this.notificationsLength}</div>}
 
-                {/* <div className={s.notificationsLive}>
-                    {notifications &&
-                    notifications.liveNotifications
-                        .filter(notification => notification !== null && typeof notification.title !== 'undefined')
-                        .map(notification => this.renderNotification(notification))}
-                </div> */}
-
                 <div className={s.notificationsHistory}>
                     <div className={s.notificationsHistory__container}>
                         {notifications && notifications.userNotifications && notifications.userNotifications.length > 0 &&
                             notifications.userNotifications!.map(notification => this.renderNotification(notification))
                         }
                     </div>
-                    {/* {notifications !== null &&
-                    notifications.userNotifications.length <= 0 && (
-                        <UserNotification
-                            id={0}
-                            title="You have no recent notifications"
-                            showDate={false}
-                            dismissable={{
-                                allow: false,
-                                onDismiss: null,
-                                dismissAutomaticallyAfterXSeconds: null,
-                            }}
-                        />
-                    )} */}
                 </div>
             </div>
         );
