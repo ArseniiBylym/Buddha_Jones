@@ -189,6 +189,7 @@ return array(
             'Application\Controller\ProjectCampaign' => 'Application\Controller\ProjectCampaignController',
             'Application\Controller\ProjectCampaignOfUser' => 'Application\Controller\ProjectCampaignOfUserController',
             'Application\Controller\ProjectCampaignPeople' => 'Application\Controller\ProjectCampaignPeopleController',
+            'Application\Controller\ProjectCampaignAddn' => 'Application\Controller\ProjectCampaignAddnController',
             'Application\Controller\ProjectCampaignBillingUser' => 'Application\Controller\ProjectCampaignBillingUserController',
             'Application\Controller\ProjectCampaignEditor' => 'Application\Controller\ProjectCampaignEditorController',
             'Application\Controller\ProjectCampaignDesigner' => 'Application\Controller\ProjectCampaignDesignerController',
