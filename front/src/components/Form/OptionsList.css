@@ -175,10 +175,11 @@
   display: flex;
 }
 :global(.optionsListCategories__item){
-  display: block;
+  display: flex;
   padding: 0;
   margin: 0;
   text-align: left;
+  position: relative;
 }
 :global(.optionsListCategories__elem){
   color: #0768d8;
@@ -192,4 +193,12 @@
     padding: 8px 24px;
     text-align: inherit;
     /* background: #e1ddd8; */
+}
+:global(.optionsListCategories__checkmark) {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  left: -8px;
+  top: 10px;
+  background: url("../../assets/images/form/tick-blue.svg") center no-repeat;
 }
