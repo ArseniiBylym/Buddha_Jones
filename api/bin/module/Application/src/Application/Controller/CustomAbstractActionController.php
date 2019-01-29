@@ -5,16 +5,6 @@ namespace Application\Controller;
 use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\Mvc\MvcEvent;
 use Zend\View\Model\JsonModel;
-
-use Application\Entity\Users;
-use Application\Entity\RediOrders;
-use Application\Entity\RediOrderLines;
-use Application\Entity\RediPendingReason;
-use Application\Entity\RediOrderPendingReason;
-use Application\Entity\RediUserCart;
-use Application\Entity\RediUserCartInfo;
-use Namshi\JOSE\SimpleJWS;
-use Namshi\JOSE\Base64\Base64UrlSafeEncoder;
 use \Firebase\JWT\JWT;
 
 class CustomAbstractActionController extends AbstractRestfulController
@@ -67,6 +57,7 @@ class CustomAbstractActionController extends AbstractRestfulController
     protected $_projectRepository;
     protected $_projectEditorProgressRepository;
     protected $_projectToCampaignRepository;
+    protected $_projectToCampaignAddnRepository;
     protected $_projectToCampaignUserRepository;
     protected $_projectToCampaignBillingUserRepository;
     protected $_projectToCampaignEditorRepository;
@@ -170,6 +161,7 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_projectToCampaignDesignerRepository = $this->_em->getRepository('Application\Entity\RediProjectToCampaignDesigner');
         $this->_projectToCampaignEditorRepository = $this->_em->getRepository('Application\Entity\RediProjectToCampaignEditor');
         $this->_projectToCampaignUserRepository = $this->_em->getRepository('Application\Entity\RediProjectToCampaignUser');
+        $this->_projectToCampaignAddnRepository = $this->_em->getRepository('Application\Entity\RediProjectToCampaignAddn');
         $this->_projectPermissionsRepository = $this->_em->getRepository('Application\Entity\RediProjectPermissions');
         $this->_ratecardTypeRepository = $this->_em->getRepository('Application\Entity\RediRatecardType');
         $this->_spotRepository = $this->_em->getRepository('Application\Entity\RediSpot');
@@ -199,7 +191,6 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_workStageRepository = $this->_em->getRepository('Application\Entity\RediWorkStage');
         $this->_userTypeProjectPermissionRepository = $this->_em->getRepository('Application\Entity\RediUserTypeProjectPermission');
 
-
         $this->_activityRepo = $this->getServiceLocator()->get('Application\Entity\Repository\ActivityRepository');
         $this->_billingRepo = $this->getServiceLocator()->get('Application\Entity\Repository\BillingRepository');
         $this->_campaignRepo = $this->getServiceLocator()->get('Application\Entity\Repository\CampaignRepository');
@@ -218,13 +209,13 @@ class CustomAbstractActionController extends AbstractRestfulController
         $this->_versionRepo = $this->getServiceLocator()->get('Application\Entity\Repository\VersionRepository');
 
         $this->getResponse()->getHeaders()
-            // can be accessed by origin
+        // can be accessed by origin
             ->addHeaderLine('Access-Control-Allow-Origin', '*')
-            // set allow methods
+        // set allow methods
             ->addHeaderLine('Access-Control-Allow-Methods', 'POST,PUT,DELETE,GET,OPTIONS')
-            // set allow headers
+        // set allow headers
             ->addHeaderLine('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
-            // allow credentials
+        // allow credentials
             ->addHeaderLine('Access-Control-Allow-Credential', 'true');
 
         if ($this->getRequest()->getMethod() != 'OPTIONS') {
@@ -239,13 +230,13 @@ class CustomAbstractActionController extends AbstractRestfulController
                         $payload = JWT::decode($token, $jwtSecret, array('HS256'));
 
                         if ($payload) {
-                            $this->_user_id = (int)$payload->userId;
+                            $this->_user_id = (int) $payload->userId;
                             $user = $this->_userRepository->find($this->_user_id);
                             $this->_user_type_id = $user->getTypeId();
                         } else {
                             $authFailed = true;
                         }
-                    } catch(\Exception $ex) {
+                    } catch (\Exception $ex) {
                         $authFailed = true;
                     }
                 } else {
@@ -256,7 +247,7 @@ class CustomAbstractActionController extends AbstractRestfulController
                     $response = new JsonModel(array(
                         'status' => 0,
                         'message' => "User authentication failed",
-                        'auth_error' => 1
+                        'auth_error' => 1,
                     ));
                     $e->stopPropagation(true);
                     $e->setViewModel($response);
@@ -271,7 +262,7 @@ class CustomAbstractActionController extends AbstractRestfulController
                 $response = new JsonModel(array(
                     'status' => 0,
                     'message' => "User authentication failed",
-                    'auth_error' => 1
+                    'auth_error' => 1,
                 ));
                 $e->stopPropagation(true);
                 $e->setViewModel($response);
@@ -296,7 +287,7 @@ class CustomAbstractActionController extends AbstractRestfulController
             'GET',
             'POST',
             'PUT',
-            'OPTIONS'
+            'OPTIONS',
         )));
         return $response;
     }
@@ -311,8 +302,9 @@ class CustomAbstractActionController extends AbstractRestfulController
         return false;
     }
 
-    public function processAmount($amount) {
-        $amountValue = (float)preg_replace('/[^0-9\.-]+/i', '', $amount);
+    public function processAmount($amount)
+    {
+        $amountValue = (float) preg_replace('/[^0-9\.-]+/i', '', $amount);
 
         if (preg_match("/\(.+\)/i", $amount, $match)) {
             $value = -$amountValue;
