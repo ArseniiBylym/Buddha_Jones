@@ -8,5 +8,6 @@ export * from './ButtonSend';
 export * from './ButtonAdd';
 export * from './ButtonArrow';
 export * from './ButtonDelete';
+export * from './ButtonExpand';
 export * from './LinkButton';
 export * from './LabelWithConfirmRemoveButton';

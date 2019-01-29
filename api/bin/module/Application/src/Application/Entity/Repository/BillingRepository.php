@@ -619,8 +619,10 @@ class BillingRepository extends EntityRepository
             $dql .= " AND " . implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " GROUP BY ss.projectId , ss.campaignId , ss.spotId
-                ORDER BY updatedAt DESC";
+        $dql .= "
+            GROUP BY ss.projectId , ss.campaignId , ss.spotId
+            ORDER BY updatedAt DESC
+        ";
 
         $query = $this->getEntityManager()->createQuery($dql);
         $query->setFirstResult($offset);

@@ -21,6 +21,7 @@ export interface SpotToBillSentFromApi {
     spotId: number;
     versionId: number | null;
     versionName: string | null;
+    versionSeq: number | null;
     spotSentId: number;
     spotSentRequestId: number;
     spotLineStatusId: number;

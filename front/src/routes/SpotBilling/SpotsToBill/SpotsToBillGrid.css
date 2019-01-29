@@ -1,10 +1,12 @@
+:global(.row).loader {
+    padding-top: 48px;
+}
+
 .grid {
     margin-top: 12px;
-    display: grid;
-    grid-template: auto / 1fr 1fr;
-    gap: 12px;
+    display: block;
 
     & > div {
-        margin-top: 0;
+        margin-top: 24px;
     }
 }

@@ -1,5 +1,6 @@
 import { DataSetEmpty } from 'components/Errors';
 import { DateHandler } from 'helpers/DateHandler';
+import { SortHandler } from 'helpers/SortHandler';
 import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
@@ -112,22 +113,18 @@ export class BillSpotFormActivities extends React.Component<Props, {}> {
     /** Sort all time entries grouped by versions, users, activities types, dates, time */
     @computed
     private get sortedVersions(): ActivityByVersion[] {
-        const sortedVersions = this.versions.sort((versionA, versionB) => {
-            const verSeqA = versionA.versionSequence !== null ? versionA.versionSequence : -1;
-            const verSeqB = versionB.versionSequence !== null ? versionB.versionSequence : -1;
-
-            return verSeqA < 0 && verSeqB < 0
-                ? 0
-                : verSeqA < 0
-                ? 1
-                : verSeqB < 0
-                ? -1
-                : verSeqA > verSeqB
-                ? 1
-                : verSeqA < verSeqB
-                ? -1
-                : 0;
-        });
+        const sortedVersions = this.versions.sort((versionA, versionB) =>
+            SortHandler.sortVersionsBySequenceOrId(
+                {
+                    id: versionA.versionId,
+                    seq: versionA.versionSequence,
+                },
+                {
+                    id: versionB.versionId,
+                    seq: versionB.versionSequence,
+                }
+            )
+        );
 
         return sortedVersions.map(version => {
             return {

@@ -21,26 +21,10 @@ export class SpotsToBillCard extends React.Component<Props, {}> {
         const { projectCampaign } = this.props;
 
         return (
-            <Card className={s.card} key={projectCampaign.projectCampaignId} isExpandable={false} noPadding={true}>
+            <Card key={projectCampaign.projectCampaignId} isExpandable={false} noPadding={true}>
                 <React.Fragment>
                     <div className={s.summary}>
-                        <p>
-                            <span>Studio: </span>
-                            <strong>{projectCampaign.studioName}</strong>
-                        </p>
-
-                        <p>
-                            {(projectCampaign.customerName && projectCampaign.customerTitle && (
-                                <span>{projectCampaign.customerTitle + ': '}</span>
-                            )) ||
-                                (projectCampaign.customerName && <span>Customer: </span>)}
-
-                            {projectCampaign.customerName && <strong>{projectCampaign.customerName}</strong>}
-                        </p>
-                    </div>
-
-                    <div className={s.content}>
-                        <div className={s.headline}>
+                        <div>
                             <LinkButton
                                 goToUrlOnClick={ProjectsActions.constructProjectUrl(
                                     projectCampaign.studioId,
@@ -57,88 +41,134 @@ export class SpotsToBillCard extends React.Component<Props, {}> {
                             </h4>
                         </div>
 
-                        {projectCampaign.producers && projectCampaign.producers.length > 0 && (
-                            <div className={s.producers}>
-                                {projectCampaign.producers.map(producer => {
-                                    const fullName = [producer.firstName, producer.lastName]
-                                        .filter(p => p !== null)
-                                        .join(' ');
+                        <div>
+                            <p>
+                                <span>Client Studio: </span>
+                                <strong>{projectCampaign.studioName}</strong>
+                            </p>
 
-                                    return (
-                                        <p key={producer.userId}>
-                                            <span>{(producer.creativeRoleName || producer.creativeRoleId) + ': '}</span>
-                                            <strong>{fullName}</strong>
-                                        </p>
-                                    );
-                                })}
-                            </div>
-                        )}
+                            <p>
+                                {(projectCampaign.customerName && projectCampaign.customerTitle && (
+                                    <span>{projectCampaign.customerTitle + ': '}</span>
+                                )) ||
+                                    (projectCampaign.customerName && <span>Customer: </span>)}
 
-                        <CardContentBlock
-                            className={s.spots}
-                            title="Select spots to bill:"
-                            titleBackground="light"
-                            titleFontWeight={400}
-                            noBorderOnBottom={true}
-                        >
-                            {projectCampaign.spots
-                                .filter(spot => spot.spotsSent && spot.spotsSent.length > 0)
-                                .map(spot => (
-                                    <CardContentBlock
-                                        key={spot.id}
-                                        title={spot.name}
-                                        noBorderOnBottom={true}
-                                        titleElements={
-                                            <Checkbox
-                                                onChange={this.handleSpotSelectionToggle(
-                                                    spot.id,
-                                                    projectCampaign.projectCampaignId
-                                                )}
-                                                checked={spot.isSelected}
-                                                label={spot.isSelected ? 'In bill' : 'Add to bill'}
-                                                labelOnLeft={true}
-                                            />
-                                        }
-                                    >
-                                        <CardContentTable
-                                            header={[
-                                                { title: 'Date spot sent', align: 'left' },
-                                                { title: 'Editorial', align: 'left' },
-                                                { title: 'Graphics', align: 'left' },
-                                            ]}
-                                        >
-                                            {spot.spotsSent.map(spotSent => (
-                                                <div className={s.spotSentRow} key={spotSent.spotSentId}>
-                                                    <div className={s.spotSentCol}>
-                                                        <Paragraph type="default" size="small">
-                                                            {spotSent.spotSentDate
-                                                                ? DateHandler.printDateObjectAsString(
-                                                                      DateHandler.parseDateStringAsDateObject(
-                                                                          spotSent.spotSentDate
-                                                                      )
-                                                                  )
-                                                                : ''}
-                                                        </Paragraph>
-                                                    </div>
+                                {projectCampaign.customerName && <strong>{projectCampaign.customerName}</strong>}
+                            </p>
 
-                                                    <div className={s.spotSentCol}>
-                                                        <Paragraph type="default" size="small" align="left">
-                                                            {spotSent.spotLineStatus || ''}
-                                                        </Paragraph>
-                                                    </div>
+                            {projectCampaign.producers && projectCampaign.producers.length > 0 && (
+                                <React.Fragment>
+                                    {projectCampaign.producers.map(producer => {
+                                        const fullName = [producer.firstName, producer.lastName]
+                                            .filter(p => p !== null)
+                                            .join(' ');
 
-                                                    <div className={s.spotSentCol}>
-                                                        <Paragraph type="default" size="small" align="left">
-                                                            {spotSent.graphicsStatus || ''}
-                                                        </Paragraph>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </CardContentTable>
-                                    </CardContentBlock>
-                                ))}
-                        </CardContentBlock>
+                                        return (
+                                            <p key={producer.userId}>
+                                                <span>
+                                                    {(producer.creativeRoleName || producer.creativeRoleId) + ': '}
+                                                </span>
+                                                <strong>{fullName}</strong>
+                                            </p>
+                                        );
+                                    })}
+                                </React.Fragment>
+                            )}
+                        </div>
                     </div>
+
+                    <CardContentBlock
+                        className={s.spots}
+                        title="Select spots to bill:"
+                        classNameForTitle={s.spotsTitleBar}
+                        titleBackground="light"
+                        titleFontWeight={400}
+                        noBorderOnBottom={true}
+                    >
+                        {projectCampaign.spots
+                            .filter(spot => spot.spotsSent && spot.spotsSent.length > 0)
+                            .map(spot => (
+                                <CardContentBlock
+                                    key={spot.id}
+                                    classNameForTitle={s.spotsSentHeader}
+                                    classNameForContent={s.spotsSentBlock}
+                                    title={spot.name}
+                                    noBorderOnBottom={true}
+                                    isExpandable={true}
+                                    titleElements={
+                                        <Checkbox
+                                            onChange={this.handleSpotSelectionToggle(
+                                                spot.id,
+                                                projectCampaign.projectCampaignId
+                                            )}
+                                            checked={spot.isSelected}
+                                            label={spot.isSelected ? 'In bill' : 'Add to bill'}
+                                            labelOnLeft={true}
+                                        />
+                                    }
+                                >
+                                    <CardContentTable
+                                        classNameForHeader={s.spotsSentTableHeader}
+                                        header={[
+                                            { title: 'Date spot sent', align: 'left' },
+                                            { title: 'Version', align: 'left' },
+                                            { title: 'Editorial', align: 'left' },
+                                            { title: 'Graphics', align: 'left' },
+                                        ]}
+                                    >
+                                        {spot.spotsSent.map(spotSent => (
+                                            <div className={s.spotSentRow} key={spotSent.spotSentId}>
+                                                <div className={s.spotSentCol}>
+                                                    <Paragraph
+                                                        type={spotSent.spotSentDate ? 'default' : 'dim'}
+                                                        size="small"
+                                                    >
+                                                        {spotSent.spotSentDate
+                                                            ? DateHandler.printDateObjectAsString(
+                                                                  DateHandler.parseDateStringAsDateObject(
+                                                                      spotSent.spotSentDate
+                                                                  )
+                                                              )
+                                                            : 'N/A'}
+                                                    </Paragraph>
+                                                </div>
+
+                                                <div>
+                                                    <Paragraph type="default" size="small" align="left">
+                                                        {spotSent.versionName || spotSent.versionId
+                                                            ? 'Ver. ' +
+                                                              (spotSent.versionName
+                                                                  ? spotSent.versionName
+                                                                  : spotSent.versionId || '1')
+                                                            : ''}
+                                                    </Paragraph>
+                                                </div>
+
+                                                <div className={s.spotSentCol}>
+                                                    <Paragraph
+                                                        type={spotSent.spotLineStatus ? 'default' : 'dim'}
+                                                        size="small"
+                                                        align="left"
+                                                    >
+                                                        {spotSent.spotLineStatus || 'N/A'}
+                                                    </Paragraph>
+                                                </div>
+
+                                                <div className={s.spotSentCol}>
+                                                    <Paragraph
+                                                        type={spotSent.graphicsStatus ? 'default' : 'dim'}
+                                                        size="small"
+                                                        align="left"
+                                                    >
+                                                        {spotSent.graphicsStatus || 'N/A'}
+                                                    </Paragraph>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </CardContentTable>
+                                </CardContentBlock>
+                            ))}
+                    </CardContentBlock>
                 </React.Fragment>
             </Card>
         );

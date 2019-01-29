@@ -1088,6 +1088,7 @@ class SpotRepository extends EntityRepository
                         s.spotName,
                         ss.versionId,
                         v.versionName,
+                        v.seq AS versionSeq,
                         ss.id AS spotSentId,
                         ss.requestId AS spotSentRequestId,
                         ss.spotSentDate,
