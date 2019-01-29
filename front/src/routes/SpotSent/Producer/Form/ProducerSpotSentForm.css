@@ -219,3 +219,16 @@
     transform: translateY(30px);
     font-size: .95em;
 }
+.deadlineContainer{
+    padding: 10px 0;
+    width: 30%;
+    margin-left: auto;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+}
+.deadlineContainer__time{
+    padding: 5px;
+    background-color: #efebe6;
+    border: 1px solid #cac7c4;
+}
