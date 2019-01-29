@@ -86,6 +86,7 @@ export class SpotsToBillCard extends React.Component<Props, {}> {
                                 .map(spot => (
                                     <CardContentBlock
                                         key={spot.id}
+                                        classNameForContent={s.spotsSentBlock}
                                         title={spot.name}
                                         noBorderOnBottom={true}
                                         isExpandable={true}

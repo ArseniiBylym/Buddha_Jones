@@ -97,6 +97,10 @@
     }
 }
 
+.spotsSentBlock {
+    background: #f6f5f4;
+}
+
 .spotSentRow {
     display: contents;
 
@@ -114,7 +118,7 @@
 
     &:first-child {
         & > div {
-            padding-top: 12px;
+            padding-top: 24px;
         }
     }
 
