@@ -73,3 +73,11 @@
         font-weight: 700;
     }
 }
+
+.titleElements {
+    flex: 0 1 auto;
+    display: flex;
+    justify-content: flex-end;
+    align-content: center;
+    align-items: center;
+}
