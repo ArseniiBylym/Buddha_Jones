@@ -819,17 +819,18 @@ class SpotSentController extends CustomAbstractActionController
 
     public function cloneSpotSentRowForFinishRequest($spotSentId)
     {
-        // $spotSentRow = $this->_spotSentRepository->find($spotSentId);
+        $spotSentRow = $this->_spotSentRepository->find($spotSentId);
 
-        // if ($spotSentRow && !$spotSentRow->getCopyFrom()) {
-        //     $newSpotSentRow = clone $spotSentRow;
+        if ($spotSentRow && !$spotSentRow->getCopyFrom()) {
+            $newRequestId = $this->_spotRepo->getNextSpotSentRequestId();
+            $newSpotSentRow = clone $spotSentRow;
 
-        //     $newSpotSentRow->setId(null);
-        //     $newSpotSentRow->setCopyFrom($spotSentId);
-        //     $newSpotSentRow->setFinishRequest(1);
+            $newSpotSentRow->setCopyFrom($spotSentId);
+            $newSpotSentRow->setRequestId($newRequestId);
+            $newSpotSentRow->setFinishRequest(1);
 
-        //     $this->_em->persist($newSpotSentRow);
-        //     $this->_em->flush();
-        // }
+            $this->_em->persist($newSpotSentRow);
+            $this->_em->flush();
+        }
     }
 }
