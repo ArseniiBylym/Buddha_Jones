@@ -665,11 +665,11 @@ export class SpotSentActionsClass {
     }
     @action    
     public handleInputFiles = files => {
-        let filesArray: any[] = [];
+        let filesObject: any = {};
         for (let file of files) {
             FileHandler.readFileAsDataUri(file).then((result) => {
-                filesArray.push(result.target.result);
-                SpotSentStore.spotSentDetails.spec_sheet_file = filesArray;
+                filesObject[file.name] = result.target.result;
+                SpotSentStore.spotSentDetails.spec_sheet_file = filesObject;
             });
         }
 

@@ -191,7 +191,7 @@ class ProducerSpotSentFormFinishRequest extends React.Component<ProducerSpotSent
                     <div className={s.finishRequestSection}>
                         <h3>Spec sheet and Tags</h3>
                         <input type="file" id="file" name="file" multiple={true} onChange={this.inputFilesHandler}/>
-                        {spotSentDetails.spec_sheet_file && spotSentDetails.spec_sheet_file.length > 0 &&
+                        {spotSentDetails.spec_sheet_file && 
                             <div className={s.filesList}>
                                 {this.getSpecSheetFiles()}
                             </div> 
@@ -234,22 +234,45 @@ class ProducerSpotSentFormFinishRequest extends React.Component<ProducerSpotSent
     }
 
     private getSpecSheetFiles = () => {
-       const files = this.props.store!.spotSent.spotSentDetails.spec_sheet_file;
-       if (files.length > 0) {
-           return files.map((item, i) => {
-            return (
-                <div key={item}>
-                    <a href={`${item}`} target="_blank">
-                        <div className="iconPdf"/>
-                        <div className={s.fileName}>File {i + 1}</div>
-                    </a>
-                </div>
-            );
-           });
+       const filesObject = this.props.store!.spotSent.spotSentDetails.spec_sheet_file;
+
+       if (Object.keys(filesObject).length > 0) {
+            let elems: any = [];
+            for (let key in filesObject) {
+                if (key && filesObject.hasOwnProperty(key)) {
+                    elems.push({name: key, value: filesObject[key]});
+                }
+            }
+            return elems.map((item, i) => {
+                return (
+                    <div key={item.name}>
+                        <a href={`${item.value}`} target="_blank">
+                            <div className="iconPdf"/>
+                            <div className={s.fileName}>{item.name}</div>
+                        </a>
+                    </div>
+                );
+            });
        } else {
            return null;
        }
     }
+
+        // console.log('hello');
+    //    if (files.length > 0) {
+    //        return files.map((item, i) => {
+    //         return (
+    //             <div key={item}>
+    //                 <a href={`${item}`} target="_blank">
+    //                     <div className="iconPdf"/>
+    //                     <div className={s.fileName}>File {i + 1}</div>
+    //                 </a>
+    //             </div>
+    //         );
+    //        });
+    //    } else {
+    //        return null;
+    //    }
 
     private getFlexDirrection = (value) => {
         if (value.parent === 1) {
