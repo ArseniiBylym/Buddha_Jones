@@ -121,6 +121,15 @@ export const routes: Route[] = [
         allowAllUsers: true,
     },
     {
+        component: ProducerSpotSentFormAsync,
+        key: 'producer-spot-sent-form-with-path',
+        accessKey: RouteAccessKey.SpotSentByProducer,
+        name: 'Spot sent',
+        path: '/portal/studio/producer-spot-sent-details/:id/:path',
+        exact: false,
+        allowAllUsers: true,
+    },
+    {
         component: SpotsPostAsync,
         key: 'spot-post-finish-request',
         accessKey: RouteAccessKey.SpotBilling,
