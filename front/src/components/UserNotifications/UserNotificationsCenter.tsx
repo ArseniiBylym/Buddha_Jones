@@ -57,6 +57,7 @@ export class UserNotificationsCenter extends React.Component<AppOnlyStoreState, 
                 {this.notificationsLength && !this.showHistory && notifications.visibleMenu !== 'hamburgerMenu' && <div className={s.notificationCounter}>{this.notificationsLength}</div>}
 
                 <div className={s.notificationsHistory}>
+                    <div className={s.notificationsHistory__header}>Notifications</div>
                     <div className={s.notificationsHistory__container}>
                         {notifications && notifications.userNotifications && notifications.userNotifications.length > 0 &&
                             notifications.userNotifications!.map(notification => this.renderNotification(notification))
