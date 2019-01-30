@@ -69,7 +69,25 @@ export class NotificationsActionsClass {
     }
 
     @action
+    public moveNotificationToAll = (notification) => {
+        const formatedNorifivation = {
+            id: Number(notification.id),
+            date: new Date(notification.createdAt.date),
+            type: NotificationContentType.Default,
+            title: notification.message,
+        };
+        NotificationsStore.allNotifications.push(formatedNorifivation);
+    }
+
+    @action
     public dismissNotification = (id: string) => {
+        const currentNotification = NotificationsStore.userNotifications.find(item => {
+            return item.id === id;
+        });
+        if (currentNotification) {
+            this.moveNotificationToAll(currentNotification);
+        }
+
         NotificationsStore.userNotifications = NotificationsStore.userNotifications.filter(item => {
             return item.id !== id;
         });
