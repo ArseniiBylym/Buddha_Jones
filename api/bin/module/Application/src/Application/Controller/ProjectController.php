@@ -4,14 +4,8 @@ namespace Application\Controller;
 
 use Application\Entity\RediProject;
 use Application\Entity\RediProjectHistory;
-use Application\Entity\RediProjectManager;
-use Application\Entity\RediProjectProducer;
 use Application\Entity\RediProjectUser;
 use Zend\View\Model\JsonModel;
-use League\Csv\Reader;
-
-use Application\Entity\RediCcStatement;
-use Application\Entity\RediCcStatementLine;
 
 class ProjectController extends CustomAbstractActionController
 {
@@ -37,18 +31,18 @@ class ProjectController extends CustomAbstractActionController
         $projectPrefixViewAccess = $this->_usersRepo->extractPermission($this->_user_permission, 34, 'view_or_edit');
 
         $filter['search'] = trim($this->getRequest()->getQuery('search', ''));
-        $filter['studio_id'] = (int)$this->getRequest()->getQuery('studio_id', 0);
-        $filter['customer_id'] = (int)$this->getRequest()->getQuery('customer_id', 0);
-        $filter['detailed'] = (int)$this->getRequest()->getQuery('detailed', 0);
+        $filter['studio_id'] = (int) $this->getRequest()->getQuery('studio_id', 0);
+        $filter['customer_id'] = (int) $this->getRequest()->getQuery('customer_id', 0);
+        $filter['detailed'] = (int) $this->getRequest()->getQuery('detailed', 0);
         $filter['project_code'] = $this->getRequest()->getQuery('project_code', null);
         $filter['project_release'] = $this->getRequest()->getQuery('project_release', null);
         $filter['all_project_access'] = $allProjectAccess;
         $filter['project_name_view_access'] = $projectNameViewAccess;
         $filter['project_code_name_view_access'] = $projectCodeNameViewAccess;
         $filter['sort'] = $this->getRequest()->getQuery('sort', 'id');
-        $offset = (int)trim($this->getRequest()->getQuery('offset', 0));
-        $length = (int)trim($this->getRequest()->getQuery('length', 10));
-        $getUser = (int)trim($this->getRequest()->getQuery('get_user', 0));
+        $offset = (int) trim($this->getRequest()->getQuery('offset', 0));
+        $length = (int) trim($this->getRequest()->getQuery('length', 10));
+        $getUser = (int) trim($this->getRequest()->getQuery('get_user', 0));
 
         $filter['image_path'] = $this->_siteUrl . 'thumb/profile_image/';
         $filter['project_to_campaign_user_id'] = $this->_user_id;
@@ -68,6 +62,7 @@ class ProjectController extends CustomAbstractActionController
                     $row['designer'] = array();
                     $row['editor'] = array();
                     $row['billingUser'] = array();
+                    $row['addnUser'] = array();
 
                     if ($canViewCreativeTeam) {
                         $row['user'] = $this->_campaignRepo->getCampaignProjectPeople('user', $row['projectCampaignId'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
@@ -83,6 +78,10 @@ class ProjectController extends CustomAbstractActionController
 
                     if ($canViewBilling) {
                         $row['billingUser'] = $this->_campaignRepo->getCampaignProjectPeople('billing', $row['projectCampaignId'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
+                    }
+
+                    if ($canViewCreativeTeam) {
+                        $row['addnUser'] = $this->_campaignRepo->getCampaignProjectPeople('addn', $row['projectCampaignId'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
                     }
 
                     $row['customerContact'] = $this->_customerRepo->getCampaignProjectCustomerContact($row['projectCampaignId']);
@@ -143,9 +142,8 @@ class ProjectController extends CustomAbstractActionController
             'message' => 'Request successful',
             'total_count' => $totalCount,
             'object_count' => count($data),
-            'data' => $data
+            'data' => $data,
         );
-
 
         return new JsonModel($response);
     }
@@ -158,15 +156,14 @@ class ProjectController extends CustomAbstractActionController
             $response = array(
                 'status' => 1,
                 'message' => "Request successful",
-                'data' => $responseData
+                'data' => $responseData,
             );
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'Project not found'
+                'message' => 'Project not found',
             );
         }
-
 
         if ($response['status'] == 0) {
             $this->getResponse()->setStatusCode(400);
@@ -185,13 +182,13 @@ class ProjectController extends CustomAbstractActionController
             $canEditProjectPrefix = $this->_usersRepo->extractPermission($this->_user_permission, 34, 'edit');
 
             if ($canCreateProject) {
-                $studioId = (int)(isset($data['studio_id']) ? trim($data['studio_id']) : 0);
+                $studioId = (int) (isset($data['studio_id']) ? trim($data['studio_id']) : 0);
                 $projectName = trim(($canEditProjectName && !empty($data['name'])) ? trim($data['name']) : '');
                 $notes = trim(isset($data['notes']) ? $data['notes'] : '');
                 $projectCode = ($canEditProjectCodeName && !empty($data['project_code'])) ? trim($data['project_code']) : null;
                 $projectPrefix = ($canEditProjectPrefix && !empty($data['project_prefix'])) ? trim($data['project_prefix']) : null;
                 $projectRelease = ($canEditReleaseDate && !empty($data['project_release'])) ? $data['project_release'] : null;
-                $confidential =  (!empty($data['confidential'])) ? $data['confidential'] : 0;
+                $confidential = (!empty($data['confidential'])) ? $data['confidential'] : 0;
                 $type = (!empty($data['type'])) ? $data['type'] : "B";
                 $users = json_decode(isset($data['user']) ? $data['user'] : null, true);
 
@@ -255,7 +252,7 @@ class ProjectController extends CustomAbstractActionController
 
                             $this->_em->flush();
                         }
-                    // project history
+                        // project history
                         if ($projectName && $projectCode) {
                             $projectNameString = '"' . $projectName . '" (codename: "' . $projectCode . '")';
                         } else if ($projectName) {
@@ -264,7 +261,7 @@ class ProjectController extends CustomAbstractActionController
                             $projectNameString = '"' . $projectCode . '"';
                         }
 
-                    // add project crated history
+                        // add project crated history
                         $historyMessage = 'Project created with name "' . $projectNameString . '"';
                         $projectHistory = new RediProjectHistory();
                         $projectHistory->setProjectId($projectId);
@@ -276,7 +273,6 @@ class ProjectController extends CustomAbstractActionController
 
                         $data = $this->getSingle($projectId);
                         $data['project_id'] = $projectId;
-
 
                         $response = array(
                             'status' => 1,
@@ -313,13 +309,13 @@ class ProjectController extends CustomAbstractActionController
 
         try {
             if ($canCreateProject) {
-                $studioId = isset($data['studio_id']) ? (int)trim($data['studio_id']) : null;
+                $studioId = isset($data['studio_id']) ? (int) trim($data['studio_id']) : null;
                 $projectName = ($canEditProjectName && isset($data['name'])) ? trim($data['name']) : null;
                 $notes = isset($data['notes']) ? trim($data['notes']) : null;
                 $projectCode = ($canEditProjectCodeName && !empty($data['project_code'])) ? $data['project_code'] : null;
                 $projectPrefix = ($canEditProjectPrefix && !empty($data['project_prefix'])) ? $data['project_prefix'] : null;
                 $projectRelease = ($canEditReleaseDate && !empty($data['project_release'])) ? $data['project_release'] : null;
-                $confidential =  (isset($data['confidential'])) ? (int)$data['confidential'] : null;
+                $confidential = (isset($data['confidential'])) ? (int) $data['confidential'] : null;
                 $type = (!empty($data['type'])) ? $data['type'] : null;
                 $users = json_decode(isset($data['user']) ? $data['user'] : null, true);
 
@@ -333,7 +329,7 @@ class ProjectController extends CustomAbstractActionController
                     if ($projectName || $projectCode || $notes || $studioId) {
                         if ($projectName || $projectCode) {
                             if ($project->getProjectName() != $projectName || $project->getProjectCode() != $projectCode) {
-                            // project history
+                                // project history
                                 if (!$projectName) {
                                     $projectName = $project->getProjectName();
                                 }
@@ -429,7 +425,7 @@ class ProjectController extends CustomAbstractActionController
                         $response = array(
                             'status' => 1,
                             'message' => 'Project updated successfully.',
-                            'data' => $data
+                            'data' => $data,
                         );
 
                     } else {
@@ -493,7 +489,8 @@ class ProjectController extends CustomAbstractActionController
                     $row['designer'] = array();
                     $row['editor'] = array();
                     $row['billingUser'] = array();
-                    
+                    $row['addnUser'] = array();
+
                     if ($canViewCreativeTeam) {
                         $row['user'] = $this->_campaignRepo->getCampaignProjectPeople('user', $row['projectCampaignId'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
                     }
@@ -508,6 +505,10 @@ class ProjectController extends CustomAbstractActionController
 
                     if ($canViewBilling) {
                         $row['billingUser'] = $this->_campaignRepo->getCampaignProjectPeople('billing', $row['projectCampaignId'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
+                    }
+
+                    if ($canViewCreativeTeam) {
+                        $row['addnUser'] = $this->_campaignRepo->getCampaignProjectPeople('addn', $row['projectCampaignId'], null, null, null, $this->_siteUrl . 'thumb/profile_image/');
                     }
 
                     $row['customerContact'] = $this->_customerRepo->getCampaignProjectCustomerContact($row['projectCampaignId']);

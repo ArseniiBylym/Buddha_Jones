@@ -426,9 +426,9 @@ class SpotSentController extends CustomAbstractActionController
                     $spotSent->setSpotResend($svd['spot_resend']);
                 }
 
-                if ($svd['finish_request'] !== null) {
-                    $spotSent->setFinishRequest($svd['finish_request']);
-                }
+                // if ($svd['finish_request'] !== null) {
+                //     $spotSent->setFinishRequest($svd['finish_request']);
+                // }
 
                 if ($svd['line_status_id'] !== null) {
                     $spotSent->setLineStatusId($svd['line_status_id']);
@@ -481,6 +481,7 @@ class SpotSentController extends CustomAbstractActionController
 
                 $this->_em->persist($spotSent);
                 $this->_em->flush();
+
                 $spotSentId = $spotSent->getId();
 
                 if ($svd['graphics_file']) {
@@ -508,6 +509,11 @@ class SpotSentController extends CustomAbstractActionController
                     }
 
                     $this->_em->flush();
+                }
+
+                // if finish_request = 1 and line_status_id = 2 then duplicate that row
+                if ($svd['finish_request'] == 1 && $svd['line_status_id'] == 2) {
+                    $this->cloneSpotSentRowForFinishRequest($spotSentId);
                 }
 
                 $spotSentIds[] = $spotSentId;
@@ -809,5 +815,21 @@ class SpotSentController extends CustomAbstractActionController
         }
 
         $this->_notificationRepo->sendSpotSentNoficationByRequestId($requestId, $this->_user_id);
+    }
+
+    public function cloneSpotSentRowForFinishRequest($spotSentId)
+    {
+        // $spotSentRow = $this->_spotSentRepository->find($spotSentId);
+
+        // if ($spotSentRow && !$spotSentRow->getCopyFrom()) {
+        //     $newSpotSentRow = clone $spotSentRow;
+
+        //     $newSpotSentRow->setId(null);
+        //     $newSpotSentRow->setCopyFrom($spotSentId);
+        //     $newSpotSentRow->setFinishRequest(1);
+
+        //     $this->_em->persist($newSpotSentRow);
+        //     $this->_em->flush();
+        // }
     }
 }
