@@ -294,6 +294,7 @@ export class ProjectBoardCampaigns extends React.Component<ProjectBoardCampaigns
                         projectId={this.props.project.projectId}
                         campaign={campaign}
                         isHeaderFixed={this.campaignsWithFixedHeader.indexOf(campaign.projectCampaignId) !== -1}
+                        projectConfidential={this.props.project.confidential}
                     />
                 );
             }
