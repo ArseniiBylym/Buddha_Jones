@@ -46,6 +46,7 @@ export class UserNotification extends React.Component<any, {}> {
                     <div className={s.userNotification__message}>{this.props.message}</div>
                     {this.props.link && 
                         <div className={s.userNotification__linkButton}>
+                            {/* <a href={`http://localhost:3000${this.props.link}`} target="_blank" className={s.userNotification__link}> */}
                             <a href={`http://buddhastage.redidemo.com${this.props.link}`} target="_blank" className={s.userNotification__link}>
                                 Go to the spot
                             </a>
