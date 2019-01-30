@@ -43,8 +43,14 @@ export class UserNotification extends React.Component<any, {}> {
         return (
             <div className={s.userNotification}>
                 <div className={s.userNotification__header}>
-                   <div className={s.userNotification__message}>{this.props.message}</div>
-                   {this.props.link && <div className={s.userNotification__link}>{this.props.link}</div>}
+                    <div className={s.userNotification__message}>{this.props.message}</div>
+                    {this.props.link && 
+                        <div className={s.userNotification__linkButton}>
+                            <a href={`http://buddhastage.redidemo.com${this.props.link}`} target="_blank" className={s.userNotification__link}>
+                                Go to the spot
+                            </a>
+                        </div>
+                    }
                 </div>
                 <div className={s.userNotification__actions}>
                     <div className={s.userNotification__acitons_complete} onClick={this.completeAction}>Complete</div>
