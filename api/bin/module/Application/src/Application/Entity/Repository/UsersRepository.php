@@ -1,8 +1,8 @@
 <?php
 namespace Application\Entity\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
 use Zend\Config\Config;
 use Zend\Form\Annotation\Type;
 
@@ -120,18 +120,14 @@ class UsersRepository extends EntityRepository
     // new search function. remove previous one if not required
     public function searchUser($search = '', $ids = [], $class = [], $type = [], $offset = 0, $length = 10, $userAccess = array())
     {
-        $selectColumn = ' a.id ';
 
-        if ($userAccess['can_access_basic_data']) {
-            $selectColumn = " a.id, a.username, a.firstName, a.lastName,
+        $selectColumn = " a.id, a.username, a.firstName, a.lastName,
                             a.nickName,
                             a.image, a.email,
                             a.initials, a.typeId, ut.typeName, utc.class,
-                            a.lastLoginDate, a.createdDate,
                             a.status ";
-        }
 
-        if ($userAccess['can_access_extra_data']) {
+        if (!empty($userAccess['can_access_extra_data']) && !empty($userAccess['get_extra_info'])) {
             $selectColumn = " a.id, a.username,
                             a.firstName, a.lastName, a.nickName,
                             a.image, a.email,
@@ -207,10 +203,9 @@ class UsersRepository extends EntityRepository
                         a.email, a.image,
                         a.firstName, a.lastName, a.initials,
                         a.typeId, ut.typeName,
-                        a.lastLoginDate, a.createdDate,
                         a.status ";
 
-        if (!empty($userAccess['can_access_extra_data'])) {
+        if (!empty($userAccess['can_access_extra_data']) && !empty($userAccess['get_extra_info'])) {
             $selectColumn .= " , a.salaryType, a.salaryAmount,
                             a.minHour, a.hourlyRate ";
         }
@@ -266,7 +261,6 @@ class UsersRepository extends EntityRepository
                             a.lastLoginDate, a.createdDate,
                             a.status ";
         }
-
 
         $dql = "SELECT " . $selectColumn . "
                 FROM \Application\Entity\RediUser a
@@ -356,9 +350,8 @@ class UsersRepository extends EntityRepository
 
         $result = $query->getArrayResult();
 
-        return (int)$result[0]['total_count'];
+        return (int) $result[0]['total_count'];
     }
-
 
     public function searchStaff($search = '', $offset = 0, $length = 10)
     {
@@ -383,8 +376,8 @@ class UsersRepository extends EntityRepository
         $data = $query->getArrayResult();
 
         foreach ($data as &$row) {
-            $row['rate'] = (float)$row['rate'];
-            $row['minHour'] = (int)$row['minHour'];
+            $row['rate'] = (float) $row['rate'];
+            $row['minHour'] = (int) $row['minHour'];
         }
         return $data;
     }
@@ -402,8 +395,8 @@ class UsersRepository extends EntityRepository
 
         if (isset($staff[0])) {
             $response = $staff[0];
-            $response['rate'] = (float)$response['rate'];
-            $response['minHour'] = (int)$response['minHour'];
+            $response['rate'] = (float) $response['rate'];
+            $response['minHour'] = (int) $response['minHour'];
         } else {
             $response = null;
         }
@@ -430,7 +423,7 @@ class UsersRepository extends EntityRepository
 
         $result = $query->getArrayResult();
 
-        return (int)$result[0]['total_count'];
+        return (int) $result[0]['total_count'];
     }
 
     public function getUserPermission($userTypeId, $setKey = false)
@@ -480,16 +473,16 @@ class UsersRepository extends EntityRepository
 
         switch ($options) {
             case 'view':
-                return (bool)($selectedPermission['canView']);
+                return (bool) ($selectedPermission['canView']);
                 break;
             case 'edit':
-                return (bool)($selectedPermission['canEdit']);
+                return (bool) ($selectedPermission['canEdit']);
                 break;
             case 'view_or_edit':
-                return (bool)($selectedPermission['canView'] || $selectedPermission['canEdit']);
+                return (bool) ($selectedPermission['canView'] || $selectedPermission['canEdit']);
                 break;
             case 'view_and_edit':
-                return (bool)($selectedPermission['canView'] && $selectedPermission['canEdit']);
+                return (bool) ($selectedPermission['canView'] && $selectedPermission['canEdit']);
                 break;
         }
 
@@ -513,31 +506,34 @@ class UsersRepository extends EntityRepository
         );
     }
 
-    public function getSpotBillingAccess($userTypeId) {
-        return (bool)in_array($userTypeId, $this->_billingUserTypeIds);
+    public function getSpotBillingAccess($userTypeId)
+    {
+        return (bool) in_array($userTypeId, $this->_billingUserTypeIds);
     }
 
-    public function getStudioRateCardAccess($userTypeId) {
-        return (bool)in_array($userTypeId, $this->_billingUserTypeIds);
+    public function getStudioRateCardAccess($userTypeId)
+    {
+        return (bool) in_array($userTypeId, $this->_billingUserTypeIds);
     }
 
-    public function getNewCustomerApproval($userTypeId) {
+    public function getNewCustomerApproval($userTypeId)
+    {
         $userPermission = $this->getUserPermission($userTypeId, true);
         $canEditCustomerNew = $this->extractPermission($userPermission, 33, 'view_or_edit');
 
-        return (bool)$canEditCustomerNew;
+        return (bool) $canEditCustomerNew;
     }
 
     public function getUserTimeCardAccess($userTypeId)
     {
-        $response = (bool)($userTypeId == 100);
+        $response = (bool) ($userTypeId == 100);
 
         return $response;
     }
 
     public function getProjectBoardPermissionAccess($userTypeId)
     {
-        $response = (bool)($userTypeId == 100);
+        $response = (bool) ($userTypeId == 100);
 
         return $response;
     }
@@ -631,9 +627,9 @@ class UsersRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         $response = array(
-            'can_access_basic_data' => (bool)(isset($result[0]['canAccessBasicData']) ? $result[0]['canAccessBasicData'] : false),
-            'can_access_extra_data' => (bool)(isset($result[0]['canAccessExtraData']) ? $result[0]['canAccessExtraData'] : false),
-            'can_edit' => (bool)(isset($result[0]['canAccessExtraData']) ? $result[0]['canAccessExtraData'] : false),
+            'can_access_basic_data' => (bool) (isset($result[0]['canAccessBasicData']) ? $result[0]['canAccessBasicData'] : false),
+            'can_access_extra_data' => (bool) (isset($result[0]['canAccessExtraData']) ? $result[0]['canAccessExtraData'] : false),
+            'can_edit' => (bool) (isset($result[0]['canAccessExtraData']) ? $result[0]['canAccessExtraData'] : false),
         );
 
         return $response;
@@ -693,9 +689,9 @@ class UsersRepository extends EntityRepository
         $result = $query->getArrayResult();
 
         foreach ($result as &$row) {
-            $row['userTypeId'] = (int)$row['userTypeId'];
-            $row['canView'] = (int)$row['canView'];
-            $row['canEdit'] = (int)$row['canEdit'];
+            $row['userTypeId'] = (int) $row['userTypeId'];
+            $row['canView'] = (int) $row['canView'];
+            $row['canEdit'] = (int) $row['canEdit'];
         }
 
         return $result;
@@ -716,12 +712,13 @@ class UsersRepository extends EntityRepository
             return false;
         }
 
-        $userTypeId = (int)$result[0]['typeId'];
+        $userTypeId = (int) $result[0]['typeId'];
 
         return in_array($userTypeId, $this->_billingUserTypeIds);
     }
 
-    public function getTypeIdsByName($typeName) {
+    public function getTypeIdsByName($typeName)
+    {
         switch ($typeName) {
             case 'music':
                 $typeIds = $this->_musicUserTypeIds;
@@ -769,7 +766,7 @@ class UsersRepository extends EntityRepository
         $query->setParameter('user_id', $userId);
         $result = $query->getArrayResult();
 
-        return (!empty($result[0]['clockin'])?$result[0]['clockin'] : null);
+        return (!empty($result[0]['clockin']) ? $result[0]['clockin'] : null);
     }
 
     public function getUserClockinByDate($userId, $date)
@@ -790,7 +787,7 @@ class UsersRepository extends EntityRepository
         $query->setParameter('end_date', $date->format('Y-m-d 23:59:59'));
         $result = $query->getArrayResult();
 
-        return (!empty($result[0])?$result[0] : null);
+        return (!empty($result[0]) ? $result[0] : null);
     }
 
     /** $roleIds - `null` is equal to users without a role, otherwise send array of role ids */
@@ -848,7 +845,7 @@ class UsersRepository extends EntityRepository
         $query->setParameter('user_id', $userId);
         $result = $query->getArrayResult();
 
-        return (!empty($result[0]['minHour']) ? (int)$result[0]['minHour'] : 8);
+        return (!empty($result[0]['minHour']) ? (int) $result[0]['minHour'] : 8);
     }
 
     public function getAllUserType()
@@ -867,10 +864,10 @@ class UsersRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery($dql);
         $result = $query->getArrayResult();
 
-        $result = array_map(function($row) {
+        $result = array_map(function ($row) {
             $row['timeEntryApprover'] = (!empty($row['timeEntryApprovingCount'])) ? 1 : 0;
-            $row['userCount'] = (int)$row['userCount'];
-            $row['timeEntryApprovingCount'] = (int)$row['timeEntryApprovingCount'];
+            $row['userCount'] = (int) $row['userCount'];
+            $row['timeEntryApprovingCount'] = (int) $row['timeEntryApprovingCount'];
 
             return $row;
         }, $result);
