@@ -93,6 +93,7 @@ export interface CampaignDetails {
     billingTeam: ProjectCampaignBillingUser[];
     designTeam: ProjectCampaignUser[];
     editorialTeam: ProjectCampaignUser[];
+    additionalTeam?: ProjectCampaignUser[];
     clientSelected: {
         id: number | null;
         name: string | null;
@@ -194,6 +195,7 @@ interface ProjectDetailsCampaignFromApi {
     user: ProjectCampaignCreativeUserFromApi[];
     designer: ProjectCampaignUserFromApi[];
     editor: ProjectCampaignUserFromApi[];
+    additional?: ProjectCampaignUserFromApi[] | any[];
     billingUser: ProjectCampaignBillingUserFromApi[];
     approvedByBilling: boolean;
     channelId: number | null;

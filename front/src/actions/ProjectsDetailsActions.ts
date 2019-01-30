@@ -132,6 +132,7 @@ export class ProjectDetailsActionsClass {
                     billingTeam: c.billingUser,
                     designTeam: c.designer,
                     editorialTeam: c.editor,
+                    additionalTeam: c.additional ? c.additional : [],
                     hidden: false,
                     spots:
                         typeof c.spot !== 'undefined' && c.spot
@@ -647,9 +648,9 @@ export class ProjectDetailsActionsClass {
 
                         await API.postData(APIPath.PROJECT_CAMPAIGN_EDITOR, preparedPostData);
                     } else if (userType === 'additional') {
-                        // campaign.editorialTeam.push(preparedUser);
+                        campaign.additionalTeam!.push(preparedUser);
 
-                        // await API.postData(APIPath.PROJECT_CAMPAIGN_EDITOR, preparedPostData);
+                        await API.postData(APIPath.PROJECT_CAMPAIGN_ADDN, preparedPostData);
                     } else if (userType === 'creative') {
                         campaign.creativeTeam.push({
                             ...preparedUser,
@@ -717,6 +718,20 @@ export class ProjectDetailsActionsClass {
                             await API.deleteData(
                                 APIPath.PROJECT_CAMPAIGN_EDITOR + '/' + projectCampaignId + '/' + userId
                             );
+                        }
+                    } else if (userType === 'additional') {
+                        if (campaign.additionalTeam) {
+
+                            userIndex = campaign.additionalTeam.findIndex(user => user.userId === userId);
+                            if (userIndex !== -1) {
+                                campaign.additionalTeam = [
+                                    ...campaign.additionalTeam.slice(0, userIndex),
+                                    ...campaign.additionalTeam.slice(userIndex + 1),
+                                ];
+                                await API.deleteData(
+                                    APIPath.PROJECT_CAMPAIGN_ADDN + '/' + projectCampaignId + '/' + userId
+                                );
+                            }
                         }
                     } else {
                         userIndex = campaign.creativeTeam.findIndex(user => user.userId === userId);

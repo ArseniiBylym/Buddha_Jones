@@ -113,10 +113,10 @@ export class ProjectBoardCampaignPeople extends React.Component<
                             : this.props.type === 'editorial'
                                 ? campaign.editorialTeam
                                 : this.props.type === 'additional'
-                                    ? campaign.editorialTeam
+                                    ? campaign.additionalTeam
                                     : [];
 
-            if (campaignUsersOfCurrentType.length > 0) {
+            if (campaignUsersOfCurrentType && campaignUsersOfCurrentType.length > 0) {
                 copyable.push({
                     projectCampaignId: campaign.projectCampaignId,
                     campaignName: campaign.name || '',
@@ -237,7 +237,9 @@ export class ProjectBoardCampaignPeople extends React.Component<
                                                           ? [UserTypeClassId.EditorialTeam]
                                                           : this.props.type === 'design'
                                                               ? [UserTypeClassId.GraphicsTeam]
-                                                              : []
+                                                              : this.props.type === 'additional'
+                                                                ? [UserTypeClassId.AdditionalTeam]
+                                                                : []
                                           }
                                       />
                                   ),

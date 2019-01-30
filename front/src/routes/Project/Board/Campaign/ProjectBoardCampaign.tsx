@@ -460,7 +460,7 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                                 projectId={this.props.projectId}
                                 projectCampaignId={this.props.campaign.projectCampaignId}
                                 campaignId={this.props.campaign.campaignId}
-                                selectedUsers={this.props.campaign.designTeam}
+                                selectedUsers={this.props.campaign.additionalTeam}
                             />
                         </AnimateHeight>
 

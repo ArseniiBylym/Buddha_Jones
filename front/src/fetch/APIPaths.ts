@@ -12,6 +12,7 @@ export enum APIPath {
     PROJECT_CAMPAIGN_BILLING_USER           = '/project-campaign-billing-user',
     PROJECT_CAMPAIGN_DESIGNER               = '/project-campaign-designer',
     PROJECT_CAMPAIGN_EDITOR                 = '/project-campaign-editor',
+    PROJECT_CAMPAIGN_ADDN                   = '/project-campaign-addn-user',
     USER_PROJECT_PERMISSIONS                = '/user-project-permissions',
     USER_PROJECT_TYPE_PERMISSIONS           = '/user-type-project-permissions',
     CAMPAIGN                                = '/campaign',
