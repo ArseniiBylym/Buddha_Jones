@@ -40,23 +40,27 @@ export class UserNotificationsCenter extends React.Component<AppOnlyStoreState, 
                     [s.hideHistory]: !this.showHistory,
                 })}
             >
-                <Button
-                    className={notifications.visibleMenu === 'hamburgerMenu' ? s.toggleHidden : s.toggle }
-                    onClick={() => this.handleNotificationsHistoryToggle()}
-                    icon={{
-                        size: 'large',
-                        background: 'white',
-                        element:
+                <div className={s.notificationButton__wrapper} onMouseEnter={this.buttonHoverHandler}>
+                    <Button
+                        className={notifications.visibleMenu === 'hamburgerMenu' ? s.toggleHidden : s.toggle }
+                        onClick={this.showHistory ? () => this.handleNotificationsHistoryToggle() : null}
+                        icon={{
+                            size: 'large',
+                            background: 'white',
+                            element:
                             !this.showHistory ? (
                                 <IconBellMenu width={25} height={25}/>
-                            ) : (
-                                <IconClose width={12} height={12}/>
-                            ),
-                    }}
-                />
+                                ) : (
+                                    <IconClose width={12} height={12}/>
+                                    ),
+                                }}
+                    />
+                </div>
+
                 {this.notificationsLength && !this.showHistory && notifications.visibleMenu !== 'hamburgerMenu' && <div className={s.notificationCounter}>{this.notificationsLength}</div>}
 
                 <div className={s.notificationsHistory}>
+                    <div className={s.notificationsHistory__header}>Notifications</div>
                     <div className={s.notificationsHistory__container}>
                         {notifications && notifications.userNotifications && notifications.userNotifications.length > 0 &&
                             notifications.userNotifications!.map(notification => this.renderNotification(notification))
@@ -65,6 +69,14 @@ export class UserNotificationsCenter extends React.Component<AppOnlyStoreState, 
                 </div>
             </div>
         );
+    }
+
+    private buttonHoverHandler = (e) => {
+        if (!this.showHistory) {
+            this.handleNotificationsHistoryToggle();
+        } else {
+            return;
+        }
     }
 
     private get notificationsLength() {
