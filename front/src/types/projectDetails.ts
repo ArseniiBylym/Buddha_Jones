@@ -30,6 +30,7 @@ export interface ProjectDetails {
     notes: string | null;
     campaigns: CampaignDetails[];
     history: ProjectHistory[];
+    confidential: number | null;
 }
 
 export interface ProjectCampaignUserFromApi {
@@ -175,6 +176,7 @@ export interface ProjectDetailsFromApi {
     history: ProjectDetailsHistoryFromApi[];
     projectName: string | null;
     projectCode: string | null;
+    confidential: number | null;
 }
 
 interface ProjectDetailsCampaignFromApi {

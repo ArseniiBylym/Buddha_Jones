@@ -41,6 +41,7 @@ export class ProjectDetailsActionsClass {
                 ProjectsDetailsStore.fetchedProjects.push({
                     loading: true,
                     projectId,
+                    confidential: null,
                     projectName:
                         typeof projectData.projectName !== 'undefined' && projectData.projectName
                             ? projectData.projectName
@@ -85,6 +86,8 @@ export class ProjectDetailsActionsClass {
 
                 // Set flat data
                 ProjectsDetailsStore.fetchedProjects[projectIdMatch].projectId = project.id;
+                ProjectsDetailsStore.fetchedProjects[projectIdMatch].confidential = 
+                typeof project.confidential !== 'undefined' && project.confidential ? project.confidential : null;
                 ProjectsDetailsStore.fetchedProjects[projectIdMatch].projectPrefix =
                 typeof project.projectPrefix !== 'undefined' && project.projectPrefix ? project.projectPrefix : null;
                 ProjectsDetailsStore.fetchedProjects[projectIdMatch].projectName =
