@@ -7,7 +7,7 @@ import { MoneyHandler } from 'helpers/MoneyHandler';
 import { computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { SpotBillFormActivityGroup } from 'types/spotBilling';
+import { SpotBillFirstRevisionRate, SpotBillFormActivityGroup } from 'types/spotBilling';
 import { SpotBillActivityRateType } from 'types/spotBillingEnums';
 import { StudioRateCardEntryFromApi } from 'types/studioRateCard';
 
@@ -19,15 +19,13 @@ interface Props {
     index: number;
     name: string;
     note: string | null;
-    spots: string | null;
-    revisions: string | null;
     amount: number;
     editable: boolean;
-    flatRates: StudioRateCardEntryFromApi[];
     hourlyActivity: SpotBillFormActivityGroup | null;
     rateType: SpotBillActivityRateType;
     rateFlatId: number | null;
     studioFlatRates: StudioRateCardEntryFromApi[];
+    firstRevisionRates: SpotBillFirstRevisionRate[];
     selectedRateCard: StudioRateCardEntryFromApi[];
 }
 
@@ -89,18 +87,6 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
                     {(this.isInEditMode && (
                         <Input onChange={this.handleNoteChange} value={this.note} label="Name" />
                     )) || <Paragraph>{this.nameOrNote}</Paragraph>}
-                </div>
-
-                <div>
-                    <Paragraph type={this.props.spots ? 'default' : 'dim'}>
-                        {this.props.spots ? this.props.spots : 'None'}
-                    </Paragraph>
-                </div>
-
-                <div>
-                    {(this.props.revisions && <Paragraph>{'Ver. ' + this.props.revisions}</Paragraph>) || (
-                        <Paragraph type="dim">None</Paragraph>
-                    )}
                 </div>
 
                 {(this.props.rateType === SpotBillActivityRateType.FirstStage && (
@@ -186,7 +172,7 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
     };
 
     private handleSavingRowChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
-        SpotToBillFormActions.changeActivityNote(this.props.index, this.note);
+        SpotToBillFormActions.changeBillRowNote(this.props.index, this.note);
 
         this.note = '';
         this.isInEditMode = false;
@@ -206,7 +192,7 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
         if (isFlat) {
             const flatRateId = parseInt(option.value.slice(flatString.length, option.value.length), 10);
 
-            SpotToBillFormActions.changeActivitiesRateType(
+            SpotToBillFormActions.changeBillRowRateType(
                 this.props.index,
                 SpotBillActivityRateType.Flat,
                 !isNaN(flatRateId) ? flatRateId : null
@@ -214,6 +200,6 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
             return;
         }
 
-        SpotToBillFormActions.changeActivitiesRateType(this.props.index, SpotBillActivityRateType.Hourly, null);
+        SpotToBillFormActions.changeBillRowRateType(this.props.index, SpotBillActivityRateType.Hourly, null);
     };
 }

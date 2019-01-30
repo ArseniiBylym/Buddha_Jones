@@ -20,8 +20,9 @@ const s = require('./BillSpotFormSpotsGrid.css');
 
 interface Props extends AppOnlyStoreState {
     spots: SpotBillFormSpot[];
-    unbilledProjectTimeEntries: BillTimeEntry[];
-    unbilledProjectCampaignTimeEntries: BillTimeEntry[];
+    unbilledDailiesTimeEntries: BillTimeEntry[];
+    unbilledNonBillableTimeEntries: BillTimeEntry[];
+    unbilledBillableTimeEntries: BillTimeEntry[];
     editable: boolean;
     campaignName: string;
     projectCampaignName: string | null;
@@ -32,15 +33,15 @@ interface Props extends AppOnlyStoreState {
 @observer
 export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
     @computed private get unbilledProjectTimeEntriesTotalMinutes(): number {
-        return this.calculateTotalMinutesOfTimeEntries(this.props.unbilledProjectTimeEntries);
+        return this.calculateTotalMinutesOfTimeEntries(this.props.unbilledDailiesTimeEntries);
     }
 
     @computed private get unbilledProjectCampaignTimeEntriesTotalMinutes(): number {
-        return this.calculateTotalMinutesOfTimeEntries(this.props.unbilledProjectCampaignTimeEntries);
+        return this.calculateTotalMinutesOfTimeEntries(this.props.unbilledNonBillableTimeEntries);
     }
 
     @computed private get selectedProjectEntries(): ActivityInBillWithBaseTime[] {
-        return this.props.unbilledProjectTimeEntries.reduce((activities: ActivityInBillWithBaseTime[], timeEntry) => {
+        return this.props.unbilledDailiesTimeEntries.reduce((activities: ActivityInBillWithBaseTime[], timeEntry) => {
             const inSelection = this.props.store!.spotToBillForm.selectedActivitiesIds.indexOf(timeEntry.timeEntryId);
             if (inSelection !== -1) {
                 const selection = this.props.store!.spotToBillForm.selectedActivities[inSelection];
@@ -60,7 +61,7 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
     }
 
     @computed private get selectedProjectCampaignEntries(): ActivityInBillWithBaseTime[] {
-        return this.props.unbilledProjectCampaignTimeEntries.reduce(
+        return this.props.unbilledNonBillableTimeEntries.reduce(
             (activities: ActivityInBillWithBaseTime[], timeEntry) => {
                 const inSelection = this.props.store!.spotToBillForm.selectedActivitiesIds.indexOf(
                     timeEntry.timeEntryId
@@ -120,8 +121,8 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
 
     @computed private get remainingSpotsToBill(): SpotBillFormSpot[] {
         const spotsAddedToBill: number[] =
-            this.props.store && this.props.store.spotToBillForm.spotsAddedToBill
-                ? this.props.store.spotToBillForm.spotsAddedToBill
+            this.props.store && this.props.store.spotToBillForm.spotsIdsAddedToBill
+                ? this.props.store.spotToBillForm.spotsIdsAddedToBill
                 : [];
 
         return this.props.spots.filter(spot => spotsAddedToBill.findIndex(spotId => spotId === spot.spotId) === -1);
@@ -201,7 +202,7 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                                 </div>
 
                                 <BillSpotFormProjectCampaignActivities
-                                    timeEntries={this.props.unbilledProjectTimeEntries}
+                                    timeEntries={this.props.unbilledDailiesTimeEntries}
                                     options={{
                                         showBillable: true,
                                         showDate: true,
@@ -228,7 +229,7 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                                 </div>
 
                                 <BillSpotFormProjectCampaignActivities
-                                    timeEntries={this.props.unbilledProjectCampaignTimeEntries}
+                                    timeEntries={this.props.unbilledNonBillableTimeEntries}
                                     options={{
                                         showBillable: true,
                                         showDate: true,
@@ -270,7 +271,9 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                                 />
                             }
                         >
-                            <BillSpotFormActivities spot={spot} />
+                            <BillSpotFormActivities
+                                unbilledBillableTimeEntries={this.props.unbilledBillableTimeEntries}
+                            />
                         </Card>
                     </Section>
                 ))}

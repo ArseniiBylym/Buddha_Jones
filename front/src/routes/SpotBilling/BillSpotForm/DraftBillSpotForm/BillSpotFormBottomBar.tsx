@@ -1,7 +1,6 @@
 import { SpotToBillFormActions } from 'actions';
-import { ButtonClose, ButtonSave } from 'components/Button';
+import { ButtonAdd, ButtonClose, ButtonSave } from 'components/Button';
 import { Paragraph } from 'components/Content';
-import { DropdownContainer, OptionsList, OptionsListOptionProp } from 'components/Form';
 import { BottomBar } from 'components/Layout';
 import { LoadingIndicator } from 'components/Loaders';
 import { Col, Row } from 'components/Section';
@@ -28,16 +27,11 @@ interface Props extends AppOnlyStoreState {
 @inject('store')
 @observer
 export class BillSpotFormBottomBar extends React.Component<Props, {}> {
-    private addToBillDropdown: DropdownContainer | null = null;
-
     @observable private deleteStatus: DeleteStatus = DeleteStatus.None;
 
     @computed
     private get isEmpty(): boolean {
-        return (
-            this.props.store!.spotToBillForm.firstStage.length <= 0 &&
-            this.props.store!.spotToBillForm.activities.length <= 0
-        );
+        return this.props.store!.spotToBillForm.rows.length <= 0;
     }
 
     @computed
@@ -53,35 +47,6 @@ export class BillSpotFormBottomBar extends React.Component<Props, {}> {
     @computed
     private get isAnythingSelected(): boolean {
         return this.selectedActivitiesCount > 0;
-    }
-
-    @computed
-    private get addDropdownOptions(): OptionsListOptionProp[] {
-        let options: OptionsListOptionProp[] = [];
-
-        const firstRateSpots = this.props.spots.filter(
-            spot => spot.firstRevisionCost !== null && !spot.firstRevisionIsBilled
-        );
-        if (firstRateSpots.length > 0) {
-            options = [
-                ...options,
-                ...firstRateSpots.map(firstRateSpot => ({
-                    value: firstRateSpot.spotId,
-                    label: 'Add selection to the bill as first stage rate of spot "' + firstRateSpot.spotName + '"',
-                })),
-            ];
-        }
-
-        if (options.length > 0) {
-            options.push({ value: null, label: '------' });
-        }
-
-        options.push({
-            value: 'add',
-            label: 'Add selection to the bill as a new row',
-        });
-
-        return options;
     }
 
     public render() {
@@ -118,13 +83,7 @@ export class BillSpotFormBottomBar extends React.Component<Props, {}> {
 
                         {this.isAnythingSelected && (
                             <Col flex="0 1 auto">
-                                <DropdownContainer
-                                    ref={this.referenceAddToBillDropdown}
-                                    minWidth={510}
-                                    label="Add selection to the bill"
-                                >
-                                    <OptionsList onChange={this.handleAddingToBill} options={this.addDropdownOptions} />
-                                </DropdownContainer>
+                                <ButtonAdd onClick={this.handleAddingToBill} label="Add selection to the bill" />
                             </Col>
                         )}
                     </Row>
@@ -172,8 +131,6 @@ export class BillSpotFormBottomBar extends React.Component<Props, {}> {
         );
     }
 
-    private referenceAddToBillDropdown = (ref: DropdownContainer) => (this.addToBillDropdown = ref);
-
     private handleDeletingBill = e => {
         // tslint:disable-next-line:no-console
         console.log('TODO');
@@ -183,22 +140,8 @@ export class BillSpotFormBottomBar extends React.Component<Props, {}> {
         }
     };
 
-    private handleAddingToBill = (option: { value: 'add' | number | null; label: string }) => {
-        // Close dropdown if it's open
-        if (this.addToBillDropdown) {
-            this.addToBillDropdown.closeDropdown();
-        }
-
-        if (option.value !== null) {
-            if (option.value === 'add') {
-                SpotToBillFormActions.addSelectedActivitiesToBillAsNewRow(this.selectedActivities);
-            } else if (typeof option.value === 'number') {
-                SpotToBillFormActions.addSelectedActivitiesToBillAsFirstStageRate(
-                    option.value,
-                    this.selectedActivities.map(selectedActivity => selectedActivity.timeEntryId)
-                );
-            }
-        }
+    private handleAddingToBill = (e: React.MouseEvent<HTMLButtonElement>) => {
+        SpotToBillFormActions.addSelectedActivitiesToBillAsNewRow(this.selectedActivities);
     };
 
     private handleOpeningBill = (e: React.MouseEvent<HTMLButtonElement>) => {

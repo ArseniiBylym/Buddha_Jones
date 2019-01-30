@@ -40,19 +40,19 @@ export interface SpotBillFormActivityTimeEntry {
 export interface SpotBillFormActivityGroup {
     name: string;
     note: string | null;
-    spot: string;
-    version: string;
     rateType: SpotBillActivityRateType;
-    rateFlatId: number | null;
-    timeEntries: SpotBillFormActivityTimeEntry[];
+    rateFlatOrFirstStageId: number | null;
+    rateAmount: number | null;
+    timeEntriesIds: number[];
 }
 
 export interface SpotBillFormData {
     selectedSpots: number[];
     typeId: number | null;
     typeName: string | null;
-    firstStage: SpotBillFormFirstStage[];
-    activities: SpotBillFormActivityGroup[];
+    selectedRateCardId: number | null;
+    rows: SpotBillFormActivityGroup[];
+    timeEntries: SpotBillFormActivityTimeEntry[];
 }
 
 export interface BillTimeEntry {
@@ -81,6 +81,12 @@ export interface BillTimeEntry {
     startDate: DateObjectFromApi;
 }
 
+export interface SpotBillFirstRevisionRate {
+    spotId: number;
+    spotName: string;
+    firstRevisionCost: number | null;
+}
+
 export interface SpotBillFormSpot {
     spotId: number;
     spotName: string;
@@ -91,7 +97,6 @@ export interface SpotBillFormSpot {
     graphicsIncluded: boolean;
     billingType: SpotBillingType | null;
     billingNote: string | null;
-    timeEntries: BillTimeEntry[];
 }
 
 export interface ProjectBillsHistoryEntry {
@@ -120,9 +125,8 @@ export interface SpotBillFormSummary {
     studioId: number;
     studioName: string;
     projectBillsHistory: ProjectBillsHistoryEntry[];
-    unbilledProjectTimeEntries: BillTimeEntry[];
-    unbilledProjectCampaignTimeEntries: BillTimeEntry[];
-    spots: SpotBillFormSpot[];
+    unbilledTimeEntries: BillTimeEntry[];
+    unbilledSpots: SpotBillFormSpot[];
     bill: SpotBillFormData;
 }
 

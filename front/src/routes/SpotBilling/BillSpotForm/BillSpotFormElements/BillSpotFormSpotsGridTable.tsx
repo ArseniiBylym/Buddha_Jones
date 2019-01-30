@@ -55,7 +55,7 @@ export class BillSpotFormSpotsGridTable extends React.Component<Props, {}> {
                         {spot.firstRevisionIsBilled ? 'Submitted on earlier bill' : 'Unbilled'}
                     </Paragraph>
 
-                    {isInEditMode && this.props.store!.spotToBillForm.spotsAddedToBill.length > 1 && (
+                    {isInEditMode && this.props.store!.spotToBillForm.spotsIdsAddedToBill.length > 1 && (
                         <ButtonDelete
                             className={s.removeSpotButton}
                             onClick={this.handleRemovingSpotFromTheBill(spot.spotId)}

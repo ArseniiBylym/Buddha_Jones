@@ -1,3 +1,5 @@
+import { ActivityHandler } from 'helpers/ActivityHandler';
+import { AsyncHandler } from 'helpers/AsyncHandler';
 import { action } from 'mobx';
 import { FormattedInBillTimeEntry } from 'routes/SpotBilling/BillSpotForm';
 import { AddingActivityToBillStatus } from 'store';
@@ -17,9 +19,10 @@ export class SpotToBillFormActionsClass {
     public reset = () => {
         SpotToBillFormStore.typeId = null;
         SpotToBillFormStore.typeName = null;
-        SpotToBillFormStore.firstStage = [];
-        SpotToBillFormStore.activities = [];
-        SpotToBillFormStore.spotsAddedToBill = [];
+        SpotToBillFormStore.rows = [];
+        SpotToBillFormStore.timeEntries = [];
+        SpotToBillFormStore.spotsIdsAddedToBill = [];
+        SpotToBillFormStore.selectedRateCardId = null;
 
         SpotToBillFormStore.addingActivityToBillStatus = 'none';
         SpotToBillFormStore.showBillPreview = false;
@@ -33,23 +36,24 @@ export class SpotToBillFormActionsClass {
 
         SpotToBillFormStore.typeId = billData.typeId;
         SpotToBillFormStore.typeName = billData.typeName;
-        SpotToBillFormStore.firstStage = billData.firstStage;
-        SpotToBillFormStore.activities = billData.activities;
-        SpotToBillFormStore.spotsAddedToBill = billData.selectedSpots;
+        SpotToBillFormStore.rows = billData.rows;
+        SpotToBillFormStore.timeEntries = billData.timeEntries;
+        SpotToBillFormStore.selectedRateCardId = billData.selectedRateCardId;
+        SpotToBillFormStore.spotsIdsAddedToBill = billData.selectedSpots;
     };
 
     @action
     public addSpotToBill = (spotId: number) => {
-        SpotToBillFormStore.spotsAddedToBill.push(spotId);
+        SpotToBillFormStore.spotsIdsAddedToBill.push(spotId);
     };
 
     @action
     public removeSpotFromBill = (spotId: number) => {
-        const index = SpotToBillFormStore.spotsAddedToBill.indexOf(spotId);
+        const index = SpotToBillFormStore.spotsIdsAddedToBill.indexOf(spotId);
         if (index !== -1) {
-            SpotToBillFormStore.spotsAddedToBill = [
-                ...SpotToBillFormStore.spotsAddedToBill.slice(0, index),
-                ...SpotToBillFormStore.spotsAddedToBill.slice(index + 1),
+            SpotToBillFormStore.spotsIdsAddedToBill = [
+                ...SpotToBillFormStore.spotsIdsAddedToBill.slice(0, index),
+                ...SpotToBillFormStore.spotsIdsAddedToBill.slice(index + 1),
             ];
         }
     };
@@ -229,77 +233,55 @@ export class SpotToBillFormActionsClass {
     };
 
     @action
-    public addSelectedActivitiesToBillAsFirstStageRate = (spotId: number, timeEntriesIds: number[]) => {
+    public addSelectedActivitiesToBillAsNewRow = async (timeEntries: SpotBillFormActivityTimeEntry[]) => {
         this.changeAddingActivityToBillStatus('saving');
 
-        const spotIndex = SpotToBillFormStore.firstStage.findIndex(firstStage => firstStage.spotId === spotId);
-        if (spotIndex !== -1) {
-            const filteredTimeEntriesIds: number[] = timeEntriesIds.filter(
-                timeEntryId => SpotToBillFormStore.firstStage[spotIndex].timeEntriesIds.indexOf(timeEntryId) === -1
+        SpotToBillFormStore.timeEntries.push(...timeEntries);
+
+        const activities: {
+            [key: string]: SpotBillFormActivityGroup;
+        } = timeEntries.reduce((combinations: { [key: string]: SpotBillFormActivityGroup }, timeEntry) => {
+            const key = ActivityHandler.constructActivityKey(
+                timeEntry.activityId,
+                timeEntry.spotId,
+                timeEntry.versionId
             );
-            SpotToBillFormStore.firstStage[spotIndex].timeEntriesIds.push(...filteredTimeEntriesIds);
-        } else {
-            SpotToBillFormStore.firstStage.push({
-                spotId: spotId,
+            if (combinations[key]) {
+                combinations[key].timeEntriesIds.push(timeEntry.timeEntryId);
+                return combinations;
+            }
+
+            combinations[key] = {
+                name: '',
                 note: null,
-                timeEntriesIds: timeEntriesIds,
-            });
-        }
+                rateType: SpotBillActivityRateType.Hourly,
+                rateAmount: null,
+                rateFlatOrFirstStageId: null,
+                timeEntriesIds: [timeEntry.timeEntryId],
+            };
 
-        this.changeAddingActivityToBillStatus('success');
+            return combinations;
+        }, {});
 
-        SpotToBillFormStore.selectedActivities = [];
+        const rows: SpotBillFormActivityGroup[] = Object.keys(activities).map(activityKey => {
+            const row = activities[activityKey];
+            const rowTimeEntries = timeEntries.filter(
+                timeEntry => row.timeEntriesIds.indexOf(timeEntry.timeEntryId) !== -1
+            );
 
-        setTimeout(() => {
-            if (SpotToBillFormStore.addingActivityToBillStatus === 'success') {
-                this.changeAddingActivityToBillStatus('none');
-            }
-        }, 3000);
-    };
-
-    @action
-    public addSelectedActivitiesToBillAsNewRow = (timeEntries: SpotBillFormActivityTimeEntry[]) => {
-        this.changeAddingActivityToBillStatus('saving');
-
-        const includedActivityIds: number[] = [];
-        let activityName: string = '';
-
-        const includedSpotIds: number[] = [];
-        let spotName: string = '';
-
-        const includedVersionIds: number[] = [];
-        let versionName: string = '';
-
-        timeEntries.forEach(timeEntry => {
-            if (includedActivityIds.indexOf(timeEntry.activityId) === -1) {
-                activityName += (activityName.length > 0 ? ', ' : '') + timeEntry.activityName;
-                includedActivityIds.push(timeEntry.activityId);
-            }
-
-            if (timeEntry.spotId !== null && includedSpotIds.indexOf(timeEntry.spotId) === -1) {
-                spotName += (spotName.length > 0 ? ', ' : '') + timeEntry.spotName;
-                includedSpotIds.push(timeEntry.spotId);
-            }
-
-            if (timeEntry.versionId !== null && includedVersionIds.indexOf(timeEntry.versionId) === -1) {
-                versionName += (versionName.length > 0 ? ', ' : '') + timeEntry.versionName;
-                includedVersionIds.push(timeEntry.versionId);
-            }
+            return {
+                ...row,
+                name: ActivityHandler.constructActivityName(rowTimeEntries),
+            };
         });
 
-        SpotToBillFormStore.activities.push({
-            name: activityName,
-            note: null,
-            spot: spotName,
-            version: versionName,
-            rateType: SpotBillActivityRateType.Hourly,
-            rateFlatId: null,
-            timeEntries: timeEntries,
-        });
+        SpotToBillFormStore.rows.push(...rows);
+        SpotToBillFormStore.selectedActivities = [];
+
+        // NOTE: Fake delay - remove when actual sync is enabled
+        await AsyncHandler.timeout(1000);
 
         this.changeAddingActivityToBillStatus('success');
-
-        SpotToBillFormStore.selectedActivities = [];
 
         setTimeout(() => {
             if (SpotToBillFormStore.addingActivityToBillStatus === 'success') {
@@ -314,29 +296,24 @@ export class SpotToBillFormActionsClass {
     };
 
     @action
-    public changeActivitiesRateType = (
+    public changeBillRowRateType = (
         activityIndex: number,
         rateType: SpotBillActivityRateType,
-        rateFlatId: number | null = null
+        rateFlatOrFirstStageId: number | null = null,
+        rateAmount: number | null = null
     ) => {
-        if (SpotToBillFormStore.activities[activityIndex]) {
-            SpotToBillFormStore.activities[activityIndex].rateType = rateType;
-            SpotToBillFormStore.activities[activityIndex].rateFlatId = rateFlatId;
+        if (SpotToBillFormStore.rows[activityIndex]) {
+            SpotToBillFormStore.rows[activityIndex].rateType = rateType;
+            SpotToBillFormStore.rows[activityIndex].rateFlatOrFirstStageId = rateFlatOrFirstStageId;
+            SpotToBillFormStore.rows[activityIndex].rateAmount = rateAmount;
         }
     };
 
     @action
-    public changeFirstStageActivityNote = (index: number, note: string | null) => {
-        if (SpotToBillFormStore.firstStage[index]) {
-            SpotToBillFormStore.firstStage[index].note = note;
-        }
-    };
-
-    @action
-    public changeActivityNote = (index: number, note: string | null) => {
-        if (SpotToBillFormStore.activities[index]) {
-            SpotToBillFormStore.activities[index].note =
-                note !== null && SpotToBillFormStore.activities[index].name === note ? null : note;
+    public changeBillRowNote = (index: number, note: string | null) => {
+        if (SpotToBillFormStore.rows[index]) {
+            SpotToBillFormStore.rows[index].note =
+                note !== null && SpotToBillFormStore.rows[index].name === note ? null : note;
         }
     };
 
@@ -352,7 +329,7 @@ export class SpotToBillFormActionsClass {
     };
 
     public checkIfSpotIsInBill = (spotId: number): boolean => {
-        if (SpotToBillFormStore.spotsAddedToBill.some(spot => spot === spotId)) {
+        if (SpotToBillFormStore.spotsIdsAddedToBill.some(spot => spot === spotId)) {
             return true;
         }
 
@@ -361,16 +338,8 @@ export class SpotToBillFormActionsClass {
 
     public checkIfTimeEntryIsInBill = (timeEntryId: number): boolean => {
         if (
-            SpotToBillFormStore.firstStage.some(firstStageSpot =>
-                firstStageSpot.timeEntriesIds.some(id => id === timeEntryId)
-            )
-        ) {
-            return true;
-        }
-
-        if (
-            SpotToBillFormStore.activities.some(activity =>
-                activity.timeEntries.some(timeEntry => timeEntry.timeEntryId === timeEntryId)
+            SpotToBillFormStore.rows.some(row =>
+                row.timeEntriesIds.some(rowTimeEntryId => rowTimeEntryId === timeEntryId)
             )
         ) {
             return true;
@@ -387,13 +356,18 @@ export class SpotToBillFormActionsClass {
 
         // For hourly
         if (activity.rateType === SpotBillActivityRateType.Hourly) {
-            total += activity.timeEntries.reduce((hourlyTotal: number, timeEntry) => {
-                const rateCard = selectedRateCard.find(card => card.activityId === timeEntry.activityId);
-                if (rateCard && rateCard.rate) {
-                    hourlyTotal +=
-                        ((rateCard.rate * timeEntry.regularHours) / 60) * 1 +
-                        ((rateCard.rate * timeEntry.overtimeHours) / 60) * 1.5 +
-                        ((rateCard.rate * timeEntry.doubletimeHours) / 60) * 2.0;
+            total += activity.timeEntriesIds.reduce((hourlyTotal: number, timeEntryId) => {
+                const inBillTimeEntry = SpotToBillFormStore.timeEntries.find(
+                    timeEntry => timeEntry.timeEntryId === timeEntryId
+                );
+                if (inBillTimeEntry) {
+                    const rateCard = selectedRateCard.find(card => card.activityId === inBillTimeEntry.activityId);
+                    if (rateCard && rateCard.rate) {
+                        hourlyTotal +=
+                            ((rateCard.rate * inBillTimeEntry.regularHours) / 60) * 1 +
+                            ((rateCard.rate * inBillTimeEntry.overtimeHours) / 60) * 1.5 +
+                            ((rateCard.rate * inBillTimeEntry.doubletimeHours) / 60) * 2.0;
+                    }
                 }
 
                 return hourlyTotal;

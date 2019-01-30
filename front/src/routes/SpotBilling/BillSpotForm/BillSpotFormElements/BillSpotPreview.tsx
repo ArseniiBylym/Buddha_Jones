@@ -7,7 +7,13 @@ import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
-import { BillTimeEntry, SpotBillFormSpot, SpotBillRowRevision } from 'types/spotBilling';
+import {
+    BillTimeEntry,
+    SpotBillFormActivityGroup,
+    SpotBillFormSpot,
+    SpotBillRowRevision
+    } from 'types/spotBilling';
+import { SpotBillActivityRateType } from 'types/spotBillingEnums';
 import { StudioRateCardApiQuery, StudioRateCardFromApi } from 'types/studioRateCard';
 import { BillSpotPreviewContent, FirstStageRow } from './BillSpotPreviewContent';
 
@@ -16,8 +22,7 @@ const s = require('./BillSpotPreview.css');
 interface Props extends AppOnlyStoreState {
     billId: number;
     spots: SpotBillFormSpot[];
-    unbilledProjectTimeEntries: BillTimeEntry[];
-    unbilledProjectCampaignTimeEntries: BillTimeEntry[];
+    unbilledTimeEntries: BillTimeEntry[];
     editable: boolean;
     projectName: string;
     campaignName: string;
@@ -30,105 +35,22 @@ interface Props extends AppOnlyStoreState {
 @inject('store')
 @observer
 export class BillSpotPreview extends React.Component<Props, {}> {
-    @computed private get combinedUnbilledTimeEntries(): BillTimeEntry[] {
-        return this.props.unbilledProjectTimeEntries.concat(this.props.unbilledProjectCampaignTimeEntries);
-    }
-
     @computed
-    private get firstStageRows(): FirstStageRow[] {
-        return this.props.store!.spotToBillForm.firstStage.map(firstStage => {
-            let spotName = '';
-            let amount = 0;
-            const revisions: SpotBillRowRevision[] = [];
-
-            const spot = this.props.spots.find(iteratedSpot => iteratedSpot.spotId === firstStage.spotId);
-            if (spot) {
-                spotName = spot.spotName;
-                amount = spot.firstRevisionCost || 0;
-            }
-
-            firstStage.timeEntriesIds.forEach(timeEntryId => {
-                const unbilledTimeEntry = this.combinedUnbilledTimeEntries.find(
-                    iteratedTimeEntry => iteratedTimeEntry.timeEntryId === timeEntryId
-                );
-
-                if (unbilledTimeEntry) {
-                    if (unbilledTimeEntry.versionId) {
-                        revisions.push({
-                            versionId: unbilledTimeEntry.versionId,
-                            versionName: unbilledTimeEntry.versionName || unbilledTimeEntry.versionId.toString(),
-                        });
-                    }
-                } else {
-                    let found: boolean = false;
-                    if (spot) {
-                        const spotTimeEntry = spot.timeEntries.find(
-                            iteratedTimeEntry => iteratedTimeEntry.timeEntryId === timeEntryId
-                        );
-                        if (spotTimeEntry) {
-                            if (spotTimeEntry.versionId) {
-                                revisions.push({
-                                    versionId: spotTimeEntry.versionId,
-                                    versionName: spotTimeEntry.versionName || spotTimeEntry.versionId.toString(),
-                                });
-                            }
-
-                            found = true;
-                        }
-                    }
-
-                    if (found === false) {
-                        this.props.spots.some(iteratedSpot => {
-                            if (iteratedSpot.spotId === firstStage.spotId) {
-                                return false;
-                            }
-
-                            const spotFound = iteratedSpot.timeEntries.find(
-                                iteratedTimeEntry => iteratedTimeEntry.timeEntryId === timeEntryId
-                            );
-                            if (spotFound) {
-                                if (spotFound.versionId) {
-                                    revisions.push({
-                                        versionId: spotFound.versionId,
-                                        versionName: spotFound.versionName || spotFound.versionId.toString(),
-                                    });
-                                }
-                                return true;
-                            }
-
-                            return false;
-                        });
-                    }
-                }
-            });
-
-            const versionIds: number[] = [];
-
-            return {
-                spotId: firstStage.spotId,
-                spotName: spotName,
-                revisions: revisions.reduce((revs: SpotBillRowRevision[], revision) => {
-                    if (versionIds.indexOf(revision.versionId) === -1) {
-                        versionIds.push(revision.versionId);
-                        revs.push(revision);
-                    }
-
-                    return revs;
-                }, []),
-                amount: amount,
-            };
-        });
+    private get firstStageRows(): SpotBillFormActivityGroup[] {
+        return this.props.store!.spotToBillForm.rows.filter(
+            row => row.rateType === SpotBillActivityRateType.FirstStage
+        );
     }
 
     @computed private get spotsInBill(): SpotBillFormSpot[] {
         return this.props.spots.filter(spot =>
-            this.props.store!.spotToBillForm.spotsAddedToBill.some(id => id === spot.spotId)
+            this.props.store!.spotToBillForm.spotsIdsAddedToBill.some(id => id === spot.spotId)
         );
     }
 
     public render() {
         const { billId, projectName, campaignName, projectCampaignName, studioId, studioName, editable } = this.props;
-        const { showBillPreview, selectedRateCardId: selectedRateCard } = this.props.store!.spotToBillForm;
+        const { showBillPreview, selectedRateCardId } = this.props.store!.spotToBillForm;
 
         return (
             <Modal
@@ -150,9 +72,9 @@ export class BillSpotPreview extends React.Component<Props, {}> {
                             apiEndpoint: APIPath.STUDIO_RATE_CARD,
                             queryObject: {
                                 studio_id: studioId || 0,
-                                ...(selectedRateCard
+                                ...(selectedRateCardId
                                     ? {
-                                          ratecard_id: selectedRateCard,
+                                          ratecard_id: selectedRateCardId,
                                       }
                                     : {}),
                             },
