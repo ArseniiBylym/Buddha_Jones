@@ -7,15 +7,10 @@ import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
-import {
-    BillTimeEntry,
-    SpotBillFormActivityGroup,
-    SpotBillFormSpot,
-    SpotBillRowRevision
-    } from 'types/spotBilling';
+import { BillTimeEntry, SpotBillFormActivityGroup, SpotBillFormSpot } from 'types/spotBilling';
 import { SpotBillActivityRateType } from 'types/spotBillingEnums';
 import { StudioRateCardApiQuery, StudioRateCardFromApi } from 'types/studioRateCard';
-import { BillSpotPreviewContent, FirstStageRow } from './BillSpotPreviewContent';
+import { BillSpotPreviewContent } from './BillSpotPreviewContent';
 
 const s = require('./BillSpotPreview.css');
 
