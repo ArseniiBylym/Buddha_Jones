@@ -418,14 +418,18 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
             elementsOnLeft: [
                 <div key="mainSpotHeaderNumber" className={s.mainSpotHeaderInfo__number}>{this.props.match!.params['id']}</div>,
                 <div key="mainSpotHeaderInfo" style={{marginRight: 'auto'}} className={s.mainSpotHeaderInfo}>
-                    <div className={s.mainSpotHeaderInfo__spotList}>
-                        <div className={s.mainSpotHeaderInfo__spotListLabel}>Spots:</div>
-                        {this.getSpotsNamesJSXElements()}
-                    </div>
-                    <div className={s.mainSpotHeaderInfo__campaign}>
-                        <div className={s.mainSpotHeaderInfo__campaignLabel}>Campaign:</div>
-                        {this.getSpotsCampaignJSXElements()}
-                    </div>
+                    {this.props.store!.spotSent.spotSentDetails.spot_version.length > 0 &&
+                        <div className={s.mainSpotHeaderInfo__spotList}>
+                            <div className={s.mainSpotHeaderInfo__spotListLabel}>Spots:</div>
+                            {this.getSpotsNamesJSXElements()}
+                        </div>
+                    }
+                    {this.props.store!.spotSent.spotSentDetails.spot_version.length > 0 &&
+                        <div className={s.mainSpotHeaderInfo__campaign}>
+                            <div className={s.mainSpotHeaderInfo__campaignLabel}>Campaign:</div>
+                            {this.getSpotsCampaignJSXElements()}
+                        </div>
+                    }
                 </div>,
             ],
             elements: [
