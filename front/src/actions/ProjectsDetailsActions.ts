@@ -135,7 +135,7 @@ export class ProjectDetailsActionsClass {
                     billingTeam: c.billingUser,
                     designTeam: c.designer,
                     editorialTeam: c.editor,
-                    additionalTeam: c.additional ? c.additional : [],
+                    additionalTeam: c.addnUser ? c.addnUser : [],
                     hidden: false,
                     spots:
                         typeof c.spot !== 'undefined' && c.spot
