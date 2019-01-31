@@ -170,6 +170,8 @@ export interface CampaignsResultsEntry {
     campaignId: number;
     campaignName: string | null;
     note: string | null;
+    customerName?: string | any;
+    customerId?: number | null;
 }
 
 export interface SpotsResultsEntry {

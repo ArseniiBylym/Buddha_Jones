@@ -32,6 +32,8 @@ export interface ProjectPickerResult {
     name: string;
     clientId: number | null;
     clientName: string | null;
+    customerName?: string | null;
+    customerId?: number | null;
 }
 
 interface Props {
@@ -53,6 +55,9 @@ interface Props {
     userCanViewProjectName: boolean;
     userCanViewProjectCodeName: boolean;
     trtList: TRTItem[] | null;
+    spot_customer_name?: string | null;
+    spot_customer_id?: number | null;
+    real_index?: number;
 }
 
 interface State {
@@ -171,6 +176,9 @@ export class ProjectPickerContent extends React.Component<Props, State> {
                                 userCanViewProjectName={this.props.userCanViewProjectName}
                                 trtList={this.props.trtList}
                                 sectionOpen={this.props.sectionOpen}
+                                spot_customer_name={this.props.spot_customer_name}
+                                spot_customer_id={this.props.spot_customer_id}
+                                real_index={this.props.real_index}
                             />
                             {(currentResults === null || currentResults.results.length <= 0) && (
                                 <li className={s.noEntries} key="noEntries">

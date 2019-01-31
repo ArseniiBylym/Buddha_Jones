@@ -136,7 +136,6 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
     private editorDropdown: DropdownContainer | null = null;
 
     public render() {
-        // console.log(this.props.spot);
         return (
             <>
             <Card
@@ -165,6 +164,9 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                     additionalElements={ this.props.withGraphicsSection ? this.getCardHeadersForGraphics() : this.getCardHeaders()}
                     line_status_name={this.props.spot.line_status_name}
                     customer_name={this.props.customerName}
+                    spot_customer_name={this.props.spot.customerName}
+                    spot_customer_id={this.props.spot.customerId}
+                    real_index={this.props.spotIndex}
                 />
 
                 {this.props.withGraphicsSection && <>{this.getFilesWorkOnSection()}</>}
@@ -548,8 +550,9 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
     private handleSpotPDFToggle = (checked: boolean) => e =>
         SpotSentActions.handleSpotPDFToggle(this.props.spotIndex, !checked);
 
-    private handleSpotChange = (values: ProjectPickerValues | null, type?: ProjectPickerSections) =>
-        SpotSentActions.handleSpotChange(this.props.spotIndex, values, type);
+    private handleSpotChange = (values: ProjectPickerValues | null, type?: ProjectPickerSections) => {
+        return SpotSentActions.handleSpotChange(this.props.spotIndex, values, type);
+    }
 
     private handleFinishingRequestToggle = (checked: boolean) =>
         SpotSentActions.handleFinishingRequestToggle(this.props.spotIndex, checked);

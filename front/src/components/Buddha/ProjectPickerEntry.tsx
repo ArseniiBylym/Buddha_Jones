@@ -9,6 +9,8 @@ export interface ProjectPickerResult {
     name: string;
     clientId: number | null;
     clientName: string | null;
+    customerName?: string | null;
+    customerId?: number | null;
 }
 
 interface Props {
@@ -20,6 +22,8 @@ interface Props {
         clientId: number | null;
         clientName: string | null;
         trtId?: number | null;
+        customerName?: string | null;
+        customerId?: number | null;
     };
     spotName: string;
     onResultPicked: (result: ProjectPickerResult) => void;
@@ -50,6 +54,8 @@ export class ProjectPickerEntry extends React.PureComponent<Props, {}> {
             name: this.props.entry.name,
             clientId: this.props.entry.clientId,
             clientName: this.props.entry.clientName,
+            customerName: this.props.entry.customerName ? this.props.entry.customerName : null,
+            customerId: this.props.entry.customerId ? this.props.entry.customerId : null,
         });
     };
 }
