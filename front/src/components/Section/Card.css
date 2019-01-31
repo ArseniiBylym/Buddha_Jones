@@ -72,6 +72,8 @@
         padding-right: 24px;
         justify-content: flex-end;
         text-align: right;
+        opacity: 1;
+        transition: 500ms opacity 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
 
         & > * {
             margin-left: 12px;
@@ -79,6 +81,10 @@
             &:first-child {
                 margin-left: 0;
             }
+        }
+
+        &.hide {
+            opacity: 0;
         }
     }
 }

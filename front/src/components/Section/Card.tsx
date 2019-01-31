@@ -19,6 +19,7 @@ interface CardProps extends ButtonExpandTitles {
     classNameForHeaderContent?: string;
     classNameForContent?: string;
     headerElements?: JSX.Element;
+    showHeaderElementsOnlyWhenExpanded?: boolean;
     contentAboveTitleBar?: JSX.Element;
     headerContent?: JSX.Element;
     isExpandable?: boolean;
@@ -47,6 +48,7 @@ export class Card extends React.Component<CardProps, {}> {
             truncuateSubTitleToCharacters: undefined,
             hideSubTitleWhenExpanded: false,
             headerElements: undefined,
+            showHeaderElementsOnlyWhenExpanded: false,
             contentAboveTitleBar: undefined,
             headerContent: undefined,
             isExpandable: true,
@@ -139,7 +141,13 @@ export class Card extends React.Component<CardProps, {}> {
                     />
                 </div>
 
-                <div className={s.right}>{this.props.headerElements}</div>
+                <div
+                    className={classNames(s.right, {
+                        [s.hide]: this.props.showHeaderElementsOnlyWhenExpanded && this.isExpanded === false,
+                    })}
+                >
+                    {this.props.headerElements}
+                </div>
             </div>
         );
     }

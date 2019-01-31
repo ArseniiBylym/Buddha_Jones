@@ -1,5 +1,6 @@
 import { BillSpotFormBottomBar } from '.';
 import { HeaderActions, SpotToBillFormActions } from 'actions';
+import { DAILIES_ACTIVITIES_IDS } from 'invariables';
 import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
@@ -12,6 +13,12 @@ import {
     BackToSpotsToBillListButton,
 } from '../BillSpotFormElements';
 
+interface FilteredTimeEntries {
+    unbilledDailiesTimeEntries: BillTimeEntry[];
+    unbilledNonBillableTimeEntries: BillTimeEntry[];
+    unbilledBillableTimeEntries: BillTimeEntry[];
+}
+
 interface Props extends AppOnlyStoreState {
     billData: SpotBillFormSummary;
 }
@@ -20,16 +27,41 @@ interface Props extends AppOnlyStoreState {
 @observer
 export class DraftBillSpotForm extends React.Component<Props, {}> {
     @computed
-    private get filteredUnbilledProjectTimeEntries(): BillTimeEntry[] {
-        return this.props.billData.unbilledProjectTimeEntries.filter(
+    private get unbilledTimeEntriesWihoutThoseInBill(): BillTimeEntry[] {
+        return this.props.billData.unbilledTimeEntries.filter(
             timeEntry => SpotToBillFormActions.checkIfTimeEntryIsInBill(timeEntry.timeEntryId) === false
         );
     }
 
     @computed
-    private get filteredUnbilledProjectCampaignTimeEntries(): BillTimeEntry[] {
-        return this.props.billData.unbilledProjectCampaignTimeEntries.filter(
-            timeEntry => SpotToBillFormActions.checkIfTimeEntryIsInBill(timeEntry.timeEntryId) === false
+    private get filteredTimeEntries(): FilteredTimeEntries {
+        return this.unbilledTimeEntriesWihoutThoseInBill.reduce(
+            (filtered: FilteredTimeEntries, timeEntry) => {
+                // Check if activity is billable
+                if (timeEntry.activityIsBillable) {
+                    filtered.unbilledBillableTimeEntries.push(timeEntry);
+                    return filtered;
+                }
+
+                // Check if activity is one of dailies
+                if (DAILIES_ACTIVITIES_IDS.indexOf(timeEntry.activityId) !== -1) {
+                    filtered.unbilledDailiesTimeEntries.push(timeEntry);
+                    return filtered;
+                }
+
+                // Check if activity is non-billable but not part of dailies activities
+                if (timeEntry.activityIsBillable === false) {
+                    filtered.unbilledNonBillableTimeEntries.push(timeEntry);
+                    return filtered;
+                }
+
+                return filtered;
+            },
+            {
+                unbilledDailiesTimeEntries: [],
+                unbilledNonBillableTimeEntries: [],
+                unbilledBillableTimeEntries: [],
+            }
         );
     }
 
@@ -55,22 +87,22 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
                 <BillSpotFormProjectHistory projectHistory={billData.projectBillsHistory} />
 
                 <BillSpotFormSpotsGrid
-                    spots={billData.spots}
-                    unbilledProjectTimeEntries={this.filteredUnbilledProjectTimeEntries}
-                    unbilledProjectCampaignTimeEntries={this.filteredUnbilledProjectCampaignTimeEntries}
+                    spots={billData.unbilledSpots}
+                    unbilledDailiesTimeEntries={this.filteredTimeEntries.unbilledDailiesTimeEntries}
+                    unbilledNonBillableTimeEntries={this.filteredTimeEntries.unbilledNonBillableTimeEntries}
+                    unbilledBillableTimeEntries={this.filteredTimeEntries.unbilledBillableTimeEntries}
                     campaignName={billData.campaignName}
                     projectCampaignName={billData.projectCampaignName}
                     projectCampaignId={billData.projectCampaignId}
                     editable={true}
                 />
 
-                <BillSpotFormBottomBar isBillSaving={false} spots={billData.spots} />
+                <BillSpotFormBottomBar isBillSaving={false} spots={billData.unbilledSpots} />
 
                 <BillSpotPreview
                     billId={billData.billId}
-                    spots={billData.spots}
-                    unbilledProjectTimeEntries={this.filteredUnbilledProjectTimeEntries}
-                    unbilledProjectCampaignTimeEntries={this.filteredUnbilledProjectCampaignTimeEntries}
+                    spots={billData.unbilledSpots}
+                    unbilledTimeEntries={this.props.billData.unbilledTimeEntries}
                     projectName={billData.projectName}
                     campaignName={billData.campaignName}
                     projectCampaignName={billData.projectCampaignName}

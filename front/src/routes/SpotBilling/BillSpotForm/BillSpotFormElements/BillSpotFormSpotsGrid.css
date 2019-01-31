@@ -23,7 +23,7 @@
     align-items: center;
     background: #eeeae7;
     padding: 12px 24px;
-    margin-top: 24px;
+    margin-top: 0;
 
     & > h3 {
         font-size: 0.85rem;

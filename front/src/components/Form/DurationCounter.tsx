@@ -1,12 +1,7 @@
 import * as classNames from 'classnames';
 import { DelayChildren } from 'components/Utility';
 import { DateHandler } from 'helpers/DateHandler';
-import {
-    computed,
-    observable,
-    reaction,
-    toJS
-    } from 'mobx';
+import { computed, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { DurationCounterDropdown } from './DurationCounterDropdown';
@@ -117,12 +112,6 @@ export class DurationCounter extends React.Component<DurationCounterProps, {}> {
         );
     }
 
-    constructor(props: DurationCounterProps) {
-        super(props);
-
-        reaction(() => this.totalMinutes, minutes => (this.props.onChange ? this.props.onChange(minutes) : undefined));
-    }
-
     public componentWillReceiveProps(nextProps: DurationCounterProps) {
         if (this.props.value !== nextProps.value && this.totalMinutes !== nextProps.value) {
             this.totalMinutes = nextProps.value || 0;
@@ -185,7 +174,9 @@ export class DurationCounter extends React.Component<DurationCounterProps, {}> {
         }
 
         if (this.isIncreaseAvailable) {
-            this.totalMinutes += this.props.incrementBy || 15;
+            const value = this.totalMinutes + (this.props.incrementBy || 15);
+            this.totalMinutes = value;
+            this.handleChange(value);
         }
     };
 
@@ -195,13 +186,22 @@ export class DurationCounter extends React.Component<DurationCounterProps, {}> {
         }
 
         if (this.isDecreaseAvailable) {
-            this.totalMinutes -= this.props.incrementBy || 15;
+            const value = this.totalMinutes - (this.props.incrementBy || 15);
+            this.totalMinutes = value;
+            this.handleChange(value);
         }
     };
 
     private handleDirectChange = (value: number) => {
         if (typeof value === 'number') {
             this.totalMinutes = value;
+            this.handleChange(value);
+        }
+    };
+
+    private handleChange = (value: number) => {
+        if (this.props.onChange) {
+            this.props.onChange(value);
         }
     };
 

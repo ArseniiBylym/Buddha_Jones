@@ -5,7 +5,7 @@ import { computed } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
-import { BillTimeEntry, SpotBillFormSpot } from 'types/spotBilling';
+import { BillTimeEntry } from 'types/spotBilling';
 import { BillSpotFormProjectCampaignActivities } from '../BillSpotFormElements';
 
 interface ActivityByVersion {
@@ -32,7 +32,7 @@ interface ActivityByVersion {
 }
 
 interface Props extends AppOnlyStoreState {
-    spot: SpotBillFormSpot;
+    unbilledBillableTimeEntries: BillTimeEntry[];
 }
 
 @inject('store')
@@ -41,7 +41,7 @@ export class BillSpotFormActivities extends React.Component<Props, {}> {
     /** Compute all time entries grouped by version, user, activity type, date, time */
     @computed
     private get versions(): ActivityByVersion[] {
-        return this.props.spot.timeEntries.reduce((versions: ActivityByVersion[], timeEntry) => {
+        return this.props.unbilledBillableTimeEntries.reduce((versions: ActivityByVersion[], timeEntry) => {
             const date = DateHandler.parseDateStringAsDateObject(timeEntry.startDate);
             const dateIso = DateHandler.printDateObjectAsString(date, 'YYYY-MM-DD');
             const versionId = timeEntry.versionId || 0;
@@ -205,11 +205,8 @@ export class BillSpotFormActivities extends React.Component<Props, {}> {
     private get sortedFilteredTimeEntries(): BillTimeEntry[] {
         return this.sortedTimeEntries.filter(
             timeEntry =>
-                !this.props.store!.spotToBillForm.activities.some(activity =>
-                    activity.timeEntries.some(t => t.timeEntryId === timeEntry.timeEntryId)
-                ) &&
-                !this.props.store!.spotToBillForm.firstStage.some(first =>
-                    first.timeEntriesIds.some(id => id === timeEntry.timeEntryId)
+                !this.props.store!.spotToBillForm.rows.some(row =>
+                    row.timeEntriesIds.some(id => id === timeEntry.timeEntryId)
                 )
         );
     }
@@ -230,7 +227,7 @@ export class BillSpotFormActivities extends React.Component<Props, {}> {
                 {this.sortedTimeEntries.length > 0 && (
                     <BillSpotFormProjectCampaignActivities
                         timeEntries={this.sortedFilteredTimeEntries}
-                        options={{ showVersions: true, showDate: true }}
+                        options={{ showVersions: true, showDate: true, showAddToBill: true }}
                     />
                 )}
             </React.Fragment>
