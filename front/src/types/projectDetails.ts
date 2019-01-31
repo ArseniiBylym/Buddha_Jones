@@ -44,6 +44,20 @@ export interface ProjectCampaignUserFromApi {
     type: string;
     typeId: number;
 }
+export interface ProjectCampaignAddnUserFromApi {
+    campaignId: number;
+    email: string | null;
+    firstName: string | null;
+    fullName: string | null;
+    image: string | null;
+    lastName: string | null;
+    projectCampaignId: string;
+    projectId: number;
+    type: string;
+    typeId: number;
+    userId: number;
+    username: string;
+}
 
 export interface ProjectCampaignCreativeUserFromApi extends ProjectCampaignUserFromApi {
     roleId: number | null;
@@ -197,7 +211,7 @@ interface ProjectDetailsCampaignFromApi {
     user: ProjectCampaignCreativeUserFromApi[];
     designer: ProjectCampaignUserFromApi[];
     editor: ProjectCampaignUserFromApi[];
-    additional?: ProjectCampaignUserFromApi[] | any[];
+    addnUser?: ProjectCampaignAddnUserFromApi[] | any[];
     billingUser: ProjectCampaignBillingUserFromApi[];
     approvedByBilling: boolean;
     channelId: number | null;
