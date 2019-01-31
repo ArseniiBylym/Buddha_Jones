@@ -119,7 +119,7 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                             ? entry.versionName
                                             : entry.versionId
                                             ? '#' + entry.versionId
-                                            : 'Unspecified'}
+                                            : 'N/A'}
                                     </Paragraph>
                                 </div>
                             )}
