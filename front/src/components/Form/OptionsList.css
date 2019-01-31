@@ -45,7 +45,8 @@
     }
     & :global(.optionsListResults.multiselect) {
       overflow: auto;
-      height: 200px;
+      height: 420px;
+      /* height: auto; */
     }
   }
 }
@@ -60,7 +61,6 @@
   flex-flow: row nowrap;
   justify-content: flex-end;
   margin: 8px;
-  padding: 10px;
 }
 
 :global(.optionsListResults) {

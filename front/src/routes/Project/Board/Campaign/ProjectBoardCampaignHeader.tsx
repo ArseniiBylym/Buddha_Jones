@@ -42,6 +42,12 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
     @observable private customerSelectorOptions: ClientForStudio[] = [];
     @observable private customerSelectorOptionsLoading: boolean = false;
     @observable private modalConfirmOpen: boolean = false;
+    @observable private removeModal: boolean = false;
+
+    @action
+    private removeModalToggle = () => {
+        this.removeModal = !this.removeModal;
+    }
 
     @action
     private modalConfirmToggle = () => {
@@ -170,6 +176,26 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
                         },
                     ]}
                 />
+                <Modal
+                    show={this.removeModal}
+                    title={`Please confirm that you wish to remove this Campaign`}
+                    closeButton={false}
+                    type="alert"
+                    actions={[
+                        {
+                            onClick: () => { this.removeButtonHandler(true); },
+                            closeOnClick: false,
+                            label: 'Remove',
+                            type: 'default',
+                        },
+                        {
+                            onClick: () => { this.removeButtonHandler(false); },
+                            closeOnClick: false,
+                            label: 'Cancel',
+                            type: 'alert',
+                        },
+                    ]}
+                />
             </>
         );
     }
@@ -180,6 +206,15 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
             this.handleProjectBoardPermissionToggle();
         } else {
             this.modalConfirmToggle();
+        }
+    }
+
+    private removeButtonHandler = (value) => {
+        if (value) {
+            this.removeModalToggle();
+            this.handleCampaignRemoval();
+        } else {
+            this.removeModalToggle();
         }
     }
 
@@ -199,7 +234,8 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
                     <Button
                         icon={this.getRemoveButtonIcon()}
                         className={styles.removeButton}
-                        onClick={this.handleCampaignRemoval}
+                        // onClick={this.handleCampaignRemoval}
+                        onClick={this.removeModalToggle}
                         label={this.getRemoveButtonLabel()}
                     />
                 }
