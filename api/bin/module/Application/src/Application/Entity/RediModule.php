@@ -28,6 +28,13 @@ class RediModule
      */
     private $moduleName;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="order", type="integer", nullable=true)
+     */
+    private $order;
+
 
 
     /**
@@ -61,5 +68,28 @@ class RediModule
     public function getModuleName()
     {
         return $this->moduleName;
+    }
+
+    /**
+     * Set order
+     *
+     * @param integer $order
+     * @return RediModule
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+
+        return $this;
+    }
+
+    /**
+     * Get order
+     *
+     * @return integer 
+     */
+    public function getOrder()
+    {
+        return $this->order;
     }
 }

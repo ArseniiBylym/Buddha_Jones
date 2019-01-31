@@ -1,12 +1,9 @@
 <?php
 namespace Application\Entity\Repository;
 
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
 use Zend\Config\Config;
-use Zend\View\Model\ViewModel;
-
-
 
 // before called Table now Repository Table Data Gateway
 // In Bug Entity add  @Entity(repositoryClass="BugRepository")
@@ -53,7 +50,7 @@ class ModuleRepository extends EntityRepository
 
     public function getAllModule($filter = array())
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   m
                 FROM \Application\Entity\RediModule m";
 
@@ -67,7 +64,7 @@ class ModuleRepository extends EntityRepository
             $dql = " WHERE " . implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " ORDER BY m.moduleName ASC";
+        $dql .= " ORDER BY m.order ASC, m.moduleName ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
 
@@ -82,7 +79,7 @@ class ModuleRepository extends EntityRepository
 
     public function getAllSubModule($filter = array())
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   s
                 FROM \Application\Entity\RediSubModule s";
 
@@ -100,7 +97,7 @@ class ModuleRepository extends EntityRepository
             $dql .= " WHERE " . implode(" AND ", $dqlFilter);
         }
 
-        $dql .= " ORDER BY s.subModuleName ASC";
+        $dql .= " ORDER BY s.order ASC, s.subModuleName ASC";
 
         $query = $this->getEntityManager()->createQuery($dql);
 
@@ -119,9 +116,9 @@ class ModuleRepository extends EntityRepository
 
     public function getSubModuleAccess($filter = array())
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   sma
-                FROM 
+                FROM
                     \Application\Entity\RediSubModuleAccess sma
                     LEFT JOIN \Application\Entity\RediUser u
                         WITH u.typeId = sma.userTypeId";
@@ -161,10 +158,10 @@ class ModuleRepository extends EntityRepository
         $result = array_column($result, 'subModuleId');
 
         $response = array_map(function ($module) use ($result) {
-            $module['subModule'] = array_map(function ($subModule) use ($result) {
-                $subModule['canAccess'] = (bool)(in_array($subModule['id'], $result));
+            $module['subModule'] = array_values(array_map(function ($subModule) use ($result) {
+                $subModule['canAccess'] = (bool) (in_array($subModule['id'], $result));
                 return $subModule;
-            }, $module['subModule']);
+            }, $module['subModule']));
 
             return $module;
         }, $response);
@@ -184,11 +181,11 @@ class ModuleRepository extends EntityRepository
 
     public function checkUserSubModule($userTypeId, $subModuleId)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   COUNT(sma) AS total_count
-                FROM 
+                FROM
                     \Application\Entity\RediSubModuleAccess sma
-                WHERE 
+                WHERE
                     sma.userTypeId = :user_type_id
                     AND sma.subModuleId = :sub_module_id";
 
@@ -198,16 +195,16 @@ class ModuleRepository extends EntityRepository
 
         $result = $query->getArrayResult();
 
-        return (bool)(isset($result[0]['total_count']) ? (int)$result[0]['total_count'] : 0);
+        return (bool) (isset($result[0]['total_count']) ? (int) $result[0]['total_count'] : 0);
     }
 
     public function getUserSubModules($userTypeId)
     {
-        $dql = "SELECT 
+        $dql = "SELECT
                   sma
-                FROM 
+                FROM
                     \Application\Entity\RediSubModuleAccess sma
-                WHERE 
+                WHERE
                     sma.userTypeId = :user_type_id";
 
         $query = $this->getEntityManager()->createQuery($dql);
