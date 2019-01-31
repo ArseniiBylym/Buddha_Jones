@@ -8,7 +8,7 @@ import { AppOnlyStoreState } from '../../store/AllStores';
 
 // Styles
 const s = require('./UserNotificationsCenter.css');
-import { IconBellMenu, IconClose } from '../Icons';
+import { IconBellMenu } from '../Icons';
 import { NotificationsActions } from 'actions';
 
 // Component
