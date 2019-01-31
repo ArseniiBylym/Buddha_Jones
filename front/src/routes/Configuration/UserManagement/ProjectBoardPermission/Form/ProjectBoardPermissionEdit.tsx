@@ -118,6 +118,11 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
         history.push('/portal/configuration/user-management/project-board-permission');
     };
 
+    @action 
+    private hideNotificationBoard = () => {
+        this.isProjectBoardPermissionsModified = false;
+    }
+
     @action
     private handleProjectBoardPermissionToggle(
         ind: number,
@@ -296,8 +301,9 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
             this.uploadStatus = uploadStatus.success;
 
             setTimeout(() => {
-                this.goBackToProjectBoardPermissionList();
-            }, 1024);
+                this.hideNotificationBoard();
+                // this.goBackToProjectBoardPermissionList();
+            }, 2500);
         } catch (error) {
             if (this.uploadStatus === 'saving') {
                 this.uploadStatus = uploadStatus.error;
