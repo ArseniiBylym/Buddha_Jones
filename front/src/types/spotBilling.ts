@@ -3,6 +3,7 @@ import { SpotBillingType } from './projectDetailsEnums';
 import { SpotBillActivityRateType } from './spotBillingEnums';
 
 export interface ActivityHours {
+    totalHoursInMinutes: number;
     regularHoursInMinutes: number;
     overtimeHoursInMinutes: number;
     doubletimeHoursInMinutes: number;
@@ -32,6 +33,7 @@ export interface SpotBillFormActivityTimeEntry {
     versionId: number | null;
     versionName: string | null;
     hoursAreSplit: boolean;
+    totalHours: number;
     regularHours: number;
     overtimeHours: number;
     doubletimeHours: number;
@@ -138,4 +140,10 @@ export interface SpotBillRowRevision {
 export interface SpotBillDiscount {
     isFixed: boolean;
     value: number;
+}
+
+export interface SpotTimeEntryDuration {
+    totalUnbilledMinutes: number;
+    selectedBaseMinutes: number;
+    selectedAdjustedMinutes: number;
 }

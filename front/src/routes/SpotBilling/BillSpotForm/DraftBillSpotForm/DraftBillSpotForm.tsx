@@ -28,8 +28,8 @@ interface Props extends AppOnlyStoreState {
 export class DraftBillSpotForm extends React.Component<Props, {}> {
     @computed
     private get unbilledTimeEntriesWihoutThoseInBill(): BillTimeEntry[] {
-        return this.props.billData.unbilledTimeEntries.filter(timeEntry =>
-            SpotToBillFormActions.checkIfTimeEntryIsInBill(timeEntry.timeEntryId)
+        return this.props.billData.unbilledTimeEntries.filter(
+            timeEntry => SpotToBillFormActions.checkIfTimeEntryIsInBill(timeEntry.timeEntryId) === false
         );
     }
 
@@ -43,11 +43,8 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
                     return filtered;
                 }
 
-                // Check if activity is non-billable and not dailies
-                if (
-                    timeEntry.activityIsBillable === false &&
-                    DAILIES_ACTIVITIES_IDS.indexOf(timeEntry.activityId) !== -1
-                ) {
+                // Check if activity is one of dailies
+                if (DAILIES_ACTIVITIES_IDS.indexOf(timeEntry.activityId) !== -1) {
                     filtered.unbilledDailiesTimeEntries.push(timeEntry);
                     return filtered;
                 }

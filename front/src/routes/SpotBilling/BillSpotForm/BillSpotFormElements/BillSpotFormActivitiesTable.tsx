@@ -39,6 +39,7 @@ export interface BillActivitiesTableOptions {
     showVersions?: boolean;
     showDate?: boolean;
     showBillable?: boolean;
+    showAddToBill?: boolean;
 }
 
 interface Props {
@@ -48,9 +49,21 @@ interface Props {
 
 @observer
 export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
+    static get defaultProps(): Props {
+        return {
+            entriesFormatted: [],
+            options: {
+                showVersions: false,
+                showDate: false,
+                showBillable: false,
+                showAddToBill: false,
+            },
+        };
+    }
+
     public render() {
         const {
-            options: { showVersions, showDate, showBillable },
+            options: { showVersions, showDate, showBillable, showAddToBill },
         } = this.props;
 
         return (
@@ -74,9 +87,9 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                           ]
                         : []),
                     { title: 'Time', align: 'right' },
-                    { title: 'Hours', align: 'right' },
+                    { title: 'Hours', align: showAddToBill || showBillable ? 'left' : 'right' },
                     ...(showBillable ? [{ title: 'Billable', align: 'left' as 'left' }] : []),
-                    { title: 'In bill', align: 'right' },
+                    ...(showAddToBill ? [{ title: 'In bill', align: 'right' as 'right' }] : []),
                 ]}
             >
                 {this.props.entriesFormatted.map(entry => (
@@ -136,8 +149,11 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                 </Paragraph>
                             </div>
 
-                            <div className={s.durationCol} style={{ textAlign: 'right' }}>
-                                <Paragraph type="blue" size="small" bold={true} align="right">
+                            <div
+                                className={s.durationCol}
+                                style={{ textAlign: showAddToBill || showBillable ? 'left' : 'right' }}
+                            >
+                                <Paragraph type="blue" size="small" bold={true}>
                                     {DateHandler.convertTotalMinutesToHM(entry.durationInMinutes)}
                                 </Paragraph>
                             </div>
@@ -155,46 +171,76 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                 </div>
                             )}
 
-                            <div className={s.inBillCol}>
-                                <div>
-                                    {entry.isSelectedToBill && entry.hoursAreSplit === false && (
-                                        <Tooltip isSmall={true} text="Split to overtime">
-                                            <button
-                                                className={s.splitButton}
-                                                onClick={this.handleSplittingEntryHours(entry.timeEntryId)}
-                                            >
-                                                <img src={splitIcon} alt="Split" />
-                                            </button>
-                                        </Tooltip>
-                                    )}
-                                </div>
+                            {showAddToBill && (
+                                <div className={s.inBillCol}>
+                                    <div>
+                                        {entry.isSelectedToBill && entry.hoursAreSplit === false && (
+                                            <Tooltip isSmall={true} text="Split to overtime">
+                                                <button
+                                                    className={s.splitButton}
+                                                    onClick={this.handleSplittingEntryHours(entry.timeEntryId)}
+                                                >
+                                                    <img src={splitIcon} alt="Split" />
+                                                </button>
+                                            </Tooltip>
+                                        )}
+                                    </div>
 
-                                <div>
-                                    {entry.isSelectedToBill && (
-                                        <DurationCounter
-                                            onChange={this.handleSelectedEntryHours(entry, 'regular')}
-                                            maxValue={entry.durationInMinutes}
-                                            value={entry.regularHoursInMinutes}
+                                    <div>
+                                        {entry.isSelectedToBill && (
+                                            <DurationCounter
+                                                onChange={this.handleSelectedEntryHours(entry, 'total')}
+                                                valueLessThan={{
+                                                    value: entry.durationInMinutes,
+                                                    color: 'alert',
+                                                }}
+                                                valueMoreThan={{
+                                                    value: entry.durationInMinutes,
+                                                    color: 'success',
+                                                }}
+                                                value={entry.totalHoursInMinutes}
+                                                minValue={0}
+                                            />
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <Checkbox
+                                            onChange={this.handleToggleActivityInBill(entry)}
+                                            labelOnLeft={true}
+                                            label={entry.isSelectedToBill ? '' : 'Add to bill'}
+                                            checked={entry.isSelectedToBill}
                                         />
-                                    )}
+                                    </div>
                                 </div>
-
-                                <div>
-                                    <Checkbox
-                                        onChange={this.handleToggleActivityInBill(entry)}
-                                        labelOnLeft={true}
-                                        label={entry.isSelectedToBill ? '' : 'Add to bill'}
-                                        checked={entry.isSelectedToBill}
-                                    />
-                                </div>
-                            </div>
+                            )}
                         </CardContentTableRow>
 
                         {entry.hoursAreSplit && (
                             <React.Fragment>
                                 <CardContentTableRow
+                                    className={classNames(s.secondaryRows, s.regularHoursRow, {
+                                        [s.fourSpan]: showVersions,
+                                    })}
+                                    design="compact"
+                                >
+                                    <div className={s.splitTimeEntryHoursEmptyCol} />
+                                    <div className={s.splitTimeEntryVisualLineCol} />
+                                    <div className={s.splitTimeEntryInBillCol}>
+                                        <p>Regular:</p>
+
+                                        <DurationCounter
+                                            onChange={this.handleSelectedEntryHours(entry, 'regular')}
+                                            value={entry.regularHoursInMinutes}
+                                            maxValue={entry.totalHoursInMinutes}
+                                            minValue={0}
+                                        />
+                                    </div>
+                                </CardContentTableRow>
+
+                                <CardContentTableRow
                                     className={classNames(s.secondaryRows, s.overtimeHoursRow, {
-                                        [s.hasDate]: showDate,
+                                        [s.fourSpan]: showVersions,
                                     })}
                                     design="compact"
                                 >
@@ -206,14 +252,15 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                         <DurationCounter
                                             onChange={this.handleSelectedEntryHours(entry, 'overtime')}
                                             value={entry.overtimeHoursInMinutes}
-                                            maxValue={entry.durationInMinutes}
+                                            maxValue={entry.totalHoursInMinutes}
+                                            minValue={0}
                                         />
                                     </div>
                                 </CardContentTableRow>
 
                                 <CardContentTableRow
                                     className={classNames(s.secondaryRows, s.doubletimeHoursRow, {
-                                        [s.hasDate]: showDate,
+                                        [s.fourSpan]: showVersions,
                                     })}
                                     design="compact"
                                 >
@@ -225,7 +272,8 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
                                         <DurationCounter
                                             onChange={this.handleSelectedEntryHours(entry, 'doubletime')}
                                             value={entry.doubletimeHoursInMinutes}
-                                            maxValue={entry.durationInMinutes}
+                                            maxValue={entry.totalHoursInMinutes}
+                                            minValue={0}
                                         />
                                     </div>
                                 </CardContentTableRow>
@@ -240,6 +288,7 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
     private handleToggleActivityInBill = (entry: FormattedInBillTimeEntry) => (checked: boolean, value: boolean) => {
         if (checked) {
             SpotToBillFormActions.addTimeEntryToActivitiesSelection(entry, {
+                totalHoursInMinutes: entry.durationInMinutes,
                 regularHoursInMinutes: entry.durationInMinutes,
             });
         } else {
@@ -249,10 +298,12 @@ export class BillSpotFormActivitiesTable extends React.Component<Props, {}> {
 
     private handleSelectedEntryHours = (
         entry: FormattedInBillTimeEntry,
-        hours: 'regular' | 'overtime' | 'doubletime'
+        hours: 'total' | 'regular' | 'overtime' | 'doubletime'
     ) => (totalMinutes: number) => {
         SpotToBillFormActions.addTimeEntryToActivitiesSelection(entry, {
-            [hours === 'doubletime'
+            [hours === 'total'
+                ? 'totalHoursInMinutes'
+                : hours === 'doubletime'
                 ? 'doubletimeHoursInMinutes'
                 : hours === 'overtime'
                 ? 'overtimeHoursInMinutes'

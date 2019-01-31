@@ -227,7 +227,7 @@ export class BillSpotFormActivities extends React.Component<Props, {}> {
                 {this.sortedTimeEntries.length > 0 && (
                     <BillSpotFormProjectCampaignActivities
                         timeEntries={this.sortedFilteredTimeEntries}
-                        options={{ showVersions: true, showDate: true }}
+                        options={{ showVersions: true, showDate: true, showAddToBill: true }}
                     />
                 )}
             </React.Fragment>

@@ -75,7 +75,7 @@ export class BillSpotFormBottomBar extends React.Component<Props, {}> {
 
                         {this.isAnythingSelected && (
                             <Col flex="0 1 auto">
-                                <Paragraph type="brown">{`Selected ${this.selectedActivitiesCount} ${
+                                <Paragraph type="brown" size="small">{`Selected ${this.selectedActivitiesCount} ${
                                     this.selectedActivitiesCount > 1 ? 'time entries' : 'time entry'
                                 }`}</Paragraph>
                             </Col>
@@ -83,7 +83,14 @@ export class BillSpotFormBottomBar extends React.Component<Props, {}> {
 
                         {this.isAnythingSelected && (
                             <Col flex="0 1 auto">
-                                <ButtonAdd onClick={this.handleAddingToBill} label="Add selection to the bill" />
+                                <ButtonAdd
+                                    onClick={this.handleAddingToBill}
+                                    label={
+                                        'Add selected time ' +
+                                        (this.selectedActivitiesCount > 1 ? 'entries' : 'entry') +
+                                        ' to the bill'
+                                    }
+                                />
                             </Col>
                         )}
                     </Row>

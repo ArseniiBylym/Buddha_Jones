@@ -1,4 +1,6 @@
+import * as classNames from 'classnames';
 import { DateHandler } from 'helpers/DateHandler';
+import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 
@@ -13,12 +15,35 @@ export interface BillTimeEntriesSelectionTotals {
     totalMinutes?: number;
     // Highlight total minutes with contrast color when they are unbilledj
     areTotalMinutesUnbilled?: boolean;
+    // Show selected minutes
+    showSelectedMinutes?: boolean;
+    // Show plus minus calculation
+    showPlusMinusCalculation?: boolean;
 }
 
 interface BillActivitiesSectionSelectionTotalProps extends BillTimeEntriesSelectionTotals {}
 
 @observer
 export class BillActivitiesSectionSelectionTotal extends React.Component<BillActivitiesSectionSelectionTotalProps, {}> {
+    static get defaultProps(): BillActivitiesSectionSelectionTotalProps {
+        return {
+            selectedBaseMinutes: 0,
+            selectedAdjustedMinutes: 0,
+            totalMinutes: 0,
+            areTotalMinutesUnbilled: false,
+            showSelectedMinutes: false,
+            showPlusMinusCalculation: false,
+        };
+    }
+
+    @computed private get isPositive(): boolean {
+        if (this.props.showPlusMinusCalculation === false) {
+            return true;
+        }
+
+        return this.props.selectedAdjustedMinutes >= this.props.selectedBaseMinutes;
+    }
+
     public render() {
         return (
             <div className={s.selection}>
@@ -29,10 +54,31 @@ export class BillActivitiesSectionSelectionTotal extends React.Component<BillAct
                     </p>
                 )}
 
-                <p>
-                    <span>Selected: </span>
-                    <strong>{DateHandler.convertTotalMinutesToHM(this.props.selectedAdjustedMinutes)}</strong>
-                </p>
+                {this.props.showSelectedMinutes && (
+                    <p>
+                        <span>Selected: </span>
+                        <strong>{DateHandler.convertTotalMinutesToHM(this.props.selectedBaseMinutes)}</strong>
+                    </p>
+                )}
+
+                {this.props.showPlusMinusCalculation && (
+                    <p
+                        className={classNames({
+                            [s.positive]: this.isPositive,
+                            [s.negative]: this.isPositive === false,
+                        })}
+                    >
+                        <strong>
+                            {(this.isPositive ? '+' : '-') +
+                                ' ' +
+                                DateHandler.convertTotalMinutesToHM(
+                                    this.isPositive
+                                        ? this.props.selectedAdjustedMinutes - this.props.selectedBaseMinutes
+                                        : this.props.selectedBaseMinutes - this.props.selectedAdjustedMinutes
+                                )}
+                        </strong>
+                    </p>
+                )}
             </div>
         );
     }

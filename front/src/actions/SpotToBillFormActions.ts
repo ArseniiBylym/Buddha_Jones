@@ -58,11 +58,14 @@ export class SpotToBillFormActionsClass {
         }
     };
 
-    private hoursOnlyPositive = (hours: ActivityHours): ActivityHours => ({
-        regularHoursInMinutes: hours.regularHoursInMinutes > 0 ? hours.regularHoursInMinutes : 0,
-        overtimeHoursInMinutes: hours.overtimeHoursInMinutes > 0 ? hours.overtimeHoursInMinutes : 0,
-        doubletimeHoursInMinutes: hours.doubletimeHoursInMinutes > 0 ? hours.doubletimeHoursInMinutes : 0,
-    });
+    private hoursOnlyPositive = (hours: ActivityHours): ActivityHours => {
+        return {
+            totalHoursInMinutes: hours.totalHoursInMinutes > 0 ? hours.totalHoursInMinutes : 0,
+            regularHoursInMinutes: hours.regularHoursInMinutes > 0 ? hours.regularHoursInMinutes : 0,
+            overtimeHoursInMinutes: hours.overtimeHoursInMinutes > 0 ? hours.overtimeHoursInMinutes : 0,
+            doubletimeHoursInMinutes: hours.doubletimeHoursInMinutes > 0 ? hours.doubletimeHoursInMinutes : 0,
+        };
+    };
 
     private calculateAdjustedHours = (
         activityTime: number,
@@ -161,6 +164,7 @@ export class SpotToBillFormActionsClass {
             hoursAreSplit:
                 (typeof hours.overtimeHoursInMinutes === 'number' && hours.overtimeHoursInMinutes > 0) ||
                 (typeof hours.doubletimeHoursInMinutes === 'number' && hours.doubletimeHoursInMinutes > 0),
+            totalHours: typeof hours.totalHoursInMinutes === 'number' ? hours.totalHoursInMinutes : 0,
             regularHours: typeof hours.regularHoursInMinutes === 'number' ? hours.regularHoursInMinutes : 0,
             overtimeHours: typeof hours.overtimeHoursInMinutes === 'number' ? hours.overtimeHoursInMinutes : 0,
             doubletimeHours: typeof hours.doubletimeHoursInMinutes === 'number' ? hours.doubletimeHoursInMinutes : 0,
@@ -171,6 +175,10 @@ export class SpotToBillFormActionsClass {
             const time = this.calculateAdjustedHours(
                 timeEntry.durationInMinutes,
                 {
+                    totalHoursInMinutes:
+                        typeof hours.totalHoursInMinutes === 'number'
+                            ? hours.totalHoursInMinutes
+                            : SpotToBillFormStore.selectedActivities[index].totalHours,
                     regularHoursInMinutes:
                         typeof hours.regularHoursInMinutes === 'number'
                             ? hours.regularHoursInMinutes

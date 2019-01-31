@@ -21,7 +21,7 @@ export class BillSpotFormSpotsToAdd extends React.Component<BillSpotFormSpotsToA
         if (this.props.remainingSpotsToBill.length <= 0) {
             return (
                 <Paragraph type="dim" align="right">
-                    No unpaid spots are available to add to this bill.
+                    No unbilled spots are available to add to this bill.
                 </Paragraph>
             );
         }
