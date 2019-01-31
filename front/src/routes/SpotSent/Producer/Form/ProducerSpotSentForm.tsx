@@ -224,6 +224,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                                     : [],
                                                 finishAccept: (spot.finish_accept === 1) ? true : false,
                                                 spotSentId: spot.spot_sent_id,
+                                                customerName: spot.customer_name,
+                                                customerId: spot.customer_id,
                                                 
                                             }}
                                             spotIndex={spotIndex}

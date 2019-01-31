@@ -25,6 +25,8 @@ export interface SpotSentVersionForSubmit {
     graphics_sent_via_method: number[] | null;
     graphics_file: [{file_name: string, file_description: string}];
     spot_sent_id?: number;
+    customer_name?: string | null;
+    customer_id?: number | null;
 }
 
 export interface SpotSentValueForSubmit {

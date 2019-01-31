@@ -42,7 +42,9 @@ export type ProjectPickerValues = {
     projectCampaign: ProjectPickerGroupValues | null;
     spot: ProjectPickerGroupValues | null;
     version: ProjectPickerGroupValues | null;
-    customerId: number | null;
+    // customerName?: string | null;
+    customerId?: number | null;
+
 };
 
 export interface ProjectPickerGroupValues {
@@ -51,6 +53,8 @@ export interface ProjectPickerGroupValues {
     campaignId?: number | null;
     finishAccept?: boolean;
     prodAccept?: boolean;
+    customerName?: string | null;
+    customerId?: number | null;
 }
 
 interface Props {
@@ -77,6 +81,9 @@ interface Props {
     isSubmoduleVisible?: boolean;
     line_status_name?: string | null;
     customer_name?: string;
+    spot_customer_name?: string | null;
+    spot_customer_id?: number | null;
+    real_index?: number;
 }
 
 declare type ComponentProps = Props & AppOnlyStoreState;
@@ -543,6 +550,9 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
                             ? projectPermissions.loggedInUserPermissions[UserPermissionKey.ProjectCodeName].canView
                             : false
                     }
+                    spot_customer_name={this.props.spot_customer_name}
+                    spot_customer_id={this.props.spot_customer_id}
+                    real_index={this.props.real_index}
                 />
                 <Modal
                     show={this.state.clearSelectionModal}
@@ -797,7 +807,9 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
                                 ? {
                                     id: result.id,
                                     name: result.name,
-                                    campaignId: result.campaignId
+                                    campaignId: result.campaignId,
+                                    customerName: result.customerName,
+                                    customerId: result.customerId
                                 }
                                 : result.section === ProjectPickerSections.project
                                 ? null
