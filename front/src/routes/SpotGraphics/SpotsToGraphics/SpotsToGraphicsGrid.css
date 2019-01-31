@@ -69,13 +69,13 @@
             flex-flow: row nowrap;
 
             & > p{
-                width: 15%;
+                width: 20%;
                 color: #968069;
                 font-weight: 300;
                 font-size: .8em;
             }
             & > p:nth-child(2) {
-                width: 55%;
+                width: 50%;
             }
             & > .spots__header__ver{
                 width: 10%;
@@ -100,10 +100,10 @@
             cursor: pointer;
 
             & > div{
-                width: 15%;
+                width: 20%;
             }
             & > div:nth-child(2) {
-                width: 55%;
+                width: 50%;
             }
             &:hover{
                 background-color: #e9e0d7;

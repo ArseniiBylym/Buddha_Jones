@@ -152,7 +152,7 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                                 checked={this.props.store!.timeEntryPermissions.data.includes(userType.id)}
                                 label={this.props.store!.timeEntryPermissions.data.includes(userType.id) ? 'Required' : 'Not Required'}
                                 labelOnLeft={true}
-                                type={'blue'}
+                                type={'no-icon'}
                             />
                         </TableCell>
                         <TableCell align="right">

@@ -149,6 +149,8 @@ export class SpotSentActionsClass {
                                 return parseInt(method, 0);
                             }) : [],
                             spot_sent_id: spot.spotSentId,
+                            customer_name: spot.customerName,
+                            customer_id: spot.customerId,
                         };
                     }),
                     finish_option: response.finishOption,
@@ -388,6 +390,12 @@ export class SpotSentActionsClass {
                         }
                         if (values.projectCampaign.name) {
                             (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).campaign_name = values.projectCampaign.name;
+                        }
+                        if (values.projectCampaign.customerName) {
+                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).customer_name = values.projectCampaign.customerName;
+                        }
+                        if (values.projectCampaign.customerId) {
+                            (SpotSentStore.spotSentDetails.spot_version[spotIndex] as SpotSentVersionForSubmit).customer_id = values.projectCampaign.customerId;
                         }
                         CampaignPeopleActions.fetchEditorsFromProjectCampaign(values.projectCampaign.id);
                     }
@@ -665,11 +673,11 @@ export class SpotSentActionsClass {
     }
     @action    
     public handleInputFiles = files => {
-        let filesArray: any[] = [];
+        let filesObject: any = {};
         for (let file of files) {
             FileHandler.readFileAsDataUri(file).then((result) => {
-                filesArray.push(result.target.result);
-                SpotSentStore.spotSentDetails.spec_sheet_file = filesArray;
+                filesObject[file.name] = result.target.result;
+                SpotSentStore.spotSentDetails.spec_sheet_file = filesObject;
             });
         }
 

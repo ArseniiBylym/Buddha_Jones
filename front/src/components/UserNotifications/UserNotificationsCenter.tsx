@@ -8,7 +8,7 @@ import { AppOnlyStoreState } from '../../store/AllStores';
 
 // Styles
 const s = require('./UserNotificationsCenter.css');
-import { IconBellMenu, IconClose } from '../Icons';
+import { IconBellMenu } from '../Icons';
 import { NotificationsActions } from 'actions';
 
 // Component
@@ -40,51 +40,57 @@ export class UserNotificationsCenter extends React.Component<AppOnlyStoreState, 
                     [s.hideHistory]: !this.showHistory,
                 })}
             >
-                <Button
-                    className={notifications.visibleMenu === 'hamburgerMenu' ? s.toggleHidden : s.toggle }
-                    onClick={() => this.handleNotificationsHistoryToggle()}
-                    icon={{
-                        size: 'large',
-                        background: 'white',
-                        element:
-                            !this.showHistory ? (
-                                <IconBellMenu width={25} height={25}/>
-                            ) : (
-                                <IconClose width={12} height={12}/>
-                            ),
-                    }}
-                />
+                <div className={s.notificationButton__wrapper} onMouseEnter={this.buttonHoverHandler}>
+                    <Button
+                        className={notifications.visibleMenu === 'hamburgerMenu' ? s.toggleHidden : s.toggle }
+                        onClick={this.showHistory ? () => this.handleNotificationsHistoryToggle() : null}
+                        // icon={{
+                        //     size: 'large',
+                        //     background: 'white',
+                        //     element:
+                        //     !this.showHistory ? (
+                        //         <IconBellMenu width={25} height={25}/>
+                        //         ) : (
+                        //             <IconClose width={12} height={12}/>
+                        //             ),
+                        //         }}
+                        icon={!this.showHistory ? ({
+                            size: 'large',
+                            background: 'white',
+                            element: <IconBellMenu width={25} height={25}/>
+                            }) : null
+                        }
+                    />
+                </div>
+
                 {this.notificationsLength && !this.showHistory && notifications.visibleMenu !== 'hamburgerMenu' && <div className={s.notificationCounter}>{this.notificationsLength}</div>}
 
-                {/* <div className={s.notificationsLive}>
-                    {notifications &&
-                    notifications.liveNotifications
-                        .filter(notification => notification !== null && typeof notification.title !== 'undefined')
-                        .map(notification => this.renderNotification(notification))}
-                </div> */}
-
-                <div className={s.notificationsHistory}>
+                <div className={s.notificationsHistory} onMouseLeave={this.mouseLeaveHandler}>
+                    <div className={s.notificationsHistory__header}>Notifications</div>
                     <div className={s.notificationsHistory__container}>
                         {notifications && notifications.userNotifications && notifications.userNotifications.length > 0 &&
                             notifications.userNotifications!.map(notification => this.renderNotification(notification))
                         }
                     </div>
-                    {/* {notifications !== null &&
-                    notifications.userNotifications.length <= 0 && (
-                        <UserNotification
-                            id={0}
-                            title="You have no recent notifications"
-                            showDate={false}
-                            dismissable={{
-                                allow: false,
-                                onDismiss: null,
-                                dismissAutomaticallyAfterXSeconds: null,
-                            }}
-                        />
-                    )} */}
                 </div>
             </div>
         );
+    }
+
+    private mouseLeaveHandler = () => {
+        if (this.showHistory) {
+            this.handleNotificationsHistoryToggle();
+        } else {
+            return;
+        }
+    }
+
+    private buttonHoverHandler = (e) => {
+        if (!this.showHistory) {
+            this.handleNotificationsHistoryToggle();
+        } else {
+            return;
+        }
     }
 
     private get notificationsLength() {

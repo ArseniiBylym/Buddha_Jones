@@ -1,6 +1,10 @@
-  
+.notificationsCenter {
+  position: fixed;
+  right: 0;
+  z-index: 100;
+  top: 0;
+}
   .notificationsHistory {
-    padding-top: 150px;
     overflow: hidden;
     position: fixed;
     width: 344px;
@@ -11,6 +15,19 @@
     background: color(#5a4d3f alpha(0.5));
     background: linear-gradient(to bottom, color(#5a4d3f alpha(0.4)), color(#5a4d3f alpha(0.8)));
     transition: 400ms all 0ms cubic-bezier(1, 0, 0, 1);
+
+    position: fixed;
+    z-index: 100;
+    right: 0;
+    top: 0;
+  }
+  .notificationsHistory__header{
+    padding: 28px 0;
+    text-align: center;
+    font-size: 26px;
+    color: white;
+    font-weight: 600;
+
   }
   .notificationsHistory__container{
     padding-left: 20px;
@@ -37,20 +54,20 @@
   
   .toggle {
     position: absolute;
-    z-index: 3;
+    z-index: 200;
     top: 70px;
     right: 12px;
   }
   .toggleHidden{
     position: absolute;
-    z-index: 3;
+    z-index: 200;
     top: 70px;
     right: 12px;
     display: none;
   }
   .notificationCounter{
     position: absolute;
-    z-index: 4;
+    z-index: 300;
     top: 70px;
     right: 45px;
     font-size: .9em;

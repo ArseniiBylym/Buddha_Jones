@@ -15,6 +15,9 @@ export interface SpotSentSpot {
     sentGraphicsViaMethod: number[];
     finishAccept?: boolean;
     spotSentId?: number;
+    customerName?: string | null;
+    customerId?: number | null;
+
 }
 
 export interface SentViaOption {
@@ -147,6 +150,8 @@ export interface SpotSentDetailsSpotDataFromApi {
     prodAccept?: 0 | 1;
     sentGraphicsViaMethod: string | null;
     spotSentId: number;
+    customerId?: number | null;
+    customerName?: string | null; 
 }
 
 export interface SpotSentAllSpotsSentSpotDataFromApi {

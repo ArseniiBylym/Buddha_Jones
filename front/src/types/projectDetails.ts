@@ -30,6 +30,7 @@ export interface ProjectDetails {
     notes: string | null;
     campaigns: CampaignDetails[];
     history: ProjectHistory[];
+    confidential: number | null;
 }
 
 export interface ProjectCampaignUserFromApi {
@@ -42,6 +43,20 @@ export interface ProjectCampaignUserFromApi {
     image: string | null;
     type: string;
     typeId: number;
+}
+export interface ProjectCampaignAddnUserFromApi {
+    campaignId: number;
+    email: string | null;
+    firstName: string | null;
+    fullName: string | null;
+    image: string | null;
+    lastName: string | null;
+    projectCampaignId: string;
+    projectId: number;
+    type: string;
+    typeId: number;
+    userId: number;
+    username: string;
 }
 
 export interface ProjectCampaignCreativeUserFromApi extends ProjectCampaignUserFromApi {
@@ -93,6 +108,7 @@ export interface CampaignDetails {
     billingTeam: ProjectCampaignBillingUser[];
     designTeam: ProjectCampaignUser[];
     editorialTeam: ProjectCampaignUser[];
+    additionalTeam?: ProjectCampaignUser[];
     clientSelected: {
         id: number | null;
         name: string | null;
@@ -174,6 +190,7 @@ export interface ProjectDetailsFromApi {
     history: ProjectDetailsHistoryFromApi[];
     projectName: string | null;
     projectCode: string | null;
+    confidential: number | null;
 }
 
 interface ProjectDetailsCampaignFromApi {
@@ -194,6 +211,7 @@ interface ProjectDetailsCampaignFromApi {
     user: ProjectCampaignCreativeUserFromApi[];
     designer: ProjectCampaignUserFromApi[];
     editor: ProjectCampaignUserFromApi[];
+    addnUser?: ProjectCampaignAddnUserFromApi[] | any[];
     billingUser: ProjectCampaignBillingUserFromApi[];
     approvedByBilling: boolean;
     channelId: number | null;

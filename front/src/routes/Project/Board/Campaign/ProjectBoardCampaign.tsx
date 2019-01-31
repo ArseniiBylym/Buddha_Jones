@@ -35,6 +35,7 @@ interface ProjectBoardCampaignProps {
     projectId: number;
     campaign: CampaignDetails;
     isHeaderFixed: boolean;
+    projectConfidential?: number | null;
 }
 
 // Types
@@ -453,15 +454,17 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                                 campaignId={this.props.campaign.campaignId}
                                 selectedUsers={this.props.campaign.designTeam}
                             />
-                            <ProjectBoardCampaignPeople
-                                userCanView={true}
-                                userCanEdit={this.userCanEditGraphicsTeam}
-                                type="additional"
-                                projectId={this.props.projectId}
-                                projectCampaignId={this.props.campaign.projectCampaignId}
-                                campaignId={this.props.campaign.campaignId}
-                                selectedUsers={this.props.campaign.designTeam}
-                            />
+                            {this.isProjectConfidential() && 
+                                <ProjectBoardCampaignPeople
+                                    userCanView={true}
+                                    userCanEdit={this.userCanEditGraphicsTeam}
+                                    type="additional"
+                                    projectId={this.props.projectId}
+                                    projectCampaignId={this.props.campaign.projectCampaignId}
+                                    campaignId={this.props.campaign.campaignId}
+                                    selectedUsers={this.props.campaign.additionalTeam}
+                                />
+                            }
                         </AnimateHeight>
 
                         <ProjectBoardCampaignWritingAndMusicTeams
@@ -491,6 +494,14 @@ export class ProjectBoardCampaign extends React.Component<ProjectBoardCampaignPr
                 </AnimateHeight>
             </div>
         );
+    }
+
+    private isProjectConfidential = () => {
+        if (this.props.projectConfidential && this.props.projectConfidential === 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private getVersionNameButtonIcon(): ButtonIcon {

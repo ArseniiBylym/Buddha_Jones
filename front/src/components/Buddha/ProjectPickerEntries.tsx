@@ -11,17 +11,25 @@ import {
     VersionsResultsEntry,
 } from 'types/projectsCampaignsSpots';
 import { truncate } from 'lodash-es';
-import { ProjectPickerEntry, ProjectPickerResult } from './ProjectPickerEntry';
-import { TRTItem } from '../../types/projectsCampaignsSpots';
+import { ProjectPickerEntry } from './ProjectPickerEntry';
+// import {ProjectPickerResult } from './ProjectPickerEntry';
+// import { TRTItem } from '../../types/projectsCampaignsSpots';
+import { inject, observer } from 'mobx-react';
+// import { AppOnlyStoreState } from 'store/AllStores';
 
-interface Props {
-    currentResults: ProjectsResult | CampaignsResult | SpotsResult | VersionsResult | null;
-    sectionOpen: ProjectPickerSections | null;
-    onResultPicked: (result: ProjectPickerResult) => void;
-    userCanViewProjectCodeName: boolean;
-    userCanViewProjectName: boolean;
-    trtList: TRTItem[] | null;
-}
+// interface Props {
+//     currentResults: ProjectsResult | CampaignsResult | SpotsResult | VersionsResult | null;
+//     sectionOpen: ProjectPickerSections | null;
+//     onResultPicked: (result: ProjectPickerResult) => void;
+//     userCanViewProjectCodeName: boolean;
+//     userCanViewProjectName: boolean;
+//     trtList: TRTItem[] | null;
+//     spot_customer_name?: string | null;
+//     spot_customer_id?: number | null;
+//     real_index?: number;
+// }
+
+// type ProjectPickerEntriesProps = Props & AppOnlyStoreState;
 
 interface Entry {
     section: ProjectPickerSections;
@@ -33,7 +41,10 @@ interface Entry {
     trtId?: number | null;
 }
 
-export class ProjectPickerEntries extends React.Component<Props, {}> {
+@inject('store')
+@observer
+// export class ProjectPickerEntries extends React.Component<Props, {}> {
+export class ProjectPickerEntries extends React.Component<any, {}> {
     public render() {
         return (
             this.mapEntries(this.props.currentResults).map((result, index: number) => {
@@ -92,7 +103,23 @@ export class ProjectPickerEntries extends React.Component<Props, {}> {
                         };
                     });
                 case ProjectPickerSections.projectCampaign:
-                    return (currentResults.results as CampaignsResultsEntry[]).map(result => {
+                    const filteredProjectByCustomer = (currentResults.results as CampaignsResultsEntry[]).filter((item: any, i) => {
+                        if (this.props.real_index !== 0) {
+
+                            if (this.props.store!.spotSent.spotSentDetails.spot_version[0] &&
+                                this.props.store!.spotSent.spotSentDetails.spot_version[0].customer_name === item.customerName) {
+                                    return true;
+                            } else {
+                                return false;
+                            }
+                        } else {
+                            return true;
+                        }
+                    });
+
+                    return (filteredProjectByCustomer as CampaignsResultsEntry[]).map(result => {
+                    // return (currentResults.results as CampaignsResultsEntry[]).map(result => {
+                        
                         return {
                             section: ProjectPickerSections.projectCampaign,
                             id: result.id,
@@ -104,6 +131,8 @@ export class ProjectPickerEntries extends React.Component<Props, {}> {
                                 : ''),
                             clientId: null,
                             clientName: null,
+                            customerName: result.customerName,
+                            customerId: result.customerId,
                         };
                     });
                 case ProjectPickerSections.spot:

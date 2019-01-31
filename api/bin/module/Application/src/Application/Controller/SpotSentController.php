@@ -524,9 +524,11 @@ class SpotSentController extends CustomAbstractActionController
                         mkdir($newDir);
                     }
 
+                    $fileCounter = 0;
                     foreach ($files as $key => $file) {
-                        $newFileName = md5($key) . $file['extension'];
-                        $fileNames[] = $newFileName;
+                        $fileCounter++;
+                        $newFileName = md5($fileCounter) . $file['extension'];
+                        $fileNames[$key] = $newFileName;
                         $newFileName = $newDir . '/' . $newFileName;
 
                         file_put_contents($newFileName, $file['data']);
@@ -605,6 +607,8 @@ class SpotSentController extends CustomAbstractActionController
     }
     private function getSingle($requestId, $raw = false)
     {
+        $specSheetDir = $this->_config['file_path_suffix']['spot_sent_spec_sheet'];
+
         $searchResult = $this->_spotRepo->searchSpotSent(array(
             "request_id" => $requestId,
             "details" => true,
@@ -647,7 +651,7 @@ class SpotSentController extends CustomAbstractActionController
                     $specSheetFiles = json_decode($data['specSheetFile'], true);
 
                     foreach ($specSheetFiles as &$file) {
-                        $file = $this->_config['site_url'] . 'spec_sheet/' . $data['requestId'] . '/' . $file;
+                        $file = $this->_config['site_url'] . $specSheetDir . $data['requestId'] . '/' . $file;
                     }
 
                     $data['specSheetFile'] = $specSheetFiles;

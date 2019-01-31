@@ -94,4 +94,5 @@ export enum UserTypeClassId {
     CreativeTeam = 'C',
     EditorialTeam = 'E',
     GraphicsTeam = 'G',
+    AdditionalTeam = 'A',
 }
