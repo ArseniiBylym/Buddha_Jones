@@ -79,14 +79,14 @@ export class Counter extends React.Component<CounterProps, {}> {
 
     public componentDidMount() {
         if (this.props.value !== null && typeof this.props.value === 'number') {
-            this.valueText = this.prepareValueAsText(this.props.value);
+            this.valueText = this.prepareValueAsText(this.props.value, this.props);
         }
     }
 
     public componentWillReceiveProps(nextProps: CounterProps) {
         if (typeof nextProps.value !== 'undefined' && this.value !== nextProps.value) {
             const newValue = this.alignValueToLimits(nextProps.value);
-            const newValueText = this.prepareValueAsText(newValue);
+            const newValueText = this.prepareValueAsText(newValue, this.props);
 
             this.value = newValue;
             this.valueText = newValueText;
@@ -94,8 +94,18 @@ export class Counter extends React.Component<CounterProps, {}> {
 
         if (typeof nextProps.maxValue === 'number' && nextProps.maxValue < this.value) {
             this.value = nextProps.maxValue;
+            this.valueText = this.prepareValueAsText(nextProps.maxValue, nextProps);
         } else if (typeof nextProps.minValue === 'number' && nextProps.minValue > this.value) {
             this.value = nextProps.minValue;
+            this.valueText = this.prepareValueAsText(nextProps.minValue, nextProps);
+        }
+
+        if (
+            this.props.showAddedTextOnInput !== nextProps.showAddedTextOnInput ||
+            this.props.readOnlyTextBeforeValue !== nextProps.readOnlyTextBeforeValue ||
+            this.props.readOnlyTextAfterValue !== nextProps.readOnlyTextAfterValue
+        ) {
+            this.valueText = this.prepareValueAsText(this.value, nextProps);
         }
     }
 
@@ -165,7 +175,7 @@ export class Counter extends React.Component<CounterProps, {}> {
         );
 
         if (!isNaN(newValue)) {
-            const newValueText = this.prepareValueAsText(newValue);
+            const newValueText = this.prepareValueAsText(newValue, this.props);
 
             this.value = newValue;
             this.valueText = newValueText;
@@ -209,10 +219,10 @@ export class Counter extends React.Component<CounterProps, {}> {
         // Parse value
         let newNumber = unformat(this.valueText);
         if (isNaN(newNumber)) {
-            this.valueText = this.prepareValueAsText(this.value);
+            this.valueText = this.prepareValueAsText(this.value, this.props);
         } else {
             newNumber = this.alignValueToLimits(newNumber);
-            const newNumberText = this.prepareValueAsText(newNumber);
+            const newNumberText = this.prepareValueAsText(newNumber, this.props);
 
             this.value = newNumber;
             this.valueText = newNumberText;
@@ -254,11 +264,9 @@ export class Counter extends React.Component<CounterProps, {}> {
         return newNumber;
     };
 
-    private prepareValueAsText = (value: number): string => {
-        return this.props.showAddedTextOnInput
-            ? this.props.readOnlyTextBeforeValue +
-                  toFixed(value, this.props.decimals || 0) +
-                  this.props.readOnlyTextAfterValue
-            : toFixed(value, this.props.decimals || 0);
+    private prepareValueAsText = (value: number, props: CounterProps): string => {
+        return props.showAddedTextOnInput
+            ? props.readOnlyTextBeforeValue + toFixed(value, props.decimals || 0) + props.readOnlyTextAfterValue
+            : toFixed(value, props.decimals || 0);
     };
 }
