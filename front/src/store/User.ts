@@ -19,22 +19,34 @@ export class User {
                 if (route.allowAllUsers) {
                     return true;
                 }
-                if (this.data !== null && route.subModuleAccess && !this.getSubmoduleAccess(route.subModuleAccess, this.data.moduleAccess)) {
-                    return false;
-                }
-                if (this.data !== null && this.data.allowedRouteKeys.indexOf(route.accessKey) !== -1) {
+                if (this.data !== null && route.moduleAccess && route.subModuleAccess && this.getSubmoduleAccess(route.moduleAccess, route.subModuleAccess, this.data.moduleAccess)) {
                     return true;
                 }
+                // if (this.data !== null && this.data.allowedRouteKeys.indexOf(route.accessKey) !== -1) {
+                //     return true;
+                // }
                 return false;
             })
             : [];
     }
 
-    getSubmoduleAccess = (routeKey, subModulesArr) => {
-        const value = subModulesArr[1].subModule.find(elem => {
-            return elem.id === routeKey;
+    getSubmoduleAccess = (moduleAccess, subModuleAccess, subModulesArr) => {
+
+        const moduleItem = subModulesArr.find((item, i) => {
+            return moduleAccess === item.moduleName;
         });
-        return value ? true : false;
+        if (!moduleItem) {
+            return false;
+        }
+
+        const subModuleItem = moduleItem.subModule.find((item, i) => {
+            return subModuleAccess === item.subModuleName;
+        });
+        if (!subModuleItem) {
+            return false;
+        }
+
+        return subModuleItem.canAccess;
     }
 
     constructor() {
