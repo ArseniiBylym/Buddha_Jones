@@ -59,6 +59,8 @@ export const routes: Route[] = [
         entry: '/portal/projects/1',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Project',
+        subModuleAccess: 'Projects',
     },
     {
         component: ProjectCreateAsync,
@@ -68,6 +70,8 @@ export const routes: Route[] = [
         path: '/portal/project/new',
         exact: true,
         allowAllUsers: false,
+        moduleAccess: 'Project',
+        subModuleAccess: 'Projects',
     },
     {
         component: ProjectsBoardAsync,
@@ -77,6 +81,8 @@ export const routes: Route[] = [
         path: '/portal/project/:studioId/:studioName/:projectId/:projectName/:fromPage?',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Project',
+        subModuleAccess: 'Projects',
     },
     {
         component: TimeEntryAsync,
@@ -88,6 +94,8 @@ export const routes: Route[] = [
         entry: '/portal/time/entry',
         exact: true,
         allowAllUsers: false,
+        moduleAccess: 'Project',
+        subModuleAccess: 'Time Entry',
     },
     {
         component: TimeApprovalAsync,
@@ -98,7 +106,9 @@ export const routes: Route[] = [
         path: '/portal/time/approval',
         entry: '/portal/time/approval',
         exact: true,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Project',
+        subModuleAccess: 'Time Approval',
     },
     {
         component: ProducerSpotSentListAsync,
@@ -109,7 +119,9 @@ export const routes: Route[] = [
         path: '/portal/studio/producer-spot-sent-list',
         entry: '/portal/studio/producer-spot-sent-list',
         exact: true,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Initiate Spot Sent',
     },
     {
         component: ProducerSpotSentFormAsync,
@@ -118,7 +130,9 @@ export const routes: Route[] = [
         name: 'Spot sent',
         path: '/portal/studio/producer-spot-sent-details/:id',
         exact: false,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Initiate Spot Sent',
     },
     {
         component: ProducerSpotSentFormAsync,
@@ -127,7 +141,9 @@ export const routes: Route[] = [
         name: 'Spot sent',
         path: '/portal/studio/producer-spot-sent-details/:id/:path',
         exact: false,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Initiate Spot Sent',
     },
     {
         component: SpotsPostAsync,
@@ -138,7 +154,9 @@ export const routes: Route[] = [
         path: '/portal/spot-post-finish-request',
         entry: '/portal/spot-post-finish-request',
         exact: false,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Finish spot sent',
     },
     {
         component: SpotsToBillAsync,
@@ -149,7 +167,9 @@ export const routes: Route[] = [
         path: '/portal/spots-to-bill',
         entry: '/portal/spots-to-bill',
         exact: true,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Spot Billing',
     },
     {
         component: BillSpotFormAsync,
@@ -158,7 +178,9 @@ export const routes: Route[] = [
         name: 'Bill spot form',
         path: '/portal/bill-spot-form/:id',
         exact: false,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Spot Billing',
     },
     {
         component: SpotsToGraphicsAsync,
@@ -169,7 +191,9 @@ export const routes: Route[] = [
         path: '/portal/spots-to-graphics',
         entry: '/portal/spots-to-graphics',
         exact: true,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Graphics Spot Sent',
     },
     {
         component: SpotsToEDLAsync,
@@ -180,7 +204,9 @@ export const routes: Route[] = [
         path: '/portal/spots-to-edl',
         entry: '/portal/spots-to-edl',
         exact: true,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'EDL for Spot',
     },
     {
         component: SpotsToQCAsync,
@@ -191,7 +217,9 @@ export const routes: Route[] = [
         path: '/portal/spots-to-qc',
         entry: '/portal/spots-to-qc',
         exact: true,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Spot to QC',
     },
     {
         component: SpotsToGraphicsSentAsync,
@@ -206,7 +234,8 @@ export const routes: Route[] = [
         exact: true,
         // allowAllUsers: true,
         allowAllUsers: false,
-        subModuleAccess: 7,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Graphics Spot Sent',
     },
     {
         component: BillingStudioRateCardsAsync,
@@ -217,7 +246,9 @@ export const routes: Route[] = [
         path: '/portal/billing/studio-rate-card',
         entry: '/portal/billing/studio-rate-card',
         exact: true,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio Rate Card',
+        subModuleAccess: 'Studio Rate Card',
     },
     {
         component: BillingStudioRateCardAsync,
@@ -227,7 +258,9 @@ export const routes: Route[] = [
         name: 'Studio rate card',
         path: '/portal/billing/studio-rate-card/:studio_id/:rate_card_id?',
         exact: false,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio Rate Card',
+        subModuleAccess: 'Studio Rate Card',
     },
     {
         component: ActivitiesDefinitionListAsync,
@@ -239,6 +272,8 @@ export const routes: Route[] = [
         entry: '/portal/configuration/activities',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'Activities Definition',
     },
     {
         component: ActivityDefinitionFormAsync,
@@ -248,6 +283,8 @@ export const routes: Route[] = [
         path: '/portal/configuration/activity/:id',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'Activities Definition',
     },
     {
         component: ProjectBoardPermissionEditAsync,
@@ -257,6 +294,8 @@ export const routes: Route[] = [
         path: '/portal/configuration/user-management/project-board-permission/:id',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'User Management',
     },
     {
         component: TimeEntryPermissionsAsync,
@@ -268,6 +307,8 @@ export const routes: Route[] = [
         entry: '/portal/configuration/user-management/time-entry-permissions',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'Time Entry Permission',
     },
     {
         component: TimeApprovalPermissionsAsync,
@@ -279,6 +320,8 @@ export const routes: Route[] = [
         entry: '/portal/configuration/user-management/time-approval-permissions/:id',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'User Management',
     },
     {
         component: ProjectBoardPermissionListAsync,
@@ -290,6 +333,8 @@ export const routes: Route[] = [
         entry: '/portal/configuration/user-management/project-board-permission',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'User Management',
     },
     {
         component: UserManagementUsersListAsync,
@@ -300,6 +345,8 @@ export const routes: Route[] = [
         path: '/portal/configuration/user-management/users-list/:userTypeId',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'User Management',
     },
     {
         component: UserAccountAsync,
@@ -320,5 +367,7 @@ export const routes: Route[] = [
         entry: '/portal/studio-client/new-client-request',
         exact: true,
         allowAllUsers: false,
+        moduleAccess: 'New Client Request',
+        subModuleAccess: 'New Client Request',
     },
 ];
