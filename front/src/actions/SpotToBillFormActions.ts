@@ -5,7 +5,6 @@ import { FormattedInBillTimeEntry } from 'routes/SpotBilling/BillSpotForm';
 import { AddingActivityToBillStatus } from 'store';
 import { SpotToBillFormStore } from 'store/AllStores';
 import { SpotBillActivityRateType } from 'types/spotBillingEnums';
-import { StudioRateCardEntryFromApi } from 'types/studioRateCard';
 import {
     ActivityHours,
     SpotBillFormActivityTimeEntry,
@@ -408,34 +407,5 @@ export class SpotToBillFormActionsClass {
         }
 
         return false;
-    };
-
-    public calculateHourlyActivityTotals = (
-        activity: SpotBillFormActivityGroup,
-        selectedRateCard: StudioRateCardEntryFromApi[] = []
-    ): number => {
-        let total = 0;
-
-        // For hourly
-        if (activity.rateType === SpotBillActivityRateType.Hourly) {
-            total += activity.timeEntriesIds.reduce((hourlyTotal: number, timeEntryId) => {
-                const inBillTimeEntry = SpotToBillFormStore.timeEntries.find(
-                    timeEntry => timeEntry.timeEntryId === timeEntryId
-                );
-                if (inBillTimeEntry) {
-                    const rateCard = selectedRateCard.find(card => card.activityId === inBillTimeEntry.activityId);
-                    if (rateCard && rateCard.rate) {
-                        hourlyTotal +=
-                            ((rateCard.rate * inBillTimeEntry.regularHours) / 60) * 1 +
-                            ((rateCard.rate * inBillTimeEntry.overtimeHours) / 60) * 1.5 +
-                            ((rateCard.rate * inBillTimeEntry.doubletimeHours) / 60) * 2.0;
-                    }
-                }
-
-                return hourlyTotal;
-            }, 0);
-        }
-
-        return total;
     };
 }
