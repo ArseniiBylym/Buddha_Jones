@@ -84,20 +84,25 @@ export class Counter extends React.Component<CounterProps, {}> {
     }
 
     public componentWillReceiveProps(nextProps: CounterProps) {
+        let valueChanged: boolean = false;
+
         if (typeof nextProps.value !== 'undefined' && this.value !== nextProps.value) {
             const newValue = this.alignValueToLimits(nextProps.value);
             const newValueText = this.prepareValueAsText(newValue, this.props);
 
             this.value = newValue;
             this.valueText = newValueText;
+            valueChanged = true;
         }
 
         if (typeof nextProps.maxValue === 'number' && nextProps.maxValue < this.value) {
             this.value = nextProps.maxValue;
             this.valueText = this.prepareValueAsText(nextProps.maxValue, nextProps);
+            valueChanged = true;
         } else if (typeof nextProps.minValue === 'number' && nextProps.minValue > this.value) {
             this.value = nextProps.minValue;
             this.valueText = this.prepareValueAsText(nextProps.minValue, nextProps);
+            valueChanged = true;
         }
 
         if (
@@ -106,6 +111,14 @@ export class Counter extends React.Component<CounterProps, {}> {
             this.props.readOnlyTextAfterValue !== nextProps.readOnlyTextAfterValue
         ) {
             this.valueText = this.prepareValueAsText(this.value, nextProps);
+            valueChanged = true;
+        }
+
+        if (valueChanged && this.props.onChange) {
+            this.props.onChange({
+                value: this.value,
+                text: this.valueText,
+            });
         }
     }
 
