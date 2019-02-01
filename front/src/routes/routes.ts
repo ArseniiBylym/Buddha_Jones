@@ -254,7 +254,7 @@ export const routes: Route[] = [
     },
     {
         component: BillingStudioRateCardAsync,
-        key: 'studio-rate-card',
+        key: 'studio-rate-card-id',
         accessKey: RouteAccessKey.StudioRateCard,
         group: billingGroup,
         name: 'Studio rate card',
@@ -279,7 +279,7 @@ export const routes: Route[] = [
     },
     {
         component: ActivityDefinitionFormAsync,
-        key: 'activities-definition',
+        key: 'activities-definition-form',
         accessKey: RouteAccessKey.ActivitiesDefinition,
         name: 'Define activity',
         path: '/portal/configuration/activity/:id',
