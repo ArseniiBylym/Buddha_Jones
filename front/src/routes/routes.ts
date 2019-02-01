@@ -34,7 +34,6 @@ const timeIcon = require('assets/images/navigation/navigation-icon-time.png');
 const dashboardGroup = { key: 'dashboard', name: 'Dashboard', icon: dashboardIcon };
 const projectsGroup = { key: 'projects', name: 'Projects', icon: projectsIcon };
 const timeGroup = { key: 'time', name: 'Time', icon: timeIcon };
-
 const studioGroup = { key: 'studio', name: 'Spots', icon: studioIcon };
 const configurationGroup = { key: 'configuration', name: 'Configuration', icon: configurationIcon };
 // const StudioClientGroup = { key: 'studio-client', name: 'StudioClient', icon: studioIcon };

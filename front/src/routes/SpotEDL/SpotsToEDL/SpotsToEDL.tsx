@@ -55,7 +55,7 @@ class SpotsToEDL extends React.Component<any, {}> {
         let permissionId: number | null = null;
         if (this.props.store && this.props.store.user.data && this.props.store.user.data.moduleAccess) {
             const moduleAccessArray = this.props.store.user.data.moduleAccess.find(
-                elem => elem.moduleName === 'Spot Sent'
+                elem => elem.moduleName === 'Studio'
             );
             if (moduleAccessArray && moduleAccessArray.subModule && moduleAccessArray.subModule.length > 0) {
                 const moduleAccessItem = moduleAccessArray.subModule.find(
