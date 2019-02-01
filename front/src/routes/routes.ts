@@ -28,14 +28,17 @@ const projectsIcon = require('../assets/images/navigation/navigation-icon-projec
 const studioIcon = require('../assets/images/navigation/navigation-icon-customer.png');
 const configurationIcon = require('../assets/images/navigation/navigation-icon-activity.png');
 const billingIcon = require('assets/images/navigation/navigation-icon-billing.png');
+const timeIcon = require('assets/images/navigation/navigation-icon-time.png');
 
 // Groups
 const dashboardGroup = { key: 'dashboard', name: 'Dashboard', icon: dashboardIcon };
 const projectsGroup = { key: 'projects', name: 'Projects', icon: projectsIcon };
-const studioGroup = { key: 'studio', name: 'Studio', icon: studioIcon };
+const timeGroup = { key: 'time', name: 'Time', icon: timeIcon };
+
+const studioGroup = { key: 'studio', name: 'Spots', icon: studioIcon };
 const configurationGroup = { key: 'configuration', name: 'Configuration', icon: configurationIcon };
-const StudioClientGroup = { key: 'studio-client', name: 'StudioClient', icon: studioIcon };
-const billingGroup = { key: 'billing', name: 'Billing', icon: billingIcon };
+// const StudioClientGroup = { key: 'studio-client', name: 'StudioClient', icon: studioIcon };
+const billingGroup = { key: 'billing', name: 'Studio', icon: billingIcon };
 
 export const routes: Route[] = [
     {
@@ -88,7 +91,7 @@ export const routes: Route[] = [
         component: TimeEntryAsync,
         key: 'time-entry',
         accessKey: RouteAccessKey.TimeEntry,
-        group: projectsGroup,
+        group: timeGroup,
         name: 'Time entry',
         path: '/portal/time/entry',
         entry: '/portal/time/entry',
@@ -101,7 +104,7 @@ export const routes: Route[] = [
         component: TimeApprovalAsync,
         key: 'time-approval',
         accessKey: RouteAccessKey.TimeApproval,
-        group: projectsGroup,
+        group: timeGroup,
         name: 'Time approval',
         path: '/portal/time/approval',
         entry: '/portal/time/approval',
@@ -361,7 +364,8 @@ export const routes: Route[] = [
         component: NewClientRequestListAsync,
         key: 'new-customer-approval',
         accessKey: RouteAccessKey.NewCustomerApproval,
-        group: StudioClientGroup,
+        // group: StudioClientGroup,
+        group: billingGroup,
         name: 'New client request',
         path: '/portal/studio-client/new-client-request',
         entry: '/portal/studio-client/new-client-request',
