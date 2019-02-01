@@ -279,6 +279,7 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                                         fieldMaxWidth={128}
                                         incrementBy={this.discountForm.isFixed ? 100 : 5}
                                         multipleOf={0.01}
+                                        showAddedTextOnInput={true}
                                         readOnlyTextBeforeValue={this.discountForm.isFixed ? '$' : ''}
                                         readOnlyTextAfterValue={this.discountForm.isFixed ? '' : '%'}
                                         value={this.discountForm.value}
@@ -300,12 +301,8 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                         <div className={s.right}>
                             {this.hasDiscount && (
                                 <Paragraph>
-                                    {(this.discount.isFixed ? 'Flat' : 'Percentage') + ' discount: '}
-                                    <strong>
-                                        {this.discount.isFixed
-                                            ? MoneyHandler.formatAsDollars(this.discount.value)
-                                            : toFixed(this.discount.value, 2) + '%'}
-                                    </strong>
+                                    {'Sub total: '}
+                                    <strong>{MoneyHandler.formatAsDollars(this.billTotal)}</strong>
                                 </Paragraph>
                             )}
 
@@ -315,9 +312,14 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                                 (this.hasDiscount && (
                                     <div className={s.subTotals}>
                                         <Paragraph>
-                                            {'Sub total: '}
-                                            <strong>{MoneyHandler.formatAsDollars(this.billTotal)}</strong>
+                                            {(this.discount.isFixed ? 'Flat' : 'Percentage') + ' discount: '}
+                                            <strong>
+                                                {this.discount.isFixed
+                                                    ? MoneyHandler.formatAsDollars(this.discount.value)
+                                                    : toFixed(this.discount.value, 2) + '%'}
+                                            </strong>
                                         </Paragraph>
+
                                         <Paragraph>
                                             {'Total: '}
                                             <strong>{MoneyHandler.formatAsDollars(this.billTotalAfterDiscount)}</strong>
