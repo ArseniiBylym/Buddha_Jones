@@ -11,19 +11,20 @@ import {
 import { Paragraph } from 'components/Content';
 import { Counter, DropdownContainer, OptionsList } from 'components/Form';
 import { BottomBar } from 'components/Layout';
+import { ActivityHandler } from 'helpers/ActivityHandler';
 import { MoneyHandler } from 'helpers/MoneyHandler';
 import { StringHandler } from 'helpers/StringHandler';
+import { FLAT_RATE_ACTIVITY_TYPE_ID } from 'invariables';
 import { computed, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
 import {
     SpotBillDiscount,
-    SpotBillFormActivityGroup,
+    SpotBillFirstRevisionRate,
     SpotBillFormSpot,
     SpotBillRowRevision
     } from 'types/spotBilling';
-import { SpotBillActivityRateType } from 'types/spotBillingEnums';
 import { StudioRateCardEntryFromApi, StudioRateCardTypeFromApi } from 'types/studioRateCard';
 
 const s = require('./BillSpotPreviewContent.css');
@@ -36,13 +37,13 @@ export interface FirstStageRow {
 }
 
 interface Props extends AppOnlyStoreState {
+    onDeleteBill: () => void;
     projectName: string;
     campaignName: string;
     projectCampaignName: string | null;
     studioName: string;
-    spotsInBill: SpotBillFormSpot[];
-    firstStageRows: SpotBillFormActivityGroup[];
     editable: boolean;
+    spotsInBill: SpotBillFormSpot[];
     studioRateCards: StudioRateCardTypeFromApi[];
     selectedRateCard: StudioRateCardEntryFromApi[];
 }
@@ -53,11 +54,23 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
     private studioRateCardsDropdown: DropdownContainer | null = null;
     private discountTypeDropdown: DropdownContainer | null = null;
 
+    @observable private areRowsInEditMode: boolean = false;
     @observable private isDiscountInEditMode: boolean = false;
     @observable private discountForm: SpotBillDiscount = {
         isFixed: true,
         value: 0,
     };
+
+    @computed
+    private get spotsInBillFirstStageRates(): SpotBillFirstRevisionRate[] {
+        return this.props.spotsInBill
+            .filter(spot => spot.firstRevisionCost !== null && spot.firstRevisionIsBilled === false)
+            .map(spot => ({
+                spotId: spot.spotId,
+                spotName: spot.spotName,
+                firstRevisionCost: spot.firstRevisionCost,
+            }));
+    }
 
     @computed
     private get selectedStudioRateCard(): StudioRateCardTypeFromApi | null {
@@ -74,34 +87,22 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
 
     @computed
     private get selectedFlatRates(): StudioRateCardEntryFromApi[] {
-        return this.props.selectedRateCard.filter(rate => rate.activityTypeId === 4);
+        return this.props.selectedRateCard.filter(rate => rate.activityTypeId === FLAT_RATE_ACTIVITY_TYPE_ID);
     }
 
     @computed private get billTotal(): number {
-        // Start with iterating first stage rows
-        let totals: number = this.props.firstStageRows.reduce((total: number, firstStageRow) => {
-            total += firstStageRow.rateAmount || 0;
-            return total;
-        }, 0);
+        // Start with zero
+        let totals: number = 0;
 
         // Iterate all activities in bill and calculate it based on selected rate
         if (this.selectedStudioRateCard) {
             totals += this.props.store!.spotToBillForm.rows.reduce((total: number, activity) => {
-                // For flat rate
-                if (activity.rateType === SpotBillActivityRateType.Flat) {
-                    const flatRate = activity.rateFlatOrFirstStageId
-                        ? this.selectedFlatRates.find(rate => rate.id === activity.rateFlatOrFirstStageId)
-                        : undefined;
-
-                    total += flatRate && flatRate.rate ? flatRate.rate : 0;
-
-                    return total;
-                }
-
-                // For hourly
-                if (activity.rateType === SpotBillActivityRateType.Hourly) {
-                    total += SpotToBillFormActions.calculateHourlyActivityTotals(activity, this.props.selectedRateCard);
-                }
+                total += ActivityHandler.calculateActivityTotals(
+                    activity,
+                    this.props.spotsInBill,
+                    this.selectedFlatRates,
+                    this.props.selectedRateCard
+                );
 
                 return total;
             }, 0);
@@ -230,44 +231,21 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                             </Paragraph>
                         </div>
 
-                        {this.props.firstStageRows.map((firstStageRow, firstStageRowIndex) => (
-                            <BillSpotPreviewRowEdit
-                                key={firstStageRowIndex}
-                                className={s.gridRow}
-                                id={firstStageRowIndex + 1}
-                                index={firstStageRowIndex}
-                                name={'First stage cost'}
-                                note={null}
-                                amount={firstStageRow.rateAmount || 0}
-                                editable={true}
-                                hourlyActivity={null}
-                                rateType={SpotBillActivityRateType.FirstStage}
-                                rateFlatId={null}
-                                studioFlatRates={this.selectedFlatRates}
-                                firstRevisionRates={[]}
-                                selectedRateCard={this.props.selectedRateCard}
-                            />
-                        ))}
-
                         {activities.map((activity, activityIndex) => {
-                            const activityNumberingId = activityIndex + this.props.firstStageRows.length + 1;
+                            const activityNumberingId = activityIndex + 1;
 
                             return (
                                 <BillSpotPreviewRowEdit
-                                    key={activityNumberingId}
                                     className={s.gridRow}
+                                    editing={this.areRowsInEditMode}
+                                    key={activityNumberingId}
                                     id={activityNumberingId}
                                     index={activityIndex}
-                                    name={activity.name}
-                                    note={activity.note}
-                                    amount={1000}
-                                    editable={true}
-                                    hourlyActivity={activity}
-                                    rateType={activity.rateType}
-                                    rateFlatId={activity.rateFlatOrFirstStageId}
+                                    activity={activity}
+                                    spotsInBill={this.props.spotsInBill}
                                     studioFlatRates={this.selectedFlatRates}
-                                    firstRevisionRates={[]}
-                                    selectedRateCard={this.props.selectedRateCard}
+                                    studioFirstRates={this.spotsInBillFirstStageRates}
+                                    studioRateCardValues={this.props.selectedRateCard}
                                 />
                             );
                         })}
@@ -416,7 +394,7 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
     };
 
     private handleDeleteBill = (e: React.MouseEvent<HTMLButtonElement>) => {
-        // TODO
+        this.props.onDeleteBill();
     };
 
     private handleSubmitBill = (e: React.MouseEvent<HTMLButtonElement>) => {

@@ -3,11 +3,12 @@ import * as classNames from 'classnames';
 import { ButtonEdit, ButtonSave } from 'components/Button';
 import { Paragraph } from 'components/Content';
 import { DropdownContainer, Input, OptionsList } from 'components/Form';
+import { ActivityHandler } from 'helpers/ActivityHandler';
 import { MoneyHandler } from 'helpers/MoneyHandler';
 import { computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { SpotBillFirstRevisionRate, SpotBillFormActivityGroup } from 'types/spotBilling';
+import { SpotBillFirstRevisionRate, SpotBillFormActivityGroup, SpotBillFormSpot } from 'types/spotBilling';
 import { SpotBillActivityRateType } from 'types/spotBillingEnums';
 import { StudioRateCardEntryFromApi } from 'types/studioRateCard';
 
@@ -15,65 +16,73 @@ const s = require('./BillSpotPreviewRowEdit.css');
 
 interface Props {
     className?: string;
+    editing: boolean;
     id: number;
     index: number;
-    name: string;
-    note: string | null;
-    amount: number;
-    editable: boolean;
-    hourlyActivity: SpotBillFormActivityGroup | null;
-    rateType: SpotBillActivityRateType;
-    rateFlatId: number | null;
+    activity: SpotBillFormActivityGroup;
+    spotsInBill: SpotBillFormSpot[];
     studioFlatRates: StudioRateCardEntryFromApi[];
-    firstRevisionRates: SpotBillFirstRevisionRate[];
-    selectedRateCard: StudioRateCardEntryFromApi[];
+    studioFirstRates: SpotBillFirstRevisionRate[];
+    studioRateCardValues: StudioRateCardEntryFromApi[];
 }
 
 @observer
 export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
     private rateDropdown: DropdownContainer | null = null;
 
-    @observable private isInEditMode: boolean = false;
+    @observable private isInEditMode: boolean = this.props.editing;
     @observable private note: string = '';
 
     @computed
     private get nameOrNote(): string {
-        return this.props.note ? this.props.note : this.props.name;
+        return this.props.activity.note ? this.props.activity.note : this.props.activity.name;
+    }
+
+    @computed
+    private get selectedSpotFirstRate(): SpotBillFormSpot | null {
+        if (this.props.activity.rateType !== SpotBillActivityRateType.FirstStage) {
+            return null;
+        }
+
+        return this.props.spotsInBill.find(spot => spot.spotId === this.props.activity.rateFlatOrFirstStageId) || null;
     }
 
     @computed
     private get selectedFlatRate(): StudioRateCardEntryFromApi | null {
-        if (this.props.rateType !== SpotBillActivityRateType.Flat) {
+        if (this.props.activity.rateType !== SpotBillActivityRateType.Flat) {
             return null;
         }
 
-        return this.props.studioFlatRates.find(flat => flat.id === this.props.rateFlatId) || null;
+        return this.props.studioFlatRates.find(flat => flat.id === this.props.activity.rateFlatOrFirstStageId) || null;
     }
 
     @computed
-    private get rowTotal(): number | null {
-        if (this.props.rateType === SpotBillActivityRateType.FirstStage) {
-            return this.props.amount;
+    private get activityRateLabel(): string {
+        return this.props.activity.rateType === SpotBillActivityRateType.FirstStage
+            ? 'First stage rate'
+            : this.props.activity.rateType === SpotBillActivityRateType.Flat
+            ? 'Flat rate'
+            : this.props.activity.rateType === SpotBillActivityRateType.Hourly
+            ? 'Hourly'
+            : '';
+    }
+
+    @computed
+    private get rowTotal(): number {
+        return ActivityHandler.calculateActivityTotals(
+            this.props.activity,
+            this.props.spotsInBill,
+            this.props.studioFlatRates,
+            this.props.studioRateCardValues
+        );
+    }
+
+    public componentWillReceiveProps(nextProps: Props) {
+        if (!this.props.editing && nextProps.editing) {
+            this.handleEnteringEditModeOfRow();
+        } else if (this.props.editing && !nextProps.editing) {
+            this.handleSavingRowChanges();
         }
-
-        if (this.props.rateType === SpotBillActivityRateType.Flat) {
-            if (this.selectedFlatRate) {
-                return this.selectedFlatRate.rate || 0;
-            }
-
-            return null;
-        }
-
-        if (this.props.rateType === SpotBillActivityRateType.Hourly) {
-            return this.props.hourlyActivity
-                ? SpotToBillFormActions.calculateHourlyActivityTotals(
-                      this.props.hourlyActivity,
-                      this.props.selectedRateCard
-                  )
-                : 0;
-        }
-
-        return null;
     }
 
     public render() {
@@ -85,69 +94,61 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
 
                 <div>
                     {(this.isInEditMode && (
-                        <Input onChange={this.handleNoteChange} value={this.note} label="Name" />
+                        <Input onChange={this.handleNoteChange} value={this.note} label="Name" minWidth={320} />
                     )) || <Paragraph>{this.nameOrNote}</Paragraph>}
                 </div>
 
-                {(this.props.rateType === SpotBillActivityRateType.FirstStage && (
-                    <div>
-                        <Paragraph>First stage rate</Paragraph>
-                    </div>
-                )) || (
-                    <div>
-                        {(this.isInEditMode && (
-                            <DropdownContainer
-                                ref={this.referenceRateDropdown}
-                                label={
-                                    this.props.rateType === SpotBillActivityRateType.Flat && this.selectedFlatRate
-                                        ? 'Flat rate: '
-                                        : ''
-                                }
+                <div>
+                    {(this.isInEditMode && (
+                        <DropdownContainer
+                            ref={this.referenceRateDropdown}
+                            label="Rate"
+                            value={
+                                this.props.activity.rateType === SpotBillActivityRateType.FirstStage
+                                    ? this.selectedSpotFirstRate
+                                        ? 'First stage rate for spot: ' + this.selectedSpotFirstRate.spotName
+                                        : 'First stage rate'
+                                    : this.props.activity.rateType === SpotBillActivityRateType.Flat
+                                    ? this.selectedFlatRate
+                                        ? 'Flat rate: ' + this.selectedFlatRate.activityName
+                                        : 'Flat rate'
+                                    : 'Hourly'
+                            }
+                        >
+                            <OptionsList
+                                onChange={this.handleRateChange}
                                 value={
-                                    this.props.rateType === SpotBillActivityRateType.Hourly
-                                        ? 'Hourly'
-                                        : this.props.rateType === SpotBillActivityRateType.Flat
-                                        ? this.selectedFlatRate
-                                            ? this.selectedFlatRate.activityName
-                                            : 'Flat rate'
-                                        : ''
+                                    this.props.activity.rateType === SpotBillActivityRateType.FirstStage
+                                        ? 'first-' + (this.props.activity.rateFlatOrFirstStageId || 0)
+                                        : this.props.activity.rateType === SpotBillActivityRateType.Flat
+                                        ? 'flat-' + (this.props.activity.rateFlatOrFirstStageId || 0)
+                                        : SpotBillActivityRateType.Hourly
                                 }
-                            >
-                                <OptionsList
-                                    onChange={this.handleRateChange}
-                                    options={[
-                                        { key: 'h', value: SpotBillActivityRateType.Hourly, label: 'Hourly' },
-                                        ...this.props.studioFlatRates.map(flat => ({
-                                            key: 'flat-' + flat.id,
-                                            value: 'flat-' + flat.id,
-                                            label:
-                                                flat.activityName +
-                                                (flat.rate ? ': ' + MoneyHandler.formatAsDollars(flat.rate) : ''),
-                                        })),
-                                        ...(this.props.studioFlatRates.length <= 0
-                                            ? [
-                                                  {
-                                                      key: 'h2',
-                                                      value: SpotBillActivityRateType.Hourly,
-                                                      label: 'No flat rates exist in this rate card',
-                                                  },
-                                              ]
-                                            : []),
-                                    ]}
-                                />
-                            </DropdownContainer>
-                        )) || (
-                            <Paragraph>
-                                {this.props.rateType === SpotBillActivityRateType.Flat
-                                    ? 'Flat rate' +
-                                      (this.selectedFlatRate ? ': ' + this.selectedFlatRate.activityName : '')
-                                    : this.props.rateType === SpotBillActivityRateType.Hourly
-                                    ? 'Hourly'
-                                    : ''}
-                            </Paragraph>
-                        )}
-                    </div>
-                )}
+                                options={[
+                                    { key: 'h', value: SpotBillActivityRateType.Hourly, label: 'Hourly' },
+                                    ...(this.props.studioFirstRates.length > 0
+                                        ? [{ key: 'sep-1', value: null, label: '---' }]
+                                        : []),
+                                    ...this.props.studioFirstRates.map(firstStage => ({
+                                        key: 'first-' + firstStage.spotId,
+                                        value: 'first-' + firstStage.spotId,
+                                        label: 'First stage rate for spot: ' + firstStage.spotName,
+                                    })),
+                                    ...(this.props.studioFlatRates.length > 0
+                                        ? [{ key: 'sep-2', value: null, label: '---' }]
+                                        : []),
+                                    ...this.props.studioFlatRates.map(flat => ({
+                                        key: 'flat-' + flat.id,
+                                        value: 'flat-' + flat.id,
+                                        label:
+                                            flat.activityName +
+                                            (flat.rate ? ': ' + MoneyHandler.formatAsDollars(flat.rate) : ''),
+                                    })),
+                                ]}
+                            />
+                        </DropdownContainer>
+                    )) || <Paragraph>{this.activityRateLabel}</Paragraph>}
+                </div>
 
                 <div className={s.rateAndEditCol}>
                     {(this.isInEditMode === false && (
@@ -166,12 +167,12 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
 
     private referenceRateDropdown = (ref: DropdownContainer) => (this.rateDropdown = ref);
 
-    private handleEnteringEditModeOfRow = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleEnteringEditModeOfRow = () => {
         this.note = this.nameOrNote;
         this.isInEditMode = true;
     };
 
-    private handleSavingRowChanges = (e: React.MouseEvent<HTMLButtonElement>) => {
+    private handleSavingRowChanges = () => {
         SpotToBillFormActions.changeBillRowNote(this.props.index, this.note);
 
         this.note = '';
@@ -183,8 +184,27 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
     };
 
     private handleRateChange = (option: { value: string; label: string }) => {
+        if (option.value === null) {
+            return;
+        }
+
         if (this.rateDropdown) {
             this.rateDropdown.closeDropdown();
+        }
+
+        const firstString = 'first-';
+        const isFirstRate = option.value.includes(firstString);
+        if (isFirstRate) {
+            const firstRateId = parseInt(option.value.slice(firstString.length, option.value.length), 10);
+
+            const firstRateSpot = this.props.studioFirstRates.find(spot => spot.spotId === firstRateId);
+
+            SpotToBillFormActions.changeBillRowRateType(
+                this.props.index,
+                SpotBillActivityRateType.FirstStage,
+                firstRateSpot ? firstRateSpot.firstRevisionCost : null
+            );
+            return;
         }
 
         const flatString = 'flat-';
