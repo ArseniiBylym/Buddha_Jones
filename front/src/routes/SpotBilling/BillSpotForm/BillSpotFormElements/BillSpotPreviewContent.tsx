@@ -1,10 +1,12 @@
 import { BillSpotPreviewRowEdit } from '.';
 import { toFixed } from 'accounting';
 import { SpotToBillFormActions } from 'actions';
+import * as classNames from 'classnames';
 import {
     ButtonAdd,
     ButtonDelete,
     ButtonEdit,
+    ButtonInBox,
     ButtonSave,
     ButtonSend
     } from 'components/Button';
@@ -52,7 +54,6 @@ interface Props extends AppOnlyStoreState {
 @observer
 export class BillSpotPreviewContent extends React.Component<Props, {}> {
     private studioRateCardsDropdown: DropdownContainer | null = null;
-    private discountTypeDropdown: DropdownContainer | null = null;
 
     @observable private areRowsInEditMode: boolean = false;
     @observable private isDiscountInEditMode: boolean = false;
@@ -255,25 +256,31 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                         <div className={s.left}>
                             {(this.isDiscountInEditMode && (
                                 <div className={s.discountForm}>
-                                    <DropdownContainer
-                                        ref={this.referenceDiscountTypeDropdown}
-                                        label="Discount: "
-                                        value={this.discountForm.isFixed ? 'Flat' : 'Percentage'}
-                                    >
-                                        <OptionsList
-                                            onChange={this.handleDiscountTypeChange}
-                                            options={[
-                                                { value: true, label: 'Flat' },
-                                                { value: false, label: 'Percentage' },
-                                            ]}
-                                            value={this.discountForm.isFixed ? true : false}
-                                        />
-                                    </DropdownContainer>
+                                    <div className={s.discountType}>
+                                        <Paragraph size="small">Discount:</Paragraph>
+
+                                        <ButtonInBox
+                                            className={classNames(s.discountTypeButton, {
+                                                [s.active]: this.discountForm.isFixed,
+                                            })}
+                                            onClick={this.handleDiscountTypeChange(true)}
+                                        >
+                                            {'$'}
+                                        </ButtonInBox>
+
+                                        <ButtonInBox
+                                            className={classNames(s.discountTypeButton, {
+                                                [s.active]: !this.discountForm.isFixed,
+                                            })}
+                                            onClick={this.handleDiscountTypeChange(false)}
+                                        >
+                                            {'%'}
+                                        </ButtonInBox>
+                                    </div>
 
                                     <Counter
                                         onChange={this.handleDiscountValueChange}
                                         decimals={2}
-                                        label="Amount"
                                         maxValue={this.discountForm.isFixed ? this.billTotal : 100}
                                         minValue={0}
                                         fieldMaxWidth={128}
@@ -358,7 +365,6 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
     }
 
     private referenceStudioRateCardsDropdown = (ref: DropdownContainer) => (this.studioRateCardsDropdown = ref);
-    private referenceDiscountTypeDropdown = (ref: DropdownContainer) => (this.discountTypeDropdown = ref);
 
     private handleRateCardChange = (option: { value: number; label: string }) => {
         SpotToBillFormActions.changeSelectedRateCard(option.value);
@@ -383,12 +389,8 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
         this.isDiscountInEditMode = false;
     };
 
-    private handleDiscountTypeChange = (option: { value: boolean; label: string }) => {
-        this.discountForm.isFixed = option.value ? true : false;
-
-        if (this.discountTypeDropdown) {
-            this.discountTypeDropdown.closeDropdown();
-        }
+    private handleDiscountTypeChange = (isFixed: boolean) => (e: React.MouseEvent<HTMLButtonElement>) => {
+        this.discountForm.isFixed = isFixed;
     };
 
     private handleDiscountValueChange = (count: { value: number; text: string }) => {

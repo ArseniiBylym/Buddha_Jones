@@ -1,6 +1,7 @@
 import * as classNames from 'classnames';
 import { observer } from 'mobx-react';
 import * as React from 'react';
+import { ButtonInBox } from './ButtonInBox';
 
 const s = require('./ButtonPlusOrMinus.css');
 
@@ -24,15 +25,14 @@ export class ButtonPlusOrMinus extends React.Component<Props, {}> {
 
     public render() {
         return (
-            <button
+            <ButtonInBox
                 onClick={this.props.onClick}
-                tabIndex={!this.props.isDisabled ? undefined : -1}
+                isDisabled={this.props.isDisabled}
                 className={classNames(
                     s.button,
                     {
                         [s.plus]: this.props.isPlus,
                         [s.minus]: !this.props.isPlus,
-                        [s.enabled]: !this.props.isDisabled,
                     },
                     this.props.className
                 )}
@@ -42,7 +42,7 @@ export class ButtonPlusOrMinus extends React.Component<Props, {}> {
 
                     {this.props.isPlus && <rect x={3} y={0} width={1} height={7} />}
                 </svg>
-            </button>
+            </ButtonInBox>
         );
     }
 }
