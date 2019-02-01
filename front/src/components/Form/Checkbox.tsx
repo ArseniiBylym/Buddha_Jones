@@ -30,7 +30,7 @@ export class Checkbox extends React.Component<CheckboxProps, {}> {
             checked: false,
             disabled: false,
             value: true,
-            valueUnchecked: null,
+            valueUnchecked: false,
             label: '',
             labelOnLeft: false,
         };
@@ -102,7 +102,11 @@ export class Checkbox extends React.Component<CheckboxProps, {}> {
     private handleCheckboxToggle = () => {
         if (this.props.disabled === false) {
             const isChecked = !this.isChecked;
-            this.isChecked = isChecked;
+
+            // Change internal value only if
+            if (typeof this.props.value === 'undefined') {
+                this.isChecked = isChecked;
+            }
 
             if (this.props.onChange) {
                 this.props.onChange(isChecked, isChecked ? this.props.value! : this.props.valueUnchecked!);
