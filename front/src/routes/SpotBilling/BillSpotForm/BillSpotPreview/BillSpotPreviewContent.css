@@ -1,7 +1,4 @@
 .summary {
-    margin: 0 -36px;
-    padding: 24px 64px;
-    background: #e2dbd5;
     display: flex;
     justify-content: space-between;
     align-content: center;
@@ -65,12 +62,12 @@
 .content {
     margin: 0 30px;
     padding-top: 24px;
-    padding-bottom: 64px;
+    padding-bottom: 128px;
 }
 
 .grid {
     display: grid;
-    grid-template: auto / auto auto auto auto auto;
+    grid-template: auto / auto auto auto auto;
     gap: 16px;
 }
 

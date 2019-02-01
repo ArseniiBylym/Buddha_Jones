@@ -1,4 +1,5 @@
 import { SpotToBillFormActions } from 'actions';
+import { history } from 'App';
 import { ButtonAdd, ButtonClose, ButtonSave } from 'components/Button';
 import { Paragraph } from 'components/Content';
 import { BottomBar } from 'components/Layout';
@@ -21,6 +22,7 @@ enum DeleteStatus {
 
 interface Props extends AppOnlyStoreState {
     isBillSaving: boolean;
+    billId: number;
     spots: SpotBillFormSpot[];
 }
 
@@ -152,6 +154,6 @@ export class BillSpotFormBottomBar extends React.Component<Props, {}> {
     };
 
     private handleOpeningBill = (e: React.MouseEvent<HTMLButtonElement>) => {
-        SpotToBillFormActions.toggleBillPreview(true);
+        history.push('/portal/bill-spot-form/' + this.props.billId + '/preview');
     };
 }

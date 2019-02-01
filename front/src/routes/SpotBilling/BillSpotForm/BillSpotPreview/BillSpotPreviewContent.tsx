@@ -2,17 +2,11 @@ import { BillSpotPreviewRowEdit } from '.';
 import { toFixed } from 'accounting';
 import { SpotToBillFormActions } from 'actions';
 import * as classNames from 'classnames';
-import {
-    ButtonAdd,
-    ButtonDelete,
-    ButtonEdit,
-    ButtonInBox,
-    ButtonSave,
-    ButtonSend
-    } from 'components/Button';
+import { ButtonAdd, ButtonDelete, ButtonEdit, ButtonInBox, ButtonSave, ButtonSend } from 'components/Button';
 import { Paragraph } from 'components/Content';
-import { Counter, DropdownContainer, OptionsList } from 'components/Form';
+import { Counter } from 'components/Form';
 import { BottomBar } from 'components/Layout';
+import { Card } from 'components/Section';
 import { ActivityHandler } from 'helpers/ActivityHandler';
 import { MoneyHandler } from 'helpers/MoneyHandler';
 import { StringHandler } from 'helpers/StringHandler';
@@ -21,12 +15,7 @@ import { computed, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
-import {
-    SpotBillDiscount,
-    SpotBillFirstRevisionRate,
-    SpotBillFormSpot,
-    SpotBillRowRevision
-    } from 'types/spotBilling';
+import { SpotBillDiscount, SpotBillFirstRevisionRate, SpotBillFormSpot, SpotBillRowRevision } from 'types/spotBilling';
 import { StudioRateCardEntryFromApi, StudioRateCardTypeFromApi } from 'types/studioRateCard';
 
 const s = require('./BillSpotPreviewContent.css');
@@ -48,14 +37,15 @@ interface Props extends AppOnlyStoreState {
     spotsInBill: SpotBillFormSpot[];
     studioRateCards: StudioRateCardTypeFromApi[];
     selectedRateCard: StudioRateCardEntryFromApi[];
+    selectedStudioRateCard: StudioRateCardTypeFromApi | null;
 }
 
 @inject('store')
 @observer
 export class BillSpotPreviewContent extends React.Component<Props, {}> {
-    private studioRateCardsDropdown: DropdownContainer | null = null;
-
     @observable private areRowsInEditMode: boolean = false;
+    @observable private selectedRowsIndexes: number[] = [];
+
     @observable private isDiscountInEditMode: boolean = false;
     @observable private discountForm: SpotBillDiscount = {
         isFixed: true,
@@ -74,19 +64,6 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
     }
 
     @computed
-    private get selectedStudioRateCard(): StudioRateCardTypeFromApi | null {
-        if (!this.props.store!.spotToBillForm.selectedRateCardId) {
-            return null;
-        }
-
-        const rateCard = this.props.studioRateCards.find(
-            r => r.ratecardId === this.props.store!.spotToBillForm.selectedRateCardId
-        );
-
-        return rateCard || null;
-    }
-
-    @computed
     private get selectedFlatRates(): StudioRateCardEntryFromApi[] {
         return this.props.selectedRateCard.filter(rate => rate.activityTypeId === FLAT_RATE_ACTIVITY_TYPE_ID);
     }
@@ -96,7 +73,7 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
         let totals: number = 0;
 
         // Iterate all activities in bill and calculate it based on selected rate
-        if (this.selectedStudioRateCard) {
+        if (this.props.selectedStudioRateCard) {
             totals += this.props.store!.spotToBillForm.rows.reduce((total: number, activity) => {
                 total += ActivityHandler.calculateActivityTotals(
                     activity,
@@ -146,7 +123,7 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
     }
 
     public componentDidMount() {
-        if (!this.selectedStudioRateCard && this.props.studioRateCards.length > 0) {
+        if (!this.props.selectedStudioRateCard && this.props.studioRateCards.length > 0) {
             SpotToBillFormActions.changeSelectedRateCard(this.props.studioRateCards[0].ratecardId);
         }
     }
@@ -156,65 +133,42 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
 
         return (
             <React.Fragment>
-                <div className={s.summary}>
-                    <div className={s.left}>
-                        {this.props.spotsInBill.length > 0 && (
-                            <Paragraph className={s.spots}>
-                                <span>{this.props.spotsInBill.length > 1 ? 'Spots: ' : 'Spot: '}</span>
-                                {this.props.spotsInBill.map(spot => (
-                                    <strong key={spot.spotId}>{spot.spotName}</strong>
-                                ))}
-                            </Paragraph>
-                        )}
-
-                        <Paragraph className={s.campaign}>
-                            <span>Campaign: </span>
-                            <strong>
-                                {StringHandler.constructProjectCampaignName(
-                                    this.props.campaignName,
-                                    this.props.projectCampaignName
+                <Card
+                    isExpandable={false}
+                    headerContent={
+                        <div className={s.summary}>
+                            <div className={s.left}>
+                                {this.props.spotsInBill.length > 0 && (
+                                    <Paragraph className={s.spots}>
+                                        <span>{this.props.spotsInBill.length > 1 ? 'Spots: ' : 'Spot: '}</span>
+                                        {this.props.spotsInBill.map(spot => (
+                                            <strong key={spot.spotId}>{spot.spotName}</strong>
+                                        ))}
+                                    </Paragraph>
                                 )}
-                            </strong>
-                            <span> — </span>
-                            <strong>{this.props.projectName}</strong>
-                        </Paragraph>
-                    </div>
 
-                    <div className={s.right}>
-                        <Paragraph className={s.studio}>
-                            <em>for </em>
-                            <strong>{this.props.studioName}</strong>
-                        </Paragraph>
-
-                        <div className={s.studioRateCard}>
-                            {(this.props.studioRateCards.length > 0 && (
-                                <DropdownContainer
-                                    ref={this.referenceStudioRateCardsDropdown}
-                                    label="Rate card:"
-                                    value={
-                                        this.selectedStudioRateCard
-                                            ? this.selectedStudioRateCard.ratecardName
-                                            : undefined
-                                    }
-                                >
-                                    <OptionsList
-                                        onChange={this.handleRateCardChange}
-                                        options={this.props.studioRateCards.map(rate => ({
-                                            value: rate.ratecardId,
-                                            label: rate.ratecardName,
-                                        }))}
-                                    />
-                                </DropdownContainer>
-                            )) || (
-                                <Paragraph type="dim" size="small">
-                                    Studio has no rate cards defined
+                                <Paragraph className={s.campaign}>
+                                    <span>Campaign: </span>
+                                    <strong>
+                                        {StringHandler.constructProjectCampaignName(
+                                            this.props.campaignName,
+                                            this.props.projectCampaignName
+                                        )}
+                                    </strong>
+                                    <span> — </span>
+                                    <strong>{this.props.projectName}</strong>
                                 </Paragraph>
-                            )}
-                        </div>
-                    </div>
-                </div>
+                            </div>
 
-                <div className={s.content}>
+                            <div className={s.right}>
+                                <Paragraph className={s.studio}>
+                                    <em>for </em>
+                                    <strong>{this.props.studioName}</strong>
+                                </Paragraph>
+                            </div>
+                        </div>
+                    }
+                >
                     <div className={s.grid}>
                         <div className={s.gridHeader}>
                             <Paragraph type="dim" size="small" align="left">
@@ -226,7 +180,6 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                             <Paragraph type="dim" size="small" align="left">
                                 Rate
                             </Paragraph>
-                            <Paragraph type="dim" size="small" align="right" />
                             <Paragraph type="dim" size="small" align="right">
                                 Amount
                             </Paragraph>
@@ -234,11 +187,14 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
 
                         {activities.map((activity, activityIndex) => {
                             const activityNumberingId = activityIndex + 1;
+                            const isSelected = this.selectedRowsIndexes.indexOf(activityIndex) !== -1;
 
                             return (
                                 <BillSpotPreviewRowEdit
+                                    onRowEditSelectionToggle={this.handleToggleRowEditSelection(activityIndex)}
                                     className={s.gridRow}
                                     editing={this.areRowsInEditMode}
+                                    editIsSelected={isSelected}
                                     key={activityNumberingId}
                                     id={activityNumberingId}
                                     index={activityIndex}
@@ -251,7 +207,9 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                             );
                         })}
                     </div>
+                </Card>
 
+                <div className={s.content}>
                     <div className={s.totals}>
                         <div className={s.left}>
                             {(this.isDiscountInEditMode && (
@@ -319,7 +277,7 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                                 (this.hasDiscount && (
                                     <div className={s.subTotals}>
                                         <Paragraph>
-                                            {(this.discount.isFixed ? 'Flat' : 'Percentage') + ' discount: '}
+                                            {'Discount: '}
                                             <strong>
                                                 {this.discount.isFixed
                                                     ? MoneyHandler.formatAsDollars(this.discount.value)
@@ -342,7 +300,23 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                     </div>
                 </div>
 
-                <BottomBar show={this.props.editable ? true : false} isWholeWidth={true}>
+                <BottomBar
+                    showHeader={true}
+                    show={this.props.editable ? true : false}
+                    header={
+                        <div className={s.rowsActions}>
+                            <ButtonEdit
+                                onClick={this.handleToggleRowsEditMore}
+                                label={this.areRowsInEditMode ? 'Stop editing' : 'Edit rows'}
+                                labelOnLeft={false}
+                            />
+
+                            <div>
+                                <p />
+                            </div>
+                        </div>
+                    }
+                >
                     <div className={s.actions}>
                         <ButtonDelete
                             onClick={this.handleDeleteBill}
@@ -363,16 +337,6 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
             </React.Fragment>
         );
     }
-
-    private referenceStudioRateCardsDropdown = (ref: DropdownContainer) => (this.studioRateCardsDropdown = ref);
-
-    private handleRateCardChange = (option: { value: number; label: string }) => {
-        SpotToBillFormActions.changeSelectedRateCard(option.value);
-
-        if (this.studioRateCardsDropdown) {
-            this.studioRateCardsDropdown.closeDropdown();
-        }
-    };
 
     private handleEditDiscount = (e: React.MouseEvent<HTMLButtonElement>) => {
         this.discountForm = {
@@ -395,6 +359,27 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
 
     private handleDiscountValueChange = (count: { value: number; text: string }) => {
         this.discountForm.value = count.value;
+    };
+
+    private handleToggleRowsEditMore = (e: React.MouseEvent<HTMLButtonElement>) => {
+        this.selectedRowsIndexes = [];
+        this.areRowsInEditMode = !this.areRowsInEditMode;
+    };
+
+    private handleToggleRowEditSelection = (rowIndex: number) => (checked: boolean, value: boolean) => {
+        if (checked && this.selectedRowsIndexes.indexOf(rowIndex) === -1) {
+            this.selectedRowsIndexes = [...this.selectedRowsIndexes, rowIndex].sort((indexA, indexB) =>
+                indexA < indexB ? 1 : indexA > indexB ? -1 : 0
+            );
+        } else if (!checked) {
+            const index = this.selectedRowsIndexes.indexOf(rowIndex);
+            if (index !== -1) {
+                this.selectedRowsIndexes = [
+                    ...this.selectedRowsIndexes.slice(0, index),
+                    ...this.selectedRowsIndexes.slice(index + 1),
+                ];
+            }
+        }
     };
 
     private handleDeleteBill = (e: React.MouseEvent<HTMLButtonElement>) => {

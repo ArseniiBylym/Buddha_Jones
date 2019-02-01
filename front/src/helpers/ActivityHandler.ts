@@ -1,16 +1,18 @@
-import { SpotBillFormActivityTimeEntry, SpotBillFormActivityGroup, SpotBillFormSpot } from 'types/spotBilling';
-import { StudioRateCardEntryFromApi } from 'types/studioRateCard';
-import { SpotBillActivityRateType } from 'types/spotBillingEnums';
 import { SpotToBillFormStore } from 'store/AllStores';
+import { SpotBillFormActivityGroup, SpotBillFormActivityTimeEntry, SpotBillFormSpot } from 'types/spotBilling';
+import { SpotBillActivityRateType } from 'types/spotBillingEnums';
+import { StudioRateCardEntryFromApi } from 'types/studioRateCard';
 
 export class ActivityHandler {
-    public static constructActivityKey = (activityId: number, spotId: number | null, versionId: number | null): string => {
+    public static constructActivityKey = (
+        activityId: number,
+        spotId: number | null,
+        versionId: number | null
+    ): string => {
         return (
-            (activityId ? activityId : '') +
-            (spotId ? '-' + spotId : '') +
-            (versionId ? '-' + versionId : '')
-        ) || 'none';
-    }
+            (activityId ? activityId : '') + (spotId ? '-' + spotId : '') + (versionId ? '-' + versionId : '') || 'none'
+        );
+    };
 
     public static constructActivityName = (timeEntries: SpotBillFormActivityTimeEntry[]): string => {
         const includedActivityIds: number[] = [];
@@ -40,65 +42,54 @@ export class ActivityHandler {
         });
 
         return activityName + (spotName ? ', Spot: ' + spotName : '') + (versionName ? ' , Ver. ' + versionName : '');
-    }
+    };
 
     public static calculateActivityTotals = (
         activity: SpotBillFormActivityGroup,
         spotsInBill: SpotBillFormSpot[],
         studioFlatRates: StudioRateCardEntryFromApi[],
-        studioRateCardValues: StudioRateCardEntryFromApi[],
+        studioRateCardValues: StudioRateCardEntryFromApi[]
     ): number => {
         return activity.rateType === SpotBillActivityRateType.FirstStage
             ? ActivityHandler.calculateFirstRateActivityTotals(activity, spotsInBill)
             : activity.rateType === SpotBillActivityRateType.Flat
-                ? ActivityHandler.calculateFlatActivityTotals(activity, studioFlatRates)
-                : ActivityHandler.calculateHourlyActivityTotals(activity, studioRateCardValues);
-    }
+            ? ActivityHandler.calculateFlatActivityTotals(activity, studioFlatRates)
+            : ActivityHandler.calculateHourlyActivityTotals(activity, studioRateCardValues);
+    };
 
     public static calculateFirstRateActivityTotals = (
         activity: SpotBillFormActivityGroup,
-        spotsInBill: SpotBillFormSpot[],
+        spotsInBill: SpotBillFormSpot[]
     ): number => {
+        // For first stage
+        if (activity.rateType === SpotBillActivityRateType.FirstStage) {
+            let firstStageRate: number | null = null;
+            if (activity.rateFlatOrFirstStageId) {
+                const spot = spotsInBill.find(spotInBill => spotInBill.spotId === activity.rateFlatOrFirstStageId);
+                firstStageRate = spot && spot.firstRevisionCost !== null ? spot.firstRevisionCost : null;
+            }
 
-                // For first stage
-                if (activity.rateType === SpotBillActivityRateType.FirstStage) {
-                    let firstStageRate: number | null = null;
-                    if (activity.rateFlatOrFirstStageId) {
-                        const spot = spotsInBill.find(
-                            spotInBill => spotInBill.spotId === activity.rateFlatOrFirstStageId
-                        );
-                        firstStageRate = spot && spot.firstRevisionCost !== null ? spot.firstRevisionCost : null;
-                    }
-
-                    return activity.rateAmount !== null
-                            ? activity.rateAmount
-                            : firstStageRate !== null
-                            ? firstStageRate
-                            : 0;
-                }
+            return activity.rateAmount !== null ? activity.rateAmount : firstStageRate !== null ? firstStageRate : 0;
+        }
 
         return 0;
-    }
+    };
 
     public static calculateFlatActivityTotals = (
         activity: SpotBillFormActivityGroup,
-        studioFlatRates: StudioRateCardEntryFromApi[],
+        studioFlatRates: StudioRateCardEntryFromApi[]
     ): number => {
-            // For flat rate
-            if (activity.rateType === SpotBillActivityRateType.Flat) {
-                const flatRate = activity.rateFlatOrFirstStageId
-                    ? studioFlatRates.find(rate => rate.id === activity.rateFlatOrFirstStageId)
-                    : undefined;
+        // For flat rate
+        if (activity.rateType === SpotBillActivityRateType.Flat) {
+            const flatRate = activity.rateFlatOrFirstStageId
+                ? studioFlatRates.find(rate => rate.id === activity.rateFlatOrFirstStageId)
+                : undefined;
 
-                return activity.rateAmount !== null
-                        ? activity.rateAmount
-                        : flatRate && flatRate.rate
-                        ? flatRate.rate
-                        : 0;
-            }
+            return activity.rateAmount !== null ? activity.rateAmount : flatRate && flatRate.rate ? flatRate.rate : 0;
+        }
 
         return 0;
-    }
+    };
 
     public static calculateHourlyActivityTotals = (
         activity: SpotBillFormActivityGroup,

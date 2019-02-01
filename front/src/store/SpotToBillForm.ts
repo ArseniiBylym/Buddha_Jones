@@ -15,7 +15,6 @@ export class SpotToBillForm {
     @observable public spotsIdsAddedToBill: number[] = [];
 
     @observable public addingActivityToBillStatus: AddingActivityToBillStatus = 'none';
-    @observable public showBillPreview: boolean = false;
 
     @observable public selectedRateCardId: number | null = null;
 

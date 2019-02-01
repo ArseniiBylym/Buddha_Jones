@@ -24,7 +24,6 @@ export class SpotToBillFormActionsClass {
         SpotToBillFormStore.selectedRateCardId = null;
 
         SpotToBillFormStore.addingActivityToBillStatus = 'none';
-        SpotToBillFormStore.showBillPreview = false;
 
         SpotToBillFormStore.selectedActivities = [];
     };
@@ -353,11 +352,6 @@ export class SpotToBillFormActionsClass {
                 this.changeAddingActivityToBillStatus('none');
             }
         }, 3000);
-    };
-
-    @action
-    public toggleBillPreview = (show?: boolean) => {
-        SpotToBillFormStore.showBillPreview = typeof show !== 'undefined' ? show : !SpotToBillFormStore.showBillPreview;
     };
 
     @action

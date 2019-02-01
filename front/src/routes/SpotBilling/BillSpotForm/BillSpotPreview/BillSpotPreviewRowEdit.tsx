@@ -1,8 +1,12 @@
 import { SpotToBillFormActions } from 'actions';
 import * as classNames from 'classnames';
-import { ButtonEdit, ButtonSave } from 'components/Button';
 import { Paragraph } from 'components/Content';
-import { DropdownContainer, Input, OptionsList } from 'components/Form';
+import {
+    Checkbox,
+    DropdownContainer,
+    Input,
+    OptionsList
+    } from 'components/Form';
 import { ActivityHandler } from 'helpers/ActivityHandler';
 import { MoneyHandler } from 'helpers/MoneyHandler';
 import { computed, observable } from 'mobx';
@@ -15,8 +19,10 @@ import { StudioRateCardEntryFromApi } from 'types/studioRateCard';
 const s = require('./BillSpotPreviewRowEdit.css');
 
 interface Props {
+    onRowEditSelectionToggle: (checked: boolean, value: boolean) => void;
     className?: string;
     editing: boolean;
+    editIsSelected: boolean;
     id: number;
     index: number;
     activity: SpotBillFormActivityGroup;
@@ -87,81 +93,84 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
 
     public render() {
         return (
-            <div className={classNames(s.row, this.props.className)}>
-                <div>
-                    <Paragraph>{'#' + this.props.id}</Paragraph>
-                </div>
+            <React.Fragment>
+                <div className={classNames(s.row, s.mainRow, this.props.className)}>
+                    <div className={s.idCol}>
+                        <Paragraph>{'#' + this.props.id}</Paragraph>
 
-                <div>
-                    {(this.isInEditMode && (
-                        <Input onChange={this.handleNoteChange} value={this.note} label="Name" minWidth={320} />
-                    )) || <Paragraph>{this.nameOrNote}</Paragraph>}
-                </div>
+                        <Checkbox
+                            onChange={this.props.onRowEditSelectionToggle}
+                            className={classNames(s.rowCheckbox, { [s.show]: this.isInEditMode })}
+                            checked={this.props.editIsSelected}
+                            disabled={!this.isInEditMode}
+                        />
+                    </div>
 
-                <div>
-                    {(this.isInEditMode && (
-                        <DropdownContainer
-                            ref={this.referenceRateDropdown}
-                            label="Rate"
-                            value={
-                                this.props.activity.rateType === SpotBillActivityRateType.FirstStage
-                                    ? this.selectedSpotFirstRate
-                                        ? 'First stage rate for spot: ' + this.selectedSpotFirstRate.spotName
-                                        : 'First stage rate'
-                                    : this.props.activity.rateType === SpotBillActivityRateType.Flat
-                                    ? this.selectedFlatRate
-                                        ? 'Flat rate: ' + this.selectedFlatRate.activityName
-                                        : 'Flat rate'
-                                    : 'Hourly'
-                            }
-                        >
-                            <OptionsList
-                                onChange={this.handleRateChange}
+                    <div>
+                        {(this.isInEditMode && (
+                            <Input onChange={this.handleNoteChange} value={this.note} label="Name" minWidth={320} />
+                        )) || <Paragraph>{this.nameOrNote}</Paragraph>}
+                    </div>
+
+                    <div>
+                        {(this.isInEditMode && (
+                            <DropdownContainer
+                                ref={this.referenceRateDropdown}
+                                label=""
                                 value={
                                     this.props.activity.rateType === SpotBillActivityRateType.FirstStage
-                                        ? 'first-' + (this.props.activity.rateFlatOrFirstStageId || 0)
+                                        ? this.selectedSpotFirstRate
+                                            ? 'First stage rate for spot: ' + this.selectedSpotFirstRate.spotName
+                                            : 'First stage rate'
                                         : this.props.activity.rateType === SpotBillActivityRateType.Flat
-                                        ? 'flat-' + (this.props.activity.rateFlatOrFirstStageId || 0)
-                                        : SpotBillActivityRateType.Hourly
+                                        ? this.selectedFlatRate
+                                            ? 'Flat rate: ' + this.selectedFlatRate.activityName
+                                            : 'Flat rate'
+                                        : 'Hourly'
                                 }
-                                options={[
-                                    { key: 'h', value: SpotBillActivityRateType.Hourly, label: 'Hourly' },
-                                    ...(this.props.studioFirstRates.length > 0
-                                        ? [{ key: 'sep-1', value: null, label: '---' }]
-                                        : []),
-                                    ...this.props.studioFirstRates.map(firstStage => ({
-                                        key: 'first-' + firstStage.spotId,
-                                        value: 'first-' + firstStage.spotId,
-                                        label: 'First stage rate for spot: ' + firstStage.spotName,
-                                    })),
-                                    ...(this.props.studioFlatRates.length > 0
-                                        ? [{ key: 'sep-2', value: null, label: '---' }]
-                                        : []),
-                                    ...this.props.studioFlatRates.map(flat => ({
-                                        key: 'flat-' + flat.id,
-                                        value: 'flat-' + flat.id,
-                                        label:
-                                            flat.activityName +
-                                            (flat.rate ? ': ' + MoneyHandler.formatAsDollars(flat.rate) : ''),
-                                    })),
-                                ]}
-                            />
-                        </DropdownContainer>
-                    )) || <Paragraph>{this.activityRateLabel}</Paragraph>}
-                </div>
+                            >
+                                <OptionsList
+                                    onChange={this.handleRateChange}
+                                    value={
+                                        this.props.activity.rateType === SpotBillActivityRateType.FirstStage
+                                            ? 'first-' + (this.props.activity.rateFlatOrFirstStageId || 0)
+                                            : this.props.activity.rateType === SpotBillActivityRateType.Flat
+                                            ? 'flat-' + (this.props.activity.rateFlatOrFirstStageId || 0)
+                                            : SpotBillActivityRateType.Hourly
+                                    }
+                                    options={[
+                                        { key: 'h', value: SpotBillActivityRateType.Hourly, label: 'Hourly' },
+                                        ...(this.props.studioFirstRates.length > 0
+                                            ? [{ key: 'sep-1', value: null, label: '---' }]
+                                            : []),
+                                        ...this.props.studioFirstRates.map(firstStage => ({
+                                            key: 'first-' + firstStage.spotId,
+                                            value: 'first-' + firstStage.spotId,
+                                            label: 'First stage rate for spot: ' + firstStage.spotName,
+                                        })),
+                                        ...(this.props.studioFlatRates.length > 0
+                                            ? [{ key: 'sep-2', value: null, label: '---' }]
+                                            : []),
+                                        ...this.props.studioFlatRates.map(flat => ({
+                                            key: 'flat-' + flat.id,
+                                            value: 'flat-' + flat.id,
+                                            label:
+                                                flat.activityName +
+                                                (flat.rate ? ': ' + MoneyHandler.formatAsDollars(flat.rate) : ''),
+                                        })),
+                                    ]}
+                                />
+                            </DropdownContainer>
+                        )) || <Paragraph>{this.activityRateLabel}</Paragraph>}
+                    </div>
 
-                <div className={s.rateAndEditCol}>
-                    {(this.isInEditMode === false && (
-                        <ButtonEdit onClick={this.handleEnteringEditModeOfRow} label="Edit" labelOnLeft={true} />
-                    )) || <ButtonSave onClick={this.handleSavingRowChanges} label="Save" isSaving={false} />}
+                    <div>
+                        <Paragraph align="right">
+                            {this.rowTotal !== null ? MoneyHandler.formatAsDollars(this.rowTotal) : 'No rate'}
+                        </Paragraph>
+                    </div>
                 </div>
-
-                <div>
-                    <Paragraph align="right">
-                        {this.rowTotal !== null ? MoneyHandler.formatAsDollars(this.rowTotal) : 'No rate'}
-                    </Paragraph>
-                </div>
-            </div>
+            </React.Fragment>
         );
     }
 
@@ -202,7 +211,7 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
             SpotToBillFormActions.changeBillRowRateType(
                 this.props.index,
                 SpotBillActivityRateType.FirstStage,
-                firstRateSpot ? firstRateSpot.firstRevisionCost : null
+                firstRateSpot ? firstRateSpot.spotId : null
             );
             return;
         }

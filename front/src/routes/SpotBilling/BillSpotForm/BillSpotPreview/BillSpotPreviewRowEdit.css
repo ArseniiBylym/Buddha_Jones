@@ -1,0 +1,36 @@
+.row {
+    & > div {
+        display: flex;
+        align-content: center;
+        align-items: center;
+    }
+
+    &.mainRow {
+    }
+}
+
+.idCol {
+    position: relative;
+}
+
+.rateAndEditCol {
+    display: flex;
+    justify-content: flex-end;
+    align-content: center;
+    align-items: center;
+}
+
+.rowCheckbox {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    top: 50%;
+    margin-top: -12px;
+    left: -42px;
+    opacity: 0;
+    transition: 300ms opacity 0ms cubic-bezier(1, 0, 0, 1);
+
+    &.show {
+        opacity: 1;
+    }
+}

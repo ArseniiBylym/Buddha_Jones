@@ -19,6 +19,7 @@ interface Props extends AppState {}
 @observer
 export default class BillSpotForm extends React.Component<Props, {}> {
     @observable private billId: number | null = null;
+    @observable private isPreview: boolean = false;
 
     constructor(props: Props) {
         super(props);
@@ -27,6 +28,11 @@ export default class BillSpotForm extends React.Component<Props, {}> {
         if (this.props.match && this.props.match.params && this.props.match.params['id']) {
             const billId = parseInt(this.props.match.params['id'], 10);
             this.billId = !isNaN(billId) && billId ? billId : null;
+        }
+
+        // Set preview coming from URL
+        if (this.props.match && this.props.match.params && this.props.match.params['preview']) {
+            this.isPreview = true;
         }
     }
 
@@ -49,6 +55,17 @@ export default class BillSpotForm extends React.Component<Props, {}> {
             const billId = parseInt(nextProps.match.params['id'], 10);
             this.billId = !isNaN(billId) && billId ? billId : null;
             this.setHeader(this.billId);
+        }
+
+        // Set modified preview
+        if (
+            this.props.match &&
+            this.props.match.params &&
+            nextProps.match &&
+            nextProps.match.params &&
+            this.props.match.params['preview'] !== nextProps.match.params['preview']
+        ) {
+            this.isPreview = nextProps.match.params['preview'] ? true : false;
         }
     }
 
@@ -772,7 +789,7 @@ export default class BillSpotForm extends React.Component<Props, {}> {
                     }
 
                     return billFromApi.response.billStatusId === SpotSentBillStatus.Draft ? (
-                        <DraftBillSpotForm billData={billFromApi.response} />
+                        <DraftBillSpotForm billData={billFromApi.response} showPreview={this.isPreview} />
                     ) : (
                         <ApprovedBillSpotForm bill={billFromApi.response} />
                     );
