@@ -18,6 +18,7 @@ import { ProducerSpotSentFormAsync, ProducerSpotSentListAsync } from './SpotSent
 import { NewClientRequestListAsync } from './StudioClient/NewClientRequest/List';
 import { TimeApprovalPermissionsAsync } from './TimeCardPermissions/TimeApprovalPermissions';
 import { TimeEntryPermissionsAsync } from './TimeCardPermissions/TimeEntryPermissions';
+import { UserTypePermissionsAsync } from './TimeCardPermissions/UserTypePermissions';
 import { TimeEntryAsync } from './TimeTracking';
 import { TimeApprovalAsync } from './TimeTracking/Approval';
 import { UserAccountAsync } from './User';
@@ -333,6 +334,19 @@ export const routes: Route[] = [
         name: 'Time Approval Permissions',
         path: '/portal/configuration/user-management/time-approval-permissions/:id',
         entry: '/portal/configuration/user-management/time-approval-permissions/:id',
+        exact: false,
+        allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'User Management',
+    },
+    {
+        component: UserTypePermissionsAsync,
+        key: 'user-type-permissions',
+        accessKey: RouteAccessKey.ProjectBoardPermission,
+        // group: configurationGroup,
+        name: 'User Type Permissions',
+        path: '/portal/configuration/user-management/user-type-permissions/:id',
+        entry: '/portal/configuration/user-management/user-type-permissions/:id',
         exact: false,
         allowAllUsers: false,
         moduleAccess: 'Configuration',

@@ -165,7 +165,7 @@ class UserManagementUsersList extends React.Component<Props & AppState, {}> {
     };
 
     private goBackToProjectBoardPermissionList = (): void => {
-        history.push('/portal/configuration/user-management/project-board-permission');
+        history.push('/portal/configuration/user-management');
     };
 
     private setHeaderAndInitialData = (): void => {

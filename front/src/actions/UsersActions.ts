@@ -503,6 +503,23 @@ export class UsersActionsClass {
         }
     };
 
+    @action 
+    public fetchUserTypesPermissions = async (id: number) => {
+        UsersStore.userTypePermissionsLoading = true;
+        const response = (await API.getData(APIPath.MODULE_ACCESS + '/?user_type_id=' + id)) as any;
+        let subModules: any[] = [];
+        response.forEach((res, i) => {
+            if (res.subModule.length === 0) {
+                return;
+            }
+            res.subModule.forEach((item: any, j) => {
+                subModules.push(item);
+            });
+        });
+        UsersStore.userTypePermissionsLoading = false;
+        UsersStore.userTypePermissions = subModules;
+    }
+
     @action
     public fetchProjectPermissionsTypes = async (id: number, forceFetch: boolean = false): Promise<boolean> => {
         try {
