@@ -22,6 +22,8 @@ export class Users {
     @observable public projectPermissionsTypesLoading: boolean = false;
     @observable public currentSelectedUser: OtherUserFromApi | null = null;
     @observable public people: OtherUserDetails[] = [];
+    @observable public userTypePermissions: any = null;
+    @observable public userTypePermissionsLoading: boolean = false;
 
     @observable
     public peopleFetchesByClass: Array<{

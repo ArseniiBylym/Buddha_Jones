@@ -142,8 +142,9 @@ class TimeApprovalPermissions extends React.Component<TimeEntryPermissionsProps,
 
     // private goBackToTimeEntryPermissions = () => history.push(`/portal/configuration/user-management/time-entry-permissions`);
 
-    private goBackToUserManagment = () =>
-        history.push(`/portal/configuration/user-management/project-board-permission`);
+    private goBackToUserManagment = () => {
+        return history.push(`/portal/configuration/user-management`);
+    }
 
     private onChangeSearchInputHandler = (event: React.FormEvent<HTMLInputElement>): void => {
         this.setState({

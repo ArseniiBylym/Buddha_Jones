@@ -166,7 +166,15 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                         <TableCell align="right">
                             <ButtonEdit
                                 onClick={this.handlePermissionEdit(userType.id, userType.name)}
-                                label="Manage access"
+                                label=""
+                                labelOnLeft={true}
+                                float="right"
+                            />
+                        </TableCell>
+                        <TableCell align="right">
+                            <ButtonEdit
+                                onClick={this.handleMenuPermissionEdit(userType.id, userType.name)}
+                                label=""
                                 labelOnLeft={true}
                                 float="right"
                             />
@@ -182,8 +190,10 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
                         { title: 'Time entry', align: 'right' },
                         { title: 'Users', align: 'right' },
                         { title: 'Access', align: 'right' },
+                        { title: 'Menu', align: 'right' },
+
                     ]}
-                    columnsWidths={['28%', '18%', '18%', '18%', '18%']}
+                    columnsWidths={['26%', '18%', '18%', '18%', '10%', '10%']}
                 >
                     {this.isSearchResultsEmpty() ? this.getTableWithNoMatchingText() : tableRowsArr}
                 </Table>
@@ -196,6 +206,10 @@ class ProjectBoardPermissionList extends React.Component<AppState, {}> {
     private handlePermissionChange = (id: number) => e => {
         TimeEntryPermissionsActions.changeTimeEntryPermission(id);
     };
+
+    private handleMenuPermissionEdit = (id: number, name: string) => e => {
+        history.push(`/portal/configuration/user-management/user-type-permissions/${id}/?user_type=${name}`);
+    }
 
     private onEditClick = (id: number) => e => {
         history.push(`/portal/configuration/user-management/time-approval-permissions/${id}`);

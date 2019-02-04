@@ -115,7 +115,7 @@ class ProjectBoardPermissionEdit extends React.Component<ProjectBoardPermissionE
     };
 
     private goBackToProjectBoardPermissionList = () => {
-        history.push('/portal/configuration/user-management/project-board-permission');
+        history.push('/portal/configuration/user-management');
     };
 
     @action 
