@@ -521,6 +521,33 @@ export class UsersActionsClass {
     }
 
     @action
+    public permissionsToggle = (id: number) => {
+        UsersStore.userTypePermissions = UsersStore.userTypePermissions.map((item, i) => {
+            if (item.id === id) {
+                return {
+                    ...item,
+                    canAccess: !item.canAccess,
+                };
+            } else {
+                return item;
+            }
+        });
+    }
+
+    @action
+    public permissionsSave = async (projectBoardPermissionData: any): Promise<boolean> => {
+        try {
+            await API.postData(
+                APIPath.MODULE_ACCESS,
+                projectBoardPermissionData
+            );
+            return true;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    @action
     public fetchProjectPermissionsTypes = async (id: number, forceFetch: boolean = false): Promise<boolean> => {
         try {
             if (

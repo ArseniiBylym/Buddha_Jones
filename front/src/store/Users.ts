@@ -25,7 +25,6 @@ export class Users {
     @observable public userTypePermissions: any = null;
     @observable public userTypePermissionsLoading: boolean = false;
 
-
     @observable
     public peopleFetchesByClass: Array<{
         classId: UserTypeClassId;
