@@ -175,8 +175,10 @@ class UserManagementUsersList extends React.Component<Props & AppState, {}> {
         UsersActions.fetchUsersTypes().then();
 
         // Set header
+        const typeName: any = this.props.location!.search.split('=')[1] + '';
         HeaderActions.setMainHeaderTitlesAndElements(
-            'User Management',
+            decodeURIComponent(typeName),
+            // 'User Management',
             'Configuration',
             null,
             null,

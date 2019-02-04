@@ -69,7 +69,7 @@ class UserTypePermissions extends React.Component<any, {}> {
 
         // Set header
         HeaderActions.setMainHeaderTitlesAndElements(
-            typeName,
+            decodeURIComponent(typeName),
             'Module access',
             null,
             null,
