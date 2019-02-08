@@ -71,14 +71,12 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
 
     componentDidMount = () => {
         if (this.props.store!.projectsVersions.filterVersionStatus.name !== 'All status') {
-            // this.handleVersionExpandOrCollapse();
             this.isVersionsVisible = true;
         }
     }
 
     public constructor(props: any) {
         super(props);
-
         reaction(
             () => this.filterVersionName,
             filterName => {
@@ -92,17 +90,6 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
     @computed
     private get filterVersionName() {
         return this.props.store!.projectsVersions.filterVersionStatus.name;
-    }
-
-    componentDidUpdate = (prevProps) => {
-        // console.log('this.props', this.props.store!.projectsVersions.filterVersionStatus.name);
-        // console.log('prevProps', prevProps.store!.projectsVersions.filterVersionStatus.name);
-
-
-        // if (this.props.store!.projectsVersions.filterVersionStatus.name !== 'All status' &&
-        //     this.isVersionsVisible === false) {
-        //         this.isVersionsVisible = true;
-        //     }
     }
 
     @observable private isVersionsVisible: boolean = false;
