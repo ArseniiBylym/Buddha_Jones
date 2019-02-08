@@ -32,6 +32,7 @@ interface DurationCounterExceedProps {
 
 interface DurationCounterProps {
     className?: string;
+    align?: 'left' | 'center' | 'right';
     onChange?: (totalMinutes: number) => void;
     incrementBy?: number;
     value?: number;
@@ -47,6 +48,7 @@ export class DurationCounter extends React.Component<DurationCounterProps, {}> {
     static get defaultProps(): DurationCounterProps {
         return {
             className: undefined,
+            align: undefined,
             onChange: undefined,
             incrementBy: 15,
             value: 0,
@@ -102,6 +104,9 @@ export class DurationCounter extends React.Component<DurationCounterProps, {}> {
         return classNames(
             s.counter,
             {
+                [s.left]: this.props.align === 'left',
+                [s.center]: this.props.align === 'center',
+                [s.right]: this.props.align === 'right',
                 [s.success]:
                     (isValueExceeded && this.props.valueMoreThan!.color === 'success') ||
                     (isValueShort && this.props.valueLessThan!.color === 'success'),
