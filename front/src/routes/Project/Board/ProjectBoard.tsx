@@ -306,7 +306,8 @@ class ProjectBoard extends React.Component<ProjectBoardProps, {}> {
                 : '',
             project.studioName ? project.studioName : 'Studio #' + project.studioId,
             project.projectName && project.projectCodeName ? '(' + project.projectCodeName + ') ' : null,
-            null
+            null,
+            project.projectPrefix ? project.projectPrefix : null
         );
     };
 

@@ -40,6 +40,11 @@
   opacity: 0.6;
 }
 
+.headerTitle span.headerTitle__afterTitleSpan {
+  font-size: 18px;
+  margin-left: 10px;
+}
+
 .headerSubTitle {
   position: relative;
   margin-top: 4px;

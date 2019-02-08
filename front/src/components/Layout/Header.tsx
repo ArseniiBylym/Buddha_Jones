@@ -31,6 +31,8 @@ export class Header extends React.Component<HeaderProps & AppOnlyStoreState, {}>
                                 {header.preTitleSpan &&
                                     header.preTitleSpan.trim() !== '' && <span>{header.preTitleSpan}</span>}
                                 {header.title}
+                                {header.afterTitleSpan && 
+                                    header.afterTitleSpan.trim() !== '' && <span className={s.headerTitle__afterTitleSpan}>{header.afterTitleSpan}</span>}
                             </h1>
                         )}
                     {header &&
