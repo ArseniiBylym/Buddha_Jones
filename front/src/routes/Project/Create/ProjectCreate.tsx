@@ -199,15 +199,15 @@ export default class ProjectCreatePage extends React.Component<AppState, {}> {
             NotificationsActions.AlertUser('Project name or code name is required');
             return;
         }
-        if (projectData.prefix && projectData.prefix.length === 0) {
-            NotificationsActions.AlertUser('Project prefix is required');
-            return;
-        }
+        // if (projectData.prefix && projectData.prefix.length === 0) {
+        //     NotificationsActions.AlertUser('Project prefix is required');
+        //     return;
+        // }
 
-        if (projectData.prefix && (projectData.prefix.length < 3 || projectData.prefix.length > 10)) {
-            NotificationsActions.AlertUser('Project prefix lenght should be from 3 to 10');
-            return;
-        }
+        // if (projectData.prefix && (projectData.prefix.length < 3 || projectData.prefix.length > 10)) {
+        //     NotificationsActions.AlertUser('Project prefix lenght should be from 3 to 10');
+        //     return;
+        // }
 
         if (projectData.studioId === null) {
             NotificationsActions.AlertUser('Project studio is required');

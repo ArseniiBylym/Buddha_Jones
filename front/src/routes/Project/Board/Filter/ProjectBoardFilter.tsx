@@ -42,6 +42,13 @@ export class ProjectBoardFilter extends React.Component<ProjectBoardFilterProps,
         };
     }
 
+    componentWillUnmount = () => {
+        ProjectsVersionsActions.changeFilterVersionStatus({
+            id: null,
+            name: 'All status',
+        });
+    }
+
     public render() {
         return (
             <section style={{width: this.props.width, float: this.props.float}}>
@@ -75,8 +82,8 @@ export class ProjectBoardFilter extends React.Component<ProjectBoardFilterProps,
     @action
     private handleVersionStatusChange = (option: ProjectBoardFilterOptionSelected) => {
         let selectedVersionStatus: ProjectVersionStatus = {
-            id: option.value
-            , name: option.label
+            id: option.value,
+            name: option.label,
         };
         ProjectsVersionsActions.changeFilterVersionStatus(selectedVersionStatus);
         if (this.versionStatusDropdown) {
