@@ -19,7 +19,7 @@ import {
 import { Col, Row } from 'components/Section';
 import * as dateFormat from 'date-fns/format';
 import upperFirst from 'lodash-es/upperFirst';
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, reaction } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import AnimateHeight from 'react-animate-height';
@@ -67,6 +67,42 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
             showSeparator: true,
             removeBottomPadding: false,
         };
+    }
+
+    componentDidMount = () => {
+        if (this.props.store!.projectsVersions.filterVersionStatus.name !== 'All status') {
+            // this.handleVersionExpandOrCollapse();
+            this.isVersionsVisible = true;
+        }
+    }
+
+    public constructor(props: any) {
+        super(props);
+
+        reaction(
+            () => this.filterVersionName,
+            filterName => {
+                if (filterName !== 'All status' && this.isVersionsVisible === false) {
+                    this.isVersionsVisible = true;
+                }
+            }
+            );
+    }
+
+    @computed
+    private get filterVersionName() {
+        return this.props.store!.projectsVersions.filterVersionStatus.name;
+    }
+
+    componentDidUpdate = (prevProps) => {
+        // console.log('this.props', this.props.store!.projectsVersions.filterVersionStatus.name);
+        // console.log('prevProps', prevProps.store!.projectsVersions.filterVersionStatus.name);
+
+
+        // if (this.props.store!.projectsVersions.filterVersionStatus.name !== 'All status' &&
+        //     this.isVersionsVisible === false) {
+        //         this.isVersionsVisible = true;
+        //     }
     }
 
     @observable private isVersionsVisible: boolean = false;
