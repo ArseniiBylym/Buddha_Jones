@@ -16,7 +16,7 @@ interface TagProps {
     className?: string;
     titleClassName?: string;
     editButtonLabel?: string;
-    title: string | null;
+    title?: string | null;
     isTitleBold?: boolean;
     isTitleDim?: boolean;
     otherLabels?: Array<{
@@ -49,7 +49,9 @@ export class Tag extends React.Component<TagProps, {}> {
     }
 
     public render() {
-        return this.props.title || (this.props.otherLabels && this.props.otherLabels.length > 0) ? (
+        return this.props.children ||
+            this.props.title ||
+            (this.props.otherLabels && this.props.otherLabels.length > 0) ? (
             <div
                 className={classNames(
                     s.tag,
@@ -88,6 +90,8 @@ export class Tag extends React.Component<TagProps, {}> {
                         {this.props.title}
                     </p>
                 )}
+
+                {this.props.children}
 
                 {this.props.otherLabels &&
                     this.props.otherLabels.map((label, labelIndex) =>
