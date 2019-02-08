@@ -2,20 +2,34 @@ import { BillSpotPreviewRowEdit } from '.';
 import { toFixed } from 'accounting';
 import { SpotToBillFormActions } from 'actions';
 import * as classNames from 'classnames';
-import { ButtonAdd, ButtonDelete, ButtonEdit, ButtonInBox, ButtonSave, ButtonSend } from 'components/Button';
+import {
+    ButtonAdd,
+    ButtonDelete,
+    ButtonEdit,
+    ButtonInBox,
+    ButtonSave,
+    ButtonSend
+    } from 'components/Button';
 import { Paragraph } from 'components/Content';
 import { Counter } from 'components/Form';
 import { BottomBar } from 'components/Layout';
-import { Card } from 'components/Section';
+import { LoadingIndicator } from 'components/Loaders';
+import { Modal } from 'components/Modals';
+import { Card, Row } from 'components/Section';
 import { ActivityHandler } from 'helpers/ActivityHandler';
 import { MoneyHandler } from 'helpers/MoneyHandler';
 import { StringHandler } from 'helpers/StringHandler';
 import { FLAT_RATE_ACTIVITY_TYPE_ID } from 'invariables';
-import { computed, observable } from 'mobx';
+import { action, computed, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
-import { SpotBillDiscount, SpotBillFirstRevisionRate, SpotBillFormSpot, SpotBillRowRevision } from 'types/spotBilling';
+import {
+    SpotBillDiscount,
+    SpotBillFirstRevisionRate,
+    SpotBillFormSpot,
+    SpotBillRowRevision
+    } from 'types/spotBilling';
 import { StudioRateCardEntryFromApi, StudioRateCardTypeFromApi } from 'types/studioRateCard';
 
 const s = require('./BillSpotPreviewContent.css');
@@ -43,14 +57,15 @@ interface Props extends AppOnlyStoreState {
 @inject('store')
 @observer
 export class BillSpotPreviewContent extends React.Component<Props, {}> {
-    @observable private areRowsInEditMode: boolean = false;
-    @observable private selectedRowsIndexes: number[] = [];
+    @observable private rowIdInEditMode: number | null = null;
 
     @observable private isDiscountInEditMode: boolean = false;
     @observable private discountForm: SpotBillDiscount = {
         isFixed: true,
         value: 0,
     };
+
+    @observable private isDeleteRowConfirmationOpen: boolean = false;
 
     @computed
     private get spotsInBillFirstStageRates(): SpotBillFirstRevisionRate[] {
@@ -129,7 +144,7 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
     }
 
     public render() {
-        const { rows: activities } = this.props.store!.spotToBillForm;
+        const { rows } = this.props.store!.spotToBillForm;
 
         return (
             <React.Fragment>
@@ -138,15 +153,6 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                     headerContent={
                         <div className={s.summary}>
                             <div className={s.left}>
-                                {this.props.spotsInBill.length > 0 && (
-                                    <Paragraph className={s.spots}>
-                                        <span>{this.props.spotsInBill.length > 1 ? 'Spots: ' : 'Spot: '}</span>
-                                        {this.props.spotsInBill.map(spot => (
-                                            <strong key={spot.spotId}>{spot.spotName}</strong>
-                                        ))}
-                                    </Paragraph>
-                                )}
-
                                 <Paragraph className={s.campaign}>
                                     <span>Campaign: </span>
                                     <strong>
@@ -155,166 +161,139 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                                             this.props.projectCampaignName
                                         )}
                                     </strong>
-                                    <span> — </span>
-                                    <strong>{this.props.projectName}</strong>
                                 </Paragraph>
                             </div>
 
                             <div className={s.right}>
-                                <Paragraph className={s.studio}>
-                                    <em>for </em>
-                                    <strong>{this.props.studioName}</strong>
-                                </Paragraph>
+                                {this.props.spotsInBill.length > 0 && (
+                                    <Paragraph className={s.spots}>
+                                        <span>{this.props.spotsInBill.length > 1 ? 'Spots: ' : 'Spot: '}</span>
+                                        {this.props.spotsInBill.map(spot => (
+                                            <strong key={spot.spotId}>{spot.spotName}</strong>
+                                        ))}
+                                    </Paragraph>
+                                )}
                             </div>
                         </div>
                     }
-                >
-                    <div className={s.grid}>
-                        <div className={s.gridHeader}>
-                            <Paragraph type="dim" size="small" align="left">
-                                ID
-                            </Paragraph>
-                            <Paragraph type="dim" size="small" align="left">
-                                Activity
-                            </Paragraph>
-                            <Paragraph type="dim" size="small" align="left">
-                                Rate
-                            </Paragraph>
-                            <Paragraph type="dim" size="small" align="right">
-                                Amount
-                            </Paragraph>
-                        </div>
+                />
 
-                        {activities.map((activity, activityIndex) => {
-                            const activityNumberingId = activityIndex + 1;
-                            const isSelected = this.selectedRowsIndexes.indexOf(activityIndex) !== -1;
+                <div className={s.activities}>
+                    {rows.map((row, rowIndex) => {
+                        return (
+                            <BillSpotPreviewRowEdit
+                                key={row.id}
+                                onRequestRowDeletion={this.handleRequestRowDeletion(this.rowIdInEditMode)}
+                                onRowEditToggle={this.handleToggleRowEdit(row.id)}
+                                className={s.gridRow}
+                                editing={row.id === this.rowIdInEditMode}
+                                index={rowIndex}
+                                rowsCount={rows.length}
+                                activity={row}
+                                spotsInBill={this.props.spotsInBill}
+                                studioFlatRates={this.selectedFlatRates}
+                                studioFirstRates={this.spotsInBillFirstStageRates}
+                                studioRateCardValues={this.props.selectedRateCard}
+                            />
+                        );
+                    })}
+                </div>
 
-                            return (
-                                <BillSpotPreviewRowEdit
-                                    onRowEditSelectionToggle={this.handleToggleRowEditSelection(activityIndex)}
-                                    className={s.gridRow}
-                                    editing={this.areRowsInEditMode}
-                                    editIsSelected={isSelected}
-                                    key={activityNumberingId}
-                                    id={activityNumberingId}
-                                    index={activityIndex}
-                                    activity={activity}
-                                    spotsInBill={this.props.spotsInBill}
-                                    studioFlatRates={this.selectedFlatRates}
-                                    studioFirstRates={this.spotsInBillFirstStageRates}
-                                    studioRateCardValues={this.props.selectedRateCard}
-                                />
-                            );
-                        })}
-                    </div>
-                </Card>
+                <div className={s.totals}>
+                    <div className={s.left}>
+                        {(this.isDiscountInEditMode && (
+                            <div className={s.discountForm}>
+                                <div className={s.discountType}>
+                                    <Paragraph size="small">Discount:</Paragraph>
 
-                <div className={s.content}>
-                    <div className={s.totals}>
-                        <div className={s.left}>
-                            {(this.isDiscountInEditMode && (
-                                <div className={s.discountForm}>
-                                    <div className={s.discountType}>
-                                        <Paragraph size="small">Discount:</Paragraph>
+                                    <ButtonInBox
+                                        className={classNames(s.discountTypeButton, {
+                                            [s.active]: this.discountForm.isFixed,
+                                        })}
+                                        onClick={this.handleDiscountTypeChange(true)}
+                                    >
+                                        {'$'}
+                                    </ButtonInBox>
 
-                                        <ButtonInBox
-                                            className={classNames(s.discountTypeButton, {
-                                                [s.active]: this.discountForm.isFixed,
-                                            })}
-                                            onClick={this.handleDiscountTypeChange(true)}
-                                        >
-                                            {'$'}
-                                        </ButtonInBox>
-
-                                        <ButtonInBox
-                                            className={classNames(s.discountTypeButton, {
-                                                [s.active]: !this.discountForm.isFixed,
-                                            })}
-                                            onClick={this.handleDiscountTypeChange(false)}
-                                        >
-                                            {'%'}
-                                        </ButtonInBox>
-                                    </div>
-
-                                    <Counter
-                                        onChange={this.handleDiscountValueChange}
-                                        decimals={2}
-                                        maxValue={this.discountForm.isFixed ? this.billTotal : 100}
-                                        minValue={0}
-                                        fieldMaxWidth={128}
-                                        incrementBy={this.discountForm.isFixed ? 100 : 5}
-                                        multipleOf={0.01}
-                                        showAddedTextOnInput={true}
-                                        readOnlyTextBeforeValue={this.discountForm.isFixed ? '$' : ''}
-                                        readOnlyTextAfterValue={this.discountForm.isFixed ? '' : '%'}
-                                        value={this.discountForm.value}
-                                        showPlusMinus={true}
-                                    />
-
-                                    <ButtonSave
-                                        onClick={this.handleSaveDiscount}
-                                        isSaving={false}
-                                        label="Apply discount"
-                                    />
+                                    <ButtonInBox
+                                        className={classNames(s.discountTypeButton, {
+                                            [s.active]: !this.discountForm.isFixed,
+                                        })}
+                                        onClick={this.handleDiscountTypeChange(false)}
+                                    >
+                                        {'%'}
+                                    </ButtonInBox>
                                 </div>
-                            )) ||
-                                (this.hasDiscount && (
-                                    <ButtonEdit onClick={this.handleEditDiscount} label="Modify discount" />
-                                )) || <ButtonAdd onClick={this.handleEditDiscount} label="Add discount" />}
-                        </div>
 
-                        <div className={s.right}>
-                            {this.hasDiscount && (
-                                <Paragraph>
-                                    {'Sub total: '}
-                                    <strong>{MoneyHandler.formatAsDollars(this.billTotal)}</strong>
-                                </Paragraph>
-                            )}
+                                <Counter
+                                    onChange={this.handleDiscountValueChange}
+                                    decimals={2}
+                                    maxValue={this.discountForm.isFixed ? this.billTotal : 100}
+                                    minValue={0}
+                                    fieldMaxWidth={128}
+                                    incrementBy={this.discountForm.isFixed ? 100 : 5}
+                                    multipleOf={0.01}
+                                    showAddedTextOnInput={true}
+                                    readOnlyTextBeforeValue={this.discountForm.isFixed ? '$' : ''}
+                                    readOnlyTextAfterValue={this.discountForm.isFixed ? '' : '%'}
+                                    value={this.discountForm.value}
+                                    showPlusMinus={true}
+                                />
 
-                            {(this.props.selectedRateCard.length <= 0 && (
-                                <Paragraph>No rate card selected</Paragraph>
-                            )) ||
-                                (this.hasDiscount && (
-                                    <div className={s.subTotals}>
-                                        <Paragraph>
-                                            {'Discount: '}
-                                            <strong>
-                                                {this.discount.isFixed
-                                                    ? MoneyHandler.formatAsDollars(this.discount.value)
-                                                    : toFixed(this.discount.value, 2) + '%'}
-                                            </strong>
-                                        </Paragraph>
+                                <ButtonSave onClick={this.handleSaveDiscount} isSaving={false} label="Apply discount" />
+                            </div>
+                        )) ||
+                            (this.hasDiscount && (
+                                <ButtonEdit onClick={this.handleEditDiscount} label="Modify discount" />
+                            )) || <ButtonAdd onClick={this.handleEditDiscount} label="Add discount" />}
+                    </div>
 
-                                        <Paragraph>
-                                            {'Total: '}
-                                            <strong>{MoneyHandler.formatAsDollars(this.billTotalAfterDiscount)}</strong>
-                                        </Paragraph>
-                                    </div>
-                                )) || (
+                    <div className={s.right}>
+                        {this.hasDiscount && (
+                            <Paragraph>
+                                {'Sub total: '}
+                                <strong>{MoneyHandler.formatAsDollars(this.billTotal)}</strong>
+                            </Paragraph>
+                        )}
+
+                        {(this.props.selectedRateCard.length <= 0 && <Paragraph>No rate card selected</Paragraph>) ||
+                            (this.hasDiscount && (
+                                <div className={s.subTotals}>
+                                    <Paragraph>
+                                        {'Discount: '}
+                                        <strong>
+                                            {this.discount.isFixed
+                                                ? MoneyHandler.formatAsDollars(this.discount.value)
+                                                : toFixed(this.discount.value, 2) + '%'}
+                                        </strong>
+                                    </Paragraph>
+
                                     <Paragraph>
                                         {'Total: '}
                                         <strong>{MoneyHandler.formatAsDollars(this.billTotalAfterDiscount)}</strong>
                                     </Paragraph>
-                                )}
-                        </div>
+                                </div>
+                            )) || (
+                                <Paragraph>
+                                    {'Total: '}
+                                    <strong>{MoneyHandler.formatAsDollars(this.billTotalAfterDiscount)}</strong>
+                                </Paragraph>
+                            )}
                     </div>
                 </div>
 
                 <BottomBar
-                    showHeader={true}
                     show={this.props.editable ? true : false}
+                    showHeader={this.props.store!.spotToBillForm.savingBillStatus !== 'none'}
                     header={
-                        <div className={s.rowsActions}>
-                            <ButtonEdit
-                                onClick={this.handleToggleRowsEditMore}
-                                label={this.areRowsInEditMode ? 'Stop editing' : 'Edit rows'}
-                                labelOnLeft={false}
-                            />
-
-                            <div>
-                                <p />
-                            </div>
-                        </div>
+                        <Row justifyContent="center" alignItems="center">
+                            {(this.props.store!.spotToBillForm.savingBillStatus === 'saving' && (
+                                <LoadingIndicator label="Saving bill changes" />
+                            )) ||
+                                (this.props.store!.spotToBillForm.savingBillStatus === 'success' && (
+                                    <Paragraph type="success">Saved bill changes</Paragraph>
+                                ))}
+                        </Row>
                     }
                 >
                     <div className={s.actions}>
@@ -334,6 +313,25 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                         />
                     </div>
                 </BottomBar>
+
+                {/** Verify rows deletion modal */}
+                <Modal
+                    show={this.isDeleteRowConfirmationOpen}
+                    onClose={this.handleRowDeleteModalClose}
+                    closeButton={true}
+                    closeButtonLabel="No, don't delete this row"
+                    type="alert"
+                    topBarTitle="Delete rows"
+                    title="Are you sure you want to remove selected activity row from this bill?"
+                    actions={[
+                        {
+                            closeOnClick: true,
+                            label: 'Yes, please remove it',
+                            onClick: this.handleEditingRowDeletion,
+                            type: 'alert',
+                        },
+                    ]}
+                />
             </React.Fragment>
         );
     }
@@ -361,24 +359,25 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
         this.discountForm.value = count.value;
     };
 
-    private handleToggleRowsEditMore = (e: React.MouseEvent<HTMLButtonElement>) => {
-        this.selectedRowsIndexes = [];
-        this.areRowsInEditMode = !this.areRowsInEditMode;
+    private handleToggleRowEdit = (rowId: number) => () => {
+        this.rowIdInEditMode = this.rowIdInEditMode === rowId ? null : rowId;
     };
 
-    private handleToggleRowEditSelection = (rowIndex: number) => (checked: boolean, value: boolean) => {
-        if (checked && this.selectedRowsIndexes.indexOf(rowIndex) === -1) {
-            this.selectedRowsIndexes = [...this.selectedRowsIndexes, rowIndex].sort((indexA, indexB) =>
-                indexA < indexB ? 1 : indexA > indexB ? -1 : 0
-            );
-        } else if (!checked) {
-            const index = this.selectedRowsIndexes.indexOf(rowIndex);
-            if (index !== -1) {
-                this.selectedRowsIndexes = [
-                    ...this.selectedRowsIndexes.slice(0, index),
-                    ...this.selectedRowsIndexes.slice(index + 1),
-                ];
-            }
+    private handleRowDeleteModalClose = () => {
+        this.isDeleteRowConfirmationOpen = false;
+    };
+
+    private handleRequestRowDeletion = (rowId: number | null) => () => {
+        if (rowId !== null) {
+            this.isDeleteRowConfirmationOpen = true;
+        }
+    };
+
+    @action
+    private handleEditingRowDeletion = () => {
+        if (this.rowIdInEditMode) {
+            SpotToBillFormActions.removeRowFromBill(this.rowIdInEditMode);
+            this.rowIdInEditMode = null;
         }
     };
 

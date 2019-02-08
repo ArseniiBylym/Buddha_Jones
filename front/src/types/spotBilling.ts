@@ -1,4 +1,4 @@
-import { DateObjectFromApi } from './api';
+import { ApiResponse, DateObjectFromApi } from './api';
 import { SpotBillingType } from './projectDetailsEnums';
 import { SpotBillActivityRateType } from './spotBillingEnums';
 
@@ -33,13 +33,16 @@ export interface SpotBillFormActivityTimeEntry {
     versionId: number | null;
     versionName: string | null;
     hoursAreSplit: boolean;
-    totalHours: number;
-    regularHours: number;
-    overtimeHours: number;
-    doubletimeHours: number;
+    durationInMinutes: number;
+    totalAdjustedMinutes: number;
+    regularBillableMinutes: number;
+    overtimeBillableMinutes: number;
+    doubletimeBillableMinutes: number;
 }
 
 export interface SpotBillFormActivityGroup {
+    id: number;
+    sort: number;
     name: string;
     note: string | null;
     rateType: SpotBillActivityRateType;
@@ -49,9 +52,12 @@ export interface SpotBillFormActivityGroup {
 }
 
 export interface SpotBillFormData {
+    billId: number;
+    billStatusId: number;
+    billStatusName: string;
+    billTypeId: number | null;
+    billTypeName: string | null;
     selectedSpots: number[];
-    typeId: number | null;
-    typeName: string | null;
     selectedRateCardId: number | null;
     rows: SpotBillFormActivityGroup[];
     timeEntries: SpotBillFormActivityTimeEntry[];
@@ -115,9 +121,6 @@ export interface ProjectBillsHistoryEntry {
 }
 
 export interface SpotBillFormSummary {
-    billId: number;
-    billStatusId: number;
-    billStatusName: string;
     projectId: number;
     projectName: string;
     projectCampaignId: number;
@@ -146,4 +149,19 @@ export interface SpotTimeEntryDuration {
     totalUnbilledMinutes: number;
     selectedBaseMinutes: number;
     selectedAdjustedMinutes: number;
+}
+
+export interface BillTypeFromApi {
+    id: number;
+    name: string;
+    note: string | null;
+}
+
+export interface BillTypesFromApi extends ApiResponse {
+    data: BillTypeFromApi[];
+}
+
+export interface BillTypesFromApiQuery {
+    offset?: number;
+    length?: number;
 }

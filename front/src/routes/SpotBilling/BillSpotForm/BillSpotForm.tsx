@@ -78,9 +78,6 @@ export default class BillSpotForm extends React.Component<Props, {}> {
             <FetchQueryMock<SpotBillFormSummary>
                 mockResponses={[
                     {
-                        billId: 1,
-                        billStatusId: 1,
-                        billStatusName: 'Draft',
                         projectId: 47,
                         projectName: 'Annihilation',
                         projectCampaignId: 156,
@@ -759,9 +756,12 @@ export default class BillSpotForm extends React.Component<Props, {}> {
                             },
                         ],
                         bill: {
+                            billId: 1,
+                            billStatusId: 1,
+                            billStatusName: 'Draft',
+                            billTypeId: null,
+                            billTypeName: null,
                             selectedSpots: [79],
-                            typeId: 2,
-                            typeName: 'Revisions',
                             selectedRateCardId: null,
                             timeEntries: [],
                             rows: [],
@@ -788,7 +788,7 @@ export default class BillSpotForm extends React.Component<Props, {}> {
                         );
                     }
 
-                    return billFromApi.response.billStatusId === SpotSentBillStatus.Draft ? (
+                    return billFromApi.response.bill.billStatusId === SpotSentBillStatus.Draft ? (
                         <DraftBillSpotForm billData={billFromApi.response} showPreview={this.isPreview} />
                     ) : (
                         <ApprovedBillSpotForm bill={billFromApi.response} />

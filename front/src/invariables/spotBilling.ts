@@ -4,3 +4,5 @@ export enum SpotSentBillStatus {
     Pending = 2,
     Approved = 3,
 }
+
+export type ReorderToOptions = 'top' | 'up' | 'down' | 'bottom';

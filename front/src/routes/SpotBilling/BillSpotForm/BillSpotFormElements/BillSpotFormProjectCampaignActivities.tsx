@@ -55,10 +55,10 @@ export class BillSpotFormProjectCampaignActivities extends React.Component<Props
                 endDate: endDate,
                 isBillable: entry.activityIsBillable,
                 isSelectedToBill: selectedToBill !== null,
-                totalHoursInMinutes: selectedToBill ? selectedToBill.totalHours : 0,
-                regularHoursInMinutes: selectedToBill ? selectedToBill.regularHours : 0,
-                overtimeHoursInMinutes: selectedToBill ? selectedToBill.overtimeHours : 0,
-                doubletimeHoursInMinutes: selectedToBill ? selectedToBill.doubletimeHours : 0,
+                totalHoursInMinutes: selectedToBill ? selectedToBill.totalAdjustedMinutes : 0,
+                regularHoursInMinutes: selectedToBill ? selectedToBill.regularBillableMinutes : 0,
+                overtimeHoursInMinutes: selectedToBill ? selectedToBill.overtimeBillableMinutes : 0,
+                doubletimeHoursInMinutes: selectedToBill ? selectedToBill.doubletimeBillableMinutes : 0,
             });
 
             // Return

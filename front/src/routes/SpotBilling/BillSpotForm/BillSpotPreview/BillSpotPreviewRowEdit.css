@@ -1,3 +1,58 @@
+.card {
+    position: relative;
+}
+
+.rowEditBox {
+    position: absolute;
+    top: -5px;
+    left: -69px;
+    width: 64px;
+    padding-top: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: center;
+
+    &.editing {
+        padding-top: 33px;
+    }
+
+    & > div {
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid #e2dbd5;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-content: center;
+        align-items: center;
+    }
+}
+
+.rowGrid {
+    display: grid;
+    grid-template: auto / 2fr 1fr 1fr;
+
+    & > div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 24px;
+
+        &:not(:first-child) {
+            border-left: 1px solid #e2dbd5;
+        }
+
+        &:last-child {
+            align-items: flex-end;
+            text-align: right;
+        }
+    }
+}
+
 .row {
     & > div {
         display: flex;
@@ -5,7 +60,8 @@
         align-items: center;
     }
 
-    &.mainRow {
+    &.timeEntryRow {
+        display: contents;
     }
 }
 
@@ -21,16 +77,25 @@
 }
 
 .rowCheckbox {
-    position: absolute;
-    width: 24px;
-    height: 24px;
-    top: 50%;
-    margin-top: -12px;
-    left: -42px;
     opacity: 0;
     transition: 300ms opacity 0ms cubic-bezier(1, 0, 0, 1);
 
     &.show {
         opacity: 1;
     }
+}
+
+.timeEntryRow {
+    & > div {
+        padding-left: 3px;
+        padding-right: 3px;
+    }
+}
+
+.timeEntryName {
+    padding-left: 24px !important;
+}
+
+.timeEntryAmount {
+    padding-right: 24px !important;
 }

@@ -1,12 +1,25 @@
 .summary {
-    display: flex;
-    justify-content: space-between;
-    align-content: center;
-    align-items: center;
+    display: grid;
+    grid-template: auto / 1fr 1fr;
 
-    & > .left {
+    & > div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 24px;
+
+        &:not(:first-child) {
+            border-left: 1px solid #e2dbd5;
+        }
+
+        &:last-child {
+            text-align: right;
+            align-items: flex-end;
+        }
+
         & p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 400;
             color: #7e756d;
 
@@ -22,65 +35,17 @@
                     font-weight: 400;
                 }
             }
-
-            &.campaign {
-                margin-top: 6px;
-                font-size: 0.9rem;
-
-                &:first-child {
-                    margin-top: 0;
-                }
-            }
-        }
-    }
-
-    & > .right {
-        padding-left: 24px;
-        display: block;
-        text-align: right;
-
-        & .studio {
-            font-size: 0.9rem;
-
-            & em {
-                font-style: normal;
-            }
-        }
-
-        & .studioRateCard {
-            display: flex;
-            justify-content: flex-end;
-            text-align: right;
-
-            & > p {
-                margin-top: 4px;
-            }
         }
     }
 }
 
-.content {
-    margin: 0 30px;
-    padding-top: 24px;
-    padding-bottom: 128px;
-}
-
-.grid {
-    display: grid;
-    grid-template: auto / auto auto auto auto;
-    gap: 16px;
-}
-
-.gridHeader {
-    display: contents;
-}
-
-.gridRow {
-    display: contents;
+.activities {
+    margin-top: 12px;
 }
 
 .totals {
-    padding-top: 24px;
+    padding: 24px;
+    padding-bottom: 128px;
     margin-top: 24px;
     display: flex;
     justify-content: space-between;
@@ -141,6 +106,24 @@
 
 .subTotals {
     margin-top: 12px;
+}
+
+.rowsActions {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+}
+
+.selectedRowsActions {
+    display: flex;
+    justify-content: flex-end;
+    align-content: center;
+    align-items: center;
+
+    & > div {
+        margin-left: 24px;
+    }
 }
 
 .actions {

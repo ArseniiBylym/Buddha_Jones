@@ -102,13 +102,11 @@ export class ActivityHandler {
                     timeEntry => timeEntry.timeEntryId === timeEntryId
                 );
                 if (inBillTimeEntry) {
-                    const rateCard = studioRateCardValues.find(card => card.activityId === inBillTimeEntry.activityId);
-                    if (rateCard && rateCard.rate) {
-                        hourlyTotal +=
-                            ((rateCard.rate * inBillTimeEntry.regularHours) / 60) * 1 +
-                            ((rateCard.rate * inBillTimeEntry.overtimeHours) / 60) * 1.5 +
-                            ((rateCard.rate * inBillTimeEntry.doubletimeHours) / 60) * 2.0;
-                    }
+                    const timeEntryTotals = ActivityHandler.calculateHourlyTimeEntryTotals(
+                        inBillTimeEntry,
+                        studioRateCardValues
+                    );
+                    hourlyTotal += timeEntryTotals.totalAmount;
                 }
 
                 return hourlyTotal;
@@ -116,5 +114,103 @@ export class ActivityHandler {
         }
 
         return 0;
+    };
+
+    public static calculateBaseActivityRate = (
+        activityId: number,
+        studioRateCardValues: StudioRateCardEntryFromApi[] = []
+    ): number => {
+        const rateCard = studioRateCardValues.find(card => card.activityId === activityId);
+        if (rateCard) {
+            return rateCard.rate || 0;
+        }
+
+        return 0;
+    };
+
+    public static calculateRegularRate = (baseRate: number = 0): number => {
+        return baseRate * 1.0;
+    };
+
+    public static calculateOvertimeRate = (baseRate: number = 0): number => {
+        return baseRate * 1.5;
+    };
+
+    public static calculateDoubletimeRate = (baseRate: number = 0): number => {
+        return baseRate * 2.0;
+    };
+
+    public static calculateRegularHoursAmount = (timeInMinutes: number, baseRate: number = 0): number => {
+        return (timeInMinutes / 60) * ActivityHandler.calculateRegularRate(baseRate);
+    };
+
+    public static calculateOvertimeHoursAmount = (timeInMinutes: number, baseRate: number = 0): number => {
+        return (timeInMinutes / 60) * ActivityHandler.calculateOvertimeRate(baseRate);
+    };
+
+    public static calculateDoubletimeHoursAmount = (timeInMinutes: number, baseRate: number = 0): number => {
+        return (timeInMinutes / 60) * ActivityHandler.calculateDoubletimeRate(baseRate);
+    };
+
+    public static calculateHourlyTimeEntryTotals = (
+        inBillTimeEntry: SpotBillFormActivityTimeEntry,
+        studioRateCardValues: StudioRateCardEntryFromApi[] = []
+    ): {
+        totalHours: number;
+        totalAmount: number;
+        regularHours: number;
+        regularRate: number;
+        regularAmount: number;
+        overtimeHours: number;
+        overtimeRate: number;
+        overtimeAmount: number;
+        doubletimeHours: number;
+        doubletimeRate: number;
+        doubletimeAmount: number;
+    } => {
+        const totalHours: number =
+            inBillTimeEntry.regularBillableMinutes +
+            inBillTimeEntry.overtimeBillableMinutes +
+            inBillTimeEntry.doubletimeBillableMinutes;
+        let totalAmount: number = 0;
+        let regularRate: number = 0;
+        let regularAmount: number = 0;
+        let overtimeRate: number = 0;
+        let overtimeAmount: number = 0;
+        let doubletimeRate: number = 0;
+        let doubletimeAmount: number = 0;
+
+        const rate = ActivityHandler.calculateBaseActivityRate(inBillTimeEntry.activityId, studioRateCardValues);
+        if (rate) {
+            regularRate = ActivityHandler.calculateRegularRate(rate);
+            overtimeRate = ActivityHandler.calculateOvertimeRate(rate);
+            doubletimeRate = ActivityHandler.calculateDoubletimeRate(rate);
+
+            regularAmount = ActivityHandler.calculateRegularHoursAmount(inBillTimeEntry.regularBillableMinutes, rate);
+            overtimeAmount = ActivityHandler.calculateOvertimeHoursAmount(
+                inBillTimeEntry.overtimeBillableMinutes,
+                rate
+            );
+            doubletimeAmount = ActivityHandler.calculateDoubletimeHoursAmount(
+                inBillTimeEntry.doubletimeBillableMinutes,
+                rate
+            );
+
+            totalAmount = regularAmount + overtimeAmount + doubletimeAmount;
+        }
+
+        return {
+            totalHours: totalHours,
+            totalAmount: totalAmount,
+            regularHours: inBillTimeEntry.regularBillableMinutes,
+            regularRate: regularRate,
+            regularAmount: regularAmount,
+            overtimeHours: inBillTimeEntry.overtimeBillableMinutes,
+            overtimeRate: overtimeRate,
+            overtimeAmount: overtimeAmount,
+            doubletimeHours: inBillTimeEntry.doubletimeBillableMinutes,
+            doubletimeRate: doubletimeRate,
+            doubletimeAmount: doubletimeAmount,
+        };
     };
 }

@@ -92,7 +92,7 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
         if (showPreview) {
             return (
                 <BillSpotPreview
-                    billId={billData.billId}
+                    billId={billData.bill.billId}
                     spots={billData.unbilledSpots}
                     unbilledTimeEntries={this.props.billData.unbilledTimeEntries}
                     projectName={billData.projectName}
@@ -122,7 +122,7 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
                 />
 
                 <BillSpotFormBottomBar
-                    billId={this.props.billData.billId}
+                    billId={billData.bill.billId}
                     isBillSaving={false}
                     spots={billData.unbilledSpots}
                 />
