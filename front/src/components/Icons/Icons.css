@@ -235,3 +235,47 @@
     width: 10px;
     height: 22px;
 }
+
+:global(.iconMoveUpBlue) {
+    background: url('./../../assets/images/actions/move-up-blue.svg') 0 0 no-repeat;
+    background-size: 10px 18px;
+    width: 10px;
+    height: 18px;
+}
+
+:global(.iconMoveDownBlue) {
+    background: url('./../../assets/images/actions/move-up-blue.svg') 0 0 no-repeat;
+    background-size: 10px 18px;
+    width: 10px;
+    height: 18px;
+    transform: rotate(180deg);
+}
+
+:global(.iconMoveToTopBlue) {
+    background: url('./../../assets/images/actions/move-to-top-blue.svg') 0 0 no-repeat;
+    background-size: 10px 19px;
+    width: 10px;
+    height: 19px;
+}
+
+:global(.iconMoveToBottomBlue) {
+    background: url('./../../assets/images/actions/move-to-top-blue.svg') 0 0 no-repeat;
+    background-size: 10px 19px;
+    width: 10px;
+    height: 19px;
+    transform: rotate(180deg);
+}
+
+:global(.iconReorderBlue) {
+    background: url('./../../assets/images/actions/move-blue.svg') 0 0 no-repeat;
+    background-size: 14px 13px;
+    width: 14px;
+    height: 13px;
+}
+
+:global(.iconMoveBlue) {
+    background: url('./../../assets/images/actions/move-anywhere-blue.svg') 0 0 no-repeat;
+    background-size: 14px 13px;
+    width: 14px;
+    height: 13px;
+}
