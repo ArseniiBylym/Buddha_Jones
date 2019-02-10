@@ -37,7 +37,6 @@
 
 `GET /spot-billing`
 
-
 ### Query Parameters
 
 Required | Parameter | Type | Default | Description
@@ -152,7 +151,168 @@ false | length | string | 10 | pagination length
 }
 ```
 
-
 ### HTTP Request
 
 `GET /spot-billing/[:spot_id]`
+
+
+
+## Create new bill
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "New bill has been created",
+    "data": {
+        "billId": 123,
+        "spotsInBill": [1, 2],
+    }
+}
+```
+
+### HTTP Request
+
+`POST /bill`
+
+### Query Parameters
+
+Required | Parameter     | Type  | Default | Description
+-------- | ------------- | ----- | ------- | -----------
+true     | spots_ids     | int[] | []      | List of spots to include in the bill
+
+
+
+## Get bill types
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Bill types",
+    "data": [
+        {
+            "id": 1,
+            "name": "Creative Fee",
+            "note": "Client requests Buddha Jones create and produce the following:",
+        }
+    ]
+}
+```
+
+### HTTP Request
+
+`GET /bill-type`
+
+
+## Get bill details
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Bill details",
+    "data": {
+        "projectId": 47,
+        "projectName": "Annihilation",
+        "projectCampaignId": 156,
+        "projectCampaignName": "Massey",
+        "campaignId": 4,
+        "campaignName": "Theatrical Teaser/Trai",
+        "studioId": 2,
+        "studioName": "Warner Bros.",
+        "projectBillsHistory": [
+            {
+                "billId": 123,
+                "billStatusId": 2,
+                "billStatusName": "Submitted",
+                "billTotal": 10000,
+                "createdByUserId": 1,
+                "createdByUsername": "johndoe",
+                "createdByUserFirstName": "John",
+                "createdByUserLastName": "Doe",
+                "createdByUserImage": null,
+                "createdAt": {
+                    "date": "2018-12-16 12:48:11.000000",
+                    "timezone": "US/Eastern",
+                    "timezone_type": 3,
+                },
+            },
+            {
+                "billId": 111,
+                "billStatusId": 3,
+                "billStatusName": "Approved",
+                "billTotal": 16690,
+                "createdByUserId": 1,
+                "createdByUsername": "johndoe",
+                "createdByUserFirstName": "John",
+                "createdByUserLastName": "Doe",
+                "createdByUserImage": null,
+                "createdAt": {
+                    "date": "2018-12-01 14:21:00.000000",
+                    "timezone": "US/Eastern",
+                    "timezone_type": 3,
+                },
+            },
+        ],
+        "timeEntries": [
+            {
+                "timeEntryId": 59,
+                "projectId": 47,
+                "projectName": "Annihilation",
+                "projectCampaignId": 156,
+                "campaignName": "Theatrical Teaser/Trai",
+                "projectCampaignName": "Massey",
+                "spotId": null,
+                "spotName": null,
+                "versionId": null,
+                "versionName": null,
+                "versionSequence": null,
+                "activityId": 32,
+                "activityName": "Produce",
+                "activityDescription": "",
+                "activityIsBillable": false,
+                "userId": 1,
+                "userName": "demo",
+                "userFirstName": "Demo",
+                "userLastName": "User",
+                "userInitials": "DU",
+                "userImage": null,
+                "duration": "1.00",
+                "startDate": {
+                    "date": "2018-06-14 09:15:00.000000",
+                    "timezone": "US/Eastern",
+                    "timezone_type": 3,
+                },
+            },
+        ],
+        "bill": {
+            "billId": 1,
+            "billStatusId": 1,
+            "billStatusName": "Draft",
+            "billTypeId": null,
+            "billTypeName": null,
+            "selectedSpots": [79],
+            "selectedRateCardId": null,
+            "timeEntries": [],
+            "rows" [],
+        },
+    }
+}
+```
+
+### HTTP Request
+
+`GET /bill/123`
+
+### Query Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+true     | id        | int  | null    | List of spots to include in the bill
+
+
+
