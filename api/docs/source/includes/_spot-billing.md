@@ -295,7 +295,7 @@ true     | spots_ids     | int[] | []      | List of spots to include in the bil
             "billStatusName": "Draft",
             "billTypeId": null,
             "billTypeName": null,
-            "selectedSpots": [79],
+            "selectedSpotsIds": [79],
             "selectedRateCardId": null,
             "timeEntries": [],
             "rows" [],
