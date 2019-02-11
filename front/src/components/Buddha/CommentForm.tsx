@@ -2,7 +2,8 @@ import * as React from 'react';
 import * as classNames from 'classnames';
 import { observer } from 'mobx-react';
 import { Button, ButtonLabelColorPropType } from '../Button';
-import { TextArea, Input } from '../Form';
+// import { TextArea } from '../Form';
+import { Input, TextAreaRedactor } from '../Form';
 import { Paragraph } from '../Content';
 import { LoadingShade, LoadingSpinner, LoadingIndicator } from '../Loaders';
 import { computed } from 'mobx';
@@ -94,12 +95,19 @@ export class CommentForm extends React.Component<CommentFormProps, {}> {
                       };
     }
 
+    private createMarkup = () => {
+        return {__html: this.props.value};
+    }
+
     public render() {
         return (
             <div className={s.comments}>
                 <div className={classNames(s.commentForm, { [s.noMargin]: this.props.removeTopMargin })}>
                     {(this.props.viewOnly && (
-                        <Paragraph>{this.props.value || this.props.viewOnlyEmptyValueText}</Paragraph>
+                        <>
+                            {this.props.value && <p dangerouslySetInnerHTML={this.createMarkup()} />}
+                            {!this.props.value && this.props.viewOnlyEmptyValueText && <Paragraph>{this.props.viewOnlyEmptyValueText}</Paragraph>}
+                        </>
                     )) ||
                         (this.props.isSingleLine && (
                             <Input
@@ -109,13 +117,17 @@ export class CommentForm extends React.Component<CommentFormProps, {}> {
                                 autoFocus={true}
                             />
                         )) || (
-                            <TextArea
-                                onChange={this.handleChange}
+                            // <TextArea
+                            //     onChange={this.handleChange}
+                            //     value={this.props.value}
+                            //     label={this.props.placeholder || ''}
+                            //     height={this.props.textareaMinHeight}
+                            //     width={1152}
+                            //     autoFocus={true}
+                            // />
+                            <TextAreaRedactor 
                                 value={this.props.value}
-                                label={this.props.placeholder || ''}
-                                height={this.props.textareaMinHeight}
-                                width={1152}
-                                autoFocus={true}
+                                onChange={this.handleChangeValue}
                             />
                         )}
                 </div>
@@ -167,6 +179,12 @@ export class CommentForm extends React.Component<CommentFormProps, {}> {
             this.props.onChange(e.target.value);
         }
     };
+
+    private handleChangeValue = (value: any) => {
+        if (this.props.onChange) {
+            this.props.onChange(value);
+        }
+    }
 
     private handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
         if (this.props.onSubmit) {
