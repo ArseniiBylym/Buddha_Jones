@@ -29,38 +29,6 @@
                 "timezone": "US/Eastern"
             }
         },
-        {
-            "projectId": 47,
-            "projectName": "Annihilation",
-            "studioId": 2,
-            "studioName": "Warner Bros.",
-            "campaignId": 4,
-            "campaignName": "Theatrical Teaser/Trai",
-            "projectCampaignId": 156,
-            "spotId": 79,
-            "spotName": "#2 Saved",
-            "updatedAt": {
-                "date": "2018-11-13 16:41:50.000000",
-                "timezone_type": 3,
-                "timezone": "US/Eastern"
-            }
-        },
-        {
-            "projectId": 47,
-            "projectName": "Annihilation",
-            "studioId": 2,
-            "studioName": "Warner Bros.",
-            "campaignId": 6,
-            "campaignName": "Theatrical Work",
-            "projectCampaignId": 207,
-            "spotId": 84,
-            "spotName": "#1 Interrogation",
-            "updatedAt": {
-                "date": "2018-11-13 16:11:00.000000",
-                "timezone_type": 3,
-                "timezone": "US/Eastern"
-            }
-        }
     ]
 }
 ```
@@ -68,7 +36,6 @@
 ### HTTP Request
 
 `GET /spot-billing`
-
 
 ### Query Parameters
 
@@ -179,209 +146,173 @@ false | length | string | 10 | pagination length
                     "date": "2018-07-06"
                 }
             ],
-            "2018-11-13": [
-                {
-                    "id": 139,
-                    "projectCampaignId": 156,
-                    "spotId": null,
-                    "versionId": null,
-                    "startDate": {
-                        "date": "2018-11-13 18:00:00.000000",
-                        "timezone_type": 3,
-                        "timezone": "US/Eastern"
-                    },
-                    "duration": "3.30",
-                    "straightTime": null,
-                    "overTime": null,
-                    "doubleTime": null,
-                    "status": 1,
-                    "statusName": "DRAFT",
-                    "activityId": 10,
-                    "activityDescription": "",
-                    "notes": null,
-                    "activityName": "Fiber",
-                    "activityTypeId": 1,
-                    "activityTypeName": "Billable",
-                    "userId": 19,
-                    "userFirstName": "ASHLEY",
-                    "userLastName": "CAPUTO",
-                    "date": "2018-11-13"
-                }
-            ],
-            "2018-11-12": [
-                {
-                    "id": 134,
-                    "projectCampaignId": 156,
-                    "spotId": 78,
-                    "versionId": 4,
-                    "startDate": {
-                        "date": "2018-11-12 11:15:00.000000",
-                        "timezone_type": 3,
-                        "timezone": "US/Eastern"
-                    },
-                    "duration": "2.45",
-                    "straightTime": null,
-                    "overTime": null,
-                    "doubleTime": null,
-                    "status": 3,
-                    "statusName": "APPROVED",
-                    "activityId": 8,
-                    "activityDescription": "Editing work",
-                    "notes": null,
-                    "activityName": "Edit",
-                    "activityTypeId": 1,
-                    "activityTypeName": "Billable",
-                    "userId": 19,
-                    "userFirstName": "ASHLEY",
-                    "userLastName": "CAPUTO",
-                    "date": "2018-11-12"
-                },
-                {
-                    "id": 138,
-                    "projectCampaignId": 156,
-                    "spotId": 78,
-                    "versionId": 2,
-                    "startDate": {
-                        "date": "2018-11-12 17:00:00.000000",
-                        "timezone_type": 3,
-                        "timezone": "US/Eastern"
-                    },
-                    "duration": "7.15",
-                    "straightTime": null,
-                    "overTime": null,
-                    "doubleTime": null,
-                    "status": 3,
-                    "statusName": "APPROVED",
-                    "activityId": 8,
-                    "activityDescription": "",
-                    "notes": null,
-                    "activityName": "Edit",
-                    "activityTypeId": 1,
-                    "activityTypeName": "Billable",
-                    "userId": 19,
-                    "userFirstName": "ASHLEY",
-                    "userLastName": "CAPUTO",
-                    "date": "2018-11-12"
-                }
-            ],
-            "2018-11-26": [
-                {
-                    "id": 147,
-                    "projectCampaignId": 156,
-                    "spotId": null,
-                    "versionId": null,
-                    "startDate": {
-                        "date": "2018-11-26 09:30:00.000000",
-                        "timezone_type": 3,
-                        "timezone": "US/Eastern"
-                    },
-                    "duration": "3.00",
-                    "straightTime": null,
-                    "overTime": null,
-                    "doubleTime": null,
-                    "status": 2,
-                    "statusName": "UNDER REVIEW",
-                    "activityId": 17,
-                    "activityDescription": "Worked on graphics design.",
-                    "notes": null,
-                    "activityName": "Graphic Design",
-                    "activityTypeId": 1,
-                    "activityTypeName": "Billable",
-                    "userId": 67,
-                    "userFirstName": "KEITH",
-                    "userLastName": "PANG",
-                    "date": "2018-11-26"
-                },
-                {
-                    "id": 150,
-                    "projectCampaignId": 156,
-                    "spotId": 78,
-                    "versionId": 4,
-                    "startDate": {
-                        "date": "2018-11-26 12:45:00.000000",
-                        "timezone_type": 3,
-                        "timezone": "US/Eastern"
-                    },
-                    "duration": "5.00",
-                    "straightTime": null,
-                    "overTime": null,
-                    "doubleTime": null,
-                    "status": 1,
-                    "statusName": "DRAFT",
-                    "activityId": 8,
-                    "activityDescription": "",
-                    "notes": null,
-                    "activityName": "Edit",
-                    "activityTypeId": 1,
-                    "activityTypeName": "Billable",
-                    "userId": 19,
-                    "userFirstName": "ASHLEY",
-                    "userLastName": "CAPUTO",
-                    "date": "2018-11-26"
-                }
-            ],
-            "2018-11-28": [
-                {
-                    "id": 155,
-                    "projectCampaignId": 156,
-                    "spotId": 78,
-                    "versionId": 1,
-                    "startDate": {
-                        "date": "2018-11-28 03:30:00.000000",
-                        "timezone_type": 3,
-                        "timezone": "US/Eastern"
-                    },
-                    "duration": "3.30",
-                    "straightTime": "3.30",
-                    "overTime": null,
-                    "doubleTime": null,
-                    "status": 1,
-                    "statusName": "DRAFT",
-                    "activityId": 8,
-                    "activityDescription": "",
-                    "notes": null,
-                    "activityName": "Edit",
-                    "activityTypeId": 1,
-                    "activityTypeName": "Billable",
-                    "userId": 19,
-                    "userFirstName": "ASHLEY",
-                    "userLastName": "CAPUTO",
-                    "date": "2018-11-28"
-                },
-                {
-                    "id": 159,
-                    "projectCampaignId": 156,
-                    "spotId": 78,
-                    "versionId": 2,
-                    "startDate": {
-                        "date": "2018-11-28 16:45:00.000000",
-                        "timezone_type": 3,
-                        "timezone": "US/Eastern"
-                    },
-                    "duration": "1.00",
-                    "straightTime": null,
-                    "overTime": null,
-                    "doubleTime": "1.15",
-                    "status": 1,
-                    "statusName": "DRAFT",
-                    "activityId": 8,
-                    "activityDescription": "",
-                    "notes": null,
-                    "activityName": "Edit",
-                    "activityTypeId": 1,
-                    "activityTypeName": "Billable",
-                    "userId": 19,
-                    "userFirstName": "ASHLEY",
-                    "userLastName": "CAPUTO",
-                    "date": "2018-11-28"
-                }
-            ]
         }
     }
 }
 ```
 
-
 ### HTTP Request
 
 `GET /spot-billing/[:spot_id]`
+
+
+
+## Create new bill
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "New bill has been created",
+    "data": {
+        "billId": 123,
+        "spotsInBill": [1, 2],
+    }
+}
+```
+
+### HTTP Request
+
+`POST /bill`
+
+### Query Parameters
+
+Required | Parameter     | Type  | Default | Description
+-------- | ------------- | ----- | ------- | -----------
+true     | spots_ids     | int[] | []      | List of spots to include in the bill
+
+
+
+## Get bill types
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Bill types",
+    "data": [
+        {
+            "id": 1,
+            "name": "Creative Fee",
+            "note": "Client requests Buddha Jones create and produce the following:",
+        }
+    ]
+}
+```
+
+### HTTP Request
+
+`GET /bill-type`
+
+
+## Get bill details
+
+> 200: success response
+
+```json
+{
+    "status": 1,
+    "message": "Bill details",
+    "data": {
+        "projectId": 47,
+        "projectName": "Annihilation",
+        "projectCampaignId": 156,
+        "projectCampaignName": "Massey",
+        "campaignId": 4,
+        "campaignName": "Theatrical Teaser/Trai",
+        "studioId": 2,
+        "studioName": "Warner Bros.",
+        "projectBillsHistory": [
+            {
+                "billId": 123,
+                "billStatusId": 2,
+                "billStatusName": "Submitted",
+                "billTotal": 10000,
+                "createdByUserId": 1,
+                "createdByUsername": "johndoe",
+                "createdByUserFirstName": "John",
+                "createdByUserLastName": "Doe",
+                "createdByUserImage": null,
+                "createdAt": {
+                    "date": "2018-12-16 12:48:11.000000",
+                    "timezone": "US/Eastern",
+                    "timezone_type": 3,
+                },
+            },
+            {
+                "billId": 111,
+                "billStatusId": 3,
+                "billStatusName": "Approved",
+                "billTotal": 16690,
+                "createdByUserId": 1,
+                "createdByUsername": "johndoe",
+                "createdByUserFirstName": "John",
+                "createdByUserLastName": "Doe",
+                "createdByUserImage": null,
+                "createdAt": {
+                    "date": "2018-12-01 14:21:00.000000",
+                    "timezone": "US/Eastern",
+                    "timezone_type": 3,
+                },
+            },
+        ],
+        "timeEntries": [
+            {
+                "timeEntryId": 59,
+                "projectId": 47,
+                "projectName": "Annihilation",
+                "projectCampaignId": 156,
+                "campaignName": "Theatrical Teaser/Trai",
+                "projectCampaignName": "Massey",
+                "spotId": null,
+                "spotName": null,
+                "versionId": null,
+                "versionName": null,
+                "versionSequence": null,
+                "activityId": 32,
+                "activityName": "Produce",
+                "activityDescription": "",
+                "activityIsBillable": false,
+                "userId": 1,
+                "userName": "demo",
+                "userFirstName": "Demo",
+                "userLastName": "User",
+                "userInitials": "DU",
+                "userImage": null,
+                "duration": "1.00",
+                "startDate": {
+                    "date": "2018-06-14 09:15:00.000000",
+                    "timezone": "US/Eastern",
+                    "timezone_type": 3,
+                },
+            },
+        ],
+        "bill": {
+            "billId": 1,
+            "billStatusId": 1,
+            "billStatusName": "Draft",
+            "billTypeId": null,
+            "billTypeName": null,
+            "selectedSpotsIds": [79],
+            "selectedRateCardId": null,
+            "timeEntries": [],
+            "rows" [],
+        },
+    }
+}
+```
+
+### HTTP Request
+
+`GET /bill/123`
+
+### Query Parameters
+
+Required | Parameter | Type | Default | Description
+-------- | --------- | ---- | ------- | -----------
+true     | id        | int  | null    | List of spots to include in the bill
+
+
+
