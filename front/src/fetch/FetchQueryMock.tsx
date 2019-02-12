@@ -43,6 +43,7 @@ export class FetchQueryMock<R> extends React.Component<Props<R>, {}> {
                 this.isLoading = false;
             }, 3000);
         } catch (error) {
+            // tslint:disable-next-line:no-console
             console.error(error);
         }
     };
@@ -52,6 +53,7 @@ export class FetchQueryMock<R> extends React.Component<Props<R>, {}> {
             await AsyncHandler.timeout(timeout);
             this.isLoading = false;
         } catch (error) {
+            // tslint:disable-next-line:no-console
             console.error(error);
         }
     };
