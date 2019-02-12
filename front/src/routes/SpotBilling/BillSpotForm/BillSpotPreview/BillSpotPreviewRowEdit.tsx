@@ -365,6 +365,7 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
                                         decimals={2}
                                         incrementBy={100}
                                         minValue={0}
+                                        fieldMaxWidth={112}
                                         readOnlyTextBeforeValue="$"
                                         showAddedTextOnInput={true}
                                         label={this.hasDiscount ? 'Row sub total' : 'Row total'}
