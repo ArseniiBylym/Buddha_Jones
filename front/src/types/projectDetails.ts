@@ -282,6 +282,7 @@ export interface ProjectDetailsVersionModalData {
     versionName: string;
     versionStatus: VersionStatus | null;
     versionNote: string | null;
+    editable?: boolean;
 }
 
 export interface ProjectDetailsVersionModal extends ProjectDetailsVersionModalData {
