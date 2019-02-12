@@ -274,6 +274,7 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                     closeButton={true}
                     onClose={this.handleVersionEditModalClose}
                     size={'content-wide'}
+                    preventBackdropClick={true}
                 >
                     {projectsDetails.versionEditModal && (
                         <div style={{ height: '500px', maxHeight: '500px', overflow: 'auto'}}>

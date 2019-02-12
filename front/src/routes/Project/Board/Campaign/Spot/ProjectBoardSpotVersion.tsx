@@ -26,7 +26,7 @@ interface ProjectBoardSpotVersionProps {
 export class ProjectBoardSpotVersion extends React.Component<ProjectBoardSpotVersionProps, {}> {
     public render() {
         return (
-            <Tooltip text={this.props.note ? this.props.note : ''}>
+            // <Tooltip text={this.props.note ? this.props.note : ''}>
                 <Tag
                     onTagClick={this.props.userCanEdit ? this.handleVersionEdit : undefined}
                     onEditButtonClick={this.props.userCanEdit ? this.handleVersionEdit : undefined}
@@ -45,7 +45,7 @@ export class ProjectBoardSpotVersion extends React.Component<ProjectBoardSpotVer
                             : []
                     }
                 />
-            </Tooltip>
+            // </Tooltip>
         );
     }
 
