@@ -1,0 +1,25 @@
+.button {
+    width: 21px;
+    height: 100%;
+
+    & svg {
+        margin: 0;
+        padding: 0;
+
+        & rect {
+            fill: #a59e97;
+        }
+    }
+
+    &.minus {
+        & svg rect {
+            fill: #cc2525;
+        }
+    }
+
+    &.plus {
+        & svg rect {
+            fill: #189e44;
+        }
+    }
+}

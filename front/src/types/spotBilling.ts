@@ -1,4 +1,4 @@
-import { DateObjectFromApi } from './api';
+import { ApiResponse, DateObjectFromApi } from './api';
 import { SpotBillingType } from './projectDetailsEnums';
 import { SpotBillActivityRateType } from './spotBillingEnums';
 
@@ -33,15 +33,19 @@ export interface SpotBillFormActivityTimeEntry {
     versionId: number | null;
     versionName: string | null;
     hoursAreSplit: boolean;
-    totalHours: number;
-    regularHours: number;
-    overtimeHours: number;
-    doubletimeHours: number;
+    durationInMinutes: number;
+    totalAdjustedMinutes: number;
+    regularBillableMinutes: number;
+    overtimeBillableMinutes: number;
+    doubletimeBillableMinutes: number;
 }
 
 export interface SpotBillFormActivityGroup {
+    id: number;
+    sort: number;
     name: string;
     note: string | null;
+    discount: SpotBillDiscount;
     rateType: SpotBillActivityRateType;
     rateFlatOrFirstStageId: number | null;
     rateAmount: number | null;
@@ -49,10 +53,14 @@ export interface SpotBillFormActivityGroup {
 }
 
 export interface SpotBillFormData {
-    selectedSpots: number[];
-    typeId: number | null;
-    typeName: string | null;
+    billId: number;
+    billStatusId: number;
+    billStatusName: string;
+    billTypeId: number | null;
+    billTypeName: string | null;
+    selectedSpotsIds: number[];
     selectedRateCardId: number | null;
+    discount: SpotBillDiscount;
     rows: SpotBillFormActivityGroup[];
     timeEntries: SpotBillFormActivityTimeEntry[];
 }
@@ -115,9 +123,6 @@ export interface ProjectBillsHistoryEntry {
 }
 
 export interface SpotBillFormSummary {
-    billId: number;
-    billStatusId: number;
-    billStatusName: string;
     projectId: number;
     projectName: string;
     projectCampaignId: number;
@@ -127,8 +132,8 @@ export interface SpotBillFormSummary {
     studioId: number;
     studioName: string;
     projectBillsHistory: ProjectBillsHistoryEntry[];
-    unbilledTimeEntries: BillTimeEntry[];
-    unbilledSpots: SpotBillFormSpot[];
+    timeEntries: BillTimeEntry[];
+    spots: SpotBillFormSpot[];
     bill: SpotBillFormData;
 }
 
@@ -146,4 +151,25 @@ export interface SpotTimeEntryDuration {
     totalUnbilledMinutes: number;
     selectedBaseMinutes: number;
     selectedAdjustedMinutes: number;
+}
+
+export interface BillTypeFromApi {
+    id: number;
+    name: string;
+    note: string | null;
+}
+
+export interface BillTypesFromApi extends ApiResponse {
+    data: BillTypeFromApi[];
+}
+
+export interface BillTypesFromApiQuery {
+    offset?: number;
+    length?: number;
+}
+
+export interface BillTotalsCalculation {
+    subTotal: number;
+    total: number;
+    hasDiscount: boolean;
 }

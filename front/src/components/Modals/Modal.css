@@ -72,6 +72,10 @@
                 }
             }
         }
+
+        & .topbar {
+            margin-top: 0;
+        }
     }
 
     &.longContent {
@@ -153,11 +157,14 @@
             }
         }
     }
+
+    & .topbar {
+        margin-top: -36px;
+    }
 }
 
 .header {
     padding: 36px;
-    padding-top: 0;
     padding-bottom: 0;
     text-align: center;
 
