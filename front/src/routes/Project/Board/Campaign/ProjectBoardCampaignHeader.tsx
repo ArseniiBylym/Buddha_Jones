@@ -88,7 +88,7 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
                                     icon={this.getCampaignNameButtonIcon()}
                                 />
 
-                                {/* {
+                                {
                                     this.props.campaign.notes &&
                                     this.props.userCanViewNotes &&
                                     this.props.campaign.notes !== this.props.campaign.name &&
@@ -97,7 +97,7 @@ export class ProjectBoardCampaignHeader extends React.Component<Props & AppOnlyS
                                             {truncate(this.props.campaign.notes, { length: 64 })}
                                         </Paragraph>
                                     )
-                                } */}
+                                }
                                 {userType !== 24 && !this.approvedByBilling && <span className={styles.pendingLabel}>pending</span>}
                                 {userType === 24 && !this.approvedByBilling && <span className={styles.pendingLabel}>pending</span>}
                             </Col>
