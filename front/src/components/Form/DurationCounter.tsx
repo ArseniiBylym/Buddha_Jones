@@ -1,4 +1,5 @@
 import * as classNames from 'classnames';
+import { ButtonPlusOrMinus } from 'components/Button';
 import { DelayChildren } from 'components/Utility';
 import { DateHandler } from 'helpers/DateHandler';
 import { computed, observable, toJS } from 'mobx';
@@ -31,6 +32,7 @@ interface DurationCounterExceedProps {
 
 interface DurationCounterProps {
     className?: string;
+    align?: 'left' | 'center' | 'right';
     onChange?: (totalMinutes: number) => void;
     incrementBy?: number;
     value?: number;
@@ -46,6 +48,7 @@ export class DurationCounter extends React.Component<DurationCounterProps, {}> {
     static get defaultProps(): DurationCounterProps {
         return {
             className: undefined,
+            align: undefined,
             onChange: undefined,
             incrementBy: 15,
             value: 0,
@@ -101,6 +104,9 @@ export class DurationCounter extends React.Component<DurationCounterProps, {}> {
         return classNames(
             s.counter,
             {
+                [s.left]: this.props.align === 'left',
+                [s.center]: this.props.align === 'center',
+                [s.right]: this.props.align === 'right',
                 [s.success]:
                     (isValueExceeded && this.props.valueMoreThan!.color === 'success') ||
                     (isValueShort && this.props.valueLessThan!.color === 'success'),
@@ -122,15 +128,12 @@ export class DurationCounter extends React.Component<DurationCounterProps, {}> {
         return (
             <React.Fragment>
                 <div className={this.className}>
-                    <button
-                        tabIndex={this.isDecreaseAvailable ? undefined : -1}
-                        className={classNames(s.minus, { [s.enabled]: this.isDecreaseAvailable })}
+                    <ButtonPlusOrMinus
+                        className={s.minus}
                         onClick={this.handleDecrease}
-                    >
-                        <svg width={7} height={7}>
-                            <rect x={0} y={3} width={7} height={1} />
-                        </svg>
-                    </button>
+                        isDisabled={!this.isDecreaseAvailable}
+                        isPlus={false}
+                    />
 
                     <input
                         className={!this.props.readOnly ? s.enabled : undefined}
@@ -141,16 +144,12 @@ export class DurationCounter extends React.Component<DurationCounterProps, {}> {
                         value={this.valueFormatted}
                     />
 
-                    <button
-                        tabIndex={this.isIncreaseAvailable ? undefined : -1}
-                        className={classNames(s.plus, { [s.enabled]: this.isIncreaseAvailable })}
+                    <ButtonPlusOrMinus
+                        className={s.plus}
                         onClick={this.handleIncrease}
-                    >
-                        <svg width={7} height={7}>
-                            <rect x={0} y={3} width={7} height={1} />
-                            <rect x={3} y={0} width={1} height={7} />
-                        </svg>
-                    </button>
+                        isDisabled={!this.isIncreaseAvailable}
+                        isPlus={true}
+                    />
                 </div>
 
                 <DelayChildren isMounted={this.dropdown !== null} delayUnmount={300}>

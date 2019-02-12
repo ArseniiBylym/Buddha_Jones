@@ -1,20 +1,17 @@
-import * as React from 'react';
+import { toFixed, unformat } from 'accounting';
 import * as classNames from 'classnames';
+import { ButtonPlusOrMinus } from 'components/Button';
+import { computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { unformat, toFixed } from 'accounting';
-import { observable } from 'mobx';
-import { Row, Col } from '../Section';
-import { IconPlusWhite, IconMinusWhite } from '../Icons';
+import * as React from 'react';
 import { Paragraph } from '../Content';
-import { Input } from '.';
 
-// Styles
 const s = require('./Counter.css');
 
-// Props
 interface CounterProps {
     className?: string | null;
     onChange?: ((count: { value: number; text: string }) => void) | null;
+    align?: 'left' | 'center' | 'right';
     label?: string | null;
     fieldMaxWidth?: number;
     multipleOf?: number | null;
@@ -30,13 +27,13 @@ interface CounterProps {
     readOnlyTextBeforeValue?: string;
 }
 
-// Component
 @observer
 export class Counter extends React.Component<CounterProps, {}> {
     static get defaultProps(): CounterProps {
         return {
             className: null,
             onChange: null,
+            align: 'left',
             label: null,
             fieldMaxWidth: 64,
             multipleOf: null,
@@ -56,81 +53,128 @@ export class Counter extends React.Component<CounterProps, {}> {
     @observable private value: number = this.props.value || 0;
     @observable private valueText: string = this.props.value ? this.props.value.toString() : '0';
 
+    @computed private get isIncreaseAvailable(): boolean {
+        if (this.props.readOnly) {
+            return false;
+        }
+
+        if (typeof this.props.maxValue === 'number' && this.props.maxValue <= this.value) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @computed private get isDecreaseAvailable(): boolean {
+        if (this.props.readOnly) {
+            return false;
+        }
+
+        if (typeof this.props.minValue === 'number' && this.props.minValue >= this.value) {
+            return false;
+        }
+
+        return true;
+    }
+
     public componentDidMount() {
         if (this.props.value !== null && typeof this.props.value === 'number') {
-            this.valueText = this.prepareValueAsText(this.props.value);
+            this.valueText = this.prepareValueAsText(this.props.value, this.props);
         }
     }
 
     public componentWillReceiveProps(nextProps: CounterProps) {
+        let valueChanged: boolean = false;
+
         if (typeof nextProps.value !== 'undefined' && this.value !== nextProps.value) {
             const newValue = this.alignValueToLimits(nextProps.value);
-            const newValueText = this.prepareValueAsText(newValue);
+            const newValueText = this.prepareValueAsText(newValue, this.props);
 
             this.value = newValue;
             this.valueText = newValueText;
+            valueChanged = true;
+        }
+
+        if (typeof nextProps.maxValue === 'number' && nextProps.maxValue < this.value) {
+            this.value = nextProps.maxValue;
+            this.valueText = this.prepareValueAsText(nextProps.maxValue, nextProps);
+            valueChanged = true;
+        } else if (typeof nextProps.minValue === 'number' && nextProps.minValue > this.value) {
+            this.value = nextProps.minValue;
+            this.valueText = this.prepareValueAsText(nextProps.minValue, nextProps);
+            valueChanged = true;
+        }
+
+        if (
+            this.props.showAddedTextOnInput !== nextProps.showAddedTextOnInput ||
+            this.props.readOnlyTextBeforeValue !== nextProps.readOnlyTextBeforeValue ||
+            this.props.readOnlyTextAfterValue !== nextProps.readOnlyTextAfterValue
+        ) {
+            this.valueText = this.prepareValueAsText(this.value, nextProps);
+            valueChanged = true;
+        }
+
+        if (valueChanged && this.props.onChange) {
+            this.props.onChange({
+                value: this.value,
+                text: this.valueText,
+            });
         }
     }
 
     public render() {
         return (
-            <Row className={classNames(s.counterField, { [s.readOnly]: this.props.readOnly })} removeGutter={true}>
+            <div
+                className={classNames(
+                    s.counterField,
+                    {
+                        [s.center]: this.props.align === 'center',
+                        [s.right]: this.props.align === 'right',
+                        [s.showPlusMinus]: this.props.showPlusMinus,
+                        [s.readOnly]: this.props.readOnly,
+                    },
+                    this.props.className
+                )}
+            >
                 {this.props.label && (
-                    <Col className={s.counterLabelCol} removeGutter={true}>
-                        <p className={s.counterLabel}>{this.props.label}</p>
-                    </Col>
+                    <div className={s.label}>
+                        <p>{this.props.label}</p>
+                    </div>
                 )}
 
-                {this.props.showPlusMinus && (
-                    <Col removeGutter={true}>
-                        <button
-                            className={classNames(s.incrementButton, s.incrementMinusButton, {
-                                [s.incrementButtonDisabled]:
-                                    typeof this.props.minValue !== 'undefined' && this.props.minValue !== null
-                                        ? this.value <= this.props.minValue
-                                        : false,
-                            })}
-                            onClick={this.handleIncrement(false)}
-                        >
-                            <IconMinusWhite />
-                        </button>
-                    </Col>
-                )}
+                <div className={s.field}>
+                    {(!this.props.readOnly && (
+                        <React.Fragment>
+                            <input
+                                className={classNames({ [s.enabled]: !this.props.readOnly })}
+                                onChange={this.handleChange}
+                                onFocus={this.handleFocus}
+                                onBlur={this.handleBlur}
+                                value={this.valueText}
+                                placeholder={this.props.label || ''}
+                            />
 
-                {(this.props.readOnly === false && (
-                    <Col className={s.fieldCol} removeGutter={true}>
-                        <Input
-                            onChange={this.handleChange}
-                            onFocus={this.handleFocus}
-                            onBlur={this.handleBlur}
-                            value={this.valueText}
-                            maxWidth={this.props.fieldMaxWidth}
-                            label={this.props.label ? this.props.label : ''}
-                            align="center"
-                        />
-                    </Col>
-                )) || (
-                    <Col removeGutter={true}>
-                        <Paragraph>{this.valueText}</Paragraph>
-                    </Col>
-                )}
+                            {this.props.showPlusMinus && !this.props.readOnly && (
+                                <div className={s.buttons}>
+                                    <ButtonPlusOrMinus
+                                        className={s.button}
+                                        onClick={this.handleIncrement(true)}
+                                        isDisabled={!this.isIncreaseAvailable}
+                                        isPlus={true}
+                                    />
 
-                {this.props.showPlusMinus && (
-                    <Col removeGutter={true}>
-                        <button
-                            className={classNames(s.incrementButton, s.incrementPlusButton, {
-                                [s.incrementButtonDisabled]:
-                                    typeof this.props.maxValue !== 'undefined' && this.props.maxValue !== null
-                                        ? this.value >= this.props.maxValue
-                                        : false,
-                            })}
-                            onClick={this.handleIncrement(true)}
-                        >
-                            <IconPlusWhite />
-                        </button>
-                    </Col>
-                )}
-            </Row>
+                                    <ButtonPlusOrMinus
+                                        className={s.button}
+                                        onClick={this.handleIncrement(false)}
+                                        isDisabled={!this.isDecreaseAvailable}
+                                        isPlus={false}
+                                    />
+                                </div>
+                            )}
+                        </React.Fragment>
+                    )) || <Paragraph>{this.valueText}</Paragraph>}
+                </div>
+            </div>
         );
     }
 
@@ -144,7 +188,7 @@ export class Counter extends React.Component<CounterProps, {}> {
         );
 
         if (!isNaN(newValue)) {
-            const newValueText = this.prepareValueAsText(newValue);
+            const newValueText = this.prepareValueAsText(newValue, this.props);
 
             this.value = newValue;
             this.valueText = newValueText;
@@ -188,10 +232,10 @@ export class Counter extends React.Component<CounterProps, {}> {
         // Parse value
         let newNumber = unformat(this.valueText);
         if (isNaN(newNumber)) {
-            this.valueText = this.prepareValueAsText(this.value);
+            this.valueText = this.prepareValueAsText(this.value, this.props);
         } else {
             newNumber = this.alignValueToLimits(newNumber);
-            const newNumberText = this.prepareValueAsText(newNumber);
+            const newNumberText = this.prepareValueAsText(newNumber, this.props);
 
             this.value = newNumber;
             this.valueText = newNumberText;
@@ -233,11 +277,9 @@ export class Counter extends React.Component<CounterProps, {}> {
         return newNumber;
     };
 
-    private prepareValueAsText = (value: number): string => {
-        return this.props.showAddedTextOnInput
-            ? this.props.readOnlyTextBeforeValue +
-                  toFixed(value, this.props.decimals || 0) +
-                  this.props.readOnlyTextAfterValue
-            : toFixed(value, this.props.decimals || 0);
+    private prepareValueAsText = (value: number, props: CounterProps): string => {
+        return props.showAddedTextOnInput
+            ? props.readOnlyTextBeforeValue + toFixed(value, props.decimals || 0) + props.readOnlyTextAfterValue
+            : toFixed(value, props.decimals || 0);
     };
 }

@@ -37,14 +37,24 @@ export class FetchQueryMock<R> extends React.Component<Props<R>, {}> {
     }
 
     private simulateRetry = async () => {
-        this.isLoading = true;
-        setTimeout(() => {
-            this.isLoading = false;
-        }, 3000);
+        try {
+            this.isLoading = true;
+            setTimeout(() => {
+                this.isLoading = false;
+            }, 3000);
+        } catch (error) {
+            // tslint:disable-next-line:no-console
+            console.error(error);
+        }
     };
 
     private stopLoading = async (timeout: number = 0) => {
-        await AsyncHandler.timeout(timeout);
-        this.isLoading = false;
+        try {
+            await AsyncHandler.timeout(timeout);
+            this.isLoading = false;
+        } catch (error) {
+            // tslint:disable-next-line:no-console
+            console.error(error);
+        }
     };
 }

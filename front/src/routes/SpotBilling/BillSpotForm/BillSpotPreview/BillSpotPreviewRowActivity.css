@@ -1,0 +1,22 @@
+.timeEntryRow {
+    & > div {
+        padding-left: 3px;
+        padding-right: 3px;
+    }
+}
+
+.timeEntryName {
+    padding-left: 24px !important;
+}
+
+.timeEntryAmount {
+    position: relative;
+    padding-right: 24px !important;
+
+    & .timeEntryActions {
+        position: absolute;
+        top: 50%;
+        margin-top: -12px;
+        right: -16px;
+    }
+}

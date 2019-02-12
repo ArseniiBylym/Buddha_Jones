@@ -28,17 +28,5 @@
                 color: #f55b1e;
             }
         }
-
-        &.positive {
-            & strong {
-                color: #189e44;
-            }
-        }
-
-        &.negative {
-            & strong {
-                color: #f55b1e;
-            }
-        }
     }
 }

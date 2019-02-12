@@ -6,7 +6,7 @@ import {
     } from '.';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { IconRemoveBlue } from '../Icons';
+import { IconRemoveBlue, IconRemoveOrange } from '../Icons';
 import { LoadingIndicator } from '../Loaders';
 import { ButtonLabelColorPropType } from './Button';
 
@@ -23,6 +23,7 @@ interface ButtonDeleteProps {
     labelIsBold?: boolean;
     float?: ButtonFloatPropType;
     iconBackground?: ButtonIconColorPropType;
+    iconColor?: 'blue' | 'orange';
     loading?: boolean;
 }
 
@@ -40,6 +41,7 @@ export class ButtonDelete extends React.Component<ButtonDeleteProps, {}> {
             labelIsBold: false,
             float: 'none',
             iconBackground: 'white',
+            iconColor: 'blue',
             loading: false,
         };
     }
@@ -74,7 +76,12 @@ export class ButtonDelete extends React.Component<ButtonDeleteProps, {}> {
                 icon={{
                     size: 'small',
                     background: this.props.iconBackground,
-                    element: <IconRemoveBlue width={18} height={18} />,
+                    element:
+                        this.props.iconColor === 'orange' ? (
+                            <IconRemoveOrange width={18} height={18} />
+                        ) : (
+                            <IconRemoveBlue width={18} height={18} />
+                        ),
                 }}
             />
         );

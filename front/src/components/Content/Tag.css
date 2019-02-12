@@ -1,94 +1,111 @@
 .tag {
-  cursor: default;
-  display: inline-flex;
-  align-content: center;
-  align-items: center;
-  margin: 0;
-  padding: 0 8px;
-  height: 26px;
-  background: #eeeae7;
-  color: #5a4d3f;
-  font-size: 0.85em;
-  &.big {
-    padding: 0 10px;
-    height: 32px;
-    & .infoIcon {
-      margin-right: 10px;
-    }
-    & .label {
-      padding: 0 10px;
-      height: 32px;
-      &.first {
-        margin-left: 10px;
-      }
-    }
-    & .editButton {
-      height: 32px;
-    }
-  }
-  &.clickable {
-    cursor: pointer;
-    transition: 300ms background 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
-    &:hover {
-      background: #dfd7d1;
-    }
-  }
-  &.noPaddingOnRight {
-    padding-right: 0;
-  }
-  & .infoIcon {
+    cursor: default;
     display: inline-flex;
-    justify-content: center;
     align-content: center;
     align-items: center;
     margin: 0;
-    margin-right: 8px;
-    width: 21px;
-    height: 21px;
-    border-radius: 50%;
-    background: color(#eeeae7 lightness(+4%));
-    box-shadow: 0px 0px 0px color(#eeeae7 alpha(0));
-    transition: 300ms box-shadow 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
-  }
-  & .title {
-    font-weight: 400;
-    color: #5a4d3f;
-    &.bold {
-      font-weight: 600;
-    }
-    &.dim {
-      color: #a59e97;
-    }
-  }
-  & .label {
-    background: color(#eeeae7 lightness(+4%));
-    border: 2px solid #eeeae7;
-    box-sizing: border-box;
-    display: inline-flex;
-    align-content: center;
-    align-items: center;
-    height: 26px;
     padding: 0 8px;
-    margin: 0;
-    &.first {
-      margin-left: 8px;
-    }
-  }
-  & .editButton {
-    background: color(#eeeae7 lightness(-3%));
-    display: inline-flex;
-    justify-content: center;
-    align-content: center;
-    align-items: center;
-    padding: 0 6px;
     height: 26px;
-  }
-  &:hover {
-    & .infoIcon {
-      box-shadow: 0px 2px 6px color(#eeeae7 lightness(-24%) alpha(0.24));
+    background: #eeeae7;
+    color: #5a4d3f;
+    font-size: 0.85em;
+
+    &.big {
+        padding: 0 10px;
+        height: 32px;
+
+        & .infoIcon {
+            margin-right: 10px;
+        }
+
+        & .label {
+            padding: 0 10px;
+            height: 32px;
+
+            &.first {
+                margin-left: 10px;
+            }
+        }
+
+        & .editButton {
+            height: 32px;
+        }
     }
-  }
+
+    &.clickable {
+        cursor: pointer;
+        transition: 300ms background 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
+
+        &:hover {
+            background: #dfd7d1;
+        }
+    }
+
+    &.noPaddingOnRight {
+        padding-right: 0;
+    }
+
+    & .infoIcon {
+        display: inline-flex;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        margin: 0;
+        margin-right: 8px;
+        width: 21px;
+        height: 21px;
+        border-radius: 50%;
+        background: color(#eeeae7 lightness(+4%));
+        box-shadow: 0px 0px 0px color(#eeeae7 alpha(0));
+        transition: 300ms box-shadow 0ms cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+
+    & .title {
+        font-weight: 400;
+        color: #5a4d3f;
+
+        &.bold {
+            font-weight: 600;
+        }
+
+        &.dim {
+            color: #a59e97;
+        }
+    }
+
+    & .label {
+        background: color(#eeeae7 lightness(+4%));
+        border: 2px solid #eeeae7;
+        box-sizing: border-box;
+        display: inline-flex;
+        align-content: center;
+        align-items: center;
+        height: 26px;
+        padding: 0 8px;
+        margin: 0;
+
+        &.first {
+            margin-left: 8px;
+        }
+    }
+
+    & .editButton {
+        background: color(#eeeae7 lightness(-3%));
+        display: inline-flex;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        padding: 0 6px;
+        height: 26px;
+    }
+
+    &:hover {
+        & .infoIcon {
+            box-shadow: 0px 2px 6px color(#eeeae7 lightness(-24%) alpha(0.24));
+        }
+    }
 }
+
 .bold {
     font-weight: 600;
 }

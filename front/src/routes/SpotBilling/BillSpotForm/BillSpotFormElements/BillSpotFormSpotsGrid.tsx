@@ -54,10 +54,10 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                 activities.push({
                     timeEntryId: selection.timeEntryId,
                     hoursAreSplit: selection.hoursAreSplit,
-                    totalHoursInMinutes: selection.totalHours,
-                    regularHoursInMinutes: selection.regularHours,
-                    overtimeHoursInMinutes: selection.overtimeHours,
-                    doubletimeHoursInMinutes: selection.doubletimeHours,
+                    totalHoursInMinutes: selection.totalAdjustedMinutes,
+                    regularHoursInMinutes: selection.regularBillableMinutes,
+                    overtimeHoursInMinutes: selection.overtimeBillableMinutes,
+                    doubletimeHoursInMinutes: selection.doubletimeBillableMinutes,
                     baseHoursInMinutes: DateHandler.convertHoursDotMinutesToTotalMinutes(timeEntry.duration),
                 });
             }
@@ -128,7 +128,7 @@ export class BillSpotFormSpotsGrid extends React.Component<Props, {}> {
                             );
                             if (timeEntryInSelection) {
                                 sum.selectedBaseMinutes += timeEntryDuration;
-                                sum.selectedAdjustedMinutes += timeEntryInSelection.totalHours;
+                                sum.selectedAdjustedMinutes += timeEntryInSelection.totalAdjustedMinutes;
                             }
 
                             sum.totalUnbilledMinutes += timeEntryDuration;

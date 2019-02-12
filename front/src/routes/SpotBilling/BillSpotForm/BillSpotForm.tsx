@@ -19,6 +19,7 @@ interface Props extends AppState {}
 @observer
 export default class BillSpotForm extends React.Component<Props, {}> {
     @observable private billId: number | null = null;
+    @observable private isPreview: boolean = false;
 
     constructor(props: Props) {
         super(props);
@@ -27,6 +28,11 @@ export default class BillSpotForm extends React.Component<Props, {}> {
         if (this.props.match && this.props.match.params && this.props.match.params['id']) {
             const billId = parseInt(this.props.match.params['id'], 10);
             this.billId = !isNaN(billId) && billId ? billId : null;
+        }
+
+        // Set preview coming from URL
+        if (this.props.match && this.props.match.params && this.props.match.params['preview']) {
+            this.isPreview = true;
         }
     }
 
@@ -50,6 +56,17 @@ export default class BillSpotForm extends React.Component<Props, {}> {
             this.billId = !isNaN(billId) && billId ? billId : null;
             this.setHeader(this.billId);
         }
+
+        // Set modified preview
+        if (
+            this.props.match &&
+            this.props.match.params &&
+            nextProps.match &&
+            nextProps.match.params &&
+            this.props.match.params['preview'] !== nextProps.match.params['preview']
+        ) {
+            this.isPreview = nextProps.match.params['preview'] ? true : false;
+        }
     }
 
     public render() {
@@ -61,9 +78,6 @@ export default class BillSpotForm extends React.Component<Props, {}> {
             <FetchQueryMock<SpotBillFormSummary>
                 mockResponses={[
                     {
-                        billId: 1,
-                        billStatusId: 1,
-                        billStatusName: 'Draft',
                         projectId: 47,
                         projectName: 'Annihilation',
                         projectCampaignId: 156,
@@ -106,7 +120,7 @@ export default class BillSpotForm extends React.Component<Props, {}> {
                                 },
                             },
                         ],
-                        unbilledTimeEntries: [
+                        timeEntries: [
                             {
                                 timeEntryId: 59,
                                 projectId: 47,
@@ -717,7 +731,7 @@ export default class BillSpotForm extends React.Component<Props, {}> {
                                 },
                             },
                         ],
-                        unbilledSpots: [
+                        spots: [
                             {
                                 spotId: 2,
                                 spotName: '#1 Interrogation',
@@ -742,10 +756,17 @@ export default class BillSpotForm extends React.Component<Props, {}> {
                             },
                         ],
                         bill: {
-                            selectedSpots: [79],
-                            typeId: 2,
-                            typeName: 'Revisions',
+                            billId: 1,
+                            billStatusId: 1,
+                            billStatusName: 'Draft',
+                            billTypeId: null,
+                            billTypeName: null,
+                            selectedSpotsIds: [79],
                             selectedRateCardId: null,
+                            discount: {
+                                value: 0,
+                                isFixed: true,
+                            },
                             timeEntries: [],
                             rows: [],
                         },
@@ -771,8 +792,8 @@ export default class BillSpotForm extends React.Component<Props, {}> {
                         );
                     }
 
-                    return billFromApi.response.billStatusId === SpotSentBillStatus.Draft ? (
-                        <DraftBillSpotForm billData={billFromApi.response} />
+                    return billFromApi.response.bill.billStatusId === SpotSentBillStatus.Draft ? (
+                        <DraftBillSpotForm billData={billFromApi.response} showPreview={this.isPreview} />
                     ) : (
                         <ApprovedBillSpotForm bill={billFromApi.response} />
                     );

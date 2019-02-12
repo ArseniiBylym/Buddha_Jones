@@ -1,0 +1,119 @@
+.card {
+    position: relative;
+}
+
+.rowEditBox {
+    position: absolute;
+    top: 0;
+    left: -69px;
+    width: 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: center;
+}
+
+.rowEditToggleButtons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    min-height: 24px;
+}
+
+.rowActionButtonBox {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e2dbd5;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: center;
+
+    &.first {
+        margin-top: 0;
+    }
+}
+
+.rowGrid {
+    display: grid;
+    grid-template: auto / 2fr 1fr 1fr;
+
+    & > div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 24px;
+
+        & .title {
+            & .subTitle {
+                font-size: 0.8rem;
+            }
+        }
+
+        & .titleInEditMode {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-content: center;
+            align-items: center;
+
+            & .resetButton {
+                padding-left: 8px;
+            }
+        }
+
+        &:not(:first-child) {
+            border-left: 1px solid #e2dbd5;
+        }
+
+        &:last-child {
+            align-items: flex-end;
+            text-align: right;
+        }
+    }
+}
+
+.row {
+    & > div {
+        display: flex;
+        align-content: center;
+        align-items: center;
+    }
+
+    &.timeEntryRow {
+        display: contents;
+    }
+}
+
+.idCol {
+    position: relative;
+}
+
+.rateAndEditCol {
+    display: flex;
+    justify-content: flex-end;
+    align-content: center;
+    align-items: center;
+}
+
+.rowRate {
+}
+
+.rowDiscountForm {
+    padding: 16px 0;
+}
+
+.rowCheckbox {
+    opacity: 0;
+    transition: 300ms opacity 0ms cubic-bezier(1, 0, 0, 1);
+
+    &.show {
+        opacity: 1;
+    }
+}

@@ -4,7 +4,7 @@
     text-align: left;
 
     & > div {
-        padding: 24px 48px;
+        padding: 24px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -59,13 +59,13 @@
 }
 
 .spotsTitleBar {
-    padding-left: 48px;
-    padding-right: 48px;
+    // padding-left: 48px;
+    // padding-right: 48px;
 }
 
 .spotsSentHeader {
-    padding-left: 48px;
-    padding-right: 48px;
+    // padding-left: 48px;
+    // padding-right: 48px;
 }
 
 .spotsSentBlock {
@@ -75,11 +75,11 @@
 .spotsSentTableHeader {
     & > div {
         &:first-child {
-            padding-left: 86px;
+            padding-left: 62px;
         }
 
         &:last-child {
-            padding-right: 48px;
+            padding-right: 24px;
         }
     }
 }
@@ -91,11 +91,11 @@
         padding: 6px 12px;
 
         &:first-child {
-            padding-left: 86px;
+            padding-left: 62px;
         }
 
         &:last-child {
-            padding-right: 48px;
+            padding-right: 24px;
         }
     }
 

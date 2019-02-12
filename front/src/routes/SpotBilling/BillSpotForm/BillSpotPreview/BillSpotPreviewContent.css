@@ -1,0 +1,93 @@
+.summary {
+    display: grid;
+    grid-template: auto / 1fr 1fr;
+
+    & > div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 24px;
+
+        &:not(:first-child) {
+            border-left: 1px solid #e2dbd5;
+        }
+
+        &:last-child {
+            text-align: right;
+            align-items: flex-end;
+        }
+
+        & p {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #7e756d;
+
+            & strong {
+                font-weight: 600;
+                color: #0b0c32;
+            }
+
+            &.spots {
+                & strong:not(:last-child)::after {
+                    display: inline;
+                    content: ', ';
+                    font-weight: 400;
+                }
+            }
+        }
+    }
+}
+
+.activities {
+    margin-top: 12px;
+}
+
+.billDiscountGroup {
+    padding: 16px 0;
+}
+
+.totals {
+    padding: 24px;
+    padding-bottom: 128px;
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #d1cdca;
+
+    & > div {
+        &:last-child {
+            padding-left: 16px;
+            text-align: right;
+        }
+    }
+
+    & p {
+        font-size: 1rem;
+    }
+}
+
+.rowsActions {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+}
+
+.selectedRowsActions {
+    display: flex;
+    justify-content: flex-end;
+    align-content: center;
+    align-items: center;
+
+    & > div {
+        margin-left: 24px;
+    }
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+}

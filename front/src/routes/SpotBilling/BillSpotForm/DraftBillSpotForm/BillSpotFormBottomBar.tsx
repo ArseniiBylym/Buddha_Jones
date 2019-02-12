@@ -1,4 +1,5 @@
 import { SpotToBillFormActions } from 'actions';
+import { history } from 'App';
 import { ButtonAdd, ButtonClose, ButtonSave } from 'components/Button';
 import { Paragraph } from 'components/Content';
 import { BottomBar } from 'components/Layout';
@@ -21,6 +22,7 @@ enum DeleteStatus {
 
 interface Props extends AppOnlyStoreState {
     isBillSaving: boolean;
+    billId: number;
     spots: SpotBillFormSpot[];
 }
 
@@ -59,40 +61,46 @@ export class BillSpotFormBottomBar extends React.Component<Props, {}> {
                 showHeader={this.isAnythingSelected || addingActivityToBillStatus !== 'none'}
                 header={
                     <Row justifyContent="center" alignContent="center" alignItems="center">
-                        {addingActivityToBillStatus !== 'none' && (
-                            <Col flex="0 1 auto">
-                                {(addingActivityToBillStatus === 'saving' && (
-                                    <LoadingIndicator label="Adding time entries to the bill" />
-                                )) || (
+                        <Col flex="1 0 auto">
+                            {(addingActivityToBillStatus === 'saving' && (
+                                <LoadingIndicator label="Adding time entries to the bill" />
+                            )) ||
+                                (addingActivityToBillStatus !== 'none' && (
                                     <Paragraph type={addingActivityToBillStatus === 'success' ? 'success' : 'alert'}>
                                         {addingActivityToBillStatus === 'success'
                                             ? 'Added time entries to the bill'
                                             : 'Could not add time entries to the bill'}
                                     </Paragraph>
+                                ))}
+                        </Col>
+
+                        <Col flex="0 1 auto">
+                            <Row justifyContent="flex-end" alignContent="center" alignItems="center">
+                                {this.isAnythingSelected && (
+                                    <Col>
+                                        <Paragraph type="brown" size="small">
+                                            {'Selected ' +
+                                                this.selectedActivitiesCount +
+                                                ' ' +
+                                                (this.selectedActivitiesCount > 1 ? 'time entries' : 'time entry')}
+                                        </Paragraph>
+                                    </Col>
                                 )}
-                            </Col>
-                        )}
 
-                        {this.isAnythingSelected && (
-                            <Col flex="0 1 auto">
-                                <Paragraph type="brown" size="small">{`Selected ${this.selectedActivitiesCount} ${
-                                    this.selectedActivitiesCount > 1 ? 'time entries' : 'time entry'
-                                }`}</Paragraph>
-                            </Col>
-                        )}
-
-                        {this.isAnythingSelected && (
-                            <Col flex="0 1 auto">
-                                <ButtonAdd
-                                    onClick={this.handleAddingToBill}
-                                    label={
-                                        'Add selected time ' +
-                                        (this.selectedActivitiesCount > 1 ? 'entries' : 'entry') +
-                                        ' to the bill'
-                                    }
-                                />
-                            </Col>
-                        )}
+                                {this.isAnythingSelected && (
+                                    <Col>
+                                        <ButtonAdd
+                                            onClick={this.handleAddingToBill}
+                                            label={
+                                                'Add selected time ' +
+                                                (this.selectedActivitiesCount > 1 ? 'entries' : 'entry') +
+                                                ' to the bill'
+                                            }
+                                        />
+                                    </Col>
+                                )}
+                            </Row>
+                        </Col>
                     </Row>
                 }
             >
@@ -152,6 +160,6 @@ export class BillSpotFormBottomBar extends React.Component<Props, {}> {
     };
 
     private handleOpeningBill = (e: React.MouseEvent<HTMLButtonElement>) => {
-        SpotToBillFormActions.toggleBillPreview(true);
+        history.push('/portal/bill-spot-form/' + this.props.billId + '/preview');
     };
 }

@@ -1,0 +1,22 @@
+.label {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #a59e97;
+
+    & strong {
+        font-weight: 700;
+        color: #0768d8;
+    }
+
+    &.positive {
+        & strong {
+            color: #189e44;
+        }
+    }
+
+    &.negative {
+        & strong {
+            color: #f55b1e;
+        }
+    }
+}

@@ -1,8 +1,8 @@
-import * as React from 'react';
 import * as classNames from 'classnames';
-import { observer } from 'mobx-react';
-import { observable, computed, action } from 'mobx';
 import { debounce as _debounce, truncate as _truncuate } from 'lodash';
+import { action, computed, observable } from 'mobx';
+import { observer } from 'mobx-react';
+import * as React from 'react';
 import { IconDropdownArrow, IconDropdownArrowYellow } from '../Icons';
 
 // Styles
@@ -27,7 +27,8 @@ interface DropdownContainerProps {
     align?: DropdownContainerAlignProp;
     type?: DropdownContainerTypeProp;
     isWhite?: boolean;
-    label: string;
+    icon?: JSX.Element;
+    label?: string;
     value?: string;
     truncuateValueTo?: number;
 }
@@ -201,8 +202,8 @@ export class DropdownContainer extends React.Component<DropdownContainerProps, {
                         typeof this.props.maxLabelOnlyWidth !== 'undefined' && this.props.maxLabelOnlyWidth > 0
                             ? this.props.maxLabelOnlyWidth + 'px'
                             : typeof this.props.maxWidth !== 'undefined' && this.props.maxWidth > 0
-                                ? this.props.maxWidth + 'px'
-                                : undefined,
+                            ? this.props.maxWidth + 'px'
+                            : undefined,
                     margin: this.props.align === 'center' ? '0 auto' : undefined,
                     marginLeft: this.props.align === 'right' ? 'auto' : undefined,
                     marginRight: this.props.align === 'left' ? 'auto' : undefined,
@@ -214,42 +215,45 @@ export class DropdownContainer extends React.Component<DropdownContainerProps, {
                     className={classNames('dropdownLabel', this.props.align)}
                     onClick={this.handleLabelClick}
                 >
-                    <p>
-                        {this.props.label && <span>{this.props.label}</span>}
-                        {this.selectionText && <strong>{this.selectionText}</strong>}
-                    </p>
+                    {(this.props.label || this.selectionText) && (
+                        <p>
+                            {this.props.label && <span>{this.props.label}</span>}
+                            {this.selectionText && <strong>{this.selectionText}</strong>}
+                        </p>
+                    )}
+
                     <div className="dropdownIcon">
-                        {(this.props.isWhite && <IconDropdownArrowYellow width={11} height={8} />) || (
-                            <IconDropdownArrow width={11} height={8} />
-                        )}
+                        {(this.props.icon && this.props.icon) ||
+                            (this.props.isWhite && <IconDropdownArrowYellow width={11} height={8} />) || (
+                                <IconDropdownArrow width={11} height={8} />
+                            )}
                     </div>
                 </div>
 
-                {typeof this.props.children !== 'undefined' &&
-                    this.props.children && (
-                        <div
-                            className={classNames('dropdownGroup', {
-                                top: this.positionOnTop,
-                            })}
-                            style={{
-                                marginLeft: this.positionMarginLeft !== 0 ? this.positionMarginLeft + 'px' : undefined,
-                                marginTop: this.positionMarginTop !== 0 ? this.positionMarginTop + 'px' : undefined,
-                                maxWidth:
-                                    typeof this.props.maxWidth !== 'undefined' && this.props.maxWidth > 0
-                                        ? this.props.maxWidth + 'px'
-                                        : undefined,
-                                minWidth:
-                                    typeof this.props.minWidth !== 'undefined' && this.props.minWidth > 0
-                                        ? this.props.minWidth + 'px'
-                                        : undefined,
-                                maxHeight: this.maxHeight + 'px',
-                                overflow: this.props.overflowAuto ? 'auto' : undefined,
-                            }}
-                            onClick={this.handleDropdownGroupClick}
-                        >
-                            {this.isOpen && this.props.children}
-                        </div>
-                    )}
+                {typeof this.props.children !== 'undefined' && this.props.children && (
+                    <div
+                        className={classNames('dropdownGroup', {
+                            top: this.positionOnTop,
+                        })}
+                        style={{
+                            marginLeft: this.positionMarginLeft !== 0 ? this.positionMarginLeft + 'px' : undefined,
+                            marginTop: this.positionMarginTop !== 0 ? this.positionMarginTop + 'px' : undefined,
+                            maxWidth:
+                                typeof this.props.maxWidth !== 'undefined' && this.props.maxWidth > 0
+                                    ? this.props.maxWidth + 'px'
+                                    : undefined,
+                            minWidth:
+                                typeof this.props.minWidth !== 'undefined' && this.props.minWidth > 0
+                                    ? this.props.minWidth + 'px'
+                                    : undefined,
+                            maxHeight: this.maxHeight + 'px',
+                            overflow: this.props.overflowAuto ? 'auto' : undefined,
+                        }}
+                        onClick={this.handleDropdownGroupClick}
+                    >
+                        {this.isOpen && this.props.children}
+                    </div>
+                )}
             </div>
         );
     }

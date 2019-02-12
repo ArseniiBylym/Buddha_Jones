@@ -1,6 +1,5 @@
-import * as classNames from 'classnames';
+import { AdjustedMinutesAboveOrBelow } from 'components/Buddha';
 import { DateHandler } from 'helpers/DateHandler';
-import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 
@@ -36,14 +35,6 @@ export class BillActivitiesSectionSelectionTotal extends React.Component<BillAct
         };
     }
 
-    @computed private get isPositive(): boolean {
-        if (this.props.showPlusMinusCalculation === false) {
-            return true;
-        }
-
-        return this.props.selectedAdjustedMinutes >= this.props.selectedBaseMinutes;
-    }
-
     public render() {
         return (
             <div className={s.selection}>
@@ -62,22 +53,10 @@ export class BillActivitiesSectionSelectionTotal extends React.Component<BillAct
                 )}
 
                 {this.props.showPlusMinusCalculation && (
-                    <p
-                        className={classNames({
-                            [s.positive]: this.isPositive,
-                            [s.negative]: this.isPositive === false,
-                        })}
-                    >
-                        <strong>
-                            {(this.isPositive ? '+' : '-') +
-                                ' ' +
-                                DateHandler.convertTotalMinutesToHM(
-                                    this.isPositive
-                                        ? this.props.selectedAdjustedMinutes - this.props.selectedBaseMinutes
-                                        : this.props.selectedBaseMinutes - this.props.selectedAdjustedMinutes
-                                )}
-                        </strong>
-                    </p>
+                    <AdjustedMinutesAboveOrBelow
+                        className={s.adjusted}
+                        minutes={(this.props.selectedBaseMinutes - this.props.selectedAdjustedMinutes) * -1}
+                    />
                 )}
             </div>
         );
