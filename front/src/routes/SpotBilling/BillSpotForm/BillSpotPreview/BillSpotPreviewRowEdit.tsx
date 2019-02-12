@@ -60,6 +60,7 @@ interface Props extends AppOnlyStoreState {
 @inject('store')
 @observer
 export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
+    private rowHeaderGrid: HTMLDivElement | null = null;
     private rateDropdown: DropdownContainer | null = null;
     private reorderDropdown: DropdownContainer | null = null;
 
@@ -74,6 +75,8 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
         value: 0,
         isFixed: true,
     };
+
+    @observable private toggleEditButtonBoxHeight: number = 0;
 
     @computed
     private get useNote(): boolean {
@@ -160,12 +163,14 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
 
     @computed
     private get rowTotal(): number {
-        return ActivityHandler.calculateActivityTotals(
+        const sum = ActivityHandler.calculateActivityTotals(
             this.props.row,
             this.props.spotsInBill,
             this.props.studioFlatRates,
             this.props.studioRateCardValues
         );
+
+        return sum.subTotal;
     }
 
     @computed
@@ -187,7 +192,7 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
 
     @computed
     private get rowTotalForEditMode(): number {
-        const total = ActivityHandler.calculateActivityTotals(
+        const sum = ActivityHandler.calculateActivityTotals(
             {
                 ...this.props.row,
                 rateType: this.rateType,
@@ -199,7 +204,7 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
             this.props.studioRateCardValues
         );
 
-        return total;
+        return sum.subTotal;
     }
 
     @computed
@@ -223,6 +228,17 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
         super(props);
 
         reaction(
+            () => this.isInEditMode,
+            editMode => {
+                setTimeout(() => {
+                    if (this.rowHeaderGrid) {
+                        this.toggleEditButtonBoxHeight = this.rowHeaderGrid.offsetHeight;
+                    }
+                }, 32);
+            }
+        );
+
+        reaction(
             () => this.props.row.timeEntriesIds.length,
             count => {
                 if (this.isInEditMode && this.noteHasChanged === false) {
@@ -230,6 +246,12 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
                 }
             }
         );
+    }
+
+    public componentDidMount() {
+        if (this.rowHeaderGrid) {
+            this.toggleEditButtonBoxHeight = this.rowHeaderGrid.offsetHeight;
+        }
     }
 
     public componentWillReceiveProps(nextProps: Props) {
@@ -245,7 +267,7 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
             <Card
                 className={s.card}
                 contentAboveTitleBar={
-                    <div className={s.rowGrid}>
+                    <div className={s.rowGrid} ref={this.referenceRowHeaderGrid}>
                         <div>
                             {(this.isInEditMode && (
                                 <div className={s.titleInEditMode}>
@@ -423,12 +445,23 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
                     </CardContentTable>
 
                     <div className={classNames(s.rowEditBox, { [s.editing]: this.isInEditMode })}>
-                        {(this.isInEditMode && (
-                            <ButtonSave isSaving={false} onClick={this.handleRowEditToggle} label="" />
-                        )) || <ButtonEdit onClick={this.handleRowEditToggle} label="" />}
+                        <div
+                            className={s.rowEditToggleButtons}
+                            style={
+                                this.toggleEditButtonBoxHeight
+                                    ? {
+                                          height: this.toggleEditButtonBoxHeight + 'px',
+                                      }
+                                    : undefined
+                            }
+                        >
+                            {(this.isInEditMode && (
+                                <ButtonSave isSaving={false} onClick={this.handleRowEditToggle} label="" />
+                            )) || <ButtonEdit onClick={this.handleRowEditToggle} label="" />}
+                        </div>
 
                         {this.isInEditMode && this.props.rowsCount > 1 && (
-                            <div className={s.reorderButtonsBox}>
+                            <div className={classNames(s.rowActionButtonBox, s.first, s.reorderButtonsBox)}>
                                 <DropdownContainer
                                     ref={this.referenceReorderDropdown}
                                     icon={<IconMoveBlue width={14} height={13} />}
@@ -455,7 +488,15 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
                         )}
 
                         {this.isInEditMode && (
-                            <div className={s.deleteButtonsBox}>
+                            <div
+                                className={classNames(
+                                    s.rowActionButtonBox,
+                                    {
+                                        [s.first]: this.props.rowsCount < 1,
+                                    },
+                                    s.deleteButtonsBox
+                                )}
+                            >
                                 <ButtonDelete onClick={this.handleDeleteRow} iconColor="orange" label="" />
                             </div>
                         )}
@@ -465,6 +506,7 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
         );
     }
 
+    private referenceRowHeaderGrid = (ref: HTMLDivElement) => (this.rowHeaderGrid = ref);
     private referenceRateDropdown = (ref: DropdownContainer) => (this.rateDropdown = ref);
     private referenceReorderDropdown = (ref: DropdownContainer) => (this.reorderDropdown = ref);
 
@@ -498,6 +540,7 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
         SpotToBillFormActions.changeBillRowDiscount(this.props.row.id, this.discount);
 
         this.isInEditMode = false;
+        this.toggleEditButtonBoxHeight = 0;
     };
 
     @action
@@ -523,6 +566,9 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
         }
 
         this.rateAmount = null;
+        this.discount.value = 0;
+        this.discount.isFixed = true;
+        this.hasDiscount = false;
 
         const firstString = 'first-';
         const isFirstRate = option.value.includes(firstString);
@@ -549,8 +595,13 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
         this.rateFlatOrFirstStageId = null;
     };
 
+    @action
     private handleRowRateChange = (count: { value: number; text: string }) => {
         this.rateAmount = count.value;
+
+        if (this.discount.value > 0 && this.discount.isFixed && this.discount.value > count.value) {
+            this.discount.value = count.value;
+        }
     };
 
     private handleInitializeDiscount = (e: React.MouseEvent<HTMLButtonElement>) => {

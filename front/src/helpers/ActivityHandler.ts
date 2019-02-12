@@ -1,7 +1,12 @@
 import { SpotToBillFormStore } from 'store/AllStores';
-import { SpotBillFormActivityGroup, SpotBillFormActivityTimeEntry, SpotBillFormSpot } from 'types/spotBilling';
 import { SpotBillActivityRateType } from 'types/spotBillingEnums';
 import { StudioRateCardEntryFromApi } from 'types/studioRateCard';
+import {
+    SpotBillFormActivityGroup,
+    SpotBillFormActivityTimeEntry,
+    SpotBillFormSpot,
+    BillTotalsCalculation,
+} from 'types/spotBilling';
 
 export class ActivityHandler {
     public static constructActivityKey = (
@@ -49,12 +54,28 @@ export class ActivityHandler {
         spotsInBill: SpotBillFormSpot[],
         studioFlatRates: StudioRateCardEntryFromApi[],
         studioRateCardValues: StudioRateCardEntryFromApi[]
-    ): number => {
-        return activity.rateType === SpotBillActivityRateType.FirstStage
-            ? ActivityHandler.calculateFirstRateActivityTotals(activity, spotsInBill)
-            : activity.rateType === SpotBillActivityRateType.Flat
-            ? ActivityHandler.calculateFlatActivityTotals(activity, studioFlatRates)
-            : ActivityHandler.calculateHourlyActivityTotals(activity, studioRateCardValues);
+    ): BillTotalsCalculation => {
+        const hasDiscount = activity.discount.value > 0;
+
+        const subTotal =
+            activity.rateType === SpotBillActivityRateType.FirstStage
+                ? ActivityHandler.calculateFirstRateActivityTotals(activity, spotsInBill)
+                : activity.rateType === SpotBillActivityRateType.Flat
+                ? ActivityHandler.calculateFlatActivityTotals(activity, studioFlatRates)
+                : ActivityHandler.calculateHourlyActivityTotals(activity, studioRateCardValues);
+
+        let total = subTotal;
+        if (hasDiscount) {
+            total = activity.discount.isFixed
+                ? subTotal - activity.discount.value
+                : subTotal - (subTotal * activity.discount.value) / 100;
+        }
+
+        return {
+            subTotal,
+            total,
+            hasDiscount,
+        };
     };
 
     public static calculateFirstRateActivityTotals = (

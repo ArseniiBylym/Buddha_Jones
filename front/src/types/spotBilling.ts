@@ -167,3 +167,9 @@ export interface BillTypesFromApiQuery {
     offset?: number;
     length?: number;
 }
+
+export interface BillTotalsCalculation {
+    subTotal: number;
+    total: number;
+    hasDiscount: boolean;
+}

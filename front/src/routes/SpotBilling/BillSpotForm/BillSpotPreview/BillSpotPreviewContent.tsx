@@ -91,12 +91,14 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
         // Iterate all activities in bill and calculate it based on selected rate
         if (this.props.selectedStudioRateCard) {
             totals += this.props.store!.spotToBillForm.rows.reduce((total: number, activity) => {
-                total += ActivityHandler.calculateActivityTotals(
+                const sum = ActivityHandler.calculateActivityTotals(
                     activity,
                     this.props.spotsInBill,
                     this.selectedFlatRates,
                     this.props.selectedRateCard
                 );
+
+                total += sum.total;
 
                 return total;
             }, 0);
