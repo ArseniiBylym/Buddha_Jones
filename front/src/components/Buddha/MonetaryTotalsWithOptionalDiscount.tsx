@@ -18,6 +18,8 @@ interface Props {
     classNameForSubTotal?: string;
     classNameForTotal?: string;
     classNameForDiscountForm?: string;
+    discountFormStackedVertically?: boolean;
+    hideSubTotal?: boolean;
     subTotalLabel?: string;
     subTotalValue?: number;
     discountLabel?: string;
@@ -39,6 +41,8 @@ export class MonetaryTotalsWithOptionalDiscount extends React.Component<Props, {
             classNameForSubTotal: undefined,
             classNameForTotal: undefined,
             classNameForDiscountForm: undefined,
+            discountFormStackedVertically: false,
+            hideSubTotal: false,
             subTotalLabel: 'Sub total',
             subTotalValue: 0,
             discountLabel: 'Discount',
@@ -84,7 +88,7 @@ export class MonetaryTotalsWithOptionalDiscount extends React.Component<Props, {
     public render() {
         return (
             <div className={classNames(s.totals, this.props.className)}>
-                {(this.isInEditMode || this.hasDiscount) && this.renderSubTotal()}
+                {(this.isInEditMode || this.hasDiscount) && !this.props.hideSubTotal && this.renderSubTotal()}
 
                 {this.isInEditMode ? this.renderForm() : this.hasDiscount ? this.renderDiscount() : undefined}
 
@@ -136,7 +140,15 @@ export class MonetaryTotalsWithOptionalDiscount extends React.Component<Props, {
 
     private renderForm() {
         return (
-            <div className={classNames(s.discountForm, this.props.classNameForDiscountForm)}>
+            <div
+                className={classNames(
+                    s.discountForm,
+                    {
+                        [s.vertical]: this.props.discountFormStackedVertically,
+                    },
+                    this.props.classNameForDiscountForm
+                )}
+            >
                 <div className={s.discountRow}>
                     <div className={s.discountType}>
                         <Paragraph size="small">{this.props.discountLabel + ': '}</Paragraph>
@@ -182,7 +194,7 @@ export class MonetaryTotalsWithOptionalDiscount extends React.Component<Props, {
                     />
                 </div>
 
-                <div className={s.discountRow}>
+                <div className={s.discountSummary}>
                     <ButtonInBox className={s.applyDiscountButton} onClick={this.handleSaveDiscount}>
                         <strong>{this.props.applyDiscountLabel}</strong>
                         <IconCheckmarkGreen width={25} height={25} />

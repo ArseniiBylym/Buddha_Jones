@@ -51,7 +51,7 @@ export class ButtonDiscount extends React.Component<ButtonDiscountProps, {}> {
                 icon={{
                     size: 'small',
                     background: this.props.iconBackground,
-                    element: <IconDiscountBlue width={14} height={14} />,
+                    element: <IconDiscountBlue width={12} height={12} />,
                 }}
             />
         );

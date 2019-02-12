@@ -176,7 +176,7 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
             return discount;
         }
 
-        return (this.rowTotal * discount) / 100;
+        return discount > 0 ? (this.rowTotal * discount) / 100 : 0;
     }
 
     @computed
@@ -210,24 +210,13 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
             return discount;
         }
 
-        return (this.rowTotalForEditMode * discount) / 100;
+        return discount > 0 ? (this.rowTotalForEditMode * discount) / 100 : 0;
     }
 
     @computed
     private get rowTotalAfterDiscountForEditMode(): number {
-        const total = ActivityHandler.calculateActivityTotals(
-            {
-                ...this.props.row,
-                rateType: this.rateType,
-                rateFlatOrFirstStageId: this.rateFlatOrFirstStageId,
-                rateAmount: this.rateAmount,
-            },
-            this.props.spotsInBill,
-            this.props.studioFlatRates,
-            this.props.studioRateCardValues
-        );
-
-        return total - this.rowDiscountForEditMode > 0 ? total - this.rowTotalForEditMode : 0;
+        const total = this.rowTotalForEditMode - this.rowDiscountForEditMode;
+        return total || 0;
     }
 
     constructor(props: Props) {
@@ -356,27 +345,36 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
                                         minValue={0}
                                         readOnlyTextBeforeValue="$"
                                         showAddedTextOnInput={true}
-                                        label="Amount"
+                                        label={this.hasDiscount ? 'Row sub total' : 'Row total'}
                                         value={this.rowTotalForEditMode}
                                     />
-
-                                    {this.hasDiscount === false && (
-                                        <ButtonDiscount
-                                            className={s.rowDiscountButton}
-                                            onClick={this.handleInitializeDiscount}
-                                            label=""
-                                        />
-                                    )}
                                 </div>
                             )) || (
                                 <MonetaryTotalsWithOptionalDiscount
+                                    onChange={this.handleChangingRowDiscount}
+                                    classNameForDiscountForm={s.rowDiscountForm}
+                                    discountFormStackedVertically={true}
                                     discountLabel="Row discount"
-                                    discountValue={this.props.row.discount.value}
-                                    discountIsFixed={this.props.row.discount.isFixed}
+                                    discountValue={
+                                        this.isInEditMode ? this.discount.value : this.props.row.discount.value
+                                    }
+                                    discountIsFixed={
+                                        this.isInEditMode ? this.discount.isFixed : this.props.row.discount.isFixed
+                                    }
+                                    hideSubTotal={
+                                        this.isInEditMode && this.rateType !== SpotBillActivityRateType.Hourly
+                                    }
                                     subTotalLabel="Row sub total"
-                                    subTotalValue={this.rowTotal}
+                                    subTotalValue={this.isInEditMode ? this.rowTotalForEditMode : this.rowTotal}
                                     totalLabel="Row total"
-                                    totalValue={this.rowTotalAfterDiscount}
+                                    totalValue={
+                                        this.isInEditMode
+                                            ? this.rowTotalAfterDiscountForEditMode
+                                            : this.rowTotalAfterDiscount
+                                    }
+                                    applyDiscountLabel="Apply discount"
+                                    editing={this.isInEditMode && this.hasDiscount}
+                                    maxFixedDiscountValue={this.rowTotalForEditMode}
                                 />
                             )}
                         </div>
@@ -385,6 +383,17 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
                 noPadding={true}
                 isExpandable={false}
                 title={this.isInEditMode ? 'Time entries' : undefined}
+                headerElements={
+                    this.isInEditMode && this.hasDiscount === false ? (
+                        <ButtonDiscount
+                            onClick={this.handleInitializeDiscount}
+                            label="Discount row"
+                            labelOnLeft={true}
+                        />
+                    ) : (
+                        undefined
+                    )
+                }
             >
                 <React.Fragment>
                     <CardContentTable
@@ -546,6 +555,12 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
 
     private handleInitializeDiscount = (e: React.MouseEvent<HTMLButtonElement>) => {
         this.hasDiscount = true;
+    };
+
+    @action
+    private handleChangingRowDiscount = (value: number, isFixed: boolean) => {
+        this.discount.value = value;
+        this.discount.isFixed = isFixed;
     };
 
     private handleReorderRow = (option: { value: ReorderToOptions; label: string }) => {
