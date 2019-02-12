@@ -376,6 +376,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                                             note={version.note}
                                             status={version.status}
                                             isEditFormVisible={this.isEditFormVisible}
+                                            userCanEdit={this.props.userCanEditSpotCore}
                                         />
 
                                         {version.editors && version.editors.length > 0 && (
