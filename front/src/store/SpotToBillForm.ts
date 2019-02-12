@@ -1,4 +1,4 @@
-import { computed, observable } from 'mobx';
+import { computed, observable, reaction } from 'mobx';
 import { SpotBillDiscount, SpotBillFormActivityGroup, SpotBillFormActivityTimeEntry } from 'types/spotBilling';
 
 export type AddingActivityToBillStatus = 'none' | 'saving' | 'success' | 'error';
@@ -6,6 +6,8 @@ export type AddingActivityToBillStatus = 'none' | 'saving' | 'success' | 'error'
 export class SpotToBillForm {
     @observable public billId: number = 0;
     @observable public billTypeId: number | null = null;
+    @observable public billStatusId: number = 1;
+    @observable public billStatusName: string = 'Draft';
 
     @observable public nextRowIdCounter: number = 1;
     @observable public rows: SpotBillFormActivityGroup[] = [];

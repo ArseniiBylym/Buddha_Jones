@@ -126,3 +126,6 @@ export const IconReorderBlue: React.SFC<IconProps> = observer(props => {
 export const IconMoveBlue: React.SFC<IconProps> = observer(props => {
     return <Icon {...props} iconName="iconMoveBlue" />;
 });
+export const IconDiscountBlue: React.SFC<IconProps> = observer(props => {
+    return <Icon {...props} iconName="iconDiscountBlue" />;
+});

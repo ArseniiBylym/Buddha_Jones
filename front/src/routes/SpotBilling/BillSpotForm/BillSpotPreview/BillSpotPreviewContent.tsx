@@ -1,23 +1,18 @@
 import { BillSpotPreviewRowEdit } from '.';
-import { toFixed } from 'accounting';
 import { SpotToBillFormActions } from 'actions';
-import * as classNames from 'classnames';
+import { MonetaryTotalsWithOptionalDiscount } from 'components/Buddha';
 import {
     ButtonAdd,
     ButtonDelete,
     ButtonEdit,
-    ButtonInBox,
-    ButtonSave,
     ButtonSend
     } from 'components/Button';
 import { Paragraph } from 'components/Content';
-import { Counter } from 'components/Form';
 import { BottomBar } from 'components/Layout';
 import { LoadingIndicator } from 'components/Loaders';
 import { Modal } from 'components/Modals';
 import { Card, Row } from 'components/Section';
 import { ActivityHandler } from 'helpers/ActivityHandler';
-import { MoneyHandler } from 'helpers/MoneyHandler';
 import { StringHandler } from 'helpers/StringHandler';
 import { FLAT_RATE_ACTIVITY_TYPE_ID } from 'invariables';
 import { action, computed, observable } from 'mobx';
@@ -66,6 +61,12 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
     };
 
     @observable private isDeleteRowConfirmationOpen: boolean = false;
+    @observable private deleteTimeEntryConfirmationOpenOnTimeEntryId: number | null = null;
+
+    @computed
+    private get isDeleteTimeEntryConfirmationOpen(): boolean {
+        return this.deleteTimeEntryConfirmationOpenOnTimeEntryId !== null ? true : false;
+    }
 
     @computed
     private get spotsInBillFirstStageRates(): SpotBillFirstRevisionRate[] {
@@ -184,12 +185,13 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                             <BillSpotPreviewRowEdit
                                 key={row.id}
                                 onRequestRowDeletion={this.handleRequestRowDeletion(this.rowIdInEditMode)}
+                                onRequestTimeEntryDeletion={this.handleRequestTimeEntryDeletion}
                                 onRowEditToggle={this.handleToggleRowEdit(row.id)}
                                 className={s.gridRow}
                                 editing={row.id === this.rowIdInEditMode}
                                 index={rowIndex}
                                 rowsCount={rows.length}
-                                activity={row}
+                                row={row}
                                 spotsInBill={this.props.spotsInBill}
                                 studioFlatRates={this.selectedFlatRates}
                                 studioFirstRates={this.spotsInBillFirstStageRates}
@@ -202,46 +204,11 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                 <div className={s.totals}>
                     <div className={s.left}>
                         {(this.isDiscountInEditMode && (
-                            <div className={s.discountForm}>
-                                <div className={s.discountType}>
-                                    <Paragraph size="small">Discount:</Paragraph>
-
-                                    <ButtonInBox
-                                        className={classNames(s.discountTypeButton, {
-                                            [s.active]: this.discountForm.isFixed,
-                                        })}
-                                        onClick={this.handleDiscountTypeChange(true)}
-                                    >
-                                        {'$'}
-                                    </ButtonInBox>
-
-                                    <ButtonInBox
-                                        className={classNames(s.discountTypeButton, {
-                                            [s.active]: !this.discountForm.isFixed,
-                                        })}
-                                        onClick={this.handleDiscountTypeChange(false)}
-                                    >
-                                        {'%'}
-                                    </ButtonInBox>
-                                </div>
-
-                                <Counter
-                                    onChange={this.handleDiscountValueChange}
-                                    decimals={2}
-                                    maxValue={this.discountForm.isFixed ? this.billTotal : 100}
-                                    minValue={0}
-                                    fieldMaxWidth={128}
-                                    incrementBy={this.discountForm.isFixed ? 100 : 5}
-                                    multipleOf={0.01}
-                                    showAddedTextOnInput={true}
-                                    readOnlyTextBeforeValue={this.discountForm.isFixed ? '$' : ''}
-                                    readOnlyTextAfterValue={this.discountForm.isFixed ? '' : '%'}
-                                    value={this.discountForm.value}
-                                    showPlusMinus={true}
-                                />
-
-                                <ButtonSave onClick={this.handleSaveDiscount} isSaving={false} label="Apply discount" />
-                            </div>
+                            <ButtonDelete
+                                onClick={this.handleRemovingDiscount}
+                                label="Remove discount"
+                                labelOnLeft={false}
+                            />
                         )) ||
                             (this.hasDiscount && (
                                 <ButtonEdit onClick={this.handleEditDiscount} label="Modify discount" />
@@ -249,36 +216,21 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                     </div>
 
                     <div className={s.right}>
-                        {this.hasDiscount && (
-                            <Paragraph>
-                                {'Sub total: '}
-                                <strong>{MoneyHandler.formatAsDollars(this.billTotal)}</strong>
-                            </Paragraph>
+                        {(this.props.selectedRateCard.length <= 0 && <Paragraph>No rate card selected</Paragraph>) || (
+                            <MonetaryTotalsWithOptionalDiscount
+                                onChange={this.handleDiscountValueChange}
+                                classNameForDiscountForm={s.billDiscountGroup}
+                                subTotalLabel="Sub total"
+                                subTotalValue={this.billTotal}
+                                discountLabel="Discount"
+                                discountValue={this.discount.value}
+                                discountIsFixed={this.discount.isFixed}
+                                totalLabel="Total"
+                                totalValue={this.billTotalAfterDiscount}
+                                editing={this.isDiscountInEditMode}
+                                maxFixedDiscountValue={this.billTotal}
+                            />
                         )}
-
-                        {(this.props.selectedRateCard.length <= 0 && <Paragraph>No rate card selected</Paragraph>) ||
-                            (this.hasDiscount && (
-                                <div className={s.subTotals}>
-                                    <Paragraph>
-                                        {'Discount: '}
-                                        <strong>
-                                            {this.discount.isFixed
-                                                ? MoneyHandler.formatAsDollars(this.discount.value)
-                                                : toFixed(this.discount.value, 2) + '%'}
-                                        </strong>
-                                    </Paragraph>
-
-                                    <Paragraph>
-                                        {'Total: '}
-                                        <strong>{MoneyHandler.formatAsDollars(this.billTotalAfterDiscount)}</strong>
-                                    </Paragraph>
-                                </div>
-                            )) || (
-                                <Paragraph>
-                                    {'Total: '}
-                                    <strong>{MoneyHandler.formatAsDollars(this.billTotalAfterDiscount)}</strong>
-                                </Paragraph>
-                            )}
                     </div>
                 </div>
 
@@ -319,9 +271,9 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                     show={this.isDeleteRowConfirmationOpen}
                     onClose={this.handleRowDeleteModalClose}
                     closeButton={true}
-                    closeButtonLabel="No, don't delete this row"
+                    closeButtonLabel="No, don't remove this row"
                     type="alert"
-                    topBarTitle="Delete rows"
+                    topBarTitle="Remove row"
                     title="Are you sure you want to remove selected activity row from this bill?"
                     actions={[
                         {
@@ -332,31 +284,52 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
                         },
                     ]}
                 />
+
+                {/** Veify time entry deletion modal */}
+                <Modal
+                    show={this.isDeleteTimeEntryConfirmationOpen}
+                    onClose={this.handleTimeEntryDeleteModalClose}
+                    closeButton={true}
+                    closeButtonLabel="No, don't remove this time entry"
+                    type="alert"
+                    topBarTitle="Remove time entry"
+                    title="Are you sure you want to remove selected time entry from this bill?"
+                    actions={[
+                        {
+                            closeOnClick: true,
+                            label: 'Yes, please remove it',
+                            onClick: this.handleTimeEntryDeletion,
+                            type: 'alert',
+                        },
+                    ]}
+                />
             </React.Fragment>
         );
     }
 
+    @action
     private handleEditDiscount = (e: React.MouseEvent<HTMLButtonElement>) => {
-        this.discountForm = {
-            isFixed: this.props.store!.spotToBillForm.discount.isFixed,
-            value: this.props.store!.spotToBillForm.discount.value,
-        };
-
         this.isDiscountInEditMode = true;
     };
 
-    private handleSaveDiscount = (e: React.MouseEvent<HTMLButtonElement>) => {
-        SpotToBillFormActions.changeBillDiscount(this.discountForm);
+    @action
+    private handleRemovingDiscount = (e: React.MouseEvent<HTMLButtonElement>) => {
+        SpotToBillFormActions.changeBillDiscount({
+            value: 0,
+            isFixed: true,
+        });
 
         this.isDiscountInEditMode = false;
     };
 
-    private handleDiscountTypeChange = (isFixed: boolean) => (e: React.MouseEvent<HTMLButtonElement>) => {
-        this.discountForm.isFixed = isFixed;
-    };
+    @action
+    private handleDiscountValueChange = (value: number, isFixed: boolean) => {
+        SpotToBillFormActions.changeBillDiscount({
+            value: value,
+            isFixed: isFixed,
+        });
 
-    private handleDiscountValueChange = (count: { value: number; text: string }) => {
-        this.discountForm.value = count.value;
+        this.isDiscountInEditMode = false;
     };
 
     private handleToggleRowEdit = (rowId: number) => () => {
@@ -367,17 +340,37 @@ export class BillSpotPreviewContent extends React.Component<Props, {}> {
         this.isDeleteRowConfirmationOpen = false;
     };
 
+    private handleTimeEntryDeleteModalClose = () => {
+        this.deleteTimeEntryConfirmationOpenOnTimeEntryId = null;
+    };
+
     private handleRequestRowDeletion = (rowId: number | null) => () => {
         if (rowId !== null) {
             this.isDeleteRowConfirmationOpen = true;
         }
     };
 
+    private handleRequestTimeEntryDeletion = (timeEntryId: number) => {
+        this.deleteTimeEntryConfirmationOpenOnTimeEntryId = timeEntryId;
+    };
+
     @action
     private handleEditingRowDeletion = () => {
         if (this.rowIdInEditMode) {
-            SpotToBillFormActions.removeRowFromBill(this.rowIdInEditMode);
+            const rowId = this.rowIdInEditMode;
             this.rowIdInEditMode = null;
+
+            SpotToBillFormActions.removeRowFromBill(rowId);
+        }
+    };
+
+    @action
+    private handleTimeEntryDeletion = () => {
+        if (this.deleteTimeEntryConfirmationOpenOnTimeEntryId) {
+            const timeEntryId = this.deleteTimeEntryConfirmationOpenOnTimeEntryId;
+            this.deleteTimeEntryConfirmationOpenOnTimeEntryId = null;
+
+            SpotToBillFormActions.removeTimeEntryFromBill(timeEntryId);
         }
     };
 

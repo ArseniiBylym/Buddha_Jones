@@ -1,44 +1,56 @@
 import { SpotToBillFormActions } from 'actions';
 import * as classNames from 'classnames';
-import { AdjustedMinutesAboveOrBelow } from 'components/Buddha';
-import { ButtonDelete, ButtonEdit, ButtonSave } from 'components/Button';
-import { Paragraph } from 'components/Content';
+import { MonetaryTotalsWithOptionalDiscount } from 'components/Buddha';
+import {
+    ButtonClose,
+    ButtonDelete,
+    ButtonDiscount,
+    ButtonEdit,
+    ButtonSave
+    } from 'components/Button';
+import { Paragraph, Tooltip } from 'components/Content';
 import {
     Counter,
     DropdownContainer,
-    DurationCounter,
     Input,
     OptionsList
     } from 'components/Form';
 import { IconMoveBlue } from 'components/Icons';
-import { Card, CardContentTable, CardContentTableRow } from 'components/Section';
+import { Card, CardContentTable } from 'components/Section';
 import { ActivityHandler } from 'helpers/ActivityHandler';
-import { DateHandler } from 'helpers/DateHandler';
 import { MoneyHandler } from 'helpers/MoneyHandler';
 import { ReorderToOptions } from 'invariables';
-import { action, computed, observable } from 'mobx';
+import {
+    action,
+    computed,
+    observable,
+    reaction
+    } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { SpotBillActivityRateType } from 'types/spotBillingEnums';
 import { StudioRateCardEntryFromApi } from 'types/studioRateCard';
+import { BillSpotPreviewRowActivity } from './BillSpotPreviewRowActivity';
 import {
     SpotBillFirstRevisionRate,
     SpotBillFormActivityGroup,
     SpotBillFormSpot,
     SpotBillFormActivityTimeEntry,
+    SpotBillDiscount,
 } from 'types/spotBilling';
 
 const s = require('./BillSpotPreviewRowEdit.css');
 
 interface Props extends AppOnlyStoreState {
     onRequestRowDeletion: () => void;
+    onRequestTimeEntryDeletion: (timeEntryId: number) => void;
     onRowEditToggle: () => void;
     className?: string;
     editing: boolean;
     index: number;
     rowsCount: number;
-    activity: SpotBillFormActivityGroup;
+    row: SpotBillFormActivityGroup;
     spotsInBill: SpotBillFormSpot[];
     studioFlatRates: StudioRateCardEntryFromApi[];
     studioFirstRates: SpotBillFirstRevisionRate[];
@@ -53,13 +65,33 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
 
     @observable private isInEditMode: boolean = this.props.editing;
     @observable private note: string = '';
+    @observable private noteHasChanged: boolean = false;
     @observable private rateType: SpotBillActivityRateType = SpotBillActivityRateType.Hourly;
     @observable private rateFlatOrFirstStageId: number | null = null;
     @observable private rateAmount: number | null = null;
+    @observable private hasDiscount: boolean = false;
+    @observable private discount: SpotBillDiscount = {
+        value: 0,
+        isFixed: true,
+    };
+
+    @computed
+    private get useNote(): boolean {
+        return this.props.row.note ? true : false;
+    }
+
+    @computed
+    private get useNoteInEditMode(): boolean {
+        if (this.isInEditMode) {
+            return this.note !== this.props.row.name ? true : false;
+        }
+
+        return false;
+    }
 
     @computed
     private get nameOrNote(): string {
-        return this.props.activity.note ? this.props.activity.note : this.props.activity.name;
+        return this.useNote ? this.props.row.note! : this.props.row.name!;
     }
 
     @computed
@@ -100,22 +132,22 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
 
     @computed
     private get activityRateLabel(): string {
-        return this.props.activity.rateType === SpotBillActivityRateType.FirstStage
+        return this.props.row.rateType === SpotBillActivityRateType.FirstStage
             ? this.selectedSpotFirstRate
                 ? 'First stage for spot: ' + this.selectedSpotFirstRate.spotName
                 : 'First stage rate'
-            : this.props.activity.rateType === SpotBillActivityRateType.Flat
+            : this.props.row.rateType === SpotBillActivityRateType.Flat
             ? this.selectedFlatRate
                 ? 'Flat rate for ' + this.selectedFlatRate.activityName
                 : 'Flat rate'
-            : this.props.activity.rateType === SpotBillActivityRateType.Hourly
+            : this.props.row.rateType === SpotBillActivityRateType.Hourly
             ? 'Hourly'
             : '';
     }
 
     @computed
     private get timeEntries(): SpotBillFormActivityTimeEntry[] {
-        return this.props.activity.timeEntriesIds.reduce((entries: SpotBillFormActivityTimeEntry[], timeEntryId) => {
+        return this.props.row.timeEntriesIds.reduce((entries: SpotBillFormActivityTimeEntry[], timeEntryId) => {
             const timeEntry = this.props.store!.spotToBillForm.timeEntries.find(t => t.timeEntryId === timeEntryId);
 
             if (timeEntry) {
@@ -129,7 +161,7 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
     @computed
     private get rowTotal(): number {
         return ActivityHandler.calculateActivityTotals(
-            this.props.activity,
+            this.props.row,
             this.props.spotsInBill,
             this.props.studioFlatRates,
             this.props.studioRateCardValues
@@ -137,10 +169,27 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
     }
 
     @computed
+    private get rowDiscount(): number {
+        const discount = this.props.row.discount.value || 0;
+
+        if (this.props.row.discount.isFixed) {
+            return discount;
+        }
+
+        return (this.rowTotal * discount) / 100;
+    }
+
+    @computed
+    private get rowTotalAfterDiscount(): number {
+        const total = this.rowTotal - this.rowDiscount;
+        return total || 0;
+    }
+
+    @computed
     private get rowTotalForEditMode(): number {
         const total = ActivityHandler.calculateActivityTotals(
             {
-                ...this.props.activity,
+                ...this.props.row,
                 rateType: this.rateType,
                 rateFlatOrFirstStageId: this.rateFlatOrFirstStageId,
                 rateAmount: this.rateAmount,
@@ -149,19 +198,55 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
             this.props.studioFlatRates,
             this.props.studioRateCardValues
         );
+
         return total;
+    }
+
+    @computed
+    private get rowDiscountForEditMode(): number {
+        const discount = this.discount.value || 0;
+
+        if (this.discount.isFixed) {
+            return discount;
+        }
+
+        return (this.rowTotalForEditMode * discount) / 100;
+    }
+
+    @computed
+    private get rowTotalAfterDiscountForEditMode(): number {
+        const total = ActivityHandler.calculateActivityTotals(
+            {
+                ...this.props.row,
+                rateType: this.rateType,
+                rateFlatOrFirstStageId: this.rateFlatOrFirstStageId,
+                rateAmount: this.rateAmount,
+            },
+            this.props.spotsInBill,
+            this.props.studioFlatRates,
+            this.props.studioRateCardValues
+        );
+
+        return total - this.rowDiscountForEditMode > 0 ? total - this.rowTotalForEditMode : 0;
+    }
+
+    constructor(props: Props) {
+        super(props);
+
+        reaction(
+            () => this.props.row.timeEntriesIds.length,
+            count => {
+                if (this.isInEditMode && this.noteHasChanged === false) {
+                    this.note = this.nameOrNote;
+                }
+            }
+        );
     }
 
     public componentWillReceiveProps(nextProps: Props) {
         if (!this.props.editing && nextProps.editing) {
             this.handleEnteringEditModeOfRow();
         } else if (this.props.editing && !nextProps.editing) {
-            this.handleSavingRowChanges();
-        }
-    }
-
-    public componentWillUnmount() {
-        if (this.isInEditMode) {
             this.handleSavingRowChanges();
         }
     }
@@ -174,12 +259,35 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
                     <div className={s.rowGrid}>
                         <div>
                             {(this.isInEditMode && (
-                                <Input onChange={this.handleNoteChange} value={this.note} label="Name" minWidth={320} />
+                                <div className={s.titleInEditMode}>
+                                    <Input
+                                        onChange={this.handleNoteChange}
+                                        value={this.note}
+                                        label="Name"
+                                        minWidth={320}
+                                    />
+
+                                    <div className={s.resetButton}>
+                                        {this.useNoteInEditMode && (
+                                            <Tooltip text="Reset row title to default">
+                                                <ButtonClose onClick={this.handleResettingNote} label="" />
+                                            </Tooltip>
+                                        )}
+                                    </div>
+                                </div>
                             )) || (
-                                <Paragraph>
-                                    {'#' + (this.props.index + 1) + ' '}
-                                    <strong>{this.nameOrNote}</strong>
-                                </Paragraph>
+                                <div className={s.title}>
+                                    <Paragraph>
+                                        {'#' + (this.props.index + 1) + ' '}
+                                        <strong>{this.nameOrNote}</strong>
+                                    </Paragraph>
+
+                                    {this.useNote && (
+                                        <Paragraph className={s.subTitle} size="small" type="dim">
+                                            {this.props.row.name}
+                                        </Paragraph>
+                                    )}
+                                </div>
                             )}
                         </div>
 
@@ -239,26 +347,37 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
 
                         <div>
                             {(this.isInEditMode && this.rateType !== SpotBillActivityRateType.Hourly && (
-                                <Counter
-                                    onChange={this.handleRowRateChange}
-                                    align="right"
-                                    decimals={2}
-                                    incrementBy={100}
-                                    minValue={0}
-                                    readOnlyTextBeforeValue="$"
-                                    showAddedTextOnInput={true}
-                                    label="Amount"
-                                    value={this.rowTotalForEditMode}
-                                />
+                                <div className={s.rowRate}>
+                                    <Counter
+                                        onChange={this.handleRowRateChange}
+                                        align="right"
+                                        decimals={2}
+                                        incrementBy={100}
+                                        minValue={0}
+                                        readOnlyTextBeforeValue="$"
+                                        showAddedTextOnInput={true}
+                                        label="Amount"
+                                        value={this.rowTotalForEditMode}
+                                    />
+
+                                    {this.hasDiscount === false && (
+                                        <ButtonDiscount
+                                            className={s.rowDiscountButton}
+                                            onClick={this.handleInitializeDiscount}
+                                            label=""
+                                        />
+                                    )}
+                                </div>
                             )) || (
-                                <Paragraph>
-                                    {'Row total: '}
-                                    <strong>
-                                        {this.rowTotal !== null
-                                            ? MoneyHandler.formatAsDollars(this.rowTotal)
-                                            : 'No rate'}
-                                    </strong>
-                                </Paragraph>
+                                <MonetaryTotalsWithOptionalDiscount
+                                    discountLabel="Row discount"
+                                    discountValue={this.props.row.discount.value}
+                                    discountIsFixed={this.props.row.discount.isFixed}
+                                    subTotalLabel="Row sub total"
+                                    subTotalValue={this.rowTotal}
+                                    totalLabel="Row total"
+                                    totalValue={this.rowTotalAfterDiscount}
+                                />
                             )}
                         </div>
                     </div>
@@ -279,210 +398,19 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
                             { title: 'Amount', align: 'right' },
                         ]}
                     >
-                        {this.timeEntries.map((timeEntry, timeEntryIndex) => {
-                            const timeEntryActivityRate: number =
-                                (this.isInEditMode && this.rateType === SpotBillActivityRateType.Hourly) ||
-                                (!this.isInEditMode && this.props.activity.rateType === SpotBillActivityRateType.Hourly)
-                                    ? ActivityHandler.calculateBaseActivityRate(
-                                          timeEntry.activityId,
-                                          this.props.studioRateCardValues
-                                      )
-                                    : 0;
-
-                            let timeEntryAmount: number = 0;
-                            let regularAmount: number = 0;
-                            let overtimeAmount: number = 0;
-                            let doubletimeAmount: number = 0;
-
-                            if (
-                                (this.isInEditMode && this.rateType === SpotBillActivityRateType.Hourly) ||
-                                (!this.isInEditMode && this.props.activity.rateType === SpotBillActivityRateType.Hourly)
-                            ) {
-                                regularAmount = ActivityHandler.calculateRegularHoursAmount(
-                                    timeEntry.regularBillableMinutes,
-                                    timeEntryActivityRate
-                                );
-                                overtimeAmount = ActivityHandler.calculateOvertimeHoursAmount(
-                                    timeEntry.overtimeBillableMinutes,
-                                    timeEntryActivityRate
-                                );
-                                doubletimeAmount = ActivityHandler.calculateDoubletimeHoursAmount(
-                                    timeEntry.doubletimeBillableMinutes,
-                                    timeEntryActivityRate
-                                );
-
-                                timeEntryAmount =
-                                    this.props.activity.rateType !== SpotBillActivityRateType.Hourly
-                                        ? timeEntryActivityRate
-                                        : regularAmount + overtimeAmount + doubletimeAmount;
-                            }
-
-                            return (
-                                <CardContentTableRow
-                                    key={timeEntry.timeEntryId}
-                                    className={s.timeEntryRow}
-                                    design="compact"
-                                >
-                                    <div className={s.timeEntryName}>
-                                        <Paragraph size="small" type="brown">
-                                            {'#' +
-                                                (timeEntryIndex + 1) +
-                                                ' ' +
-                                                ActivityHandler.constructActivityName([timeEntry])}
-                                        </Paragraph>
-                                    </div>
-
-                                    <div>
-                                        <Paragraph
-                                            size="small"
-                                            align="right"
-                                            type={this.isInEditMode ? 'blue' : 'brown'}
-                                            bold={true}
-                                        >
-                                            {DateHandler.convertTotalMinutesToHM(timeEntry.durationInMinutes)}
-                                        </Paragraph>
-                                    </div>
-
-                                    <div>
-                                        {(this.isInEditMode && (
-                                            <DurationCounter
-                                                align="right"
-                                                onChange={this.handleTimeEntryHoursChange(
-                                                    timeEntry.timeEntryId,
-                                                    'total'
-                                                )}
-                                                valueLessThan={{
-                                                    value: timeEntry.durationInMinutes,
-                                                    color: 'alert',
-                                                }}
-                                                valueMoreThan={{
-                                                    value: timeEntry.durationInMinutes,
-                                                    color: 'success',
-                                                }}
-                                                value={timeEntry.totalAdjustedMinutes}
-                                                minValue={0}
-                                            />
-                                        )) || (
-                                            <AdjustedMinutesAboveOrBelow
-                                                style={{ width: '100%', textAlign: 'right' }}
-                                                minutes={timeEntry.totalAdjustedMinutes - timeEntry.durationInMinutes}
-                                            />
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        {(this.isInEditMode && (
-                                            <DurationCounter
-                                                align="right"
-                                                onChange={this.handleTimeEntryHoursChange(
-                                                    timeEntry.timeEntryId,
-                                                    'regular'
-                                                )}
-                                                value={timeEntry.regularBillableMinutes}
-                                                maxValue={timeEntry.totalAdjustedMinutes}
-                                                minValue={0}
-                                            />
-                                        )) || (
-                                            <Paragraph
-                                                size="small"
-                                                align="right"
-                                                type={timeEntry.regularBillableMinutes ? 'default' : 'dim'}
-                                            >
-                                                {timeEntry.regularBillableMinutes
-                                                    ? DateHandler.convertTotalMinutesToHM(
-                                                          timeEntry.regularBillableMinutes
-                                                      ) +
-                                                      (this.props.activity.rateType === SpotBillActivityRateType.Hourly
-                                                          ? ' × ' +
-                                                            MoneyHandler.formatAsDollars(
-                                                                ActivityHandler.calculateRegularRate(
-                                                                    timeEntryActivityRate
-                                                                )
-                                                            )
-                                                          : '')
-                                                    : '0min'}
-                                            </Paragraph>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        {(this.isInEditMode && (
-                                            <DurationCounter
-                                                align="right"
-                                                onChange={this.handleTimeEntryHoursChange(
-                                                    timeEntry.timeEntryId,
-                                                    'overtime'
-                                                )}
-                                                value={timeEntry.overtimeBillableMinutes}
-                                                maxValue={timeEntry.totalAdjustedMinutes}
-                                                minValue={0}
-                                            />
-                                        )) || (
-                                            <Paragraph
-                                                size="small"
-                                                align="right"
-                                                type={timeEntry.overtimeBillableMinutes ? 'default' : 'dim'}
-                                            >
-                                                {timeEntry.overtimeBillableMinutes
-                                                    ? DateHandler.convertTotalMinutesToHM(
-                                                          timeEntry.overtimeBillableMinutes
-                                                      ) +
-                                                      (this.props.activity.rateType === SpotBillActivityRateType.Hourly
-                                                          ? ' × ' +
-                                                            MoneyHandler.formatAsDollars(
-                                                                ActivityHandler.calculateOvertimeRate(
-                                                                    timeEntryActivityRate
-                                                                )
-                                                            )
-                                                          : '')
-                                                    : '0min'}
-                                            </Paragraph>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        {(this.isInEditMode && (
-                                            <DurationCounter
-                                                align="right"
-                                                onChange={this.handleTimeEntryHoursChange(
-                                                    timeEntry.timeEntryId,
-                                                    'doubletime'
-                                                )}
-                                                value={timeEntry.doubletimeBillableMinutes}
-                                                maxValue={timeEntry.totalAdjustedMinutes}
-                                                minValue={0}
-                                            />
-                                        )) || (
-                                            <Paragraph
-                                                size="small"
-                                                align="right"
-                                                type={timeEntry.doubletimeBillableMinutes ? 'default' : 'dim'}
-                                            >
-                                                {timeEntry.doubletimeBillableMinutes
-                                                    ? DateHandler.convertTotalMinutesToHM(
-                                                          timeEntry.doubletimeBillableMinutes
-                                                      ) +
-                                                      (this.props.activity.rateType === SpotBillActivityRateType.Hourly
-                                                          ? ' × ' +
-                                                            MoneyHandler.formatAsDollars(
-                                                                ActivityHandler.calculateDoubletimeRate(
-                                                                    timeEntryActivityRate
-                                                                )
-                                                            )
-                                                          : '')
-                                                    : '0min'}
-                                            </Paragraph>
-                                        )}
-                                    </div>
-
-                                    <div className={s.timeEntryAmount}>
-                                        <Paragraph size="small" align="right" bold={true}>
-                                            {MoneyHandler.formatAsDollars(timeEntryAmount)}
-                                        </Paragraph>
-                                    </div>
-                                </CardContentTableRow>
-                            );
-                        })}
+                        {this.timeEntries.map((timeEntry, timeEntryIndex) => (
+                            <BillSpotPreviewRowActivity
+                                key={timeEntry.timeEntryId}
+                                onRequestTimeEntryDeletion={this.props.onRequestTimeEntryDeletion}
+                                index={timeEntryIndex}
+                                timeEntry={timeEntry}
+                                timeEntriesCountInRow={this.timeEntries.length}
+                                activity={this.props.row}
+                                studioRateCardValues={this.props.studioRateCardValues}
+                                rateType={this.rateType}
+                                isInEditMode={this.isInEditMode}
+                            />
+                        ))}
                     </CardContentTable>
 
                     <div className={classNames(s.rowEditBox, { [s.editing]: this.isInEditMode })}>
@@ -537,28 +465,42 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
 
     private handleEnteringEditModeOfRow = () => {
         this.note = this.nameOrNote;
-        this.rateType = this.props.activity.rateType;
-        this.rateFlatOrFirstStageId = this.props.activity.rateFlatOrFirstStageId;
-        this.rateAmount = this.props.activity.rateAmount;
+        this.noteHasChanged = false;
+        this.rateType = this.props.row.rateType;
+        this.rateFlatOrFirstStageId = this.props.row.rateFlatOrFirstStageId;
+        this.rateAmount = this.props.row.rateAmount;
+        this.hasDiscount = this.props.row.discount.value > 0;
+        this.discount.value = this.props.row.discount.value;
+        this.discount.isFixed = this.props.row.discount.isFixed;
 
         this.isInEditMode = true;
     };
 
     private handleSavingRowChanges = () => {
-        SpotToBillFormActions.changeBillRowNote(this.props.index, this.note);
+        SpotToBillFormActions.changeBillRowNote(this.props.row.id, this.note);
 
         SpotToBillFormActions.changeBillRowRateType(
-            this.props.index,
+            this.props.row.id,
             this.rateType,
             this.rateFlatOrFirstStageId,
             this.rateAmount
         );
 
+        SpotToBillFormActions.changeBillRowDiscount(this.props.row.id, this.discount);
+
         this.isInEditMode = false;
     };
 
+    @action
     private handleNoteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         this.note = e.target.value;
+        this.noteHasChanged = true;
+    };
+
+    @action
+    private handleResettingNote = (e: React.MouseEvent<HTMLButtonElement>) => {
+        this.note = this.props.row.name;
+        this.noteHasChanged = false;
     };
 
     @action
@@ -602,19 +544,8 @@ export class BillSpotPreviewRowEdit extends React.Component<Props, {}> {
         this.rateAmount = count.value;
     };
 
-    private handleTimeEntryHoursChange = (
-        timeEntryId: number,
-        hours: 'total' | 'regular' | 'overtime' | 'doubletime'
-    ) => (totalMinutes: number) => {
-        SpotToBillFormActions.adjustTimeEntryHoursInBill(timeEntryId, {
-            [hours === 'total'
-                ? 'totalHoursInMinutes'
-                : hours === 'doubletime'
-                ? 'doubletimeHoursInMinutes'
-                : hours === 'overtime'
-                ? 'overtimeHoursInMinutes'
-                : 'regularHoursInMinutes']: totalMinutes,
-        });
+    private handleInitializeDiscount = (e: React.MouseEvent<HTMLButtonElement>) => {
+        this.hasDiscount = true;
     };
 
     private handleReorderRow = (option: { value: ReorderToOptions; label: string }) => {

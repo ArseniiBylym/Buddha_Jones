@@ -12,7 +12,7 @@ import { action, computed, observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
-import { BillTimeEntry, BillTypesFromApi, SpotBillFormSpot } from 'types/spotBilling';
+import { BillTypesFromApi, SpotBillFormSpot, SpotBillFormSummary } from 'types/spotBilling';
 import { StudioRateCardApiQuery, StudioRateCardFromApi, StudioRateCardTypeFromApi } from 'types/studioRateCard';
 import { BillSpotPreviewContent } from './BillSpotPreviewContent';
 import { BillSpotPreviewType } from './BillSpotPreviewType';
@@ -20,16 +20,8 @@ import { BillSpotPreviewType } from './BillSpotPreviewType';
 const s = require('./BillSpotPreview.css');
 
 interface Props extends AppOnlyStoreState {
-    billId: number;
-    spots: SpotBillFormSpot[];
-    unbilledTimeEntries: BillTimeEntry[];
+    billData: SpotBillFormSummary;
     editable: boolean;
-    projectName: string;
-    campaignName: string;
-    projectCampaignName: string | null;
-    projectCampaignId: number;
-    studioId: number;
-    studioName: string;
 }
 
 @inject('store')
@@ -40,7 +32,7 @@ export class BillSpotPreview extends React.Component<Props, {}> {
     @observable private isDeleteConfirmationOpen: boolean = false;
 
     @computed private get spotsInBill(): SpotBillFormSpot[] {
-        return this.props.spots.filter(spot =>
+        return this.props.billData.spots.filter(spot =>
             this.props.store!.spotToBillForm.spotsIdsAddedToBill.some(id => id === spot.spotId)
         );
     }
@@ -60,12 +52,23 @@ export class BillSpotPreview extends React.Component<Props, {}> {
         ]);
 
         if (this.billIsEmpty) {
-            history.push('/portal/bill-spot-form/' + this.props.billId);
+            history.push('/portal/bill-spot-form/' + this.props.billData.bill.billId);
         }
     }
 
     public render() {
-        const { billId, projectName, campaignName, projectCampaignName, studioId, studioName, editable } = this.props;
+        const {
+            billData: {
+                projectName,
+                campaignName,
+                projectCampaignName,
+                studioId,
+                studioName,
+                bill: { billId },
+            },
+            editable,
+        } = this.props;
+
         const { selectedRateCardId } = this.props.store!.spotToBillForm;
 
         return (
@@ -295,6 +298,6 @@ export class BillSpotPreview extends React.Component<Props, {}> {
     };
 
     private closeBillPreview = () => {
-        history.push('/portal/bill-spot-form/' + this.props.billId);
+        history.push('/portal/bill-spot-form/' + this.props.billData.bill.billId);
     };
 }

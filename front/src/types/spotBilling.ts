@@ -45,6 +45,7 @@ export interface SpotBillFormActivityGroup {
     sort: number;
     name: string;
     note: string | null;
+    discount: SpotBillDiscount;
     rateType: SpotBillActivityRateType;
     rateFlatOrFirstStageId: number | null;
     rateAmount: number | null;
@@ -57,8 +58,9 @@ export interface SpotBillFormData {
     billStatusName: string;
     billTypeId: number | null;
     billTypeName: string | null;
-    selectedSpots: number[];
+    selectedSpotsIds: number[];
     selectedRateCardId: number | null;
+    discount: SpotBillDiscount;
     rows: SpotBillFormActivityGroup[];
     timeEntries: SpotBillFormActivityTimeEntry[];
 }
@@ -130,8 +132,8 @@ export interface SpotBillFormSummary {
     studioId: number;
     studioName: string;
     projectBillsHistory: ProjectBillsHistoryEntry[];
-    unbilledTimeEntries: BillTimeEntry[];
-    unbilledSpots: SpotBillFormSpot[];
+    timeEntries: BillTimeEntry[];
+    spots: SpotBillFormSpot[];
     bill: SpotBillFormData;
 }
 

@@ -120,7 +120,7 @@ export default class BillSpotForm extends React.Component<Props, {}> {
                                 },
                             },
                         ],
-                        unbilledTimeEntries: [
+                        timeEntries: [
                             {
                                 timeEntryId: 59,
                                 projectId: 47,
@@ -731,7 +731,7 @@ export default class BillSpotForm extends React.Component<Props, {}> {
                                 },
                             },
                         ],
-                        unbilledSpots: [
+                        spots: [
                             {
                                 spotId: 2,
                                 spotName: '#1 Interrogation',
@@ -761,8 +761,12 @@ export default class BillSpotForm extends React.Component<Props, {}> {
                             billStatusName: 'Draft',
                             billTypeId: null,
                             billTypeName: null,
-                            selectedSpots: [79],
+                            selectedSpotsIds: [79],
                             selectedRateCardId: null,
+                            discount: {
+                                value: 0,
+                                isFixed: true,
+                            },
                             timeEntries: [],
                             rows: [],
                         },

@@ -286,3 +286,10 @@
     width: 14px;
     height: 13px;
 }
+
+:global(.iconDiscountBlue) {
+    background: url('./../../assets/images/form/discount-icon-blue.svg') 0 0 no-repeat;
+    background-size: 18px 18px;
+    width: 18px;
+    height: 18px;
+}

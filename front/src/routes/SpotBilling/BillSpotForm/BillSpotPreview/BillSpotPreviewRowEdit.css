@@ -42,6 +42,24 @@
         align-items: flex-start;
         padding: 24px;
 
+        & .title {
+            & .subTitle {
+                font-size: 0.8rem;
+            }
+        }
+
+        & .titleInEditMode {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-content: center;
+            align-items: center;
+
+            & .resetButton {
+                padding-left: 8px;
+            }
+        }
+
         &:not(:first-child) {
             border-left: 1px solid #e2dbd5;
         }
@@ -76,6 +94,17 @@
     align-items: center;
 }
 
+.rowRate {
+    position: relative;
+}
+
+.rowDiscountButton {
+    position: absolute;
+    top: 50%;
+    margin-top: -12px;
+    right: -24px;
+}
+
 .rowCheckbox {
     opacity: 0;
     transition: 300ms opacity 0ms cubic-bezier(1, 0, 0, 1);
@@ -83,19 +112,4 @@
     &.show {
         opacity: 1;
     }
-}
-
-.timeEntryRow {
-    & > div {
-        padding-left: 3px;
-        padding-right: 3px;
-    }
-}
-
-.timeEntryName {
-    padding-left: 24px !important;
-}
-
-.timeEntryAmount {
-    padding-right: 24px !important;
 }

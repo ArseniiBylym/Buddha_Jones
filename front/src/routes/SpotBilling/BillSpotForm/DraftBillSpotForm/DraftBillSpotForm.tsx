@@ -6,7 +6,7 @@ import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { AppOnlyStoreState } from 'store/AllStores';
 import { BillTimeEntry, SpotBillFormSummary } from 'types/spotBilling';
-import { BillSpotPreview } from '../BillSpotPreview';
+import { BillSpotPreview } from '../BillSpotPreview/BillSpotPreview';
 import {
     BillSpotFormProjectHistory,
     BillSpotFormSpotsGrid,
@@ -29,7 +29,7 @@ interface Props extends AppOnlyStoreState {
 export class DraftBillSpotForm extends React.Component<Props, {}> {
     @computed
     private get unbilledTimeEntriesWihoutThoseInBill(): BillTimeEntry[] {
-        return this.props.billData.unbilledTimeEntries.filter(
+        return this.props.billData.timeEntries.filter(
             timeEntry => SpotToBillFormActions.checkIfTimeEntryIsInBill(timeEntry.timeEntryId) === false
         );
     }
@@ -90,20 +90,7 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
         const { billData, showPreview } = this.props;
 
         if (showPreview) {
-            return (
-                <BillSpotPreview
-                    billId={billData.bill.billId}
-                    spots={billData.unbilledSpots}
-                    unbilledTimeEntries={this.props.billData.unbilledTimeEntries}
-                    projectName={billData.projectName}
-                    campaignName={billData.campaignName}
-                    projectCampaignName={billData.projectCampaignName}
-                    projectCampaignId={billData.projectCampaignId}
-                    studioId={billData.studioId}
-                    studioName={billData.studioName}
-                    editable={true}
-                />
-            );
+            return <BillSpotPreview billData={billData} editable={true} />;
         }
 
         return (
@@ -111,7 +98,7 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
                 <BillSpotFormProjectHistory projectHistory={billData.projectBillsHistory} />
 
                 <BillSpotFormSpotsGrid
-                    spots={billData.unbilledSpots}
+                    spots={billData.spots}
                     unbilledDailiesTimeEntries={this.filteredTimeEntries.unbilledDailiesTimeEntries}
                     unbilledNonBillableTimeEntries={this.filteredTimeEntries.unbilledNonBillableTimeEntries}
                     unbilledBillableTimeEntries={this.filteredTimeEntries.unbilledBillableTimeEntries}
@@ -121,11 +108,7 @@ export class DraftBillSpotForm extends React.Component<Props, {}> {
                     editable={true}
                 />
 
-                <BillSpotFormBottomBar
-                    billId={billData.bill.billId}
-                    isBillSaving={false}
-                    spots={billData.unbilledSpots}
-                />
+                <BillSpotFormBottomBar billId={billData.bill.billId} isBillSaving={false} spots={billData.spots} />
             </React.Fragment>
         );
     }
