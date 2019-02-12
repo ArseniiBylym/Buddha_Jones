@@ -50,6 +50,9 @@
   & .addVersion {
     margin: 6px;
   }
+  & .versionNameDescription {
+    width: 33.33%;
+  }
   & .addVersion {
     display: inline-flex;
     flex: 0 1 auto;

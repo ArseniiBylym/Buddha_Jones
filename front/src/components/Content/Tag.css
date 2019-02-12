@@ -26,9 +26,16 @@
                 margin-left: 10px;
             }
         }
+        & .labelVersion {
+            /* flex-grow: 1 !important; */
+            flex-grow: 1 ;
+        }
 
         & .editButton {
             height: 32px;
+        }
+        & .editButtonVersion {
+            margin-left: auto;
         }
     }
 
@@ -71,6 +78,10 @@
         &.dim {
             color: #a59e97;
         }
+    }
+
+    & .titleVersion {
+        width: 35px;
     }
 
     & .label {

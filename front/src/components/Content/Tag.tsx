@@ -25,6 +25,7 @@ interface TagProps {
     }>;
     showInfoIcon?: boolean;
     isBig?: boolean;
+    fromVersion?: boolean;
 }
 
 // Component
@@ -45,6 +46,7 @@ export class Tag extends React.Component<TagProps, {}> {
             otherLabels: [],
             showInfoIcon: false,
             isBig: false,
+            fromVersion: false
         };
     }
 
@@ -83,6 +85,7 @@ export class Tag extends React.Component<TagProps, {}> {
                             {
                                 [s.bold]: this.props.isTitleBold,
                                 [s.dim]: this.props.isTitleDim,
+                                [s.titleVersion]: this.props.fromVersion,
                             },
                             this.props.titleClassName
                         )}
@@ -101,6 +104,7 @@ export class Tag extends React.Component<TagProps, {}> {
                                 className={classNames(s.label, {
                                     [s.bold]: label.isBold,
                                     [s.first]: labelIndex === 0,
+                                    [s.labelVersion]: this.props.fromVersion,
                                 })}
                             >
                                 {label.text}
@@ -110,7 +114,11 @@ export class Tag extends React.Component<TagProps, {}> {
 
                 {(typeof this.props.onEditButtonClick !== 'undefined' ||
                     typeof this.props.onEditButtonClickCapture !== 'undefined') && (
-                    <p className={s.editButton}>
+                    <p 
+                        className={classNames(s.editButton, {
+                        [s.editButtonVersion]: this.props.fromVersion,
+                        })}
+                    >
                         <Button
                             onClick={this.handleEditClick(false)}
                             onClickCapture={this.handleEditClick(true)}

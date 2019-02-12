@@ -29,13 +29,16 @@ export class ProjectBoardSpotVersion extends React.Component<ProjectBoardSpotVer
         return (
             // <Tooltip text={this.props.note ? this.props.note : ''}>
                 <Tag
-                    onTagClick={this.props.userCanEdit ? this.handleVersionEdit : undefined}
+                    // onTagClick={this.props.userCanEdit ? this.handleVersionEdit : undefined}
+                    onTagClick={this.handleVersionView}
                     onEditButtonClick={this.props.userCanEdit ? this.handleVersionEdit : undefined}
-                    className={classNames(s.versionName)}
-                    showInfoIcon={this.props.note ? true : false}
+                    className={classNames(s.versionName, s.versionNameDescription)}
+                    // showInfoIcon={this.props.note ? true : false}
+                    showInfoIcon={true}
                     isBig={true}
                     title={this.props.name}
                     isTitleBold={true}
+                    fromVersion={true}
                     otherLabels={
                         this.props.status
                             ? [
@@ -48,6 +51,10 @@ export class ProjectBoardSpotVersion extends React.Component<ProjectBoardSpotVer
                 />
             // </Tooltip>
         );
+    }
+
+    private handleVersionView = async (e: React.MouseEvent<HTMLElement>) => {
+        e.stopPropagation();
     }
 
     private handleVersionEdit = async (e: React.MouseEvent<HTMLElement>) => {
