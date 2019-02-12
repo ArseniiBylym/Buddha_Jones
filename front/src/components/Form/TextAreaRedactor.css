@@ -26,7 +26,7 @@
     cursor: default;
   }
   :global(.rdw-dropdown-wrapper) {
-    width: 100px;
+    width: auto;
     height: 30px;
     background: white;
     cursor: pointer;
@@ -67,7 +67,8 @@
     border-right: 5px solid transparent;
   }
   :global(.rdw-dropdown-selectedtext) {
-    width: 100px;
+    width: 150px;
+    overflow: hidden;
     display: flex;
     position: relative;
     height: 100%;
@@ -780,7 +781,7 @@
     border-radius: 2px;
   }
   :global(.rdw-image-alignment-options-popup) {
-    display: none !important;
+    /* display: none !important; */
     position: absolute;
     background: white;
     display: flex;

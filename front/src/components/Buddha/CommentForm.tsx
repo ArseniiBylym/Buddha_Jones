@@ -2,8 +2,9 @@ import * as React from 'react';
 import * as classNames from 'classnames';
 import { observer } from 'mobx-react';
 import { Button, ButtonLabelColorPropType } from '../Button';
-// import { TextArea } from '../Form';
-import { Input, TextAreaRedactor } from '../Form';
+import { TextArea } from '../Form';
+import { Input } from '../Form';
+// import { TextAreaRedactor } from '../Form';
 import { Paragraph } from '../Content';
 import { LoadingShade, LoadingSpinner, LoadingIndicator } from '../Loaders';
 import { computed } from 'mobx';
@@ -117,18 +118,18 @@ export class CommentForm extends React.Component<CommentFormProps, {}> {
                                 autoFocus={true}
                             />
                         )) || (
-                            // <TextArea
-                            //     onChange={this.handleChange}
-                            //     value={this.props.value}
-                            //     label={this.props.placeholder || ''}
-                            //     height={this.props.textareaMinHeight}
-                            //     width={1152}
-                            //     autoFocus={true}
-                            // />
-                            <TextAreaRedactor 
+                            <TextArea
+                                onChange={this.handleChange}
                                 value={this.props.value}
-                                onChange={this.handleChangeValue}
+                                label={this.props.placeholder || ''}
+                                height={this.props.textareaMinHeight}
+                                width={1152}
+                                autoFocus={true}
                             />
+                            // <TextAreaRedactor 
+                            //     value={this.props.value}
+                            //     onChange={this.handleChangeValue}
+                            // />
                         )}
                 </div>
 
@@ -180,11 +181,11 @@ export class CommentForm extends React.Component<CommentFormProps, {}> {
         }
     };
 
-    private handleChangeValue = (value: any) => {
-        if (this.props.onChange) {
-            this.props.onChange(value);
-        }
-    }
+    // private handleChangeValue = (value: any) => {
+    //     if (this.props.onChange) {
+    //         this.props.onChange(value);
+    //     }
+    // }
 
     private handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
         if (this.props.onSubmit) {

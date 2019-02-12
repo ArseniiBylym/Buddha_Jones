@@ -15,7 +15,9 @@ import { ButtonEdit, ButtonSave } from 'components/Button';
 import { observable, computed, reaction, toJS } from 'mobx';
 import { UserPermissionKey } from 'types/projectPermissions';
 import { Modal } from 'components/Modals';
-import { DropdownContainer, OptionsList, TextArea, ToggleButtons, OptionsListValuePropType } from 'components/Form';
+import { DropdownContainer, OptionsList, ToggleButtons, OptionsListValuePropType } from 'components/Form';
+// import { TextArea } from 'components/Form';
+import { TextAreaRedactor } from 'components/Form';
 
 // Styles
 const s = require('./ProjectBoardContent.css');
@@ -274,7 +276,7 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                     size={'content-wide'}
                 >
                     {projectsDetails.versionEditModal && (
-                        <div>
+                        <div style={{ height: '500px', maxHeight: '500px', overflow: 'auto'}}>
                             {this.userCanEditVersionStatus && (
                                 <DropdownContainer
                                     ref={this.referenceVersionStatusDropdown}
@@ -310,13 +312,17 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                             )}
 
                             {this.userCanEditVersionNote && (
-                                <TextArea
-                                    onChange={this.handleVersionNoteChange}
-                                    className={s.versionNotes}
-                                    label="Version note"
+                                // <TextArea
+                                //     onChange={this.handleVersionNoteChange}
+                                //     className={s.versionNotes}
+                                //     label="Version note"
+                                //     value={projectsDetails.versionEditModal.versionNote || ''}
+                                //     width={1152}
+                                //     height={400}
+                                // />
+                                <TextAreaRedactor 
                                     value={projectsDetails.versionEditModal.versionNote || ''}
-                                    width={1152}
-                                    height={400}
+                                    onChange={this.handleVersionNoteChangeValue}
                                 />
                             )}
 
@@ -439,8 +445,12 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
         }
     };
 
-    private handleVersionNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        ProjectsDetailsActions.changeVersionEditModalVersionNote(e.target.value);
+    // private handleVersionNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    //     ProjectsDetailsActions.changeVersionEditModalVersionNote(e.target.value);
+    // };
+
+    private handleVersionNoteChangeValue = (value: any) => {
+        ProjectsDetailsActions.changeVersionEditModalVersionNote(value);
     };
 
     private handleVersionRemoval = (remove: boolean) => {
