@@ -3,7 +3,8 @@ import * as classNames from 'classnames';
 import { observer } from 'mobx-react';
 import { VersionStatus } from 'types/projectDetails';
 import { ProjectsDetailsActions } from 'actions';
-import { Tooltip, Tag } from 'components/Content';
+// import { Tooltip } from 'components/Content';
+import { Tag } from 'components/Content';
 
 // Styles
 const s = require('./ProjectBoardSpot.css');
