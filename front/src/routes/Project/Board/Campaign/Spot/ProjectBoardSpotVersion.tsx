@@ -18,6 +18,7 @@ interface ProjectBoardSpotVersionProps {
     name: string;
     note: string | null;
     status: VersionStatus | null;
+    userCanEdit?: any;
 }
 
 // Component
@@ -27,8 +28,8 @@ export class ProjectBoardSpotVersion extends React.Component<ProjectBoardSpotVer
         return (
             <Tooltip text={this.props.note ? this.props.note : ''}>
                 <Tag
-                    onTagClick={this.props.isEditFormVisible ? this.handleVersionEdit : undefined}
-                    onEditButtonClick={this.props.isEditFormVisible ? this.handleVersionEdit : undefined}
+                    onTagClick={this.props.userCanEdit ? this.handleVersionEdit : undefined}
+                    onEditButtonClick={this.props.userCanEdit ? this.handleVersionEdit : undefined}
                     className={classNames(s.versionName)}
                     showInfoIcon={this.props.note ? true : false}
                     isBig={true}
