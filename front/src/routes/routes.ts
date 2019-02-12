@@ -18,6 +18,7 @@ import { ProducerSpotSentFormAsync, ProducerSpotSentListAsync } from './SpotSent
 import { NewClientRequestListAsync } from './StudioClient/NewClientRequest/List';
 import { TimeApprovalPermissionsAsync } from './TimeCardPermissions/TimeApprovalPermissions';
 import { TimeEntryPermissionsAsync } from './TimeCardPermissions/TimeEntryPermissions';
+import { UserTypePermissionsAsync } from './TimeCardPermissions/UserTypePermissions';
 import { TimeEntryAsync } from './TimeTracking';
 import { TimeApprovalAsync } from './TimeTracking/Approval';
 import { UserAccountAsync } from './User';
@@ -28,14 +29,16 @@ const projectsIcon = require('../assets/images/navigation/navigation-icon-projec
 const studioIcon = require('../assets/images/navigation/navigation-icon-customer.png');
 const configurationIcon = require('../assets/images/navigation/navigation-icon-activity.png');
 const billingIcon = require('assets/images/navigation/navigation-icon-billing.png');
+const timeIcon = require('assets/images/navigation/navigation-icon-time.png');
 
 // Groups
 const dashboardGroup = { key: 'dashboard', name: 'Dashboard', icon: dashboardIcon };
 const projectsGroup = { key: 'projects', name: 'Projects', icon: projectsIcon };
-const studioGroup = { key: 'studio', name: 'Studio', icon: studioIcon };
+const timeGroup = { key: 'time', name: 'Time', icon: timeIcon };
+const studioGroup = { key: 'studio', name: 'Spots', icon: studioIcon };
 const configurationGroup = { key: 'configuration', name: 'Configuration', icon: configurationIcon };
-const StudioClientGroup = { key: 'studio-client', name: 'StudioClient', icon: studioIcon };
-const billingGroup = { key: 'billing', name: 'Billing', icon: billingIcon };
+// const StudioClientGroup = { key: 'studio-client', name: 'StudioClient', icon: studioIcon };
+const billingGroup = { key: 'billing', name: 'Studio', icon: billingIcon };
 
 export const routes: Route[] = [
     {
@@ -59,6 +62,8 @@ export const routes: Route[] = [
         entry: '/portal/projects/1',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Project',
+        subModuleAccess: 'Projects',
     },
     {
         component: ProjectCreateAsync,
@@ -68,6 +73,8 @@ export const routes: Route[] = [
         path: '/portal/project/new',
         exact: true,
         allowAllUsers: false,
+        moduleAccess: 'Project',
+        subModuleAccess: 'Projects',
     },
     {
         component: ProjectsBoardAsync,
@@ -77,28 +84,34 @@ export const routes: Route[] = [
         path: '/portal/project/:studioId/:studioName/:projectId/:projectName/:fromPage?',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Project',
+        subModuleAccess: 'Projects',
     },
     {
         component: TimeEntryAsync,
         key: 'time-entry',
         accessKey: RouteAccessKey.TimeEntry,
-        group: projectsGroup,
+        group: timeGroup,
         name: 'Time entry',
         path: '/portal/time/entry',
         entry: '/portal/time/entry',
         exact: true,
         allowAllUsers: false,
+        moduleAccess: 'Project',
+        subModuleAccess: 'Time Entry',
     },
     {
         component: TimeApprovalAsync,
         key: 'time-approval',
         accessKey: RouteAccessKey.TimeApproval,
-        group: projectsGroup,
+        group: timeGroup,
         name: 'Time approval',
         path: '/portal/time/approval',
         entry: '/portal/time/approval',
         exact: true,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Project',
+        subModuleAccess: 'Time Approval',
     },
     {
         component: ProducerSpotSentListAsync,
@@ -109,7 +122,9 @@ export const routes: Route[] = [
         path: '/portal/studio/producer-spot-sent-list',
         entry: '/portal/studio/producer-spot-sent-list',
         exact: true,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Initiate Spot Sent',
     },
     {
         component: ProducerSpotSentFormAsync,
@@ -118,7 +133,9 @@ export const routes: Route[] = [
         name: 'Spot sent',
         path: '/portal/studio/producer-spot-sent-details/:id',
         exact: false,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Initiate Spot Sent',
     },
     {
         component: ProducerSpotSentFormAsync,
@@ -127,7 +144,9 @@ export const routes: Route[] = [
         name: 'Spot sent',
         path: '/portal/studio/producer-spot-sent-details/:id/:path',
         exact: false,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Initiate Spot Sent',
     },
     {
         component: SpotsPostAsync,
@@ -138,7 +157,9 @@ export const routes: Route[] = [
         path: '/portal/spot-post-finish-request',
         entry: '/portal/spot-post-finish-request',
         exact: false,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Finish spot sent',
     },
     {
         component: SpotsToBillAsync,
@@ -149,7 +170,9 @@ export const routes: Route[] = [
         path: '/portal/spots-to-bill',
         entry: '/portal/spots-to-bill',
         exact: true,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Spot Billing',
     },
     {
         component: BillSpotFormAsync,
@@ -158,7 +181,9 @@ export const routes: Route[] = [
         name: 'Bill spot form',
         path: '/portal/bill-spot-form/:id/:preview?',
         exact: false,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Spot Billing',
     },
     {
         component: SpotsToGraphicsAsync,
@@ -169,7 +194,9 @@ export const routes: Route[] = [
         path: '/portal/spots-to-graphics',
         entry: '/portal/spots-to-graphics',
         exact: true,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Graphics Spot Sent',
     },
     {
         component: SpotsToEDLAsync,
@@ -180,7 +207,9 @@ export const routes: Route[] = [
         path: '/portal/spots-to-edl',
         entry: '/portal/spots-to-edl',
         exact: true,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'EDL for Spot',
     },
     {
         component: SpotsToQCAsync,
@@ -191,7 +220,9 @@ export const routes: Route[] = [
         path: '/portal/spots-to-qc',
         entry: '/portal/spots-to-qc',
         exact: true,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Spot to QC',
     },
     {
         component: SpotsToGraphicsSentAsync,
@@ -206,7 +237,8 @@ export const routes: Route[] = [
         exact: true,
         // allowAllUsers: true,
         allowAllUsers: false,
-        subModuleAccess: 7,
+        moduleAccess: 'Studio',
+        subModuleAccess: 'Graphics Spot Sent',
     },
     {
         component: BillingStudioRateCardsAsync,
@@ -217,17 +249,21 @@ export const routes: Route[] = [
         path: '/portal/billing/studio-rate-card',
         entry: '/portal/billing/studio-rate-card',
         exact: true,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio Rate Card',
+        subModuleAccess: 'Studio Rate Card',
     },
     {
         component: BillingStudioRateCardAsync,
-        key: 'studio-rate-card',
+        key: 'studio-rate-card-id',
         accessKey: RouteAccessKey.StudioRateCard,
         group: billingGroup,
         name: 'Studio rate card',
         path: '/portal/billing/studio-rate-card/:studio_id/:rate_card_id?',
         exact: false,
-        allowAllUsers: true,
+        allowAllUsers: false,
+        moduleAccess: 'Studio Rate Card',
+        subModuleAccess: 'Studio Rate Card',
     },
     {
         component: ActivitiesDefinitionListAsync,
@@ -239,15 +275,32 @@ export const routes: Route[] = [
         entry: '/portal/configuration/activities',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'Activities Definition',
     },
     {
         component: ActivityDefinitionFormAsync,
-        key: 'activities-definition',
+        key: 'activities-definition-form',
         accessKey: RouteAccessKey.ActivitiesDefinition,
         name: 'Define activity',
         path: '/portal/configuration/activity/:id',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'Activities Definition',
+    },
+    {
+        component: ProjectBoardPermissionListAsync,
+        key: 'project-board-permission',
+        accessKey: RouteAccessKey.ProjectBoardPermission,
+        group: configurationGroup,
+        name: 'User management',
+        path: '/portal/configuration/user-management',
+        entry: '/portal/configuration/user-management',
+        exact: true,
+        allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'User Management',
     },
     {
         component: ProjectBoardPermissionEditAsync,
@@ -257,6 +310,8 @@ export const routes: Route[] = [
         path: '/portal/configuration/user-management/project-board-permission/:id',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'User Management',
     },
     {
         component: TimeEntryPermissionsAsync,
@@ -268,6 +323,8 @@ export const routes: Route[] = [
         entry: '/portal/configuration/user-management/time-entry-permissions',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'Time Entry Permission',
     },
     {
         component: TimeApprovalPermissionsAsync,
@@ -279,18 +336,35 @@ export const routes: Route[] = [
         entry: '/portal/configuration/user-management/time-approval-permissions/:id',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'User Management',
     },
     {
-        component: ProjectBoardPermissionListAsync,
-        key: 'project-board-permission',
+        component: UserTypePermissionsAsync,
+        key: 'user-type-permissions',
         accessKey: RouteAccessKey.ProjectBoardPermission,
-        group: configurationGroup,
-        name: 'User management',
-        path: '/portal/configuration/user-management/project-board-permission',
-        entry: '/portal/configuration/user-management/project-board-permission',
+        // group: configurationGroup,
+        name: 'User Type Permissions',
+        path: '/portal/configuration/user-management/user-type-permissions/:id',
+        entry: '/portal/configuration/user-management/user-type-permissions/:id',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'User Management',
     },
+    // {
+    //     component: ProjectBoardPermissionListAsync,
+    //     key: 'project-board-permission',
+    //     accessKey: RouteAccessKey.ProjectBoardPermission,
+    //     group: configurationGroup,
+    //     name: 'User management',
+    //     path: '/portal/configuration/user-management/project-board-permission',
+    //     entry: '/portal/configuration/user-management/project-board-permission',
+    //     exact: false,
+    //     allowAllUsers: false,
+    //     moduleAccess: 'Configuration',
+    //     subModuleAccess: 'User Management',
+    // },
     {
         component: UserManagementUsersListAsync,
         key: 'user-management-users-list',
@@ -300,6 +374,8 @@ export const routes: Route[] = [
         path: '/portal/configuration/user-management/users-list/:userTypeId',
         exact: false,
         allowAllUsers: false,
+        moduleAccess: 'Configuration',
+        subModuleAccess: 'User Management',
     },
     {
         component: UserAccountAsync,
@@ -314,11 +390,14 @@ export const routes: Route[] = [
         component: NewClientRequestListAsync,
         key: 'new-customer-approval',
         accessKey: RouteAccessKey.NewCustomerApproval,
-        group: StudioClientGroup,
+        // group: StudioClientGroup,
+        group: billingGroup,
         name: 'New client request',
         path: '/portal/studio-client/new-client-request',
         entry: '/portal/studio-client/new-client-request',
         exact: true,
         allowAllUsers: false,
+        moduleAccess: 'New Client Request',
+        subModuleAccess: 'New Client Request',
     },
 ];

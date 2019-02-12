@@ -5,6 +5,7 @@ interface HeaderAll {
     title?: string | null;
     subTitle?: string | null;
     preTitleSpan?: string | null;
+    afterTitleSpan?: string | null;
     preSubTitleSpan?: string | null;
     elements?: JSX.Element[];
     elementsOnLeft?: JSX.Element[];
@@ -36,12 +37,14 @@ export class HeaderActionsClass {
         title: string | null,
         subTitle: string | null = null,
         preTitleSpan: string | null = null,
-        preSubTitleSpan: string | null = null
+        preSubTitleSpan: string | null = null,
+        afterTitleSpan: string | null = null,
     ): Promise<boolean> => {
         HeaderStore.title = title;
         HeaderStore.preTitleSpan = preTitleSpan;
         HeaderStore.subTitle = subTitle;
         HeaderStore.preSubTitleSpan = preSubTitleSpan;
+        HeaderStore.afterTitleSpan = afterTitleSpan;
 
         return true;
     };
@@ -80,6 +83,7 @@ export class HeaderActionsClass {
     public replaceMainHeaderContent = async (content: HeaderAll): Promise<boolean> => {
         HeaderStore.title = content.title || null;
         HeaderStore.preTitleSpan = content.preTitleSpan || null;
+        HeaderStore.afterTitleSpan = content.afterTitleSpan || null;
         HeaderStore.subTitle = content.subTitle || null;
         HeaderStore.preSubTitleSpan = content.preSubTitleSpan || null;
         HeaderStore.elements = content.elements || [];

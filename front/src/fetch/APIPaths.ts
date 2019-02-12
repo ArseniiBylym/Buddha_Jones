@@ -59,4 +59,5 @@ export enum APIPath {
     SPOTS_POST                              = '/spot-sent-all',
     SPOTS_VALIDATE                          = '/spot-sent-validate',
     NOTIFICATIONS                           = '/notification',
+    MODULE_ACCESS                           = '/module-access',
 }

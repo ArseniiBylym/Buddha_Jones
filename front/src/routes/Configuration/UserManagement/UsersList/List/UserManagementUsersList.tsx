@@ -165,7 +165,7 @@ class UserManagementUsersList extends React.Component<Props & AppState, {}> {
     };
 
     private goBackToProjectBoardPermissionList = (): void => {
-        history.push('/portal/configuration/user-management/project-board-permission');
+        history.push('/portal/configuration/user-management');
     };
 
     private setHeaderAndInitialData = (): void => {
@@ -175,8 +175,10 @@ class UserManagementUsersList extends React.Component<Props & AppState, {}> {
         UsersActions.fetchUsersTypes().then();
 
         // Set header
+        const typeName: any = this.props.location!.search.split('=')[1] + '';
         HeaderActions.setMainHeaderTitlesAndElements(
-            'User Management',
+            decodeURIComponent(typeName),
+            // 'User Management',
             'Configuration',
             null,
             null,
