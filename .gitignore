@@ -19,3 +19,4 @@ vendor/
 *.swp
 *.php~
 *.swo
+api/bin/public/php_errors.log
