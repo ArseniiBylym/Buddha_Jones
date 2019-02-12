@@ -44,7 +44,6 @@ export class TextAreaRedactor extends React.Component<any, {}> {
     }
 
     componentDidMount = () => {
-        // console.log('Mounted value', this.props.value)
         const contentBlock = htmlToDraft(this.props.value);
         if (contentBlock) {
             const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
@@ -74,6 +73,9 @@ export class TextAreaRedactor extends React.Component<any, {}> {
     // }
 
     onEditorStateChange = (editor) => {
+        if (this.props.isEditable === false) {
+            return;
+        }
         const editorHTML = draftToHtml(convertToRaw(editor.getCurrentContent()));
         this.setState({
             editorValue: editor,
@@ -125,6 +127,18 @@ export class TextAreaRedactor extends React.Component<any, {}> {
         //   });
     }
 
+    editOptions = () => {
+        if (this.props.isEditable) {
+            return ['inline', 'blockType', 'fontSize', 'fontFamily', 'image', 'textAlign'];
+        } else {
+            return [];
+        }
+    }
+
+    pictureEditable = () => {
+        return this.props.isEditable ? true : false;
+    }
+
     render() {
         if (!this.state.editorValue) {
             return null;
@@ -138,7 +152,7 @@ export class TextAreaRedactor extends React.Component<any, {}> {
                     editorClassName="demo-editor"
                     toolbarClassName="demo-toolbar"
                     toolbar={{
-                        options: ['inline', 'blockType', 'fontSize', 'fontFamily', 'image', 'textAlign', ],
+                        options: this.editOptions(),
                         inline: {
                             options: ['bold', 'italic', 'underline'],
                         },
@@ -151,8 +165,8 @@ export class TextAreaRedactor extends React.Component<any, {}> {
                                 width: '300px',
                             },  
                             uploadCallback: this.uploadImageCallBack,
-                            // alt: {present: true, mandatory: true},
-                            previewImage: true 
+                            previewImage: true,
+                            alignmentEnabled: this.pictureEditable() 
                         },
                     }}
                 />

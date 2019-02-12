@@ -322,6 +322,7 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                                 //     height={400}
                                 // />
                                 <TextAreaRedactor 
+                                    isEditable={projectsDetails.versionEditModal.editable}
                                     value={projectsDetails.versionEditModal.versionNote || ''}
                                     onChange={this.handleVersionNoteChangeValue}
                                 />

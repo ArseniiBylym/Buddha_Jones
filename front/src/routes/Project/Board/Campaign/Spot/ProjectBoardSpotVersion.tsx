@@ -55,6 +55,16 @@ export class ProjectBoardSpotVersion extends React.Component<ProjectBoardSpotVer
 
     private handleVersionView = async (e: React.MouseEvent<HTMLElement>) => {
         e.stopPropagation();
+        ProjectsDetailsActions.openVersionEditModal({
+            projectId: this.props.projectId,
+            projectCampaignId: this.props.projectCampaignId,
+            spotId: this.props.spotId,
+            versionId: this.props.id,
+            versionName: this.props.name,
+            versionStatus: this.props.status,
+            versionNote: this.props.note,
+            editable: false,
+        });
     }
 
     private handleVersionEdit = async (e: React.MouseEvent<HTMLElement>) => {
@@ -67,6 +77,7 @@ export class ProjectBoardSpotVersion extends React.Component<ProjectBoardSpotVer
             versionName: this.props.name,
             versionStatus: this.props.status,
             versionNote: this.props.note,
+            editable: true,
         });
     };
 }

@@ -864,12 +864,13 @@
 
 
   :global(.demo-wrapper) {
-    margin-top: 50px;
+    margin-top: 10px;
   }
   :global(.demo-editor) {
     min-height: 100px;
     padding: 5px;
-    border: 1px solid #3999be;
+    border: 1px solid #cac7c4;
+    border-radius: 3px;
   }
   :global(.demo-toolbar) {
     background: none;
