@@ -1,4 +1,4 @@
-import { computed, observable, reaction } from 'mobx';
+import { computed, observable } from 'mobx';
 import { SpotBillDiscount, SpotBillFormActivityGroup, SpotBillFormActivityTimeEntry } from 'types/spotBilling';
 
 export type AddingActivityToBillStatus = 'none' | 'saving' | 'success' | 'error';
