@@ -53,6 +53,9 @@
   & .versionNameDescription {
     width: 33.33%;
   }
+  & .versionNameFullWidth {
+    flex-grow: 1
+  }
   & .addVersion {
     display: inline-flex;
     flex: 0 1 auto;

@@ -278,7 +278,7 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                 >
                     {projectsDetails.versionEditModal && (
                         <div style={{ height: '500px', maxHeight: '500px', overflow: 'auto'}}>
-                            {this.userCanEditVersionStatus && (
+                            {this.userCanEditVersionStatus && projectsDetails.versionEditModal.editable && (
                                 <DropdownContainer
                                     ref={this.referenceVersionStatusDropdown}
                                     label="Version status"
