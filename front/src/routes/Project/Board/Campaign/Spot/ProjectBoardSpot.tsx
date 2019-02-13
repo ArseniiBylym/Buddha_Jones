@@ -382,12 +382,15 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                                         {version.editors && version.editors.length > 0 && (
                                             <Tooltip text={this.spotVersionsEditors(version.editors)}>
                                                 <Tag
-                                                    className={s.versionName}
+                                                    className={classNames(s.versionName, s.versionNameFullWidth)}
                                                     title="Editors:"
                                                     isTitleDim={true}
                                                     isBig={true}
+                                                    // otherLabels={[
+                                                    //     { text: version.editors[0].name.substring(0, 8) + '...' },
+                                                    // ]}
                                                     otherLabels={[
-                                                        { text: version.editors[0].name.substring(0, 8) + '...' },
+                                                        { text: version.editors[0].name},
                                                     ]}
                                                 />
                                             </Tooltip>
