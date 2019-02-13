@@ -328,64 +328,66 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                                 />
                             )}
 
-                            <div className={s.versionModalSummary}>
-                                {this.userCanEditVersion && (
-                                    <ToggleButtons
-                                        onChange={this.handleVersionRemoval}
-                                        toggleIsSetToRight={false}
-                                        toggleOnLeft={{
-                                            value: false,
-                                            color: 'green',
-                                            label:
-                                                projectsDetails.versionEditModal.uploadStatus === 'remove-prompt'
-                                                    ? 'No, keep the version'
-                                                    : '',
-                                        }}
-                                        toggleOnRight={{
-                                            value: true,
-                                            color:
-                                                projectsDetails.versionEditModal.uploadStatus === 'removing-succes'
-                                                    ? 'green'
-                                                    : 'orange',
-                                            label:
-                                                projectsDetails.versionEditModal.uploadStatus === 'remove-prompt'
-                                                    ? 'Yes, please remove this version'
-                                                    : projectsDetails.versionEditModal.uploadStatus === 'removing'
-                                                        ? 'Removing the version...'
-                                                        : projectsDetails.versionEditModal.uploadStatus ===
-                                                          'removing-succes'
-                                                            ? 'Removed the version'
-                                                            : 'Remove the version',
-                                        }}
-                                    />
-                                )}
-
-                                {(this.userCanEditVersionStatus || this.userCanEditVersionNote) &&
-                                    projectsDetails.versionEditModal.uploadStatus !== 'remove-prompt' &&
-                                    projectsDetails.versionEditModal.uploadStatus !== 'removing' &&
-                                    projectsDetails.versionEditModal.uploadStatus !== 'removing-error' &&
-                                    projectsDetails.versionEditModal.uploadStatus !== 'removing-succes' && (
-                                        <ButtonSave
-                                            onClick={this.handleVersionChangesSave}
-                                            labelColor={
-                                                projectsDetails.versionEditModal.uploadStatus === 'saving-error'
-                                                    ? 'orange'
-                                                    : projectsDetails.versionEditModal.uploadStatus === 'saving-success'
+                            {projectsDetails.versionEditModal.editable && 
+                                <div className={s.versionModalSummary}>
+                                    {this.userCanEditVersion && (
+                                        <ToggleButtons
+                                            onChange={this.handleVersionRemoval}
+                                            toggleIsSetToRight={false}
+                                            toggleOnLeft={{
+                                                value: false,
+                                                color: 'green',
+                                                label:
+                                                    projectsDetails.versionEditModal.uploadStatus === 'remove-prompt'
+                                                        ? 'No, keep the version'
+                                                        : '',
+                                            }}
+                                            toggleOnRight={{
+                                                value: true,
+                                                color:
+                                                    projectsDetails.versionEditModal.uploadStatus === 'removing-succes'
                                                         ? 'green'
-                                                        : 'blue'
-                                            }
-                                            label={
-                                                projectsDetails.versionEditModal.uploadStatus === 'saving-error'
-                                                    ? 'Could not save changes, try again'
-                                                    : projectsDetails.versionEditModal.uploadStatus === 'saving-success'
-                                                        ? 'Saved changes'
-                                                        : 'Save'
-                                            }
-                                            savingLabel="Saving version"
-                                            isSaving={projectsDetails.versionEditModal.uploadStatus === 'saving'}
+                                                        : 'orange',
+                                                label:
+                                                    projectsDetails.versionEditModal.uploadStatus === 'remove-prompt'
+                                                        ? 'Yes, please remove this version'
+                                                        : projectsDetails.versionEditModal.uploadStatus === 'removing'
+                                                            ? 'Removing the version...'
+                                                            : projectsDetails.versionEditModal.uploadStatus ===
+                                                            'removing-succes'
+                                                                ? 'Removed the version'
+                                                                : 'Remove the version',
+                                            }}
                                         />
                                     )}
-                            </div>
+
+                                    {(this.userCanEditVersionStatus || this.userCanEditVersionNote) &&
+                                        projectsDetails.versionEditModal.uploadStatus !== 'remove-prompt' &&
+                                        projectsDetails.versionEditModal.uploadStatus !== 'removing' &&
+                                        projectsDetails.versionEditModal.uploadStatus !== 'removing-error' &&
+                                        projectsDetails.versionEditModal.uploadStatus !== 'removing-succes' && (
+                                            <ButtonSave
+                                                onClick={this.handleVersionChangesSave}
+                                                labelColor={
+                                                    projectsDetails.versionEditModal.uploadStatus === 'saving-error'
+                                                        ? 'orange'
+                                                        : projectsDetails.versionEditModal.uploadStatus === 'saving-success'
+                                                            ? 'green'
+                                                            : 'blue'
+                                                }
+                                                label={
+                                                    projectsDetails.versionEditModal.uploadStatus === 'saving-error'
+                                                        ? 'Could not save changes, try again'
+                                                        : projectsDetails.versionEditModal.uploadStatus === 'saving-success'
+                                                            ? 'Saved changes'
+                                                            : 'Save'
+                                                }
+                                                savingLabel="Saving version"
+                                                isSaving={projectsDetails.versionEditModal.uploadStatus === 'saving'}
+                                            />
+                                        )}
+                                </div>
+                            }
                         </div>
                     )}
                 </Modal>
