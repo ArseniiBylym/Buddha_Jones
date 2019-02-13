@@ -232,3 +232,12 @@
     background-color: #efebe6;
     border: 1px solid #cac7c4;
 }
+.projectDisableBackdrop{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: transparent;
+    z-index: 1000;
+}
