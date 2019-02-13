@@ -10,6 +10,7 @@ import { AppOnlyStoreState } from 'store/AllStores';
 import { ProjectPermissionsActions, ProjectsCampaignsSpotsActions } from 'actions';
 import { UserPermissionKey } from 'types/projectPermissions';
 import { Modal } from 'components/Modals';
+import { SpotSentVersionForSubmit } from '../../types/spotSentForm';
 
 // Styles
 const s = require('./ProjectPicker.css');
@@ -633,11 +634,21 @@ export class ProjectPicker extends React.Component<ComponentProps, State> {
         return this.props.title && this.subTitleLabel ? this.subTitleLabel : capitalize(this.subTitleLabel);
     }
 
+    private getProjectLineStatus = () => {
+        if (this.props.store!.spotSent.spotSentDetails.spot_version.length > 0 &&
+            (this.props.store!.spotSent.spotSentDetails.spot_version as SpotSentVersionForSubmit[])[0].line_status_id === 1 ||
+            (this.props.store!.spotSent.spotSentDetails.spot_version as SpotSentVersionForSubmit[])[0].line_status_id === 2) {
+                return true;
+        } else {
+            return false;
+        }
+    }
+
     private getHeaderElementsArray(): SectionElement[] {
         return [
             ...(this.props.headerElements || []),
             ...(
-                this.showClearValuesButton && this.props.isSubmoduleVisible ? [
+                this.showClearValuesButton && this.props.isSubmoduleVisible && this.getProjectLineStatus() ? [
                     {
                         element: (
                             <Button
