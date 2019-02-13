@@ -85,12 +85,13 @@ Get list of all user
 
 Required | Parameter | Type | Default | Description
 -------- | --------- | ---- | ------- | -----------
-**false** | search   | string | null | search string (this will search in first_name, last_name, initials)
-**false** | class    | char or JSON Array   | null | E - Editor section, G - Graphics section, C - Creative section, B- Billing contact selection
-**false** | type  | int or JSON Array   | null | Type id
-**false** | ids      | int or JSON Array   | null | User id
-**false** | offset   | int    | 0    | offset to start
-**false** | length   | int    | 10   | length/count of data that will be returned
+false | search   | string | null | search string (this will search in first_name, last_name, initials)
+false | class    | char or JSON Array   | null | E - Editor section, G - Graphics section, C - Creative section, B- Billing contact selection
+false | type  | int or JSON Array   | null | Type id
+false | ids      | int or JSON Array   | null | User id
+false | offset   | int    | 0    | offset to start
+false | length   | int    | 10   | length/count of data that will be returned
+false | get_extra_info   | int    | 0   | send 1 to get extra data like salary type, hourly rate, min hour etc. (user should have access to that data (checked in backend))
 
 ### Send request like bellow
 /users?search=a&type=1&offset=0&length=20

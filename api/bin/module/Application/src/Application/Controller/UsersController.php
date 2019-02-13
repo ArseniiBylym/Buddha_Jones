@@ -2,10 +2,8 @@
 
 namespace Application\Controller;
 
-use Zend\View\Model\JsonModel;
-
 use Application\Entity\RediUser;
-use Application\Entity\RediNavigationPermission;
+use Zend\View\Model\JsonModel;
 
 class UsersController extends CustomAbstractActionController
 {
@@ -22,7 +20,6 @@ class UsersController extends CustomAbstractActionController
      */
     protected $_passwordMaxLength = 15;
 
-
     public function getList()
     {
         $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
@@ -30,19 +27,21 @@ class UsersController extends CustomAbstractActionController
         $ids = trim($this->getRequest()->getQuery('ids', ''));
         $type = trim($this->getRequest()->getQuery('type', ''));
         $search = trim($this->getRequest()->getQuery('search', ''));
-        $page = (int)trim($this->getRequest()->getQuery('page', 0));
-        $length = (int)trim($this->getRequest()->getQuery('length', 10));
-        $offset = (int)trim($this->getRequest()->getQuery('offset', ($page - 1) * $length));
+        $page = (int) trim($this->getRequest()->getQuery('page', 0));
+        $getExtraInfo = (int) trim($this->getRequest()->getQuery('get_extra_info', 0));
+        $length = (int) trim($this->getRequest()->getQuery('length', 10));
+        $offset = (int) trim($this->getRequest()->getQuery('offset', ($page - 1) * $length));
         $offset = ($offset >= 0) ? $offset : 0;
 
-
-        $idsArr = (array)json_decode($ids, true);
-        $classArr = (array)json_decode($class, true);
-        $typeArr = (array)json_decode($type, true);
+        $idsArr = (array) json_decode($ids, true);
+        $classArr = (array) json_decode($class, true);
+        $typeArr = (array) json_decode($type, true);
 
         if (!count($classArr) && $class) {
             $classArr = [$class];
         }
+
+        $userAccess = array_merge($userAccess, array('get_extra_info' => $getExtraInfo));
 
         $users = $this->_usersRepo->searchUser($search, $idsArr, $classArr, $typeArr, $offset, $length, $userAccess);
         $userCount = $this->_usersRepo->searchCount($search, $idsArr, $classArr, $typeArr);
@@ -62,7 +61,7 @@ class UsersController extends CustomAbstractActionController
             'length' => $length,
             'page' => floor($offset / $length) + 1,
             'totalPages' => ceil($userCount / $length),
-            'data' => $users
+            'data' => $users,
         );
 
         if ($response['status'] == 0) {
@@ -79,7 +78,7 @@ class UsersController extends CustomAbstractActionController
         $response = array(
             'status' => 1,
             'message' => 'Request successful',
-            'data' => $user
+            'data' => $user,
         );
 
         if ($response['status'] == 0) {
@@ -98,14 +97,14 @@ class UsersController extends CustomAbstractActionController
         if ($userAccess['can_edit']) {
             $userName = trim(isset($data['username']) ? $data['username'] : '');
             $password = trim(isset($data['password']) ? $data['password'] : '');
-            $generatePassword = (int)trim(isset($data['generate_password']) ? $data['generate_password'] : 0);
+            $generatePassword = (int) trim(isset($data['generate_password']) ? $data['generate_password'] : 0);
             $firstName = trim(isset($data['first_name']) ? $data['first_name'] : '');
             $lastName = trim(isset($data['last_name']) ? $data['last_name'] : '');
             $nickName = trim(isset($data['nick_name']) ? $data['nick_name'] : '');
             $initials = trim(isset($data['initials']) ? $data['initials'] : '');
             $email = trim(isset($data['email']) ? $data['email'] : '');
-            $typeId = (int)(isset($data['type_id']) ? $data['type_id'] : 0);
-            $status = (int)trim(isset($data['status']) ? $data['status'] : 1);
+            $typeId = (int) (isset($data['type_id']) ? $data['type_id'] : 0);
+            $status = (int) trim(isset($data['status']) ? $data['status'] : 1);
             $hourlyRate = isset($data['hourly_rate']) ? trim($data['hourly_rate']) : null;
             $salaryType = isset($data['salary_type']) ? trim($data['salary_type']) : null;
             $salaryAmount = isset($data['salary_amount']) ? trim($data['salary_amount']) : null;
@@ -180,26 +179,26 @@ class UsersController extends CustomAbstractActionController
                     } else {
                         $response = array(
                             'status' => 0,
-                            'message' => 'Email address already exists'
+                            'message' => 'Email address already exists',
                         );
                     }
                 } else {
                     $response = array(
                         'status' => 0,
-                        'message' => 'User name already exists'
+                        'message' => 'User name already exists',
                     );
                 }
 
             } else {
                 $response = array(
                     'status' => 0,
-                    'message' => 'Please provide required data (username, first_name, last_name, password, email, type_id (user type id))'
+                    'message' => 'Please provide required data (username, first_name, last_name, password, email, type_id (user type id))',
                 );
             }
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'User does not have access to change this data.'
+                'message' => 'User does not have access to change this data.',
             );
         }
 
@@ -215,15 +214,15 @@ class UsersController extends CustomAbstractActionController
         $data = $this->paramNameProxy($data);
 
         $password = isset($data['password']) ? $data['password'] : null;
-        $generatePassword = (int)trim(isset($data['generate_password']) ? $data['generate_password'] : 0);
+        $generatePassword = (int) trim(isset($data['generate_password']) ? $data['generate_password'] : 0);
         $oldPassword = isset($data['old_password']) ? $data['old_password'] : null;
         $firstName = isset($data['first_name']) ? $data['first_name'] : null;
         $lastName = isset($data['last_name']) ? $data['last_name'] : null;
         $nickName = isset($data['nick_name']) ? $data['nick_name'] : null;
         $initials = isset($data['initials']) ? $data['initials'] : null;
         $email = isset($data['email']) ? $data['email'] : null;
-        $typeId = isset($data['type_id']) ? (int)($data['type_id']) : null;
-        $status = isset($data['status']) ? (int)$data['status'] : null;
+        $typeId = isset($data['type_id']) ? (int) ($data['type_id']) : null;
+        $status = isset($data['status']) ? (int) $data['status'] : null;
         $hourlyRate = isset($data['hourly_rate']) ? trim($data['hourly_rate']) : null;
         $salaryType = isset($data['salary_type']) ? trim($data['salary_type']) : null;
         $salaryAmount = isset($data['salary_amount']) ? trim($data['salary_amount']) : null;
@@ -247,13 +246,13 @@ class UsersController extends CustomAbstractActionController
                     if ($id == $this->_user_id && $password && !$oldPassword) {
                         $response = array(
                             'status' => 0,
-                            'message' => 'Please provide current password.'
+                            'message' => 'Please provide current password.',
                         );
                     } else {
                         if ($id == $this->_user_id && $password && md5($oldPassword) != $user->getPassword()) {
                             $response = array(
                                 'status' => 0,
-                                'message' => 'Current password does not match.'
+                                'message' => 'Current password does not match.',
                             );
                         } else {
                             if ($firstName) {
@@ -314,7 +313,7 @@ class UsersController extends CustomAbstractActionController
                                         $tempImage = $this->_tempProfileImagePath . $uploadedImage;
 
                                         if (file_exists($tempImage)) {
-                                        // delete current image (if exists)
+                                            // delete current image (if exists)
                                             if ($user->getImage()) {
                                                 if (file_exists($this->_profileImagePath . $user->getImage())) {
                                                     unlink($this->_profileImagePath . $user->getImage());
@@ -342,26 +341,26 @@ class UsersController extends CustomAbstractActionController
                             $response = array(
                                 'status' => 1,
                                 'message' => 'User updated successfully',
-                                'data' => $updatedUser
+                                'data' => $updatedUser,
                             );
                         }
                     }
                 } else {
                     $response = array(
                         'status' => 0,
-                        'message' => 'User does not exist.'
+                        'message' => 'User does not exist.',
                     );
                 }
             } else {
                 $response = array(
                     'status' => 0,
-                    'message' => 'Email address already exists'
+                    'message' => 'Email address already exists',
                 );
             }
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'User does not have access to change this data.'
+                'message' => 'User does not have access to change this data.',
             );
         }
 
@@ -385,18 +384,18 @@ class UsersController extends CustomAbstractActionController
 
                 $response = array(
                     'status' => 0,
-                    'message' => 'User deleted'
+                    'message' => 'User deleted',
                 );
             } else {
                 $response = array(
                     'status' => 0,
-                    'message' => 'User does not exist'
+                    'message' => 'User does not exist',
                 );
             }
         } else {
             $response = array(
                 'status' => 0,
-                'message' => 'User does not have access to change this data.'
+                'message' => 'User does not have access to change this data.',
             );
         }
 
@@ -409,8 +408,10 @@ class UsersController extends CustomAbstractActionController
 
     private function getSingle($id)
     {
+        $getExtraInfo = (int) $this->getRequest()->getQuery('get_extra_info', 0);
+
         $userAccess = $this->_usersRepo->getUserAccessPermission($this->_user_type_id);
-        $user = $this->_usersRepo->getUser($id, $userAccess);
+        $user = $this->_usersRepo->getUser($id, array_merge($userAccess, array('get_extra_info' => $getExtraInfo)));
 
         return $user;
     }
@@ -433,7 +434,10 @@ class UsersController extends CustomAbstractActionController
         $mime_split = explode('/', $mime_split_without_base64[0], 2);
         if (count($mime_split) == 2) {
             $extension = $mime_split[1];
-            if ($extension == 'jpeg') $extension = 'jpg';
+            if ($extension == 'jpeg') {
+                $extension = 'jpg';
+            }
+
             //if($extension=='javascript')$extension='js';
             //if($extension=='text')$extension='txt';
             $output_file_with_extentnion = $output_file_without_extentnion . '.' . $extension;
@@ -469,27 +473,27 @@ class UsersController extends CustomAbstractActionController
         $src_y = 0;
 
         //selecting width and height
-//        if (!isset ($_GET["width"]) && !isset ($_GET["height"])) {
-//            $new_height = $height;
-//            $new_width = $width;
-//        } else if (!isset ($_GET["width"])) {
-//            $new_height = $_GET["height"];
-//            $new_width = ($width * $_GET["height"]) / $height;
-//        } else if (!isset ($_GET["height"])) {
-//            $new_height = ($height * $_GET["width"]) / $width;
-//            $new_width = $_GET["width"];
-//        } else {
-//            $new_width = $_GET["width"];
-//            $new_height = $_GET["height"];
-//        }
+        //        if (!isset ($_GET["width"]) && !isset ($_GET["height"])) {
+        //            $new_height = $height;
+        //            $new_width = $width;
+        //        } else if (!isset ($_GET["width"])) {
+        //            $new_height = $_GET["height"];
+        //            $new_width = ($width * $_GET["height"]) / $height;
+        //        } else if (!isset ($_GET["height"])) {
+        //            $new_height = ($height * $_GET["width"]) / $width;
+        //            $new_width = $_GET["width"];
+        //        } else {
+        //            $new_width = $_GET["width"];
+        //            $new_height = $_GET["height"];
+        //        }
 
         //secelcting_offsets
 
-        if ($new_width > $width)//by width
+        if ($new_width > $width) //by width
         {
             $dst_x = ($new_width - $width) / 2;
         }
-        if ($new_height > $height)//by height
+        if ($new_height > $height) //by height
         {
             $dst_y = ($new_height - $height) / 2;
         }
@@ -536,9 +540,8 @@ class UsersController extends CustomAbstractActionController
         //free resources
         ImageDestroy($source);
 
-
         //output image
-//        header('Content-Type: image/' . $ext);
+        //        header('Content-Type: image/' . $ext);
         $func = "image" . $ext;
 
         if (file_exists($newPath . '.' . $ext)) {

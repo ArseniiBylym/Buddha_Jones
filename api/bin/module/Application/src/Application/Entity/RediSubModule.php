@@ -35,6 +35,13 @@ class RediSubModule
      */
     private $subModuleName;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="order", type="integer", nullable=true)
+     */
+    private $order;
+
 
 
     /**
@@ -91,5 +98,28 @@ class RediSubModule
     public function getSubModuleName()
     {
         return $this->subModuleName;
+    }
+
+    /**
+     * Set order
+     *
+     * @param integer $order
+     * @return RediSubModule
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+
+        return $this;
+    }
+
+    /**
+     * Get order
+     *
+     * @return integer 
+     */
+    public function getOrder()
+    {
+        return $this->order;
     }
 }

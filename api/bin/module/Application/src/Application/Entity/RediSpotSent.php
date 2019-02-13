@@ -395,6 +395,13 @@ class RediSpotSent
     /**
      * @var integer
      *
+     * @ORM\Column(name="copy_from", type="bigint", nullable=true)
+     */
+    private $copyFrom;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="created_by", type="integer", nullable=true)
      */
     private $createdBy;
@@ -1649,6 +1656,29 @@ class RediSpotSent
     public function getQcLink()
     {
         return $this->qcLink;
+    }
+
+    /**
+     * Set copyFrom
+     *
+     * @param integer $copyFrom
+     * @return RediSpotSent
+     */
+    public function setCopyFrom($copyFrom)
+    {
+        $this->copyFrom = $copyFrom;
+
+        return $this;
+    }
+
+    /**
+     * Get copyFrom
+     *
+     * @return integer 
+     */
+    public function getCopyFrom()
+    {
+        return $this->copyFrom;
     }
 
     /**
