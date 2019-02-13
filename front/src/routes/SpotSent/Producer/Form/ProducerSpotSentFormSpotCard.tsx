@@ -138,6 +138,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
     public render() {
         return (
             <>
+            {this.props.spot.line_status_id === 3 && <div className={s.projectDisableBackdrop}/>}
             <Card
                 // title={'#' + (this.props.spotIndex + 1)}
                 // subTitle="Spot sent"
@@ -145,7 +146,7 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
                 // headerElements={
                 //     this.props.withGraphicsSection ? this.getCardHeadersForGraphics() : this.getCardHeaders()
                 // }
-            >
+            >   
                 <ProjectPicker
                     onChange={this.handleSpotChange}
                     forUserId={this.props.forUserId}
