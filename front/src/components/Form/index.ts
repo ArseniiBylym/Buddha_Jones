@@ -13,4 +13,3 @@ export * from './Counter';
 export * from './DurationCounter';
 export * from './Select';
 export * from './CheckmarkSquare';
-export * from './TextAreaRedactor';

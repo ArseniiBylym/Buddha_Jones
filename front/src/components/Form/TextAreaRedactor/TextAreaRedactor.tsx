@@ -5,11 +5,10 @@ import { EditorState, ContentState, convertToRaw } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
 
-// import './TextAreaRedactor.css';
-import './TextAreaRedactor-test.css';
+import './TextAreaRedactor.css';
 
 @observer
-export class TextAreaRedactor extends React.Component<any, {}> {
+class TextAreaRedactor extends React.Component<any, {}> {
 
     state = {
         editorValue: '',
@@ -174,3 +173,5 @@ export class TextAreaRedactor extends React.Component<any, {}> {
         );
     }
 }
+
+export default TextAreaRedactor;
