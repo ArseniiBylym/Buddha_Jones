@@ -416,11 +416,19 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
     private handleCreateSpot = () => SpotSentActions.handleCreateSpot();
 
+    private getSpotIdStyle = () => {
+        if (this.props.match!.params['id'] > 99 ) {
+            return s.mainSpotHeaderInfoLongNumber;
+        } else {
+            return s.mainSpotHeaderInfo;
+        }
+    }
+
     private updateHeader = () => {
         HeaderActions.replaceMainHeaderContent({
             elementsOnLeft: [
                 <div key="mainSpotHeaderNumber" className={s.mainSpotHeaderInfo__number}>{this.props.match!.params['id']}</div>,
-                <div key="mainSpotHeaderInfo" style={{marginRight: 'auto'}} className={s.mainSpotHeaderInfo}>
+                <div key="mainSpotHeaderInfo" style={{marginRight: 'auto'}} className={this.getSpotIdStyle()}>
                     {this.props.store!.spotSent.spotSentDetails.spot_version.length > 0 &&
                         <div className={s.mainSpotHeaderInfo__spotList}>
                             <div className={s.mainSpotHeaderInfo__spotListLabel}>Spots:</div>
