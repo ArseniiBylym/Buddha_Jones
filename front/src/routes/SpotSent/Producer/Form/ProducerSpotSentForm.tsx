@@ -253,7 +253,7 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
 
                     {spotSentDetails.spot_version &&
                         spotSentDetails.spot_version.length > 0 &&
-                        (spotSentDetails.spot_version[0] as SpotSentVersionForSubmit).project_campaign_id && (
+                        (spotSentDetails.spot_version[0] as SpotSentVersionForSubmit).project_campaign_id ? ( 
                             <ProducerSpotSentFormSentTo
                                 onContactAdd={this.handleSentToAdd}
                                 onContactRemove={this.handleSentToRemove}
@@ -262,7 +262,8 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                                 }
                                 assignedCustomers={this.assignedCustomers}
                             />
-                        )}
+                        ) : null
+                    }
 
                     <Section title="Internal notes">
                         <TextArea
