@@ -17,7 +17,7 @@ import { UserPermissionKey } from 'types/projectPermissions';
 import { Modal } from 'components/Modals';
 import { DropdownContainer, OptionsList, ToggleButtons, OptionsListValuePropType } from 'components/Form';
 // import { TextArea } from 'components/Form';
-import { TextAreaRedactor } from 'components/Form';
+import { TextAreaRedactorAsync } from 'components/Form/TextAreaRedactor';
 
 // Styles
 const s = require('./ProjectBoardContent.css');
@@ -321,7 +321,7 @@ export class ProjectBoardContent extends React.Component<ProjectBoardContentProp
                                 //     width={1152}
                                 //     height={400}
                                 // />
-                                <TextAreaRedactor 
+                                <TextAreaRedactorAsync 
                                     isEditable={projectsDetails.versionEditModal.editable}
                                     value={projectsDetails.versionEditModal.versionNote || ''}
                                     onChange={this.handleVersionNoteChangeValue}
