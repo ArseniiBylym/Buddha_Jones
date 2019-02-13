@@ -444,14 +444,9 @@ class ProducerSpotSentForm extends React.Component<ProducerSpotSentFormPropsType
                 </div>,
             ],
             elements: [
-                <div key="spotCampaignInfo" className={s.spotCampaignInfo}>
-                    <div className={s.spotCampaignInfo__campaignName}>{this.props.store!.spotSent.spotSentDetails.project_name}</div>
-                    {/* {this.props.store!.spotSent.spotSentDetails.studio_note && 
-                        <div className={s.spotCampaignInfo__campaignName}>
-                            for {this.props.store!.spotSent.spotSentDetails.studio_note}
-                        </div>
-                    } */}
-                </div>,
+                // <div key="spotCampaignInfo" className={s.spotCampaignInfo}>
+                //     <div className={s.spotCampaignInfo__campaignName}>{this.props.store!.spotSent.spotSentDetails.project_name}</div>
+                // </div>,
                 <ButtonBack
                     key="button-back-to-list"
                     onClick={this.handleBackButtonClick}

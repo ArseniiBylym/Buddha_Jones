@@ -138,7 +138,9 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
     public render() {
         return (
             <>
-            {this.props.spot.line_status_id === 3 && <div className={s.projectDisableBackdrop}/>}
+            {this.props.spot.line_status_id === 3 || this.props.spot.line_status_id === 4 &&
+                <div className={s.projectDisableBackdrop}/>
+            }
             <Card
                 // title={'#' + (this.props.spotIndex + 1)}
                 // subTitle="Spot sent"
