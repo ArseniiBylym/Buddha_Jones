@@ -178,7 +178,7 @@ export class SpotsToGraphicsGrid extends React.Component<any, {}> {
                                             return (
                                                 <div key={spot.spotSentId} onClick={this.handleSpotSelectionToggle(this.props.routeType, spot)} className={styleName}>
                                                 <div className={s.spotDate}>
-                                                    {spot.date && moment(spot.date).format('DD/MM/YYYY')}
+                                                    {spot.date && moment(spot.date).format('MM/DD/YY')}
                                                 </div>
                                                 <div className={s.spotItem}>
                                                     {spot.spotName}{spot.runtime && ` (${spot.runtime})`}
