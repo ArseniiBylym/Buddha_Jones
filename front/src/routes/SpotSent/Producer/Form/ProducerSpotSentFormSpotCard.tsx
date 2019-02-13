@@ -136,9 +136,10 @@ export class ProducerSpotSentFormSpotCard extends React.Component<
     private editorDropdown: DropdownContainer | null = null;
 
     public render() {
+        console.log(this.props.spot.line_status_id);
         return (
             <>
-            {this.props.spot.line_status_id === 3 || this.props.spot.line_status_id === 4 &&
+            {(this.props.spot.line_status_id === 3 || this.props.spot.line_status_id === 4) &&
                 <div className={s.projectDisableBackdrop}/>
             }
             <Card
