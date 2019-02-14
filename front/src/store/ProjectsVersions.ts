@@ -18,6 +18,8 @@ export class ProjectVersions {
         name: 'All status'
     };
 
+    @observable public showAddButton: boolean = false;
+
     @computed
     public get areStandardVersionsLoading(): boolean {
         return this.loadingStandardVersions && this.allStandardVersions.length <= 0;

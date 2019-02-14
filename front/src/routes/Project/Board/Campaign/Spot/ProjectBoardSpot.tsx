@@ -84,7 +84,21 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                     this.isVersionsVisible = true;
                 }
             }
-            );
+        );
+        reaction(
+            () => this.versionDropdownSearch,
+            queryString => {
+                const versionName = this.versionDropdownSearch
+                        .trim()
+                        .split(' ')
+                        .map(word => upperFirst(word))
+                        .join(' ');
+                ProjectsVersionsActions.validateVersion(versionName, this.props.spot.id);
+            },
+            {
+                delay: 500,
+            }
+        );
     }
 
     @computed
@@ -449,7 +463,8 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                                             }}
                                             label="Select version"
                                             directHint={
-                                                this.versionDropdownSearchTrimmedLowerCase.length > 0
+                                                this.versionDropdownSearchTrimmedLowerCase.length > 0 &&
+                                                this.props.store!.projectsVersions.showAddButton
                                                     ? {
                                                           value: 'createCustomVersion',
                                                           label: 'Create version: ' + this.versionDropdownSearch.trim(),
@@ -513,6 +528,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
     };
 
     private handleVersionSearchChange = (query: string) => {
+        ProjectsVersionsActions.clearAddVersionValue();
         this.versionDropdownSearch = query;
     };
 
@@ -526,6 +542,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
 
             let versionId: number = option.value as number;
             let versionName: string = option.label;
+            let versionSuccess: boolean = true;
             const createNewVersion = option.value === 'createCustomVersion';
             if (createNewVersion) {
                 versionName = this.versionDropdownSearch
@@ -535,18 +552,24 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                     .join(' ');
                 const version = await ProjectsVersionsActions.createNewVersion(versionName, this.props.spot.id);
                 versionId = version.id;
+                versionSuccess = version.successfull;
+            }
+            if (versionSuccess) {
+                await ProjectsDetailsActions.addVersionToProjectCampaignSpot(
+                    this.props.projectId,
+                    this.props.projectCampaignId,
+                    this.props.spot.id,
+                    versionId,
+                    versionName,
+                    createNewVersion
+                );
+    
+                this.addingNewVersionStatus = 'none';
+                ProjectsVersionsActions.clearAddVersionValue();
+            } else {
+                this.addingNewVersionStatus = 'error';
             }
 
-            await ProjectsDetailsActions.addVersionToProjectCampaignSpot(
-                this.props.projectId,
-                this.props.projectCampaignId,
-                this.props.spot.id,
-                versionId,
-                versionName,
-                createNewVersion
-            );
-
-            this.addingNewVersionStatus = 'none';
         } catch (error) {
             this.addingNewVersionStatus = 'error';
             throw error;

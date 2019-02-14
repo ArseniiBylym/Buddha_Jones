@@ -15,6 +15,7 @@ export interface ProjectVersionCreateFromApi {
         id: number;
         versionName: string;
         custom: 1 | 0 | null;
+        sortOrder?: string;
     };
 }
 
