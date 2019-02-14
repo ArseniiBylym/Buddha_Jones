@@ -68,6 +68,27 @@ export class ProjectsVersionsActionsClass {
     };
 
     @action
+    public validateVersion = async (versionName: string, customSpotId?: number) => {
+        try {
+            const result = (await API.getData(APIPath.VERSION + `/?search=${versionName}`
+                )) as any;
+                
+            if (result.length === 0) {
+                ProjectsVersionsStore.showAddButton = true;
+            }
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    @action
+    public clearAddVersionValue = () => {
+        if (ProjectsVersionsStore.showAddButton === true) {
+            ProjectsVersionsStore.showAddButton = false;
+        }
+    }
+
+    @action
     public createNewVersion = async (
         versionName: string,
         customSpotId?: number

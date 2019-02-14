@@ -84,7 +84,21 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                     this.isVersionsVisible = true;
                 }
             }
-            );
+        );
+        reaction(
+            () => this.versionDropdownSearch,
+            queryString => {
+                const versionName = this.versionDropdownSearch
+                        .trim()
+                        .split(' ')
+                        .map(word => upperFirst(word))
+                        .join(' ');
+                ProjectsVersionsActions.validateVersion(versionName, this.props.spot.id);
+            },
+            {
+                delay: 500,
+            }
+        );
     }
 
     @computed
@@ -449,7 +463,8 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                                             }}
                                             label="Select version"
                                             directHint={
-                                                this.versionDropdownSearchTrimmedLowerCase.length > 0
+                                                this.versionDropdownSearchTrimmedLowerCase.length > 0 &&
+                                                this.props.store!.projectsVersions.showAddButton
                                                     ? {
                                                           value: 'createCustomVersion',
                                                           label: 'Create version: ' + this.versionDropdownSearch.trim(),
@@ -513,6 +528,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
     };
 
     private handleVersionSearchChange = (query: string) => {
+        ProjectsVersionsActions.clearAddVersionValue();
         this.versionDropdownSearch = query;
     };
 
@@ -549,6 +565,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                 );
     
                 this.addingNewVersionStatus = 'none';
+                ProjectsVersionsActions.clearAddVersionValue();
             } else {
                 this.addingNewVersionStatus = 'error';
             }
