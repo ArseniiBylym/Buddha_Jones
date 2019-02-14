@@ -526,6 +526,7 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
 
             let versionId: number = option.value as number;
             let versionName: string = option.label;
+            let versionSuccess: boolean = true;
             const createNewVersion = option.value === 'createCustomVersion';
             if (createNewVersion) {
                 versionName = this.versionDropdownSearch
@@ -535,18 +536,23 @@ export class ProjectBoardSpot extends React.Component<ProjectBoardSpotPropsTypes
                     .join(' ');
                 const version = await ProjectsVersionsActions.createNewVersion(versionName, this.props.spot.id);
                 versionId = version.id;
+                versionSuccess = version.successfull;
+            }
+            if (versionSuccess) {
+                await ProjectsDetailsActions.addVersionToProjectCampaignSpot(
+                    this.props.projectId,
+                    this.props.projectCampaignId,
+                    this.props.spot.id,
+                    versionId,
+                    versionName,
+                    createNewVersion
+                );
+    
+                this.addingNewVersionStatus = 'none';
+            } else {
+                this.addingNewVersionStatus = 'error';
             }
 
-            await ProjectsDetailsActions.addVersionToProjectCampaignSpot(
-                this.props.projectId,
-                this.props.projectCampaignId,
-                this.props.spot.id,
-                versionId,
-                versionName,
-                createNewVersion
-            );
-
-            this.addingNewVersionStatus = 'none';
         } catch (error) {
             this.addingNewVersionStatus = 'error';
             throw error;

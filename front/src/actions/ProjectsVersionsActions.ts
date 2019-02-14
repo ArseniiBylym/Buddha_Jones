@@ -71,7 +71,7 @@ export class ProjectsVersionsActionsClass {
     public createNewVersion = async (
         versionName: string,
         customSpotId?: number
-    ): Promise<{ id: number; name: string }> => {
+    ): Promise<{ id: number; name: string; successfull: boolean; }> => {
         try {
             const newVersion = (await API.postData(APIPath.VERSION, {
                 name: versionName,
@@ -83,24 +83,34 @@ export class ProjectsVersionsActionsClass {
                     : {}),
             })) as ProjectVersionCreateFromApi;
 
-            if (customSpotId) {
-                ProjectsVersionsStore.allCustomVersions.push({
-                    value: newVersion.version.id,
-                    label: newVersion.version.versionName,
-                    isCustom: true,
-                });
+            if (newVersion.version.sortOrder) {
+                if (customSpotId) {
+                    ProjectsVersionsStore.allCustomVersions.push({
+                        value: newVersion.version.id,
+                        label: newVersion.version.versionName,
+                        isCustom: true,
+                    });
+                } else {
+                    ProjectsVersionsStore.allStandardVersions.push({
+                        value: newVersion.version.id,
+                        label: newVersion.version.versionName,
+                        isCustom: false,
+                    });
+                }
+
+                return {
+                    id: newVersion.version.id,
+                    name: newVersion.version.versionName,
+                    successfull: true,
+                };
             } else {
-                ProjectsVersionsStore.allStandardVersions.push({
-                    value: newVersion.version.id,
-                    label: newVersion.version.versionName,
-                    isCustom: false,
-                });
+                return {
+                    id: newVersion.version.id,
+                    name: newVersion.version.versionName,
+                    successfull: false,
+                };
             }
 
-            return {
-                id: newVersion.version.id,
-                name: newVersion.version.versionName,
-            };
         } catch (error) {
             throw error;
         }
